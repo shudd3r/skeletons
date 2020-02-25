@@ -1,0 +1,28 @@
+{
+    "name": "shudd3r/package-files",
+    "description": "Skeleton template generation & synchronization for package files",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Shudd3r",
+            "email": "q3.shudder@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Shudd3r\\PackageFiles\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Shudd3r\\PackageFiles\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.4",
+        "phpunit/phpunit": "^9.0",
+        "php-coveralls/php-coveralls": "^2.2"
+    }
+}
