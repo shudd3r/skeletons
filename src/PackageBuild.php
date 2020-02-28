@@ -14,13 +14,16 @@ namespace Shudd3r\PackageFiles;
 
 class PackageBuild
 {
+    private $input;
     private $resourceDir;
 
     /**
-     * @param string $resourceDir
+     * @param callable $input       fn(prompt, defaultValue) => string
+     * @param string   $resourceDir
      */
-    public function __construct(string $resourceDir)
+    public function __construct(callable $input, string $resourceDir)
     {
+        $this->input       = $input;
         $this->resourceDir = $resourceDir;
     }
 
@@ -45,15 +48,16 @@ class PackageBuild
             : [basename(dirname($projectRoot)), basename($projectRoot)];
         $description = $composer['description'] ?? 'Polymorphine library package';
 
-        $vendorName  = $this->input('Vendor name', $vendorName);
-        $packageName = $this->input('Package name', $packageName);
-        $description = $this->input('Package Description', $description);
+        $input       = $this->input;
+        $vendorName  = $input('Vendor name', $vendorName);
+        $packageName = $input('Package name', $packageName);
+        $description = $input('Package Description', $description);
 
         $vendorNamespace  = ucfirst($vendorName);
         $packageNamespace = ucfirst($packageName);
 
-        $vendorRepository  = $this->input('Vendor Github', $vendorName);
-        $packageRepository = $this->input('Package Github repository', $packageName);
+        $vendorRepository  = $input('Vendor Github', $vendorName);
+        $packageRepository = $input('Package Github repository', $packageName);
 
         $composer['autoload']['psr-4'][$vendorNamespace . '\\' . $packageNamespace . '\\']            = 'src/';
         $composer['autoload-dev']['psr-4'][$vendorNamespace . '\\' . $packageNamespace . '\\Tests\\'] = 'tests/';
@@ -78,20 +82,6 @@ class PackageBuild
         echo "composer package  = $vendorName/$packageName\n";
         echo "package namespace = $vendorNamespace\\$packageNamespace\n";
         echo "github repository = $vendorRepository/$packageRepository\n";
-    }
-
-    private function input(string $prompt, string $default = ''): string
-    {
-        $defaultInfo = $default ? ' [default: ' . $default . ']' : '';
-        echo $prompt . $defaultInfo . ': ';
-        $input = fopen('php://stdin', 'r');
-        $line  = trim(fgets($input));
-        fclose($input);
-        if ($line === '!') {
-            echo '...cancelled' . PHP_EOL;
-            exit;
-        }
-        return $line ?: $default;
     }
 
     private function isValidWorkspace(string $projectRoot)
