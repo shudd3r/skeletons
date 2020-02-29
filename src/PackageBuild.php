@@ -32,9 +32,9 @@ class PackageBuild
      *
      * @param array $args
      */
-    public function run(array $args): void
+    public function run(array $args = []): void
     {
-        $projectRoot = $args[0];
+        $projectRoot = $args[1] ?? getcwd() . DIRECTORY_SEPARATOR . 'build';
         if (!$this->isValidWorkspace($projectRoot)) {
             echo 'Package can be initialized in directory containing vendor directory';
             exit;
