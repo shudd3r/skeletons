@@ -48,16 +48,15 @@ class PackageBuild
             : [basename(dirname($projectRoot)), basename($projectRoot)];
         $description = $composer['description'] ?? 'Polymorphine library package';
 
-        $input       = $this->input;
-        $vendorName  = $input('Vendor name', $vendorName);
-        $packageName = $input('Package name', $packageName);
-        $description = $input('Package Description', $description);
+        $vendorName  = $this->input('Vendor name', $vendorName);
+        $packageName = $this->input('Package name', $packageName);
+        $description = $this->input('Package Description', $description);
 
         $vendorNamespace  = ucfirst($vendorName);
         $packageNamespace = ucfirst($packageName);
 
-        $vendorRepository  = $input('Vendor Github', $vendorName);
-        $packageRepository = $input('Package Github repository', $packageName);
+        $vendorRepository  = $this->input('Vendor Github', $vendorName);
+        $packageRepository = $this->input('Package Github repository', $packageName);
 
         $composer['autoload']['psr-4'][$vendorNamespace . '\\' . $packageNamespace . '\\']            = 'src/';
         $composer['autoload-dev']['psr-4'][$vendorNamespace . '\\' . $packageNamespace . '\\Tests\\'] = 'tests/';
@@ -90,5 +89,20 @@ class PackageBuild
         $projectRoot = rtrim($projectRoot, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         if (!file_exists($projectRoot . 'composer.json')) { return false; }
         return true;
+    }
+
+    private function input(string $prompt, string $default = ''): string
+    {
+        $defaultInfo = $default ? ' [default: ' . $default . ']' : '';
+        echo $prompt . $defaultInfo . ': ';
+
+        $line = ($this->input)();
+
+        if ($line === '!') {
+            echo '...cancelled' . PHP_EOL;
+            exit;
+        }
+
+        return $line ?: $default;
     }
 }
