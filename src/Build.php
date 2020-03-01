@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles;
 
 
-class PackageBuild
+class Build
 {
     private $input;
     private $resourceDir;

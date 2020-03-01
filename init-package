@@ -25,5 +25,5 @@ $input = function (): string {
     return $line;
 };
 
-$build = new Shudd3r\PackageFiles\PackageBuild($input, __DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
+$build = new Shudd3r\PackageFiles\Build($input, __DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
 $build->run($argv);
