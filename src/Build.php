@@ -15,15 +15,18 @@ namespace Shudd3r\PackageFiles;
 class Build
 {
     private $input;
+    private $output;
     private $resourceDir;
 
     /**
      * @param callable $input       fn(prompt, defaultValue) => string
+     * @param callable $output      fn(message) => void
      * @param string   $resourceDir
      */
-    public function __construct(callable $input, string $resourceDir)
+    public function __construct(callable $input, callable $output, string $resourceDir)
     {
         $this->input       = $input;
+        $this->output      = $output;
         $this->resourceDir = $resourceDir;
     }
 
@@ -36,8 +39,8 @@ class Build
     {
         $projectRoot = $args[1] ?? getcwd() . DIRECTORY_SEPARATOR . 'build';
         if (!$this->isValidWorkspace($projectRoot)) {
-            echo 'Package can be initialized in directory containing vendor directory';
-            exit;
+            $this->output('Package can be initialized in directory containing vendor directory');
+            return;
         }
 
         $composerFile = $projectRoot . DIRECTORY_SEPARATOR . 'composer.json';
@@ -77,10 +80,12 @@ class Build
         $composerJson = json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
         file_put_contents($composerFile, $composerJson);
 
-        echo PHP_EOL;
-        echo "composer package  = $vendorName/$packageName\n";
-        echo "package namespace = $vendorNamespace\\$packageNamespace\n";
-        echo "github repository = $vendorRepository/$packageRepository\n";
+        $this->output(
+            PHP_EOL .
+            "composer package  = $vendorName/$packageName\n" .
+            "package namespace = $vendorNamespace\\$packageNamespace\n" .
+            "github repository = $vendorRepository/$packageRepository\n"
+        );
     }
 
     private function isValidWorkspace(string $projectRoot)
@@ -94,15 +99,20 @@ class Build
     private function input(string $prompt, string $default = ''): string
     {
         $defaultInfo = $default ? ' [default: ' . $default . ']' : '';
-        echo $prompt . $defaultInfo . ': ';
+        $this->output($prompt . $defaultInfo . ': ');
 
         $line = ($this->input)();
 
         if ($line === '!') {
-            echo '...cancelled' . PHP_EOL;
+            $this->output('...cancelled' . PHP_EOL);
             exit;
         }
 
         return $line ?: $default;
+    }
+
+    private function output(string $message): void
+    {
+        ($this->output)($message);
     }
 }
