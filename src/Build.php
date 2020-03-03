@@ -88,12 +88,11 @@ class Build
         );
     }
 
-    private function isValidWorkspace(string $projectRoot)
+    private function isValidWorkspace(string $projectRoot): bool
     {
         if (!is_dir($projectRoot)) { return false; }
         $projectRoot = rtrim($projectRoot, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-        if (!file_exists($projectRoot . 'composer.json')) { return false; }
-        return true;
+        return file_exists($projectRoot . 'composer.json');
     }
 
     private function input(string $prompt, string $default = ''): string
