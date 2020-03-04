@@ -97,13 +97,6 @@ class Build
         $defaultInfo = $default ? ' [default: ' . $default . ']' : '';
         $this->terminal->send($prompt . $defaultInfo . ': ');
 
-        $line = $this->terminal->input();
-
-        if ($line === '!') {
-            $this->terminal->send('...cancelled' . PHP_EOL);
-            exit;
-        }
-
-        return $line ?: $default;
+        return $this->terminal->input() ?: $default;
     }
 }

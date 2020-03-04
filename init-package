@@ -28,6 +28,12 @@ $terminal = new class() implements Terminal
         $stdin = fopen('php://stdin', 'r');
         $line  = trim(fgets($stdin));
         fclose($stdin);
+
+        if ($line === '!') {
+            $this->send('...cancelled' . PHP_EOL);
+            exit;
+        }
+
         return $line;
     }
 
