@@ -14,19 +14,16 @@ namespace Shudd3r\PackageFiles;
 
 class Build
 {
-    private $input;
-    private $output;
+    private $terminal;
     private $resourceDir;
 
     /**
-     * @param callable $input       fn(prompt, defaultValue) => string
-     * @param callable $output      fn(message) => void
+     * @param Terminal $terminal
      * @param string   $resourceDir
      */
-    public function __construct(callable $input, callable $output, string $resourceDir)
+    public function __construct(Terminal $terminal, string $resourceDir)
     {
-        $this->input       = $input;
-        $this->output      = $output;
+        $this->terminal    = $terminal;
         $this->resourceDir = $resourceDir;
     }
 
@@ -39,7 +36,7 @@ class Build
     {
         $projectRoot = $args[1] ?? getcwd() . DIRECTORY_SEPARATOR . 'build';
         if (!$this->isValidWorkspace($projectRoot)) {
-            $this->output('Package can be initialized in directory containing vendor directory');
+            $this->terminal->send('Package can be initialized in directory containing vendor directory');
             return;
         }
 
@@ -80,7 +77,7 @@ class Build
         $composerJson = json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
         file_put_contents($composerFile, $composerJson);
 
-        $this->output(
+        $this->terminal->send(
             PHP_EOL .
             "composer package  = $vendorName/$packageName\n" .
             "package namespace = $vendorNamespace\\$packageNamespace\n" .
@@ -98,20 +95,15 @@ class Build
     private function input(string $prompt, string $default = ''): string
     {
         $defaultInfo = $default ? ' [default: ' . $default . ']' : '';
-        $this->output($prompt . $defaultInfo . ': ');
+        $this->terminal->send($prompt . $defaultInfo . ': ');
 
-        $line = ($this->input)();
+        $line = $this->terminal->input();
 
         if ($line === '!') {
-            $this->output('...cancelled' . PHP_EOL);
+            $this->terminal->send('...cancelled' . PHP_EOL);
             exit;
         }
 
         return $line ?: $default;
-    }
-
-    private function output(string $message): void
-    {
-        ($this->output)($message);
     }
 }
