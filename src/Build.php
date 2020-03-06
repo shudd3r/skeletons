@@ -36,7 +36,7 @@ class Build
     {
         $projectRoot = $args[1] ?? getcwd() . DIRECTORY_SEPARATOR . 'build';
         if (!$this->isValidWorkspace($projectRoot)) {
-            $this->terminal->send('Package can be initialized in directory containing vendor directory');
+            $this->terminal->display('Package can be initialized in directory containing vendor directory');
             return;
         }
 
@@ -77,7 +77,7 @@ class Build
         $composerJson = json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
         file_put_contents($composerFile, $composerJson);
 
-        $this->terminal->send(
+        $this->terminal->display(
             PHP_EOL .
             "composer package  = $vendorName/$packageName\n" .
             "package namespace = $vendorNamespace\\$packageNamespace\n" .
@@ -95,7 +95,7 @@ class Build
     private function input(string $prompt, string $default = ''): string
     {
         $defaultInfo = $default ? ' [default: ' . $default . ']' : '';
-        $this->terminal->send($prompt . $defaultInfo . ': ');
+        $this->terminal->display($prompt . $defaultInfo . ': ');
 
         return $this->terminal->input() ?: $default;
     }

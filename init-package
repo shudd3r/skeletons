@@ -30,14 +30,14 @@ $terminal = new class() implements Terminal
         fclose($stdin);
 
         if ($line === '!') {
-            $this->send('...cancelled' . PHP_EOL);
+            $this->display('...cancelled' . PHP_EOL);
             exit;
         }
 
         return $line;
     }
 
-    public function send(string $message): void
+    public function display(string $message): void
     {
         echo $message;
     }

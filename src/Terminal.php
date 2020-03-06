@@ -29,5 +29,5 @@ interface Terminal
      *
      * @param string $message
      */
-    public function send(string $message): void;
+    public function display(string $message): void;
 }
