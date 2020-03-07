@@ -36,7 +36,7 @@ class Build
     {
         $projectRoot = $args[1] ?? getcwd() . DIRECTORY_SEPARATOR . 'build';
         if (!$this->isValidWorkspace($projectRoot)) {
-            $this->terminal->display('Package can be initialized in directory containing vendor directory');
+            $this->terminal->display('Project root directory must contain composer.json file');
             return;
         }
 
@@ -51,12 +51,11 @@ class Build
         $vendorName  = $this->input('Vendor name', $vendorName);
         $packageName = $this->input('Package name', $packageName);
         $description = $this->input('Package Description', $description);
+        $vendorRepo  = $this->input('Package Github account', $vendorName);
+        $packageRepo = $this->input('Package Github repository', $packageName);
 
         $vendorNamespace  = ucfirst($vendorName);
         $packageNamespace = ucfirst($packageName);
-
-        $vendorRepository  = $this->input('Vendor Github', $vendorName);
-        $packageRepository = $this->input('Package Github repository', $packageName);
 
         $composer['autoload']['psr-4'][$vendorNamespace . '\\' . $packageNamespace . '\\']            = 'src/';
         $composer['autoload-dev']['psr-4'][$vendorNamespace . '\\' . $packageNamespace . '\\Tests\\'] = 'tests/';
@@ -81,7 +80,7 @@ class Build
             PHP_EOL .
             "composer package  = $vendorName/$packageName\n" .
             "package namespace = $vendorNamespace\\$packageNamespace\n" .
-            "github repository = $vendorRepository/$packageRepository\n"
+            "github repository = $vendorRepo/$packageRepo\n"
         );
     }
 
