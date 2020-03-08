@@ -11,6 +11,8 @@
 
 namespace Shudd3r\PackageFiles;
 
+use Shudd3r\PackageFiles\Resource\File;
+
 
 class Build
 {
@@ -40,8 +42,9 @@ class Build
             return;
         }
 
-        $composerFile = $projectRoot . DIRECTORY_SEPARATOR . 'composer.json';
-        $composer     = json_decode(file_get_contents($composerFile), true);
+        $composerFile = new File($projectRoot . DIRECTORY_SEPARATOR . 'composer.json');
+
+        $composer = json_decode($composerFile->contents(), true);
 
         [$vendorName, $packageName] = isset($composer['name'])
             ? explode('/', $composer['name'])
@@ -74,7 +77,7 @@ class Build
         ]);
 
         $composerJson = json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
-        file_put_contents($composerFile, $composerJson);
+        $composerFile->write($composerJson);
 
         $this->terminal->display(
             PHP_EOL .
