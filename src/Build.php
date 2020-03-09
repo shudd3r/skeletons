@@ -78,13 +78,6 @@ class Build
 
         $composerJson = json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
         $composerFile->write($composerJson);
-
-        $this->terminal->display(
-            PHP_EOL .
-            "composer package  = $vendorName/$packageName\n" .
-            "package namespace = $vendorNamespace\\$packageNamespace\n" .
-            "github repository = $vendorRepo/$packageRepo\n"
-        );
     }
 
     private function isValidWorkspace(string $projectRoot): bool
