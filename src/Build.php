@@ -51,21 +51,20 @@ class Build
             : [basename(dirname($projectRoot)), basename($projectRoot)];
         $description = $composer['description'] ?? 'Polymorphine library package';
 
-        $vendorName  = $this->input('Vendor name', $vendorName);
-        $packageName = $this->input('Package name', $packageName);
-        $description = $this->input('Package Description', $description);
-        $vendorRepo  = $this->input('Package Github account', $vendorName);
-        $packageRepo = $this->input('Package Github repository', $packageName);
+        $data = new Properties();
+        $data->packageVendor = $this->input('Vendor name', $vendorName);
+        $data->packageName   = $this->input('Package name', $packageName);
+        $data->packageDesc   = $this->input('Package Description', $description);
+        $data->repoUser      = $this->input('Package Github account', $vendorName);
+        $data->repoName      = $this->input('Package Github repository', $packageName);
 
-        $vendorNamespace  = ucfirst($vendorName);
-        $packageNamespace = ucfirst($packageName);
-
-        $composer['autoload']['psr-4'][$vendorNamespace . '\\' . $packageNamespace . '\\']            = 'src/';
-        $composer['autoload-dev']['psr-4'][$vendorNamespace . '\\' . $packageNamespace . '\\Tests\\'] = 'tests/';
+        $namespace = ucfirst($data->packageVendor) . '\\' . ucfirst($data->packageName) . '\\';
+        $composer['autoload']['psr-4'][$namespace] = 'src/';
+        $composer['autoload-dev']['psr-4'][$namespace . 'Tests\\'] = 'tests/';
 
         $newComposer = array_filter([
-            'name'              => $vendorName . '/' . $packageName,
-            'description'       => $description,
+            'name'              => $data->packageVendor . '/' . $data->packageName,
+            'description'       => $data->packageDesc,
             'type'              => 'library',
             'license'           => 'MIT',
             'authors'           => $composer['authors'] ?? [['name' => 'Shudd3r', 'email' => 'q3.shudder@gmail.com']],
