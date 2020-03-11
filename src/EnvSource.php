@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles;
 
 
-interface Resource
+interface EnvSource
 {
     /**
      * @return string

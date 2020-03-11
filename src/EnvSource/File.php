@@ -9,12 +9,12 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Resource;
+namespace Shudd3r\PackageFiles\EnvSource;
 
-use Shudd3r\PackageFiles\Resource;
+use Shudd3r\PackageFiles\EnvSource;
 
 
-class File implements Resource
+class File implements EnvSource
 {
     private string $filename;
     private string $contents;

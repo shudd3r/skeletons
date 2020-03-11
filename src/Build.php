@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Resource\File;
+use Shudd3r\PackageFiles\EnvSource\File;
 
 
 class Build
