@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\EnvSource\File;
+use Shudd3r\PackageFiles\Command\GenerateComposer;
 
 
 class Build
@@ -58,25 +59,8 @@ class Build
         $data->repoUser      = $this->input('Package Github account', $vendorName);
         $data->repoName      = $this->input('Package Github repository', $packageName);
 
-        $namespace = ucfirst($data->packageVendor) . '\\' . ucfirst($data->packageName) . '\\';
-        $composer['autoload']['psr-4'][$namespace] = 'src/';
-        $composer['autoload-dev']['psr-4'][$namespace . 'Tests\\'] = 'tests/';
-
-        $newComposer = array_filter([
-            'name'              => $data->packageVendor . '/' . $data->packageName,
-            'description'       => $data->packageDesc,
-            'type'              => 'library',
-            'license'           => 'MIT',
-            'authors'           => $composer['authors'] ?? [['name' => 'Shudd3r', 'email' => 'q3.shudder@gmail.com']],
-            'autoload'          => $composer['autoload'],
-            'autoload-dev'      => $composer['autoload-dev'],
-            'minimum-stability' => 'stable',
-            'require'           => $composer['require'] ?? null,
-            'require-dev'       => $composer['require-dev'] ?? null
-        ]);
-
-        $composerJson = json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
-        $composerFile->write($composerJson);
+        $command = new GenerateComposer($composerFile);
+        $command->execute($data);
     }
 
     private function isValidWorkspace(string $projectRoot): bool
