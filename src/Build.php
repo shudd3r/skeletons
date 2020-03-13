@@ -11,8 +11,9 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\EnvSource\File;
+use Shudd3r\PackageFiles\Files\ProjectFiles;
 use Shudd3r\PackageFiles\Command\GenerateComposer;
+use InvalidArgumentException;
 
 
 class Build
@@ -38,14 +39,20 @@ class Build
     public function run(array $args = []): void
     {
         $projectRoot = $args[1] ?? getcwd() . DIRECTORY_SEPARATOR . 'build';
-        if (!$this->isValidWorkspace($projectRoot)) {
+
+        try {
+            $files = new ProjectFiles($projectRoot);
+        } catch (InvalidArgumentException $e) {
+            $this->terminal->display($e->getMessage());
+            return;
+        }
+
+        if (!$files->exists('composer.json')) {
             $this->terminal->display('Project root directory must contain composer.json file');
             return;
         }
 
-        $composerFile = new File($projectRoot . DIRECTORY_SEPARATOR . 'composer.json');
-
-        $composer = json_decode($composerFile->contents(), true);
+        $composer = json_decode($files->contents('composer.json'), true);
 
         [$vendorName, $packageName] = isset($composer['name'])
             ? explode('/', $composer['name'])
@@ -59,15 +66,8 @@ class Build
         $data->repoUser      = $this->input('Package Github account', $vendorName);
         $data->repoName      = $this->input('Package Github repository', $packageName);
 
-        $command = new GenerateComposer($composerFile);
+        $command = new GenerateComposer($files);
         $command->execute($data);
-    }
-
-    private function isValidWorkspace(string $projectRoot): bool
-    {
-        if (!is_dir($projectRoot)) { return false; }
-        $projectRoot = rtrim($projectRoot, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-        return file_exists($projectRoot . 'composer.json');
     }
 
     private function input(string $prompt, string $default = ''): string

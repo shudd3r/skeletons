@@ -12,15 +12,25 @@
 namespace Shudd3r\PackageFiles;
 
 
-interface EnvSource
+interface Files
 {
     /**
-     * @return string
+     * @param string $filename
+     *
+     * @return bool
      */
-    public function contents(): string;
+    public function exists(string $filename): bool;
 
     /**
+     * @param string $filename
+     *
+     * @return string
+     */
+    public function contents(string $filename): string;
+
+    /**
+     * @param string $filename
      * @param string $contents
      */
-    public function write(string $contents): void;
+    public function write(string $filename, string $contents): void;
 }

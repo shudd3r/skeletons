@@ -12,22 +12,22 @@
 namespace Shudd3r\PackageFiles\Command;
 
 use Shudd3r\PackageFiles\Command;
+use Shudd3r\PackageFiles\Files;
 use Shudd3r\PackageFiles\Properties;
-use Shudd3r\PackageFiles\EnvSource;
 
 
 class GenerateComposer implements Command
 {
-    private EnvSource $composer;
+    private Files $files;
 
-    public function __construct(EnvSource $composer)
+    public function __construct(Files $files)
     {
-        $this->composer = $composer;
+        $this->files = $files;
     }
 
     public function execute(Properties $data): void
     {
-        $composer  = json_decode($this->composer->contents(), true);
+        $composer  = json_decode($this->files->contents('composer.json'), true);
         $namespace = ucfirst($data->packageVendor) . '\\' . ucfirst($data->packageName) . '\\';
         $composer['autoload']['psr-4'][$namespace] = 'src/';
         $composer['autoload-dev']['psr-4'][$namespace . 'Tests\\'] = 'tests/';
@@ -46,6 +46,6 @@ class GenerateComposer implements Command
         ]);
 
         $composerJson = json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
-        $this->composer->write($composerJson);
+        $this->files->write('composer.json', $composerJson);
     }
 }
