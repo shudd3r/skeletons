@@ -10,6 +10,7 @@
  * with this source code in the file LICENSE.
  */
 
+use Shudd3r\PackageFiles\Files\ProjectFiles;
 use Shudd3r\PackageFiles\Terminal;
 use Shudd3r\PackageFiles\Build;
 
@@ -43,5 +44,5 @@ $terminal = new class() implements Terminal
     }
 };
 
-$build = new Build($terminal, __DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
+$build = new Build($terminal, new ProjectFiles(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton'));
 $build->run($argv);

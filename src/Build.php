@@ -19,16 +19,16 @@ use InvalidArgumentException;
 class Build
 {
     private $terminal;
-    private $resourceDir;
+    private $skeletonFiles;
 
     /**
      * @param Terminal $terminal
-     * @param string   $resourceDir
+     * @param Files    $skeletonFiles
      */
-    public function __construct(Terminal $terminal, string $resourceDir)
+    public function __construct(Terminal $terminal, Files $skeletonFiles)
     {
-        $this->terminal    = $terminal;
-        $this->resourceDir = $resourceDir;
+        $this->terminal      = $terminal;
+        $this->skeletonFiles = $skeletonFiles;
     }
 
     /**
