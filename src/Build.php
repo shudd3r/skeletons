@@ -13,22 +13,24 @@ namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Files\ProjectFiles;
 use Shudd3r\PackageFiles\Command\GenerateComposer;
-use InvalidArgumentException;
 
 
 class Build
 {
     private $terminal;
     private $skeletonFiles;
+    private $rootDirectory;
 
     /**
      * @param Terminal $terminal
      * @param Files    $skeletonFiles
+     * @param string   $rootDirectory
      */
-    public function __construct(Terminal $terminal, Files $skeletonFiles)
+    public function __construct(Terminal $terminal, Files $skeletonFiles, string $rootDirectory)
     {
         $this->terminal      = $terminal;
         $this->skeletonFiles = $skeletonFiles;
+        $this->rootDirectory = $rootDirectory;
     }
 
     /**
@@ -38,25 +40,12 @@ class Build
      */
     public function run(array $args = []): void
     {
-        $projectRoot = $args[1] ?? getcwd() . DIRECTORY_SEPARATOR . 'build';
-
-        try {
-            $files = new ProjectFiles($projectRoot);
-        } catch (InvalidArgumentException $e) {
-            $this->terminal->display($e->getMessage());
-            return;
-        }
-
-        if (!$files->exists('composer.json')) {
-            $this->terminal->display('Project root directory must contain composer.json file');
-            return;
-        }
-
+        $files    = new ProjectFiles($this->rootDirectory);
         $composer = json_decode($files->contents('composer.json'), true);
 
         [$vendorName, $packageName] = isset($composer['name'])
             ? explode('/', $composer['name'])
-            : [basename(dirname($projectRoot)), basename($projectRoot)];
+            : [basename(dirname($this->rootDirectory)), basename($this->rootDirectory)];
         $description = $composer['description'] ?? 'Polymorphine library package';
 
         $data = new Properties();

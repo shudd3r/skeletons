@@ -14,13 +14,21 @@ use Shudd3r\PackageFiles\Files\ProjectFiles;
 use Shudd3r\PackageFiles\Terminal;
 use Shudd3r\PackageFiles\Build;
 
-$rootDir = getcwd();
-if (!file_exists($rootDir . '/vendor/autoload.php')) {
-    fwrite(STDERR, 'Cannot find composer vendor/autoload.php file in this directory');
+
+// This script is assumed to be one of composer dependencies of the package
+// located in $rootDir/vendor/shudd3r/package-files directory
+$rootDirectory = dirname(dirname(dirname(__DIR__)));
+if (!file_exists($rootDirectory . '/vendor/autoload.php')) {
+    fwrite(STDERR, 'Cannot find vendor/autoload.php file in package root directory');
     die(1);
 }
 
-require_once $rootDir . '/vendor/autoload.php';
+if (!file_exists($rootDirectory . '/composer.json')) {
+    fwrite(STDERR, 'Cannot find composer.json file in package root directory');
+    die(1);
+}
+
+require_once $rootDirectory . '/vendor/autoload.php';
 
 $terminal = new class() implements Terminal
 {
@@ -44,5 +52,7 @@ $terminal = new class() implements Terminal
     }
 };
 
-$build = new Build($terminal, new ProjectFiles(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton'));
+$skeletonFiles = new ProjectFiles(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
+
+$build = new Build($terminal, $skeletonFiles, $rootDirectory);
 $build->run($argv);
