@@ -34,6 +34,11 @@ class ProjectFiles implements Files
         $this->rootDirectory = rtrim($rootDirectory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
     }
 
+    public function directory(): string
+    {
+        return $this->rootDirectory;
+    }
+
     public function exists(string $filename): bool
     {
         return file_exists($this->rootDirectory . $filename);

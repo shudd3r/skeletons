@@ -12,8 +12,17 @@
 namespace Shudd3r\PackageFiles;
 
 
+/**
+ * Files within concrete directory.
+ * All filename parameters should be relative to this directory.
+ */
 interface Files
 {
+    /**
+     * @return string Absolute path to directory in which files are located
+     */
+    public function directory(): string;
+
     /**
      * @param string $filename
      *
