@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Files;
 
 use Shudd3r\PackageFiles\Files;
-use InvalidArgumentException;
 
 
 class ProjectFiles implements Files
@@ -23,12 +22,14 @@ class ProjectFiles implements Files
      * Operations on files in given root directory.
      *
      * @param string $rootDirectory
+     *
+     * @throws Exception\InvalidDirectoryException
      */
     public function __construct(string $rootDirectory)
     {
         if (!is_dir($rootDirectory)) {
             $message = 'Cannot reach provided directory: `%s`';
-            throw new InvalidArgumentException(sprintf($message, $rootDirectory));
+            throw new Exception\InvalidDirectoryException(sprintf($message, $rootDirectory));
         }
 
         $this->rootDirectory = rtrim($rootDirectory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
@@ -46,6 +47,10 @@ class ProjectFiles implements Files
 
     public function contents(string $filename): string
     {
+        if (!file_exists($this->rootDirectory . $filename)) {
+            $message = 'File `%s` not found in `%s` directory';
+            throw new Exception\FileNotFoundException(sprintf($message, $filename, $this->rootDirectory));
+        }
         return file_get_contents($this->rootDirectory . $filename);
     }
 

@@ -11,6 +11,8 @@
 
 namespace Shudd3r\PackageFiles;
 
+use Shudd3r\PackageFiles\Files\Exception;
+
 
 /**
  * Files within concrete directory.
@@ -32,6 +34,8 @@ interface Files
 
     /**
      * @param string $filename
+     *
+     * @throws Exception\FileNotFoundException
      *
      * @return string
      */
