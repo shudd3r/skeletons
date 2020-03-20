@@ -11,7 +11,6 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Files\ProjectFiles;
 use Shudd3r\PackageFiles\Command\GenerateComposer;
 
 
@@ -19,18 +18,18 @@ class Build
 {
     private $terminal;
     private $skeletonFiles;
-    private $rootDirectory;
+    private $packageFiles;
 
     /**
      * @param Terminal $terminal
      * @param Files    $skeletonFiles
-     * @param string   $rootDirectory
+     * @param Files    $packageFiles
      */
-    public function __construct(Terminal $terminal, Files $skeletonFiles, string $rootDirectory)
+    public function __construct(Terminal $terminal, Files $skeletonFiles, Files $packageFiles)
     {
         $this->terminal      = $terminal;
         $this->skeletonFiles = $skeletonFiles;
-        $this->rootDirectory = $rootDirectory;
+        $this->packageFiles  = $packageFiles;
     }
 
     /**
@@ -40,12 +39,11 @@ class Build
      */
     public function run(array $args = []): void
     {
-        $files    = new ProjectFiles($this->rootDirectory);
-        $composer = json_decode($files->contents('composer.json'), true);
+        $composer = json_decode($this->packageFiles->contents('composer.json'), true);
 
         [$vendorName, $packageName] = isset($composer['name'])
             ? explode('/', $composer['name'])
-            : [basename(dirname($this->rootDirectory)), basename($this->rootDirectory)];
+            : [basename(dirname($this->packageFiles->directory())), basename($this->packageFiles->directory())];
         $description = $composer['description'] ?? 'Polymorphine library package';
 
         $data = new Properties();
@@ -55,7 +53,7 @@ class Build
         $data->repoUser      = $this->input('Package Github account', $vendorName);
         $data->repoName      = $this->input('Package Github repository', $packageName);
 
-        $command = new GenerateComposer($files);
+        $command = new GenerateComposer($this->packageFiles);
         $command->execute($data);
     }
 
