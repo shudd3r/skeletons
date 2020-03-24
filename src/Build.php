@@ -52,22 +52,34 @@ class Build
     {
         $composer = json_decode($this->packageFiles->contents('composer.json'), true);
 
-        [$vendorName, $packageName] = isset($composer['name'])
-            ? explode('/', $composer['name'])
-            : [basename(dirname($this->packageFiles->directory())), basename($this->packageFiles->directory())];
-        $description = $composer['description'] ?? 'Polymorphine library package';
+        $package     = $options['package'] ?? $composer['name'] ?? '';
+        $repo        = $options['repo'] ?? '';
+        $description = $options['desc'] ?? $composer['description'] ?? '';
 
-        $data = new Properties();
-        $data->packageVendor = $this->input('Vendor name', $vendorName);
-        $data->packageName   = $this->input('Package name', $packageName);
-        $data->packageDesc   = $this->input('Package Description', $description);
-        $data->repoUser      = $this->input('Package Github account', $vendorName);
-        $data->repoName      = $this->input('Package Github repository', $packageName);
+        if (empty($options['package'])) {
+            $package = $this->input('Packagist package name', $package ?: $this->packageNameFromDirectory());
+        }
+
+        if (empty($options['desc'])) {
+            $description = $this->input('Package description', $description ?: 'Polymorphine library package');
+        }
+
+        if (!$repo) {
+            $repo = $this->input('Github repository URL', 'https://github.com/' . $package . '.git');
+        }
+
+        $data = new Properties($repo, $package, $description);
 
         $composerFile = new File('composer.json', $this->packageFiles);
         $command      = new GenerateComposer($composerFile);
 
         $command->execute($data);
+    }
+
+    private function packageNameFromDirectory(): string
+    {
+        $directory = $this->packageFiles->directory();
+        return basename(dirname($directory)) . '/' . basename($directory);
     }
 
     private function input(string $prompt, string $default = ''): string

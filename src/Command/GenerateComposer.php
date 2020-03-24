@@ -27,14 +27,15 @@ class GenerateComposer implements Command
 
     public function execute(Properties $data): void
     {
-        $composer  = json_decode($this->file->contents(), true);
-        $namespace = ucfirst($data->packageVendor) . '\\' . ucfirst($data->packageName) . '\\';
+        $composer = json_decode($this->file->contents(), true);
+
+        $namespace = $data->namespace . '\\';
         $composer['autoload']['psr-4'][$namespace] = 'src/';
         $composer['autoload-dev']['psr-4'][$namespace . 'Tests\\'] = 'tests/';
 
         $newComposer = array_filter([
-            'name'              => $data->packageVendor . '/' . $data->packageName,
-            'description'       => $data->packageDesc,
+            'name'              => $data->package,
+            'description'       => $data->description,
             'type'              => 'library',
             'license'           => 'MIT',
             'authors'           => $composer['authors'] ?? [['name' => 'Shudd3r', 'email' => 'q3.shudder@gmail.com']],
