@@ -50,10 +50,20 @@ class Build
      */
     public function run(array $options = []): void
     {
+        $packageProperties = $this->packageProperties($options);
+
+        $composerFile = new File('composer.json', $this->packageFiles);
+        $command      = new GenerateComposer($composerFile);
+
+        $command->execute($packageProperties);
+    }
+
+    private function packageProperties(array $options): Properties
+    {
         $composer = json_decode($this->packageFiles->contents('composer.json'), true);
 
-        $package     = $options['package'] ?? $composer['name'] ?? '';
         $repo        = $options['repo'] ?? '';
+        $package     = $options['package'] ?? $composer['name'] ?? '';
         $description = $options['desc'] ?? $composer['description'] ?? '';
 
         if (empty($options['package'])) {
@@ -64,16 +74,11 @@ class Build
             $description = $this->input('Package description', $description ?: 'Polymorphine library package');
         }
 
-        if (!$repo) {
+        if (empty($options['repo'])) {
             $repo = $this->input('Github repository URL', 'https://github.com/' . $package . '.git');
         }
 
-        $data = new Properties($repo, $package, $description);
-
-        $composerFile = new File('composer.json', $this->packageFiles);
-        $command      = new GenerateComposer($composerFile);
-
-        $command->execute($data);
+        return new Properties($repo, $package, $description);
     }
 
     private function packageNameFromDirectory(): string
