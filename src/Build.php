@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Command\GenerateComposer;
 use Shudd3r\PackageFiles\Files\File;
+use InvalidArgumentException;
 
 
 class Build
@@ -50,7 +51,12 @@ class Build
      */
     public function run(array $options = []): void
     {
-        $packageProperties = $this->packageProperties($options);
+        try {
+            $packageProperties = $this->packageProperties($options);
+        } catch (InvalidArgumentException $e) {
+            $this->terminal->display($e->getMessage());
+            return;
+        }
 
         $composerFile = new File('composer.json', $this->packageFiles);
         $command      = new GenerateComposer($composerFile);
@@ -78,13 +84,39 @@ class Build
             $repo = $this->input('Github repository URL', 'https://github.com/' . $package . '.git');
         }
 
-        return new Properties($repo, $package, $description);
+        return new Properties($this->validGithubUri($repo), $this->validPackagistPackage($package), $description);
     }
 
     private function packageNameFromDirectory(): string
     {
         $directory = $this->packageFiles->directory();
         return basename(dirname($directory)) . '/' . basename($directory);
+    }
+
+    private function validGithubUri(string $uri): string
+    {
+        $validSuffix = substr($uri, -4) === '.git';
+        $validPrefix = substr($uri, 0, 19) === 'https://github.com/' || substr($uri, 0, 15) === 'git@github.com:';
+
+        if (!$validPrefix || !$validSuffix) {
+            throw new InvalidArgumentException();
+        }
+
+        $repoName = $uri[0] === 'h' ? substr($uri, 19, -4) : substr($uri, 15, -4);
+        if (!preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9\-._]{1,100}$#i', $repoName)) {
+            throw new InvalidArgumentException();
+        }
+
+        return $uri;
+    }
+
+    private function validPackagistPackage(string $package): string
+    {
+        if (!preg_match('#^[a-z0-9]([_.-]?[a-z0-9]+)*/[a-z0-9]([_.-]?[a-z0-9]+)*$#iD', $package)) {
+            throw new InvalidArgumentException();
+        }
+
+        return $package;
     }
 
     private function input(string $prompt, string $default = ''): string
