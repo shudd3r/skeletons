@@ -37,6 +37,6 @@ class Properties
 
     private function toPascalCase(string $name): string
     {
-        return implode('', array_map(fn ($part) => ucfirst($part), explode('-', $name)));
+        return implode('', array_map(fn ($part) => ucfirst($part), preg_split('#[_.-]#', $name)));
     }
 }
