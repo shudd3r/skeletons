@@ -20,23 +20,12 @@ class Properties
     public string $description;
     public string $namespace;
 
-    public function __construct(string $repo, string $package, string $desc)
+    public function __construct(string $repo, string $package, string $desc, string $namespace)
     {
         $this->repoUrl     = $repo;
         $this->repoName    = basename(dirname($this->repoUrl)) . '/' . basename($this->repoUrl, '.git');
         $this->package     = $package;
         $this->description = $desc;
-        $this->namespace   = $this->packageNamespace($package);
-    }
-
-    private function packageNamespace(string $package): string
-    {
-        [$vendor, $package] = explode('/', $package);
-        return $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
-    }
-
-    private function toPascalCase(string $name): string
-    {
-        return implode('', array_map(fn ($part) => ucfirst($part), preg_split('#[_.-]#', $name)));
+        $this->namespace   = $namespace;
     }
 }

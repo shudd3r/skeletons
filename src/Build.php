@@ -37,14 +37,15 @@ class Build
     /**
      * Builds package environment files.
      *
-     * $options array is option name keys ('package', 'repo' & 'desc') with
+     * $options array is option name keys ('package', 'repo', 'desc' & 'ns') with
      * corresponding values. Not provided option values might be omitted or
      * assigned to null.
      *
      * @example Array with all values defined for this package: [
      *     'package' => 'polymorphine/dev',
      *     'repo'    => 'polymorphine/dev',
-     *     'desc'    => 'Development tools & coding standard scripts for Polymorphine libraries'
+     *     'desc'    => 'Development tools & coding standard scripts for Polymorphine libraries',
+     *     'ns'      => 'Polymorphine\Dev'
      * ]
      *
      * @param array $options
@@ -71,6 +72,7 @@ class Build
         $repo        = $options['repo'] ?? '';
         $package     = $options['package'] ?? $composer['name'] ?? '';
         $description = $options['desc'] ?? $composer['description'] ?? '';
+        $namespace   = $options['ns'] ?? $this->namespaceFromAutoload($composer) ?? '';
 
         if (empty($options['package'])) {
             $package = $this->input('Packagist package name', $package ?: $this->packageNameFromDirectory());
@@ -84,13 +86,37 @@ class Build
             $repo = $this->input('Github repository URL', 'https://github.com/' . $package . '.git');
         }
 
-        return new Properties($this->validGithubUri($repo), $this->validPackagistPackage($package), $description);
+        if (empty($options['ns'])) {
+            $namespace = $this->input('Source files namespace', $namespace ?: $this->namespaceFromPackage($package));
+        }
+
+        $repo    = $this->validGithubUri($repo);
+        $package = $this->validPackagistPackage($package);
+
+        return new Properties($repo, $package, $description, $namespace);
     }
 
     private function packageNameFromDirectory(): string
     {
         $directory = $this->packageFiles->directory();
         return basename(dirname($directory)) . '/' . basename($directory);
+    }
+
+    private function namespaceFromAutoload(array $composer): ?string
+    {
+        if (!isset($composer['autoload']['psr-4'])) { return null; }
+        return array_search('src/', $composer['autoload']['psr-4'], true) ?: null;
+    }
+
+    private function namespaceFromPackage(string $package)
+    {
+        [$vendor, $package] = explode('/', $package);
+        return $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
+    }
+
+    private function toPascalCase(string $name): string
+    {
+        return implode('', array_map(fn ($part) => ucfirst($part), preg_split('#[_.-]#', $name)));
     }
 
     private function validGithubUri(string $uri): string
@@ -103,7 +129,7 @@ class Build
         }
 
         $repoName = $uri[0] === 'h' ? substr($uri, 19, -4) : substr($uri, 15, -4);
-        if (!preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9\-._]{1,100}$#i', $repoName)) {
+        if (!preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#i', $repoName)) {
             throw new InvalidArgumentException();
         }
 
