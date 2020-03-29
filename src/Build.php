@@ -37,9 +37,11 @@ class Build
     /**
      * Builds package environment files.
      *
-     * $options array is option name keys ('package', 'repo', 'desc' & 'ns') with
-     * corresponding values. Not provided option values might be omitted or
-     * assigned to null.
+     * $options array is config name keys ('package', 'repo', 'desc' & 'ns')
+     * with corresponding values and 'interactive' key (or short version: 'i')
+     * with any not null value (also false) that when given activates CLI input
+     * of not provided options (omitted or assigned to null) otherwise these
+     * values will try to be resolved automatically.
      *
      * @example Array with all values defined for this package: [
      *     'package' => 'polymorphine/dev',
@@ -67,27 +69,27 @@ class Build
 
     private function packageProperties(array $options): Properties
     {
-        $composer = json_decode($this->packageFiles->contents('composer.json'), true);
+        $composer    = json_decode($this->packageFiles->contents('composer.json'), true);
+        $interactive = isset($options['i']) || isset($options['interactive']);
 
-        $repo        = $options['repo'] ?? '';
-        $package     = $options['package'] ?? $composer['name'] ?? '';
-        $description = $options['desc'] ?? $composer['description'] ?? '';
-        $namespace   = $options['ns'] ?? $this->namespaceFromAutoload($composer) ?? '';
-
-        if (empty($options['package'])) {
-            $package = $this->input('Packagist package name', $package ?: $this->packageNameFromDirectory());
+        $package = $options['package'] ?? $composer['name'] ?? $this->packageNameFromDirectory();
+        if ($interactive && empty($options['package'])) {
+            $package = $this->input('Packagist package name', $package);
         }
 
-        if (empty($options['desc'])) {
-            $description = $this->input('Package description', $description ?: 'Polymorphine library package');
+        $description = $options['desc'] ?? $composer['description'] ?? 'Polymorphine library package';
+        if ($interactive && empty($options['desc'])) {
+            $description = $this->input('Package description', $description);
         }
 
-        if (empty($options['repo'])) {
-            $repo = $this->input('Github repository URL', 'https://github.com/' . $package . '.git');
+        $repo = $options['repo'] ?? 'https://github.com/' . $package . '.git';
+        if ($interactive && empty($options['repo'])) {
+            $repo = $this->input('Github repository URL', $repo);
         }
 
-        if (empty($options['ns'])) {
-            $namespace = $this->input('Source files namespace', $namespace ?: $this->namespaceFromPackage($package));
+        $namespace = $options['ns'] ?? $this->namespaceFromAutoload($composer) ?? $this->namespaceFromPackage($package);
+        if ($interactive && empty($options['ns'])) {
+            $namespace = $this->input('Source files namespace', $namespace);
         }
 
         $repo    = $this->validGithubUri($repo);
