@@ -87,7 +87,7 @@ class Build
             $repo = $this->input('Github repository URL', $repo);
         }
 
-        $namespace = $options['ns'] ?? $this->namespaceFromAutoload($composer) ?? $this->namespaceFromPackage($package);
+        $namespace = $options['ns'] ?? $this->composerSrcNamespace($composer) ?? $this->namespaceFromPackage($package);
         if ($interactive && empty($options['ns'])) {
             $namespace = $this->input('Source files namespace', $namespace);
         }
@@ -104,7 +104,7 @@ class Build
         return basename(dirname($directory)) . '/' . basename($directory);
     }
 
-    private function namespaceFromAutoload(array $composer): ?string
+    private function composerSrcNamespace(array $composer): ?string
     {
         if (!isset($composer['autoload']['psr-4'])) { return null; }
         return array_search('src/', $composer['autoload']['psr-4'], true) ?: null;
