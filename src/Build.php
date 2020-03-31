@@ -82,7 +82,7 @@ class Build
             $description = $this->input('Package description', $description);
         }
 
-        $repo = $options['repo'] ?? 'https://github.com/' . $package . '.git';
+        $repo = $options['repo'] ?? $this->readGitConfig() ?? 'https://github.com/' . $package . '.git';
         if ($interactive && empty($options['repo'])) {
             $repo = $this->input('Github repository URL', $repo);
         }
@@ -119,6 +119,14 @@ class Build
     private function toPascalCase(string $name): string
     {
         return implode('', array_map(fn ($part) => ucfirst($part), preg_split('#[_.-]#', $name)));
+    }
+
+    private function readGitConfig(): ?string
+    {
+        if (!$this->packageFiles->exists('.git/config')) { return null; }
+
+        $config = parse_ini_string($this->packageFiles->contents('.git/config'), true);
+        return $config['remote upstream']['url'] ?? $config['remote origin']['url'] ?? null;
     }
 
     private function validGithubUri(string $uri): string
