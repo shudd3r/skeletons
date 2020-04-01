@@ -139,7 +139,7 @@ class Build
         }
 
         $repoName = $uri[0] === 'h' ? substr($uri, 19, -4) : substr($uri, 15, -4);
-        if (!preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#i', $repoName)) {
+        if (!preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $repoName)) {
             throw new InvalidArgumentException();
         }
 
@@ -148,7 +148,7 @@ class Build
 
     private function validPackagistPackage(string $package): string
     {
-        if (!preg_match('#^[a-z0-9]([_.-]?[a-z0-9]+)*/[a-z0-9]([_.-]?[a-z0-9]+)*$#iD', $package)) {
+        if (!preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $package)) {
             throw new InvalidArgumentException();
         }
 
