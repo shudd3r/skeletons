@@ -10,10 +10,12 @@
  * with this source code in the file LICENSE.
  */
 
-use Shudd3r\PackageFiles\Files\ProjectFiles;
-use Shudd3r\PackageFiles\RuntimeEnv;
-use Shudd3r\PackageFiles\Terminal;
 use Shudd3r\PackageFiles\Build;
+use Shudd3r\PackageFiles\Files;
+use Shudd3r\PackageFiles\RuntimeEnv;
+use Shudd3r\PackageFiles\CommandMap;
+use Shudd3r\PackageFiles\Command;
+use Shudd3r\PackageFiles\Terminal;
 
 
 // This script is assumed to be one of composer dependencies of the package
@@ -31,8 +33,7 @@ if (!file_exists($rootDirectory . '/composer.json')) {
 
 require_once $rootDirectory . '/vendor/autoload.php';
 
-$terminal = new class() implements Terminal
-{
+$terminal = new class() implements Terminal {
     public function input(): string
     {
         $stdin = fopen('php://stdin', 'r');
@@ -53,9 +54,16 @@ $terminal = new class() implements Terminal
     }
 };
 
-$skeletonFiles = new ProjectFiles(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
-$packageFiles  = new ProjectFiles($rootDirectory);
+$skeletonFiles = new Files\ProjectFiles(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
+$packageFiles  = new Files\ProjectFiles($rootDirectory);
 $environment   = new RuntimeEnv($terminal, $packageFiles, $skeletonFiles);
 
-$build = new Build($environment);
+$commands = new CommandMap($environment, [
+    'init' => function (RuntimeEnv $env) {
+        $composerFile = new Files\File('composer.json', $env->packageFiles());
+        return new Command\GenerateComposer($composerFile);
+    }
+]);
+
+$build = new Build($environment, $commands);
 $build->run(getopt('i', ['package:', 'repo:', 'desc:', 'interactive']));

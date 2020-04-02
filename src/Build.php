@@ -11,20 +11,21 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Command\GenerateComposer;
-use Shudd3r\PackageFiles\Files\File;
 use InvalidArgumentException;
+use RuntimeException;
 
 
 class Build
 {
-    private $terminal;
-    private $packageFiles;
+    private Terminal   $terminal;
+    private Files      $packageFiles;
+    private CommandMap $commands;
 
-    public function __construct(RuntimeEnv $env)
+    public function __construct(RuntimeEnv $env, CommandMap $commands)
     {
         $this->terminal     = $env->terminal();
         $this->packageFiles = $env->packageFiles();
+        $this->commands     = $commands;
     }
 
     /**
@@ -49,15 +50,11 @@ class Build
     {
         try {
             $packageProperties = $this->packageProperties($options);
-        } catch (InvalidArgumentException $e) {
+            $this->commands->command('init')->execute($packageProperties);
+        } catch (InvalidArgumentException | RuntimeException $e) {
             $this->terminal->display($e->getMessage());
             return;
         }
-
-        $composerFile = new File('composer.json', $this->packageFiles);
-        $command      = new GenerateComposer($composerFile);
-
-        $command->execute($packageProperties);
     }
 
     private function packageProperties(array $options): Properties
