@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Build;
 
 
 // This script is assumed to be one of composer dependencies of the package
-// located in $rootDir/vendor/shudd3r/package-files directory
+// located in $rootDirectory/vendor/shudd3r/package-files directory
 $rootDirectory = dirname(dirname(dirname(__DIR__)));
 if (!file_exists($rootDirectory . '/vendor/autoload.php')) {
     fwrite(STDERR, 'Cannot find vendor/autoload.php file in package root directory');
