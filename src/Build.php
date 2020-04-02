@@ -19,19 +19,12 @@ use InvalidArgumentException;
 class Build
 {
     private $terminal;
-    private $skeletonFiles;
     private $packageFiles;
 
-    /**
-     * @param Terminal $terminal
-     * @param Files    $skeletonFiles
-     * @param Files    $packageFiles
-     */
-    public function __construct(Terminal $terminal, Files $skeletonFiles, Files $packageFiles)
+    public function __construct(RuntimeEnv $env)
     {
-        $this->terminal      = $terminal;
-        $this->skeletonFiles = $skeletonFiles;
-        $this->packageFiles  = $packageFiles;
+        $this->terminal     = $env->terminal();
+        $this->packageFiles = $env->packageFiles();
     }
 
     /**

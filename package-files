@@ -11,6 +11,7 @@
  */
 
 use Shudd3r\PackageFiles\Files\ProjectFiles;
+use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Terminal;
 use Shudd3r\PackageFiles\Build;
 
@@ -54,6 +55,7 @@ $terminal = new class() implements Terminal
 
 $skeletonFiles = new ProjectFiles(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
 $packageFiles  = new ProjectFiles($rootDirectory);
+$environment   = new RuntimeEnv($terminal, $packageFiles, $skeletonFiles);
 
-$build = new Build($terminal, $skeletonFiles, $packageFiles);
+$build = new Build($environment);
 $build->run(getopt('i', ['package:', 'repo:', 'desc:', 'interactive']));
