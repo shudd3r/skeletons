@@ -82,8 +82,9 @@ class Build
             $namespace = $this->input('Source files namespace', $namespace);
         }
 
-        $repo    = $this->validGithubUri($repo);
-        $package = $this->validPackagistPackage($package);
+        $repo      = $this->validGithubUri($repo);
+        $package   = $this->validPackagistPackage($package);
+        $namespace = $this->validNamespace($namespace);
 
         return new Properties($repo, $package, $description, $namespace);
     }
@@ -145,6 +146,16 @@ class Build
         }
 
         return $package;
+    }
+
+    private function validNamespace(string $namespace): string
+    {
+        foreach (explode('\\', $namespace) as $label) {
+            if (!preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label)) {
+                throw new InvalidArgumentException();
+            }
+        }
+        return $namespace;
     }
 
     private function input(string $prompt, string $default = ''): string
