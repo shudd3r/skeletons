@@ -97,7 +97,8 @@ class Build
     private function composerSrcNamespace(array $composer): ?string
     {
         if (!isset($composer['autoload']['psr-4'])) { return null; }
-        return array_search('src/', $composer['autoload']['psr-4'], true) ?: null;
+        $namespace = array_search('src/', $composer['autoload']['psr-4'], true);
+        return $namespace ? rtrim($namespace, '\\') : null;
     }
 
     private function namespaceFromPackage(string $package)
