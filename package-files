@@ -70,4 +70,5 @@ $build = new Build($environment, $commands);
 $command = $argv[1] ?? 'init';
 $options = getopt('i', ['package:', 'repo:', 'desc:', 'interactive']);
 
-$build->run($command, $options);
+$exitCode = $build->run($command, $options);
+exit($exitCode);

@@ -46,16 +46,20 @@ class Build
      *
      * @param string $command
      * @param array  $options
+     *
+     * @return int Exit code
      */
-    public function run(string $command, array $options = []): void
+    public function run(string $command, array $options = []): int
     {
         try {
             $packageProperties = $this->packageProperties($options);
             $this->commands->command($command)->execute($packageProperties);
         } catch (InvalidArgumentException | RuntimeException $e) {
             $this->terminal->display($e->getMessage());
-            return;
+            return 1;
         }
+
+        return 0;
     }
 
     private function packageProperties(array $options): Properties
