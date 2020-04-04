@@ -44,13 +44,14 @@ class Build
      *     'ns'      => 'Polymorphine\Dev'
      * ]
      *
-     * @param array $options
+     * @param string $command
+     * @param array  $options
      */
-    public function run(array $options = []): void
+    public function run(string $command, array $options = []): void
     {
         try {
             $packageProperties = $this->packageProperties($options);
-            $this->commands->command('init')->execute($packageProperties);
+            $this->commands->command($command)->execute($packageProperties);
         } catch (InvalidArgumentException | RuntimeException $e) {
             $this->terminal->display($e->getMessage());
             return;
