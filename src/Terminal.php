@@ -16,15 +16,20 @@ class Terminal
 {
     private $input;
     private $output;
+    private $error;
+
+    private int $errorCode = 0;
 
     /**
      * @param resource $input
      * @param resource $output
+     * @param resource $error
      */
-    public function __construct($input, $output)
+    public function __construct($input, $output, $error)
     {
         $this->input  = $input;
         $this->output = $output;
+        $this->error  = $error;
     }
 
     /**
@@ -45,5 +50,26 @@ class Terminal
     public function display(string $message): void
     {
         fwrite($this->output, $message);
+    }
+
+    /**
+     * Sends error message to error stream resource (usually STDERR)
+     * and collects error code for exit result.
+     *
+     * @param string $message
+     * @param int    $code
+     */
+    public function sendError(string $message, int $code): void
+    {
+        $this->errorCode |= $code;
+        fwrite($this->error, $message);
+    }
+
+    /**
+     * @return int Binary sum of error codes
+     */
+    public function exitCode(): int
+    {
+        return $this->errorCode;
     }
 }

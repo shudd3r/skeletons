@@ -33,7 +33,7 @@ if (!file_exists($rootDirectory . '/composer.json')) {
 
 require_once $rootDirectory . '/vendor/autoload.php';
 
-$terminal      = new Terminal(STDIN, STDOUT);
+$terminal      = new Terminal(STDIN, STDOUT, STDERR);
 $skeletonFiles = new Files\ProjectFiles(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
 $packageFiles  = new Files\ProjectFiles($rootDirectory);
 $environment   = new RuntimeEnv($terminal, $packageFiles, $skeletonFiles);
