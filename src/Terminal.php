@@ -12,22 +12,38 @@
 namespace Shudd3r\PackageFiles;
 
 
-/**
- * Port separating application from Input/Output side-effects.
- */
-interface Terminal
+class Terminal
 {
+    private $input;
+    private $output;
+
     /**
-     * Returns value provided from external source (usually STDIN).
+     * @param resource $input
+     * @param resource $output
+     */
+    public function __construct($input, $output)
+    {
+        $this->input  = $input;
+        $this->output = $output;
+    }
+
+    /**
+     * Returns value provided from external stream resource (usually STDIN).
      *
      * @return string
      */
-    public function input(): string;
+    public function input(): string
+    {
+        return trim(fgets($this->input));
+    }
 
     /**
-     * Sends message to external device (usually STDOUT).
+     * Sends message to external stream resource (usually STDOUT).
      *
      * @param string $message
      */
-    public function display(string $message): void;
+    public function display(string $message): void
+    {
+        fwrite($this->output, $message);
+    }
 }
