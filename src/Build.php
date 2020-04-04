@@ -109,6 +109,7 @@ class Build
 
     private function toPascalCase(string $name): string
     {
+        $name = ltrim($name, '0..9');
         return implode('', array_map(fn ($part) => ucfirst($part), preg_split('#[_.-]#', $name)));
     }
 
