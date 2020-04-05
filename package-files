@@ -20,7 +20,7 @@ use Shudd3r\PackageFiles\Terminal;
 
 // This script is assumed to be one of composer dependencies of the package
 // located in $rootDirectory/vendor/shudd3r/package-files directory
-$rootDirectory = dirname(dirname(dirname(__DIR__)));
+$rootDirectory = dirname(__DIR__, 3);
 if (!file_exists($rootDirectory . '/vendor/autoload.php')) {
     fwrite(STDERR, 'Cannot find vendor/autoload.php file in package root directory');
     die(1);
