@@ -14,11 +14,11 @@ namespace Shudd3r\PackageFiles;
 
 class Properties
 {
-    public string $repoUrl;
-    public string $repoName;
-    public string $package;
-    public string $description;
-    public string $namespace;
+    private string $repoUrl;
+    private string $repoName;
+    private string $package;
+    private string $description;
+    private string $namespace;
 
     public function __construct(string $repo, string $package, string $desc, string $namespace)
     {
@@ -27,5 +27,30 @@ class Properties
         $this->package     = $package;
         $this->description = $desc;
         $this->namespace   = $namespace;
+    }
+
+    public function repositoryUrl(): string
+    {
+        return $this->repoUrl;
+    }
+
+    public function repositoryName(): string
+    {
+        return $this->repoName;
+    }
+
+    public function packageName(): string
+    {
+        return $this->package;
+    }
+
+    public function packageDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function sourceNamespace(): string
+    {
+        return $this->namespace;
     }
 }

@@ -29,13 +29,13 @@ class GenerateComposer implements Command
     {
         $composer = json_decode($this->file->contents(), true);
 
-        $namespace = $data->namespace . '\\';
+        $namespace = $data->sourceNamespace() . '\\';
         $composer['autoload']['psr-4'][$namespace] = 'src/';
         $composer['autoload-dev']['psr-4'][$namespace . 'Tests\\'] = 'tests/';
 
         $newComposer = array_filter([
-            'name'              => $data->package,
-            'description'       => $data->description,
+            'name'              => $data->packageName(),
+            'description'       => $data->packageDescription(),
             'type'              => 'library',
             'license'           => 'MIT',
             'authors'           => $composer['authors'] ?? [['name' => 'Shudd3r', 'email' => 'q3.shudder@gmail.com']],
