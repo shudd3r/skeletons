@@ -28,8 +28,8 @@ class ProjectFiles implements Files
     public function __construct(string $rootDirectory)
     {
         if (!is_dir($rootDirectory)) {
-            $message = 'Cannot reach provided directory: `%s`';
-            throw new Exception\InvalidDirectoryException(sprintf($message, $rootDirectory));
+            $message = "Cannot reach provided root directory `{$rootDirectory}`";
+            throw new Exception\InvalidDirectoryException($message);
         }
 
         $this->rootDirectory = rtrim($rootDirectory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
@@ -48,8 +48,8 @@ class ProjectFiles implements Files
     public function contents(string $filename): string
     {
         if (!file_exists($this->rootDirectory . $filename)) {
-            $message = 'File `%s` not found in `%s` directory';
-            throw new Exception\FileNotFoundException(sprintf($message, $filename, $this->rootDirectory));
+            $message = "File `{$filename}` not found in `{$this->rootDirectory}` directory";
+            throw new Exception\FileNotFoundException($message);
         }
         return file_get_contents($this->rootDirectory . $filename);
     }
