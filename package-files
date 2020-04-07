@@ -47,8 +47,8 @@ $commands = new CommandMap($environment, [
 
 $build = new Build($environment, $commands);
 
-$command = $argv[1] ?? 'init';
-$options = getopt('i', ['package:', 'repo:', 'desc:', 'interactive']);
+$options = getopt('i', ['package:', 'repo:', 'desc:', 'interactive'], $commandIdx);
+$command = $argv[$commandIdx] ?? 'init';
 
 $exitCode = $build->run($command, $options);
 exit($exitCode);
