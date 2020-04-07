@@ -133,12 +133,12 @@ class Build
         $validPrefix = substr($uri, 0, 19) === 'https://github.com/' || substr($uri, 0, 15) === 'git@github.com:';
 
         if (!$validPrefix || !$validSuffix) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invalid github uri `{$uri}`");
         }
 
         $repoName = $uri[0] === 'h' ? substr($uri, 19, -4) : substr($uri, 15, -4);
         if (!preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $repoName)) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invalid github uri `{$uri}`");
         }
 
         return $uri;
@@ -147,7 +147,7 @@ class Build
     private function validPackagistPackage(string $package): string
     {
         if (!preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $package)) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invalid packagist package name `{$package}`");
         }
 
         return $package;
@@ -157,7 +157,7 @@ class Build
     {
         foreach (explode('\\', $namespace) as $label) {
             if (!preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label)) {
-                throw new InvalidArgumentException();
+                throw new InvalidArgumentException("Invalid namespace `{$namespace}`");
             }
         }
         return $namespace;

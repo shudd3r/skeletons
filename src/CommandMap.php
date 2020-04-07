@@ -41,7 +41,7 @@ class CommandMap
     public function command(string $name): Command
     {
         if (!isset($this->factories[$name]) || !class_exists($this->factories[$name])) {
-            throw new RuntimeException();
+            throw new RuntimeException("Unknown `{$name}` command");
         }
 
         return $this->factory($this->factories[$name])->command($this->env);
