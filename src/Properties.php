@@ -12,45 +12,15 @@
 namespace Shudd3r\PackageFiles;
 
 
-class Properties
+interface Properties
 {
-    private string $repoUrl;
-    private string $repoName;
-    private string $package;
-    private string $description;
-    private string $namespace;
+    public function repositoryUrl(): string;
 
-    public function __construct(string $repo, string $package, string $desc, string $namespace)
-    {
-        $this->repoUrl     = $repo;
-        $this->repoName    = basename(dirname($this->repoUrl)) . '/' . basename($this->repoUrl, '.git');
-        $this->package     = $package;
-        $this->description = $desc;
-        $this->namespace   = $namespace;
-    }
+    public function repositoryName(): string;
 
-    public function repositoryUrl(): string
-    {
-        return $this->repoUrl;
-    }
+    public function packageName(): string;
 
-    public function repositoryName(): string
-    {
-        return $this->repoName;
-    }
+    public function packageDescription(): string;
 
-    public function packageName(): string
-    {
-        return $this->package;
-    }
-
-    public function packageDescription(): string
-    {
-        return $this->description;
-    }
-
-    public function sourceNamespace(): string
-    {
-        return $this->namespace;
-    }
+    public function sourceNamespace(): string;
 }

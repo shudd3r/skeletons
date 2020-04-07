@@ -91,7 +91,7 @@ class Build
         $package   = $this->validPackagistPackage($package);
         $namespace = $this->validNamespace($namespace);
 
-        return new Properties($repo, $package, $description, $namespace);
+        return new Properties\RequiredProperties($repo, $package, $description, $namespace);
     }
 
     private function packageNameFromDirectory(): string
