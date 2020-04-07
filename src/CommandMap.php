@@ -11,22 +11,24 @@
 
 namespace Shudd3r\PackageFiles;
 
+use Shudd3r\PackageFiles\Command\Factory;
 use RuntimeException;
 
 
 class CommandMap
 {
     private RuntimeEnv $env;
-    private array      $commands;
+    private array      $factories;
 
     /**
      * @param RuntimeEnv $env
-     * @param callable[] $commands fn(RuntimeEnv) => Command
+     * @param string[]   $factories Associative array of command names mapped
+     *                              to Factory class (FQN) names
      */
-    public function __construct(RuntimeEnv $env, array $commands)
+    public function __construct(RuntimeEnv $env, array $factories)
     {
-        $this->env      = $env;
-        $this->commands = $commands;
+        $this->env       = $env;
+        $this->factories = $factories;
     }
 
     /**
@@ -38,10 +40,15 @@ class CommandMap
      */
     public function command(string $name): Command
     {
-        if (!isset($this->commands[$name])) {
+        if (!isset($this->factories[$name]) || !class_exists($this->factories[$name])) {
             throw new RuntimeException();
         }
 
-        return ($this->commands[$name])($this->env);
+        return $this->factory($this->factories[$name])->command($this->env);
+    }
+
+    public function factory(string $className): Factory
+    {
+        return new $className();
     }
 }

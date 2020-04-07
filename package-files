@@ -39,10 +39,7 @@ $packageFiles  = new Files\ProjectFiles($rootDirectory);
 $environment   = new RuntimeEnv($terminal, $packageFiles, $skeletonFiles);
 
 $commands = new CommandMap($environment, [
-    'init' => function (RuntimeEnv $env) {
-        $composerFile = new Files\File('composer.json', $env->packageFiles());
-        return new Command\GenerateComposer($composerFile);
-    }
+    'init' => Command\Factory\InitCommandFactory::class
 ]);
 
 $build = new Build($environment, $commands);
