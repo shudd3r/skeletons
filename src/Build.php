@@ -52,8 +52,7 @@ class Build
     public function run(string $command, array $options = []): int
     {
         try {
-            $builder    = new Properties\PackageReader($this->packageFiles, $this->terminal);
-            $properties = $builder->properties($options);
+            $properties = new Properties\RequiredProperties($this->packageFiles, $this->terminal, $options);
             $this->commands->command($command)->execute($properties);
         } catch (InvalidArgumentException | RuntimeException $e) {
             $this->terminal->display($e->getMessage());
