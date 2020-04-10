@@ -12,25 +12,22 @@
 namespace Shudd3r\PackageFiles\Properties;
 
 use Shudd3r\PackageFiles\Properties;
-use Shudd3r\PackageFiles\Terminal;
 use InvalidArgumentException;
 
 
 class RequiredProperties extends Properties
 {
-    private Properties $properties;
-    private Terminal   $terminal;
-
     private string $repoUrl;
     private string $package;
     private string $description;
     private string $namespace;
 
-    public function __construct(Properties $properties, Terminal $terminal, array $options)
+    public function __construct(Properties $properties)
     {
-        $this->properties = $properties;
-        $this->terminal   = $terminal;
-        $this->setProperties($options);
+        $this->repoUrl     = $this->validGithubUri($properties->repositoryUrl());
+        $this->package     = $this->validPackagistPackage($properties->packageName());
+        $this->description = $properties->packageDescription();
+        $this->namespace   = $this->validNamespace($properties->sourceNamespace());
     }
 
     public function repositoryUrl(): string
@@ -51,40 +48,6 @@ class RequiredProperties extends Properties
     public function sourceNamespace(): string
     {
         return $this->namespace;
-    }
-
-    private function setProperties(array $options): void
-    {
-        $interactive = isset($options['i']) || isset($options['interactive']);
-
-        $package = $this->properties->packageName();
-        if ($interactive && empty($options['package'])) {
-            $package = $this->input('Packagist package name', $package);
-        }
-
-        $description = $this->properties->packageDescription();
-        if ($interactive && empty($options['desc'])) {
-            $description = $this->input('Package description', $description);
-        }
-
-        $repo = $this->properties->repositoryUrl();
-        if ($interactive && empty($options['repo'])) {
-            $repo = $this->input('Github repository URL', $repo);
-        }
-
-        $namespace = $this->properties->sourceNamespace();
-        if ($interactive && empty($options['ns'])) {
-            $namespace = $this->input('Source files namespace', $namespace);
-        }
-
-        $repo      = $this->validGithubUri($repo);
-        $package   = $this->validPackagistPackage($package);
-        $namespace = $this->validNamespace($namespace);
-
-        $this->repoUrl     = $repo;
-        $this->package     = $package;
-        $this->description = $description;
-        $this->namespace   = $namespace;
     }
 
     private function validGithubUri(string $uri): string
@@ -121,13 +84,5 @@ class RequiredProperties extends Properties
             }
         }
         return $namespace;
-    }
-
-    private function input(string $prompt, string $default = ''): string
-    {
-        $defaultInfo = $default ? ' [default: ' . $default . ']' : '';
-        $this->terminal->display($prompt . $defaultInfo . ': ');
-
-        return $this->terminal->input() ?: $default;
     }
 }

@@ -55,7 +55,10 @@ class Build
             $properties = new Properties\FileReadProperties($this->packageFiles);
             $properties = new Properties\PredefinedProperties($options, $properties);
             $properties = new Properties\ResolvedProperties($properties, $this->packageFiles);
-            $properties = new Properties\RequiredProperties($properties, $this->terminal, $options);
+            if (isset($options['i']) || isset($options['interactive'])) {
+                $properties = new Properties\InputProperties($this->terminal, $properties);
+            }
+            $properties = new Properties\RequiredProperties($properties);
             $this->commands->command($command)->execute($properties);
         } catch (InvalidArgumentException | RuntimeException $e) {
             $this->terminal->display($e->getMessage());
