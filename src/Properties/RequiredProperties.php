@@ -57,22 +57,22 @@ class RequiredProperties extends Properties
     {
         $interactive = isset($options['i']) || isset($options['interactive']);
 
-        $package = $options['package'] ?? $this->properties->packageName();
+        $package = $this->properties->packageName();
         if ($interactive && empty($options['package'])) {
             $package = $this->input('Packagist package name', $package);
         }
 
-        $description = $options['desc'] ?? $this->properties->packageDescription() ?: 'Polymorphine library package';
+        $description = $this->properties->packageDescription() ?: 'Polymorphine library package';
         if ($interactive && empty($options['desc'])) {
             $description = $this->input('Package description', $description);
         }
 
-        $repo = $options['repo'] ?? $this->properties->repositoryUrl() ?: 'https://github.com/' . $package . '.git';
+        $repo = $this->properties->repositoryUrl() ?: 'https://github.com/' . $package . '.git';
         if ($interactive && empty($options['repo'])) {
             $repo = $this->input('Github repository URL', $repo);
         }
 
-        $namespace = $options['ns'] ?? $this->properties->sourceNamespace() ?? $this->namespaceFromPackage($package);
+        $namespace = $this->properties->sourceNamespace() ?? $this->namespaceFromPackage($package);
         if ($interactive && empty($options['ns'])) {
             $namespace = $this->input('Source files namespace', $namespace);
         }

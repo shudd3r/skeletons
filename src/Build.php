@@ -53,6 +53,7 @@ class Build
     {
         try {
             $properties = new Properties\FileReadProperties($this->packageFiles);
+            $properties = new Properties\PredefinedProperties($options, $properties);
             $properties = new Properties\RequiredProperties($properties, $this->terminal, $options);
             $this->commands->command($command)->execute($properties);
         } catch (InvalidArgumentException | RuntimeException $e) {
