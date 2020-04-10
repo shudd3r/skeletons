@@ -12,25 +12,24 @@
 namespace Shudd3r\PackageFiles\Properties;
 
 use Shudd3r\PackageFiles\Properties;
-use Shudd3r\PackageFiles\Files;
 use Shudd3r\PackageFiles\Terminal;
 use InvalidArgumentException;
 
 
 class RequiredProperties extends Properties
 {
-    private Files    $packageFiles;
-    private Terminal $terminal;
+    private Properties $properties;
+    private Terminal   $terminal;
 
     private string $repoUrl;
     private string $package;
     private string $description;
     private string $namespace;
 
-    public function __construct(Files $packageFiles, Terminal $terminal, array $options)
+    public function __construct(Properties $properties, Terminal $terminal, array $options)
     {
-        $this->packageFiles = $packageFiles;
-        $this->terminal     = $terminal;
+        $this->properties = $properties;
+        $this->terminal   = $terminal;
         $this->setProperties($options);
     }
 
@@ -56,25 +55,24 @@ class RequiredProperties extends Properties
 
     private function setProperties(array $options): void
     {
-        $composer    = json_decode($this->packageFiles->contents('composer.json'), true);
         $interactive = isset($options['i']) || isset($options['interactive']);
 
-        $package = $options['package'] ?? $composer['name'] ?? $this->packageNameFromDirectory();
+        $package = $options['package'] ?? $this->properties->packageName();
         if ($interactive && empty($options['package'])) {
             $package = $this->input('Packagist package name', $package);
         }
 
-        $description = $options['desc'] ?? $composer['description'] ?? 'Polymorphine library package';
+        $description = $options['desc'] ?? $this->properties->packageDescription() ?: 'Polymorphine library package';
         if ($interactive && empty($options['desc'])) {
             $description = $this->input('Package description', $description);
         }
 
-        $repo = $options['repo'] ?? $this->readGitConfig() ?? 'https://github.com/' . $package . '.git';
+        $repo = $options['repo'] ?? $this->properties->repositoryUrl() ?: 'https://github.com/' . $package . '.git';
         if ($interactive && empty($options['repo'])) {
             $repo = $this->input('Github repository URL', $repo);
         }
 
-        $namespace = $options['ns'] ?? $this->composerSrcNamespace($composer) ?? $this->namespaceFromPackage($package);
+        $namespace = $options['ns'] ?? $this->properties->sourceNamespace() ?? $this->namespaceFromPackage($package);
         if ($interactive && empty($options['ns'])) {
             $namespace = $this->input('Source files namespace', $namespace);
         }
@@ -89,19 +87,6 @@ class RequiredProperties extends Properties
         $this->namespace   = $namespace;
     }
 
-    private function packageNameFromDirectory(): string
-    {
-        $directory = $this->packageFiles->directory();
-        return basename(dirname($directory)) . '/' . basename($directory);
-    }
-
-    private function composerSrcNamespace(array $composer): ?string
-    {
-        if (!isset($composer['autoload']['psr-4'])) { return null; }
-        $namespace = array_search('src/', $composer['autoload']['psr-4'], true);
-        return $namespace ? rtrim($namespace, '\\') : null;
-    }
-
     private function namespaceFromPackage(string $package)
     {
         [$vendor, $package] = explode('/', $package);
@@ -112,14 +97,6 @@ class RequiredProperties extends Properties
     {
         $name = ltrim($name, '0..9');
         return implode('', array_map(fn ($part) => ucfirst($part), preg_split('#[_.-]#', $name)));
-    }
-
-    private function readGitConfig(): ?string
-    {
-        if (!$this->packageFiles->exists('.git/config')) { return null; }
-
-        $config = parse_ini_string($this->packageFiles->contents('.git/config'), true);
-        return $config['remote upstream']['url'] ?? $config['remote origin']['url'] ?? null;
     }
 
     private function validGithubUri(string $uri): string
