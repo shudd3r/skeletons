@@ -62,17 +62,17 @@ class RequiredProperties extends Properties
             $package = $this->input('Packagist package name', $package);
         }
 
-        $description = $this->properties->packageDescription() ?: 'Polymorphine library package';
+        $description = $this->properties->packageDescription();
         if ($interactive && empty($options['desc'])) {
             $description = $this->input('Package description', $description);
         }
 
-        $repo = $this->properties->repositoryUrl() ?: 'https://github.com/' . $package . '.git';
+        $repo = $this->properties->repositoryUrl();
         if ($interactive && empty($options['repo'])) {
             $repo = $this->input('Github repository URL', $repo);
         }
 
-        $namespace = $this->properties->sourceNamespace() ?? $this->namespaceFromPackage($package);
+        $namespace = $this->properties->sourceNamespace();
         if ($interactive && empty($options['ns'])) {
             $namespace = $this->input('Source files namespace', $namespace);
         }
@@ -85,18 +85,6 @@ class RequiredProperties extends Properties
         $this->package     = $package;
         $this->description = $description;
         $this->namespace   = $namespace;
-    }
-
-    private function namespaceFromPackage(string $package)
-    {
-        [$vendor, $package] = explode('/', $package);
-        return $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
-    }
-
-    private function toPascalCase(string $name): string
-    {
-        $name = ltrim($name, '0..9');
-        return implode('', array_map(fn ($part) => ucfirst($part), preg_split('#[_.-]#', $name)));
     }
 
     private function validGithubUri(string $uri): string

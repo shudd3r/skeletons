@@ -35,23 +35,17 @@ class FileReadProperties extends Properties
 
     public function packageName(): string
     {
-        return $this->composerValue('name') ?? $this->packageNameFromDirectory();
+        return $this->composerValue('name') ?? '';
     }
 
     public function packageDescription(): string
     {
-        return $this->composerValue('description') ?? 'Polymorphine library package';
+        return $this->composerValue('description') ?? '';
     }
 
     public function sourceNamespace(): string
     {
         return $this->composerSrcNamespace() ?? '';
-    }
-
-    private function packageNameFromDirectory(): string
-    {
-        $directory = $this->packageFiles->directory();
-        return basename(dirname($directory)) . '/' . basename($directory);
     }
 
     private function composerSrcNamespace(): ?string
