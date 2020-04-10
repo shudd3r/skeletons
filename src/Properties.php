@@ -12,15 +12,19 @@
 namespace Shudd3r\PackageFiles;
 
 
-interface Properties
+abstract class Properties
 {
-    public function repositoryUrl(): string;
+    abstract public function repositoryUrl(): string;
 
-    public function repositoryName(): string;
+    public function repositoryName(): string
+    {
+        $url = $this->repositoryUrl();
+        return $url ? basename(dirname($url)) . '/' . basename($url, '.git') : '';
+    }
 
-    public function packageName(): string;
+    abstract public function packageName(): string;
 
-    public function packageDescription(): string;
+    abstract public function packageDescription(): string;
 
-    public function sourceNamespace(): string;
+    abstract public function sourceNamespace(): string;
 }

@@ -17,13 +17,12 @@ use Shudd3r\PackageFiles\Terminal;
 use InvalidArgumentException;
 
 
-class RequiredProperties implements Properties
+class RequiredProperties extends Properties
 {
     private Files    $packageFiles;
     private Terminal $terminal;
 
     private string $repoUrl;
-    private string $repoName;
     private string $package;
     private string $description;
     private string $namespace;
@@ -38,11 +37,6 @@ class RequiredProperties implements Properties
     public function repositoryUrl(): string
     {
         return $this->repoUrl;
-    }
-
-    public function repositoryName(): string
-    {
-        return $this->repoName;
     }
 
     public function packageName(): string
@@ -90,7 +84,6 @@ class RequiredProperties implements Properties
         $namespace = $this->validNamespace($namespace);
 
         $this->repoUrl     = $repo;
-        $this->repoName    = basename(dirname($this->repoUrl)) . '/' . basename($this->repoUrl, '.git');
         $this->package     = $package;
         $this->description = $description;
         $this->namespace   = $namespace;
