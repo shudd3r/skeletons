@@ -17,37 +17,42 @@ use InvalidArgumentException;
 
 class RequiredProperties extends Properties
 {
+    private Properties $properties;
+
     private string $repoUrl;
+    private string $repoName;
     private string $package;
     private string $description;
     private string $namespace;
 
     public function __construct(Properties $properties)
     {
-        $this->repoUrl     = $this->validGithubUri($properties->repositoryUrl());
-        $this->package     = $this->validPackagistPackage($properties->packageName());
-        $this->description = $properties->packageDescription();
-        $this->namespace   = $this->validNamespace($properties->sourceNamespace());
+        $this->properties = $properties;
     }
 
     public function repositoryUrl(): string
     {
-        return $this->repoUrl;
+        return $this->repoUrl ?? $this->repoUrl = $this->validGithubUri($this->properties->repositoryUrl());
+    }
+
+    public function repositoryName(): string
+    {
+        return $this->repoName ?? $this->repoName = parent::repositoryName();
     }
 
     public function packageName(): string
     {
-        return $this->package;
+        return $this->package ?? $this->package = $this->validPackagistPackage($this->properties->packageName());
     }
 
     public function packageDescription(): string
     {
-        return $this->description;
+        return $this->description ?? $this->description = $this->properties->packageDescription();
     }
 
     public function sourceNamespace(): string
     {
-        return $this->namespace;
+        return $this->namespace ?? $this->namespace = $this->validNamespace($this->properties->sourceNamespace());
     }
 
     private function validGithubUri(string $uri): string
