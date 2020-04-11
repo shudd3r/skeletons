@@ -58,7 +58,7 @@ class Build
             if (isset($options['i']) || isset($options['interactive'])) {
                 $properties = new Properties\InputProperties($this->terminal, $properties);
             }
-            $properties = new Properties\RequiredProperties($properties);
+            $properties = new Properties\CachedProperties($properties);
             $this->commands->command($command)->execute($properties);
         } catch (InvalidArgumentException | RuntimeException $e) {
             $this->terminal->display($e->getMessage());

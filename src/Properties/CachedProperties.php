@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Properties;
 
 
-class RequiredProperties extends Properties
+class CachedProperties extends Properties
 {
     private Properties $properties;
 
