@@ -20,7 +20,9 @@ class InitCommandFactory implements Command\Factory
 {
     public function command(RuntimeEnv $env): Command
     {
-        $composerFile = new File('composer.json', $env->packageFiles());
-        return new Command\GenerateComposer($composerFile);
+        $composerFile     = new File('composer.json', $env->packageFiles());
+        $generateComposer = new Command\GenerateComposer($composerFile);
+
+        return new Command\ValidateProperties($env->terminal(), $generateComposer);
     }
 }
