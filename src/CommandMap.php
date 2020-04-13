@@ -44,11 +44,11 @@ class CommandMap
             throw new RuntimeException("Unknown `{$name}` command");
         }
 
-        return $this->factory($this->factories[$name])->command($this->env);
+        return $this->factory($this->factories[$name])->command();
     }
 
     public function factory(string $className): Factory
     {
-        return new $className();
+        return new $className($this->env);
     }
 }

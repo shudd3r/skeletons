@@ -12,17 +12,16 @@
 namespace Shudd3r\PackageFiles\Command\Factory;
 
 use Shudd3r\PackageFiles\Command;
-use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Files\File;
 
 
-class InitCommandFactory implements Command\Factory
+class InitCommandFactory extends Command\Factory
 {
-    public function command(RuntimeEnv $env): Command
+    public function command(): Command
     {
-        $composerFile     = new File('composer.json', $env->packageFiles());
+        $composerFile     = new File('composer.json', $this->env->packageFiles());
         $generateComposer = new Command\GenerateComposer($composerFile);
 
-        return new Command\ValidateProperties($env->terminal(), $generateComposer);
+        return new Command\ValidateProperties($this->env->terminal(), $generateComposer);
     }
 }

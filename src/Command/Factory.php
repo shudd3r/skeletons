@@ -15,7 +15,14 @@ use Shudd3r\PackageFiles\Command;
 use Shudd3r\PackageFiles\RuntimeEnv;
 
 
-interface Factory
+abstract class Factory
 {
-    public function command(RuntimeEnv $env): Command;
+    protected RuntimeEnv $env;
+
+    final public function __construct(RuntimeEnv $env)
+    {
+        $this->env = $env;
+    }
+
+    abstract public function command(): Command;
 }
