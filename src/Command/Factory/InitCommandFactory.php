@@ -11,17 +11,18 @@
 
 namespace Shudd3r\PackageFiles\Command\Factory;
 
-use Shudd3r\PackageFiles\Command;
+use Shudd3r\PackageFiles\Command\Factory;
+use Shudd3r\PackageFiles\Command\Subroutine;
 use Shudd3r\PackageFiles\Files\File;
 
 
-class InitCommandFactory extends Command\Factory
+class InitCommandFactory extends Factory
 {
-    public function command(): Command
+    public function command(): Subroutine
     {
         $composerFile     = new File('composer.json', $this->env->packageFiles());
-        $generateComposer = new Command\GenerateComposer($composerFile);
+        $generateComposer = new Subroutine\GenerateComposer($composerFile);
 
-        return new Command\ValidateProperties($this->env->terminal(), $generateComposer);
+        return new Subroutine\ValidateProperties($this->env->terminal(), $generateComposer);
     }
 }

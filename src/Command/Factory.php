@@ -11,7 +11,6 @@
 
 namespace Shudd3r\PackageFiles\Command;
 
-use Shudd3r\PackageFiles\Command;
 use Shudd3r\PackageFiles\RuntimeEnv;
 
 
@@ -24,5 +23,5 @@ abstract class Factory
         $this->env = $env;
     }
 
-    abstract public function command(): Command;
+    abstract public function command(): Subroutine;
 }

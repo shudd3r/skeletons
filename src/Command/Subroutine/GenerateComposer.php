@@ -9,14 +9,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Command;
+namespace Shudd3r\PackageFiles\Command\Subroutine;
 
-use Shudd3r\PackageFiles\Command;
+use Shudd3r\PackageFiles\Command\Subroutine;
 use Shudd3r\PackageFiles\Files\File;
 use Shudd3r\PackageFiles\Properties;
 
 
-class GenerateComposer implements Command
+class GenerateComposer implements Subroutine
 {
     private File $file;
 
@@ -25,7 +25,7 @@ class GenerateComposer implements Command
         $this->file = $composer;
     }
 
-    public function execute(Properties $data): void
+    public function process(Properties $data): void
     {
         $composer = json_decode($this->file->contents(), true);
 

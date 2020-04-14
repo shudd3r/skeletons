@@ -9,15 +9,12 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles;
+namespace Shudd3r\PackageFiles\Command;
+
+use Shudd3r\PackageFiles\Properties;
 
 
-interface Command
+interface Subroutine
 {
-    /**
-     * Operations on project files.
-     *
-     * @param Properties $properties
-     */
-    public function execute(Properties $properties): void;
+    public function process(Properties $properties): void;
 }

@@ -9,47 +9,47 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Command;
+namespace Shudd3r\PackageFiles\Command\Subroutine;
 
-use Shudd3r\PackageFiles\Command;
+use Shudd3r\PackageFiles\Command\Subroutine;
 use Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Terminal;
 
 
-class ValidateProperties implements Command
+class ValidateProperties implements Subroutine
 {
-    private Terminal $terminal;
-    private Command  $nextCommand;
+    private Terminal   $terminal;
+    private Subroutine $nextSubroutine;
 
-    public function __construct(Terminal $terminal, Command $nextCommand)
+    public function __construct(Terminal $terminal, Subroutine $nextSubroutine)
     {
-        $this->terminal    = $terminal;
-        $this->nextCommand = $nextCommand;
+        $this->terminal       = $terminal;
+        $this->nextSubroutine = $nextSubroutine;
     }
 
-    public function execute(Properties $properties): void
+    public function process(Properties $options): void
     {
-        $githubUri = $properties->repositoryUrl();
+        $githubUri = $options->repositoryUrl();
         if (!$this->isValidGithubUri($githubUri)) {
             $this->terminal->sendError("Invalid github uri `{$githubUri}`", 1);
         }
 
-        $packageName = $properties->packageName();
+        $packageName = $options->packageName();
         if (!$this->isValidPackagistPackage($packageName)) {
             $this->terminal->sendError("Invalid packagist package name `{$packageName}`", 1);
         }
 
-        $namespace = $properties->sourceNamespace();
+        $namespace = $options->sourceNamespace();
         if (!$this->isValidNamespace($namespace)) {
             $this->terminal->sendError("Invalid namespace `{$namespace}`", 1);
         }
 
-        if (empty($properties->packageDescription())) {
+        if (empty($options->packageDescription())) {
             $this->terminal->sendError('Package description cannot be empty', 1);
         }
 
         if ($this->terminal->exitCode() !== 0) { return; }
-        $this->nextCommand->execute($properties);
+        $this->nextSubroutine->process($options);
     }
 
     private function isValidGithubUri(string $uri): bool
