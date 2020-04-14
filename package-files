@@ -13,7 +13,7 @@
 use Shudd3r\PackageFiles\Build;
 use Shudd3r\PackageFiles\Files;
 use Shudd3r\PackageFiles\RuntimeEnv;
-use Shudd3r\PackageFiles\CommandMap;
+use Shudd3r\PackageFiles\CommandRouting;
 use Shudd3r\PackageFiles\Command;
 use Shudd3r\PackageFiles\Terminal;
 
@@ -38,7 +38,7 @@ $skeletonFiles = new Files\ProjectFiles(__DIR__ . DIRECTORY_SEPARATOR . 'skeleto
 $packageFiles  = new Files\ProjectFiles($rootDirectory);
 $environment   = new RuntimeEnv($terminal, $packageFiles, $skeletonFiles);
 
-$commands = new CommandMap($environment, [
+$commands = new CommandRouting($environment, [
     'init' => Command\Factory\InitCommandFactory::class
 ]);
 

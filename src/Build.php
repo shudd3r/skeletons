@@ -17,11 +17,11 @@ use RuntimeException;
 
 class Build
 {
-    private Terminal   $terminal;
-    private Files      $packageFiles;
-    private CommandMap $commands;
+    private Terminal       $terminal;
+    private Files          $packageFiles;
+    private CommandRouting $commands;
 
-    public function __construct(RuntimeEnv $env, CommandMap $commands)
+    public function __construct(RuntimeEnv $env, CommandRouting $commands)
     {
         $this->terminal     = $env->terminal();
         $this->packageFiles = $env->packageFiles();

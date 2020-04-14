@@ -15,7 +15,7 @@ use Shudd3r\PackageFiles\Command\Factory;
 use RuntimeException;
 
 
-class CommandMap
+class CommandRouting
 {
     private RuntimeEnv $env;
     private array      $factories;
