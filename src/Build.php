@@ -18,14 +18,12 @@ use RuntimeException;
 class Build
 {
     private Terminal       $terminal;
-    private Files          $packageFiles;
     private CommandRouting $commands;
 
-    public function __construct(RuntimeEnv $env, CommandRouting $commands)
+    public function __construct(Terminal $terminal, CommandRouting $commands)
     {
-        $this->terminal     = $env->terminal();
-        $this->packageFiles = $env->packageFiles();
-        $this->commands     = $commands;
+        $this->terminal = $terminal;
+        $this->commands = $commands;
     }
 
     /**
@@ -52,19 +50,11 @@ class Build
     public function run(string $command, array $options = []): int
     {
         try {
-            $properties = new Properties\FileReadProperties($this->packageFiles);
-            $properties = new Properties\PredefinedProperties($options, $properties);
-            $properties = new Properties\ResolvedProperties($properties, $this->packageFiles);
-            if (isset($options['i']) || isset($options['interactive'])) {
-                $properties = new Properties\InputProperties($this->terminal, $properties);
-            }
-            $properties = new Properties\CachedProperties($properties);
-            $this->commands->command($command)->execute($properties);
+            return $this->commands->command($command)->execute($options);
         } catch (InvalidArgumentException | RuntimeException $e) {
             $this->terminal->display($e->getMessage());
-            return 1;
         }
 
-        return 0;
+        return 1;
     }
 }

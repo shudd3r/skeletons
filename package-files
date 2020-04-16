@@ -42,7 +42,7 @@ $commands = new CommandRouting($environment, [
     'init' => Command\Factory\InitCommandFactory::class
 ]);
 
-$build = new Build($environment, $commands);
+$build = new Build($terminal, $commands);
 
 $options = getopt('i', ['package:', 'repo:', 'desc:', 'interactive'], $commandIdx);
 $command = $argv[$commandIdx] ?? 'init';
