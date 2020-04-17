@@ -17,13 +17,13 @@ use RuntimeException;
 
 class Application
 {
-    private Terminal       $terminal;
-    private CommandRouting $commands;
+    private RuntimeEnv $env;
+    private array      $factories;
 
-    public function __construct(Terminal $terminal, CommandRouting $commands)
+    public function __construct(RuntimeEnv $env, array $factories)
     {
-        $this->terminal = $terminal;
-        $this->commands = $commands;
+        $this->env       = $env;
+        $this->factories = $factories;
     }
 
     /**
@@ -50,11 +50,25 @@ class Application
     public function run(string $command, array $options = []): int
     {
         try {
-            return $this->commands->command($command)->execute($options);
+            return $this->command($command)->execute($options);
         } catch (InvalidArgumentException | RuntimeException $e) {
-            $this->terminal->display($e->getMessage());
+            $this->env->terminal()->display($e->getMessage());
         }
 
         return 1;
+    }
+
+    private function command(string $name): Command
+    {
+        if (!isset($this->factories[$name]) || !class_exists($this->factories[$name])) {
+            throw new RuntimeException("Unknown `{$name}` command");
+        }
+
+        return $this->factory($this->factories[$name])->command();
+    }
+
+    private function factory(string $className): Command\Factory
+    {
+        return new $className($this->env);
     }
 }
