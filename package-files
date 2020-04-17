@@ -10,7 +10,7 @@
  * with this source code in the file LICENSE.
  */
 
-use Shudd3r\PackageFiles\Build;
+use Shudd3r\PackageFiles\Application;
 use Shudd3r\PackageFiles\Files;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\CommandRouting;
@@ -42,10 +42,10 @@ $commands = new CommandRouting($environment, [
     'init' => Command\Factory\InitCommandFactory::class
 ]);
 
-$build = new Build($terminal, $commands);
+$app = new Application($terminal, $commands);
 
 $options = getopt('i', ['package:', 'repo:', 'desc:', 'interactive'], $commandIdx);
 $command = $argv[$commandIdx] ?? 'init';
 
-$exitCode = $build->run($command, $options);
+$exitCode = $app->run($command, $options);
 exit($exitCode);

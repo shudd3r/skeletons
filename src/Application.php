@@ -15,7 +15,7 @@ use InvalidArgumentException;
 use RuntimeException;
 
 
-class Build
+class Application
 {
     private Terminal       $terminal;
     private CommandRouting $commands;
