@@ -31,26 +31,26 @@ class CachedProperties extends Properties
 
     public function repositoryUrl(): string
     {
-        return $this->repoUrl ?? $this->repoUrl = $this->properties->repositoryUrl();
+        return $this->repoUrl ??= $this->properties->repositoryUrl();
     }
 
     public function repositoryName(): string
     {
-        return $this->repoName ?? $this->repoName = parent::repositoryName();
+        return $this->repoName ??= parent::repositoryName();
     }
 
     public function packageName(): string
     {
-        return $this->package ?? $this->package = $this->properties->packageName();
+        return $this->package ??= $this->properties->packageName();
     }
 
     public function packageDescription(): string
     {
-        return $this->description ?? $this->description = $this->properties->packageDescription();
+        return $this->description ??= $this->properties->packageDescription();
     }
 
     public function sourceNamespace(): string
     {
-        return $this->namespace ?? $this->namespace = $this->properties->sourceNamespace();
+        return $this->namespace ??= $this->properties->sourceNamespace();
     }
 }
