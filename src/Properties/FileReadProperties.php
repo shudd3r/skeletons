@@ -57,7 +57,7 @@ class FileReadProperties extends Properties
         return $namespace ? rtrim($namespace, '\\') : null;
     }
 
-    private function composerValue(string $key): ?string
+    private function composerValue(string $key)
     {
         if (!isset($this->composerData)) {
             $this->composerData = json_decode($this->packageFiles->contents('composer.json'), true);
