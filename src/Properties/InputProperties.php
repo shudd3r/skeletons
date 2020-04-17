@@ -29,8 +29,7 @@ class InputProperties extends Properties
 
     public function repositoryUrl(): string
     {
-        if ($this->repoUrl) { return $this->repoUrl; }
-        return $this->repoUrl = $this->input('Github repository URL', $this->properties->repositoryUrl());
+        return $this->repoUrl ??= $this->input('Github repository URL', $this->properties->repositoryUrl());
     }
 
     public function packageName(): string
