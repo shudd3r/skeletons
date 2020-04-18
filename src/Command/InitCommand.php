@@ -12,36 +12,32 @@
 namespace Shudd3r\PackageFiles\Command;
 
 use Shudd3r\PackageFiles\Command;
-use Shudd3r\PackageFiles\Files;
 use Shudd3r\PackageFiles\Terminal;
 use Shudd3r\PackageFiles\Properties;
 
 
 class InitCommand implements Command
 {
+    private $buildProperties;
     private Subroutine $subroutine;
-    private Files      $packageFiles;
     private Terminal   $terminal;
 
-    public function __construct(Subroutine $subroutine, Files $packageFiles, Terminal $terminal)
+    public function __construct(callable $buildProperties, Subroutine $subroutine, Terminal $terminal)
     {
-        $this->subroutine   = $subroutine;
-        $this->packageFiles = $packageFiles;
-        $this->terminal     = $terminal;
+        $this->buildProperties = $buildProperties;
+        $this->subroutine      = $subroutine;
+        $this->terminal        = $terminal;
     }
 
     public function execute(array $options): int
     {
-        $properties = new Properties\FileReadProperties($this->packageFiles);
-        $properties = new Properties\PredefinedProperties($options, $properties);
-        $properties = new Properties\ResolvedProperties($properties, $this->packageFiles);
-        if (isset($options['i']) || isset($options['interactive'])) {
-            $properties = new Properties\InputProperties($this->terminal, $properties);
-        }
-        $properties = new Properties\CachedProperties($properties);
-
-        $this->subroutine->process($properties);
+        $this->subroutine->process($this->properties($options));
 
         return $this->terminal->exitCode();
+    }
+
+    private function properties(array $options): Properties
+    {
+        return ($this->buildProperties)($options);
     }
 }

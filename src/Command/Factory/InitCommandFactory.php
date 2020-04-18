@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Command\Factory;
 use Shudd3r\PackageFiles\Command;
 use Shudd3r\PackageFiles\Command\Factory;
 use Shudd3r\PackageFiles\Command\Subroutine;
+use Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Files\File;
 
 
@@ -21,10 +22,23 @@ class InitCommandFactory extends Factory
 {
     public function command(): Command
     {
+        $packageFiles = $this->env->packageFiles();
+        $terminal     = $this->env->terminal();
+
         $composerFile     = new File('composer.json', $this->env->packageFiles());
         $generateComposer = new Subroutine\GenerateComposer($composerFile);
-        $subroutine       = new Subroutine\ValidateProperties($this->env->terminal(), $generateComposer);
+        $subroutine       = new Subroutine\ValidateProperties($terminal, $generateComposer);
 
-        return new Command\InitCommand($subroutine, $this->env->packageFiles(), $this->env->terminal());
+        $buildProperties = function (array $options) use ($packageFiles, $terminal): Properties {
+            $properties = new Properties\FileReadProperties($packageFiles);
+            $properties = new Properties\PredefinedProperties($options, $properties);
+            $properties = new Properties\ResolvedProperties($properties, $packageFiles);
+            if (isset($options['i']) || isset($options['interactive'])) {
+                $properties = new Properties\InputProperties($terminal, $properties);
+            }
+            return new Properties\CachedProperties($properties);
+        };
+
+        return new Command\InitCommand($buildProperties, $subroutine, $terminal);
     }
 }
