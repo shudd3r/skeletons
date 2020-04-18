@@ -20,7 +20,7 @@ use Shudd3r\PackageFiles\Files\File;
 
 class InitCommandFactory extends Factory
 {
-    public function command(): Command
+    public function command(array $options): Command
     {
         $packageFiles = $this->env->packageFiles();
         $terminal     = $this->env->terminal();
@@ -29,16 +29,14 @@ class InitCommandFactory extends Factory
         $generateComposer = new Subroutine\GenerateComposer($composerFile);
         $subroutine       = new Subroutine\ValidateProperties($terminal, $generateComposer);
 
-        $buildProperties = function (array $options) use ($packageFiles, $terminal): Properties {
-            $properties = new Properties\FileReadProperties($packageFiles);
-            $properties = new Properties\PredefinedProperties($options, $properties);
-            $properties = new Properties\ResolvedProperties($properties, $packageFiles);
-            if (isset($options['i']) || isset($options['interactive'])) {
-                $properties = new Properties\InputProperties($terminal, $properties);
-            }
-            return new Properties\CachedProperties($properties);
-        };
+        $properties = new Properties\FileReadProperties($packageFiles);
+        $properties = new Properties\PredefinedProperties($options, $properties);
+        $properties = new Properties\ResolvedProperties($properties, $packageFiles);
+        if (isset($options['i']) || isset($options['interactive'])) {
+            $properties = new Properties\InputProperties($terminal, $properties);
+        }
+        $properties = new Properties\CachedProperties($properties);
 
-        return new Command\InitCommand($buildProperties, $subroutine, $terminal);
+        return new Command\InitCommand($properties, $subroutine, $terminal);
     }
 }

@@ -18,26 +18,21 @@ use Shudd3r\PackageFiles\Properties;
 
 class InitCommand implements Command
 {
-    private $buildProperties;
+    private Properties $properties;
     private Subroutine $subroutine;
     private Terminal   $terminal;
 
-    public function __construct(callable $buildProperties, Subroutine $subroutine, Terminal $terminal)
+    public function __construct(Properties $properties, Subroutine $subroutine, Terminal $terminal)
     {
-        $this->buildProperties = $buildProperties;
-        $this->subroutine      = $subroutine;
-        $this->terminal        = $terminal;
+        $this->properties = $properties;
+        $this->subroutine = $subroutine;
+        $this->terminal   = $terminal;
     }
 
-    public function execute(array $options): int
+    public function execute(): int
     {
-        $this->subroutine->process($this->properties($options));
+        $this->subroutine->process($this->properties);
 
         return $this->terminal->exitCode();
-    }
-
-    private function properties(array $options): Properties
-    {
-        return ($this->buildProperties)($options);
     }
 }

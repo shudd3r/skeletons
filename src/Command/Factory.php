@@ -24,5 +24,5 @@ abstract class Factory
         $this->env = $env;
     }
 
-    abstract public function command(): Command;
+    abstract public function command(array $options): Command;
 }

@@ -15,9 +15,7 @@ namespace Shudd3r\PackageFiles;
 interface Command
 {
     /**
-     * @param array $options
-     *
      * @return int Exit code
      */
-    public function execute(array $options): int;
+    public function execute(): int;
 }
