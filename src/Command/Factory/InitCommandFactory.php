@@ -37,6 +37,6 @@ class InitCommandFactory extends Factory
         }
         $properties = new Properties\CachedProperties($properties);
 
-        return new Command\InitCommand($properties, $subroutine, $terminal);
+        return new Command($properties, $subroutine, $terminal);
     }
 }
