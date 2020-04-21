@@ -50,7 +50,7 @@ class Application
     public function run(string $command, array $options = []): int
     {
         try {
-            return $this->command($command, $options)->execute();
+            return $this->factory($command)->command($options)->execute();
         } catch (InvalidArgumentException | RuntimeException $e) {
             $this->env->terminal()->display($e->getMessage());
         }
@@ -58,17 +58,13 @@ class Application
         return 1;
     }
 
-    private function command(string $name, array $options): Command
+    private function factory(string $command): Command\Factory
     {
-        if (!isset($this->factories[$name]) || !class_exists($this->factories[$name])) {
-            throw new RuntimeException("Unknown `{$name}` command");
+        if (!isset($this->factories[$command]) || !class_exists($this->factories[$command])) {
+            throw new RuntimeException("Unknown `{$command}` command");
         }
 
-        return $this->factory($this->factories[$name])->command($options);
-    }
-
-    private function factory(string $className): Command\Factory
-    {
+        $className = $this->factories[$command];
         return new $className($this->env);
     }
 }
