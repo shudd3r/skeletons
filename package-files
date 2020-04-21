@@ -56,4 +56,4 @@ $skeletonFiles = new ProjectFiles(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
 $packageFiles  = new ProjectFiles($rootDirectory);
 
 $build = new Build($terminal, $skeletonFiles, $packageFiles);
-$build->run($argv);
+$build->run(getopt('', ['package:', 'repo:', 'desc:']));

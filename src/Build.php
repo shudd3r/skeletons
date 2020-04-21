@@ -35,9 +35,19 @@ class Build
     /**
      * Builds package environment files.
      *
-     * @param array $args
+     * $options array is option name keys ('package', 'repo' & 'desc') with
+     * corresponding values. Not provided option values might be omitted or
+     * assigned to null.
+     *
+     * @example Array with all values defined for this package: [
+     *     'package' => 'polymorphine/dev',
+     *     'repo'    => 'polymorphine/dev',
+     *     'desc'    => 'Development tools & coding standard scripts for Polymorphine libraries'
+     * ]
+     *
+     * @param array $options
      */
-    public function run(array $args = []): void
+    public function run(array $options = []): void
     {
         $composer = json_decode($this->packageFiles->contents('composer.json'), true);
 
