@@ -25,6 +25,6 @@ class InitCommandFactory extends Factory
         $generateComposer = new Subroutine\GenerateComposer($composerFile);
         $subroutine       = new Subroutine\ValidateProperties($this->env->terminal(), $generateComposer);
 
-        return new Command($this->properties($options), $subroutine, $this->env->terminal());
+        return new Command($this->properties($options), $subroutine);
     }
 }

@@ -18,22 +18,15 @@ class Command
 {
     private Properties $properties;
     private Subroutine $subroutine;
-    private Terminal   $terminal;
 
-    public function __construct(Properties $properties, Subroutine $subroutine, Terminal $terminal)
+    public function __construct(Properties $properties, Subroutine $subroutine)
     {
         $this->properties = $properties;
         $this->subroutine = $subroutine;
-        $this->terminal   = $terminal;
     }
 
-    /**
-     * @return int Exit code
-     */
-    public function execute(): int
+    public function execute(): void
     {
         $this->subroutine->process($this->properties);
-
-        return $this->terminal->exitCode();
     }
 }

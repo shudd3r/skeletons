@@ -49,13 +49,15 @@ class Application
      */
     public function run(string $command, array $options = []): int
     {
+        $terminal = $this->env->terminal();
+
         try {
-            return $this->factory($command)->command($options)->execute();
+            $this->factory($command)->command($options)->execute();
         } catch (InvalidArgumentException | RuntimeException $e) {
-            $this->env->terminal()->display($e->getMessage());
+            $terminal->sendError($e->getMessage(), 1);
         }
 
-        return 1;
+        return $terminal->exitCode();
     }
 
     private function factory(string $command): Command\Factory
