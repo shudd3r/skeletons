@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Command\GenerateComposer;
+use Shudd3r\PackageFiles\Files\File;
 
 
 class Build
@@ -63,7 +64,9 @@ class Build
         $data->repoUser      = $this->input('Package Github account', $vendorName);
         $data->repoName      = $this->input('Package Github repository', $packageName);
 
-        $command = new GenerateComposer($this->packageFiles);
+        $composerFile = new File('composer.json', $this->packageFiles);
+        $command      = new GenerateComposer($composerFile);
+
         $command->execute($data);
     }
 
