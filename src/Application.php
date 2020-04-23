@@ -54,7 +54,7 @@ class Application
         try {
             $this->factory($command)->command($options)->execute();
         } catch (InvalidArgumentException | RuntimeException $e) {
-            $terminal->sendError($e->getMessage(), 1);
+            $terminal->render($e->getMessage(), 1);
         }
 
         return $terminal->exitCode();

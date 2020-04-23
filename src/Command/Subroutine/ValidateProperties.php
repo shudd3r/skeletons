@@ -31,21 +31,21 @@ class ValidateProperties implements Subroutine
     {
         $githubUri = $options->repositoryUrl();
         if (!$this->isValidGithubUri($githubUri)) {
-            $this->terminal->sendError("Invalid github uri `{$githubUri}`", 1);
+            $this->terminal->render("Invalid github uri `{$githubUri}`", 1);
         }
 
         $packageName = $options->packageName();
         if (!$this->isValidPackagistPackage($packageName)) {
-            $this->terminal->sendError("Invalid packagist package name `{$packageName}`", 1);
+            $this->terminal->render("Invalid packagist package name `{$packageName}`", 1);
         }
 
         $namespace = $options->sourceNamespace();
         if (!$this->isValidNamespace($namespace)) {
-            $this->terminal->sendError("Invalid namespace `{$namespace}`", 1);
+            $this->terminal->render("Invalid namespace `{$namespace}`", 1);
         }
 
         if (empty($options->packageDescription())) {
-            $this->terminal->sendError('Package description cannot be empty', 1);
+            $this->terminal->render('Package description cannot be empty', 1);
         }
 
         if ($this->terminal->exitCode() !== 0) { return; }

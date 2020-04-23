@@ -43,30 +43,19 @@ class Terminal
     }
 
     /**
-     * Sends message to external stream resource (usually STDOUT).
+     * Sends message to external stream resource with optional error code.
      *
      * @param string $message
+     * @param int    $errorCode
      */
-    public function display(string $message): void
+    public function render(string $message, int $errorCode = 0): void
     {
-        fwrite($this->output, $message);
+        $this->errorCode |= $errorCode;
+        fwrite($errorCode === 0 ? $this->output : $this->error, $message);
     }
 
     /**
-     * Sends error message to error stream resource (usually STDERR)
-     * and collects error code for exit result.
-     *
-     * @param string $message
-     * @param int    $code
-     */
-    public function sendError(string $message, int $code): void
-    {
-        $this->errorCode |= $code;
-        fwrite($this->error, $message);
-    }
-
-    /**
-     * @return int Binary sum of error codes
+     * @return int Binary sum of error codes for rendered messages
      */
     public function exitCode(): int
     {
