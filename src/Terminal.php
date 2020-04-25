@@ -35,10 +35,13 @@ class Terminal
     /**
      * Returns value provided from external stream resource (usually STDIN).
      *
+     * @param string $prompt
+     *
      * @return string
      */
-    public function input(): string
+    public function input(string $prompt = ''): string
     {
+        if ($prompt) { $this->render($prompt); }
         return trim(fgets($this->input));
     }
 

@@ -50,8 +50,6 @@ class InputProperties extends Properties
     private function input(string $prompt, string $default = ''): string
     {
         $defaultInfo = $default ? ' [default: ' . $default . ']' : '';
-        $this->terminal->render($prompt . $defaultInfo . ': ');
-
-        return $this->terminal->input() ?: $default;
+        return $this->terminal->input($prompt . $defaultInfo . ': ') ?: $default;
     }
 }
