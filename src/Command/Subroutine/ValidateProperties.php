@@ -12,18 +12,18 @@
 namespace Shudd3r\PackageFiles\Command\Subroutine;
 
 use Shudd3r\PackageFiles\Command\Subroutine;
+use Shudd3r\PackageFiles\Application\Output;
 use Shudd3r\PackageFiles\Properties;
-use Shudd3r\PackageFiles\Application\Terminal;
 
 
 class ValidateProperties implements Subroutine
 {
-    private Terminal   $terminal;
+    private Output     $output;
     private Subroutine $nextSubroutine;
 
-    public function __construct(Terminal $terminal, Subroutine $nextSubroutine)
+    public function __construct(Output $output, Subroutine $nextSubroutine)
     {
-        $this->terminal       = $terminal;
+        $this->output         = $output;
         $this->nextSubroutine = $nextSubroutine;
     }
 
@@ -31,24 +31,24 @@ class ValidateProperties implements Subroutine
     {
         $githubUri = $options->repositoryUrl();
         if (!$this->isValidGithubUri($githubUri)) {
-            $this->terminal->render("Invalid github uri `{$githubUri}`", 1);
+            $this->output->render("Invalid github uri `{$githubUri}`", 1);
         }
 
         $packageName = $options->packageName();
         if (!$this->isValidPackagistPackage($packageName)) {
-            $this->terminal->render("Invalid packagist package name `{$packageName}`", 1);
+            $this->output->render("Invalid packagist package name `{$packageName}`", 1);
         }
 
         $namespace = $options->sourceNamespace();
         if (!$this->isValidNamespace($namespace)) {
-            $this->terminal->render("Invalid namespace `{$namespace}`", 1);
+            $this->output->render("Invalid namespace `{$namespace}`", 1);
         }
 
         if (empty($options->packageDescription())) {
-            $this->terminal->render('Package description cannot be empty', 1);
+            $this->output->render('Package description cannot be empty', 1);
         }
 
-        if ($this->terminal->exitCode() !== 0) { return; }
+        if ($this->output->exitCode() !== 0) { return; }
         $this->nextSubroutine->process($options);
     }
 

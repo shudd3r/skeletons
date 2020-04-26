@@ -12,18 +12,18 @@
 namespace Shudd3r\PackageFiles\Properties;
 
 use Shudd3r\PackageFiles\Properties;
-use Shudd3r\PackageFiles\Application\Terminal;
+use Shudd3r\PackageFiles\Application\Input;
 
 
 class InputProperties extends Properties
 {
-    private Terminal   $terminal;
+    private Input      $input;
     private Properties $properties;
     private string     $repoUrl;
 
-    public function __construct(Terminal $terminal, Properties $properties)
+    public function __construct(Input $input, Properties $properties)
     {
-        $this->terminal   = $terminal;
+        $this->input      = $input;
         $this->properties = $properties;
     }
 
@@ -50,6 +50,6 @@ class InputProperties extends Properties
     private function input(string $prompt, string $default = ''): string
     {
         $defaultInfo = $default ? ' [default: ' . $default . ']' : '';
-        return $this->terminal->input($prompt . $defaultInfo . ': ') ?: $default;
+        return $this->input->value($prompt . $defaultInfo . ': ') ?: $default;
     }
 }

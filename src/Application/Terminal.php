@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Application;
 
 
-class Terminal
+class Terminal implements Input, Output
 {
     private $input;
     private $output;
@@ -32,34 +32,18 @@ class Terminal
         $this->error  = $error;
     }
 
-    /**
-     * Returns value provided from external stream resource (usually STDIN).
-     *
-     * @param string $prompt
-     *
-     * @return string
-     */
-    public function input(string $prompt = ''): string
+    public function value(string $prompt = ''): string
     {
         if ($prompt) { $this->render($prompt); }
         return trim(fgets($this->input));
     }
 
-    /**
-     * Sends message to external stream resource with optional error code.
-     *
-     * @param string $message
-     * @param int    $errorCode
-     */
     public function render(string $message, int $errorCode = 0): void
     {
         $this->errorCode |= $errorCode;
         fwrite($errorCode === 0 ? $this->output : $this->error, $message);
     }
 
-    /**
-     * @return int Binary sum of error codes for rendered messages
-     */
     public function exitCode(): int
     {
         return $this->errorCode;
