@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Command\Subroutine;
 
 use Shudd3r\PackageFiles\Command\Subroutine;
 use Shudd3r\PackageFiles\Properties;
-use Shudd3r\PackageFiles\Terminal;
+use Shudd3r\PackageFiles\Application\Terminal;
 
 
 class ValidateProperties implements Subroutine

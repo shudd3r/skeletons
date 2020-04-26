@@ -14,7 +14,6 @@ use Shudd3r\PackageFiles\Application;
 use Shudd3r\PackageFiles\Files;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Command;
-use Shudd3r\PackageFiles\Terminal;
 
 
 // This script is assumed to be one of composer dependencies of the package
@@ -32,7 +31,7 @@ if (!file_exists($rootDirectory . '/composer.json')) {
 
 require_once $rootDirectory . '/vendor/autoload.php';
 
-$terminal      = new Terminal(STDIN, STDOUT, STDERR);
+$terminal      = new Application\Terminal(STDIN, STDOUT, STDERR);
 $skeletonFiles = new Files\ProjectFiles(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
 $packageFiles  = new Files\ProjectFiles($rootDirectory);
 $environment   = new RuntimeEnv($terminal, $packageFiles, $skeletonFiles);

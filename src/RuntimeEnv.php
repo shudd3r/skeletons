@@ -11,6 +11,8 @@
 
 namespace Shudd3r\PackageFiles;
 
+use Shudd3r\PackageFiles\Application\Terminal;
+
 
 class RuntimeEnv
 {
