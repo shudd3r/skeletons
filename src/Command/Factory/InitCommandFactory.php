@@ -23,7 +23,7 @@ class InitCommandFactory extends Factory
     {
         $composerFile     = new File('composer.json', $this->env->packageFiles());
         $generateComposer = new Subroutine\GenerateComposer($composerFile);
-        $subroutine       = new Subroutine\ValidateProperties($this->env->terminal(), $generateComposer);
+        $subroutine       = new Subroutine\ValidateProperties($this->env->output(), $generateComposer);
 
         return new Command($this->properties($options), $subroutine);
     }

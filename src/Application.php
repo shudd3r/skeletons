@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles;
 
+use Shudd3r\PackageFiles\Application\Output;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -19,11 +20,13 @@ class Application
 {
     private RuntimeEnv $env;
     private array      $factories;
+    private Output     $output;
 
     public function __construct(RuntimeEnv $env, array $factories)
     {
         $this->env       = $env;
         $this->factories = $factories;
+        $this->output    = $env->output();
     }
 
     /**
@@ -49,15 +52,13 @@ class Application
      */
     public function run(string $command, array $options = []): int
     {
-        $terminal = $this->env->terminal();
-
         try {
             $this->factory($command)->command($options)->execute();
         } catch (InvalidArgumentException | RuntimeException $e) {
-            $terminal->render($e->getMessage(), 1);
+            $this->output->render($e->getMessage(), 1);
         }
 
-        return $terminal->exitCode();
+        return $this->output->exitCode();
     }
 
     private function factory(string $command): Command\Factory

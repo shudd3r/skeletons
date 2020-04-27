@@ -12,6 +12,8 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\Terminal;
+use Shudd3r\PackageFiles\Application\Input;
+use Shudd3r\PackageFiles\Application\Output;
 
 
 class RuntimeEnv
@@ -27,7 +29,12 @@ class RuntimeEnv
         $this->skeletonFiles = $skeletonFiles;
     }
 
-    public function terminal(): Terminal
+    public function output(): Output
+    {
+        return $this->terminal;
+    }
+
+    public function input(): Input
     {
         return $this->terminal;
     }

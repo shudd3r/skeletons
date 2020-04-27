@@ -33,7 +33,7 @@ abstract class Factory
         $properties = new Properties\PredefinedProperties($options, $properties);
         $properties = new Properties\ResolvedProperties($properties, $this->env->packageFiles());
         if (isset($options['i']) || isset($options['interactive'])) {
-            $properties = new Properties\InputProperties($this->env->terminal(), $properties);
+            $properties = new Properties\InputProperties($this->env->input(), $properties);
         }
         return new Properties\CachedProperties($properties);
     }
