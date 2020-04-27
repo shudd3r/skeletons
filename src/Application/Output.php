@@ -20,7 +20,7 @@ interface Output
      * @param string $message
      * @param int    $errorCode
      */
-    public function render(string $message, int $errorCode = 0): void;
+    public function send(string $message, int $errorCode = 0): void;
 
     /**
      * @return int Binary sum of error codes for rendered messages

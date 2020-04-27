@@ -34,11 +34,11 @@ class Terminal implements Input, Output
 
     public function value(string $prompt = ''): string
     {
-        if ($prompt) { $this->render($prompt); }
+        if ($prompt) { $this->send($prompt); }
         return trim(fgets($this->input));
     }
 
-    public function render(string $message, int $errorCode = 0): void
+    public function send(string $message, int $errorCode = 0): void
     {
         $this->errorCode |= $errorCode;
         fwrite($errorCode === 0 ? $this->output : $this->error, $message);
