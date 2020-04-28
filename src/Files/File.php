@@ -30,6 +30,11 @@ class File
         return $this->filename;
     }
 
+    public function exists(): bool
+    {
+        return $this->files->exists($this->filename);
+    }
+
     public function contents(): string
     {
         return $this->files->contents($this->filename);
