@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles;
 
+use Shudd3r\PackageFiles\Files\File;
 use Shudd3r\PackageFiles\Files\Exception;
 
 
@@ -31,6 +32,13 @@ interface Files
      * @return bool
      */
     public function exists(string $filename): bool;
+
+    /**
+     * @param string $filename
+     *
+     * @return File
+     */
+    public function file(string $filename): File;
 
     /**
      * @param string $filename

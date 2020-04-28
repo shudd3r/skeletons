@@ -45,6 +45,11 @@ class ProjectFiles implements Files
         return file_exists($this->rootDirectory . $filename);
     }
 
+    public function file(string $filename): File
+    {
+        return new File($filename, $this);
+    }
+
     public function contents(string $filename): string
     {
         if (!file_exists($this->rootDirectory . $filename)) {
