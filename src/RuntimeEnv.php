@@ -11,7 +11,6 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Application\Terminal;
 use Shudd3r\PackageFiles\Application\Input;
 use Shudd3r\PackageFiles\Application\Output;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
@@ -19,25 +18,31 @@ use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 class RuntimeEnv
 {
-    private Terminal  $terminal;
+    private Input     $input;
+    private Output    $output;
     private Directory $packageFiles;
     private Directory $skeletonFiles;
 
-    public function __construct(Terminal $terminal, Directory $packageFiles, Directory $skeletonFiles)
-    {
-        $this->terminal      = $terminal;
+    public function __construct(
+        Input $input,
+        Output $output,
+        Directory $packageFiles,
+        Directory $skeletonFiles
+    ) {
+        $this->input         = $input;
+        $this->output        = $output;
         $this->packageFiles  = $packageFiles;
         $this->skeletonFiles = $skeletonFiles;
     }
 
-    public function output(): Output
-    {
-        return $this->terminal;
-    }
-
     public function input(): Input
     {
-        return $this->terminal;
+        return $this->input;
+    }
+
+    public function output(): Output
+    {
+        return $this->output;
     }
 
     public function packageFiles(): Directory

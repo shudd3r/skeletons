@@ -34,7 +34,7 @@ require_once $rootDirectory . '/vendor/autoload.php';
 $terminal      = new Application\Terminal(STDIN, STDOUT, STDERR);
 $skeletonFiles = new Files\Directory(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
 $packageFiles  = new Files\Directory($rootDirectory);
-$environment   = new RuntimeEnv($terminal, $packageFiles, $skeletonFiles);
+$environment   = new RuntimeEnv($terminal, $terminal, $packageFiles, $skeletonFiles);
 
 $app = new Application($environment, [
     'init' => Command\Factory\InitCommandFactory::class
