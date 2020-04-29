@@ -11,10 +11,10 @@
 
 namespace Shudd3r\PackageFiles\Files;
 
-use Shudd3r\PackageFiles\Files;
+use Shudd3r\PackageFiles\Directory;
 
 
-class ProjectFiles implements Files
+class ProjectFiles implements Directory
 {
     private string $rootDirectory;
 
@@ -35,14 +35,9 @@ class ProjectFiles implements Files
         $this->rootDirectory = rtrim($rootDirectory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
     }
 
-    public function directory(): string
+    public function path(): string
     {
         return $this->rootDirectory;
-    }
-
-    public function exists(string $filename): bool
-    {
-        return file_exists($this->rootDirectory . $filename);
     }
 
     public function file(string $filename): File
@@ -50,14 +45,8 @@ class ProjectFiles implements Files
         return new File($filename, $this);
     }
 
-    public function contents(string $filename): string
+    public function save(File $file): void
     {
-        $file = $this->rootDirectory . $filename;
-        return file_exists($file) ? file_get_contents($file) : '';
-    }
-
-    public function write(string $filename, string $contents): void
-    {
-        file_put_contents($this->rootDirectory . $filename, $contents);
+        file_put_contents($this->rootDirectory . $file->name(), $file->contents());
     }
 }

@@ -18,11 +18,11 @@ use Shudd3r\PackageFiles\Application\Output;
 
 class RuntimeEnv
 {
-    private Terminal $terminal;
-    private Files    $packageFiles;
-    private Files    $skeletonFiles;
+    private Terminal  $terminal;
+    private Directory $packageFiles;
+    private Directory $skeletonFiles;
 
-    public function __construct(Terminal $terminal, Files $packageFiles, Files $skeletonFiles)
+    public function __construct(Terminal $terminal, Directory $packageFiles, Directory $skeletonFiles)
     {
         $this->terminal      = $terminal;
         $this->packageFiles  = $packageFiles;
@@ -39,12 +39,12 @@ class RuntimeEnv
         return $this->terminal;
     }
 
-    public function packageFiles(): Files
+    public function packageFiles(): Directory
     {
         return $this->packageFiles;
     }
 
-    public function skeletonFiles(): Files
+    public function skeletonFiles(): Directory
     {
         return $this->skeletonFiles;
     }

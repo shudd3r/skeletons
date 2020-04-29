@@ -11,18 +11,19 @@
 
 namespace Shudd3r\PackageFiles\Files;
 
-use Shudd3r\PackageFiles\Files;
+use Shudd3r\PackageFiles\Directory;
 
 
 class File
 {
-    private string $filename;
-    private Files  $files;
+    private string    $filename;
+    private Directory $directory;
+    private string    $contents;
 
-    public function __construct(string $filename, Files $files)
+    public function __construct(string $filename, Directory $directory)
     {
-        $this->filename = $filename;
-        $this->files    = $files;
+        $this->filename  = $filename;
+        $this->directory = $directory;
     }
 
     public function name(): string
@@ -32,16 +33,22 @@ class File
 
     public function exists(): bool
     {
-        return $this->files->exists($this->filename);
+        return file_exists($this->path());
     }
 
     public function contents(): string
     {
-        return $this->files->contents($this->filename);
+        return $this->contents ??= file_get_contents($this->path());
     }
 
     public function write(string $contents): void
     {
-        $this->files->write($this->filename, $contents);
+        $this->contents = $contents;
+        $this->directory->save($this);
+    }
+
+    private function path(): string
+    {
+        return $this->directory->path() . $this->filename;
     }
 }

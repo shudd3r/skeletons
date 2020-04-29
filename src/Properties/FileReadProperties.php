@@ -12,24 +12,25 @@
 namespace Shudd3r\PackageFiles\Properties;
 
 use Shudd3r\PackageFiles\Properties;
-use Shudd3r\PackageFiles\Files;
+use Shudd3r\PackageFiles\Directory;
 
 
 class FileReadProperties extends Properties
 {
-    private Files $packageFiles;
-    private array $composerData;
+    private Directory $packageFiles;
+    private array     $composerData;
 
-    public function __construct(Files $packageFiles)
+    public function __construct(Directory $packageFiles)
     {
         $this->packageFiles = $packageFiles;
     }
 
     public function repositoryUrl(): string
     {
-        if (!$this->packageFiles->exists('.git/config')) { return ''; }
+        $gitConfigFile = $this->packageFiles->file('.git/config');
+        if (!$gitConfigFile->exists()) { return ''; }
 
-        $config = parse_ini_string($this->packageFiles->contents('.git/config'), true);
+        $config = parse_ini_string($gitConfigFile->contents(), true);
         return $config['remote upstream']['url'] ?? $config['remote origin']['url'] ?? '';
     }
 
@@ -60,7 +61,8 @@ class FileReadProperties extends Properties
     private function composerValue(string $key)
     {
         if (!isset($this->composerData)) {
-            $this->composerData = json_decode($this->packageFiles->contents('composer.json'), true);
+            $composerJsonFile = $this->packageFiles->file('composer.json');
+            $this->composerData = $composerJsonFile->exists() ? json_decode($composerJsonFile->contents(), true) : [];
         }
 
         return $this->composerData[$key] ?? null;

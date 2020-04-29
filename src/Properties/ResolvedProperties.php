@@ -12,15 +12,15 @@
 namespace Shudd3r\PackageFiles\Properties;
 
 use Shudd3r\PackageFiles\Properties;
-use Shudd3r\PackageFiles\Files;
+use Shudd3r\PackageFiles\Directory;
 
 
 class ResolvedProperties extends Properties
 {
     private Properties $properties;
-    private Files      $packageFiles;
+    private Directory  $packageFiles;
 
-    public function __construct(Properties $properties, Files $packageFiles)
+    public function __construct(Properties $properties, Directory $packageFiles)
     {
         $this->properties   = $properties;
         $this->packageFiles = $packageFiles;
@@ -48,7 +48,7 @@ class ResolvedProperties extends Properties
 
     private function packageNameFromDirectory(): string
     {
-        $directory = $this->packageFiles->directory();
+        $directory = $this->packageFiles->path();
         return basename(dirname($directory)) . '/' . basename($directory);
     }
 
