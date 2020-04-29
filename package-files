@@ -32,8 +32,8 @@ if (!file_exists($rootDirectory . '/composer.json')) {
 require_once $rootDirectory . '/vendor/autoload.php';
 
 $terminal      = new Application\Terminal(STDIN, STDOUT, STDERR);
-$skeletonFiles = new Files\ProjectFiles(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
-$packageFiles  = new Files\ProjectFiles($rootDirectory);
+$skeletonFiles = new Files\Directory(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
+$packageFiles  = new Files\Directory($rootDirectory);
 $environment   = new RuntimeEnv($terminal, $packageFiles, $skeletonFiles);
 
 $app = new Application($environment, [

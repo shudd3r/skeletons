@@ -11,11 +11,11 @@
 
 namespace Shudd3r\PackageFiles\Files;
 
-use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory as DirectoryInterface;
 use Shudd3r\PackageFiles\Application\FileSystem\File as FileInterface;
 
 
-class ProjectFiles implements Directory
+class Directory implements DirectoryInterface
 {
     private string $rootDirectory;
 
