@@ -52,11 +52,8 @@ class ProjectFiles implements Files
 
     public function contents(string $filename): string
     {
-        if (!file_exists($this->rootDirectory . $filename)) {
-            $message = "File `{$filename}` not found in `{$this->rootDirectory}` directory";
-            throw new Exception\FileNotFoundException($message);
-        }
-        return file_get_contents($this->rootDirectory . $filename);
+        $file = $this->rootDirectory . $filename;
+        return file_exists($file) ? file_get_contents($file) : '';
     }
 
     public function write(string $filename, string $contents): void
