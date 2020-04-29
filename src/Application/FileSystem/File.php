@@ -12,22 +12,25 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem;
 
 
-interface Directory
+interface File
 {
     /**
-     * @return string Absolute path to directory
+     * @return string
      */
-    public function path(): string;
+    public function name(): string;
 
     /**
-     * @param string $filename
-     *
-     * @return File
+     * @return bool
      */
-    public function file(string $filename): File;
+    public function exists(): bool;
 
     /**
-     * @param File $file
+     * @return string
      */
-    public function save(File $file): void;
+    public function contents(): string;
+
+    /**
+     * @param string $contents
+     */
+    public function write(string $contents): void;
 }

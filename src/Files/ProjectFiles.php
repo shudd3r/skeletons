@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Files;
 
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\File as FileInterface;
 
 
 class ProjectFiles implements Directory
@@ -40,12 +41,12 @@ class ProjectFiles implements Directory
         return $this->rootDirectory;
     }
 
-    public function file(string $filename): File
+    public function file(string $filename): FileInterface
     {
         return new File($filename, $this);
     }
 
-    public function save(File $file): void
+    public function save(FileInterface $file): void
     {
         file_put_contents($this->rootDirectory . $file->name(), $file->contents());
     }
