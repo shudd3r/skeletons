@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Properties;
 
 use Shudd3r\PackageFiles\Properties;
-use Shudd3r\PackageFiles\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 
 class FileReadProperties extends Properties

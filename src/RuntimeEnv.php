@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles;
 use Shudd3r\PackageFiles\Application\Terminal;
 use Shudd3r\PackageFiles\Application\Input;
 use Shudd3r\PackageFiles\Application\Output;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 
 class RuntimeEnv

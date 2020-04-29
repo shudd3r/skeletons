@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Files;
 
-use Shudd3r\PackageFiles\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 
 class ProjectFiles implements Directory
