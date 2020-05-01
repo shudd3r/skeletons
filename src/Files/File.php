@@ -12,44 +12,39 @@
 namespace Shudd3r\PackageFiles\Files;
 
 use Shudd3r\PackageFiles\Application\FileSystem\File as FileInterface;
-use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 
 class File implements FileInterface
 {
-    private string    $filename;
-    private Directory $directory;
-    private string    $contents;
+    private string $path;
+    private string $contents;
 
-    public function __construct(string $filename, Directory $directory)
+    /**
+     * @param string $path absolute file path
+     */
+    public function __construct(string $path)
     {
-        $this->filename  = $filename;
-        $this->directory = $directory;
+        $this->path = $path;
     }
 
-    public function name(): string
+    public function path(): string
     {
-        return $this->filename;
+        return $this->path;
     }
 
     public function exists(): bool
     {
-        return file_exists($this->path());
+        return file_exists($this->path);
     }
 
     public function contents(): string
     {
-        return $this->contents ??= file_get_contents($this->path());
+        return $this->contents ??= file_get_contents($this->path);
     }
 
     public function write(string $contents): void
     {
         $this->contents = $contents;
-        $this->directory->save($this);
-    }
-
-    private function path(): string
-    {
-        return $this->directory->path() . $this->filename;
+        file_put_contents($this->path, $this->contents);
     }
 }

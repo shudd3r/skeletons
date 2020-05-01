@@ -15,9 +15,9 @@ namespace Shudd3r\PackageFiles\Application\FileSystem;
 interface File
 {
     /**
-     * @return string
+     * @return string absolute path to file
      */
-    public function name(): string;
+    public function path(): string;
 
     /**
      * @return bool

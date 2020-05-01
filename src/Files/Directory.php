@@ -17,37 +17,30 @@ use Shudd3r\PackageFiles\Application\FileSystem\File as FileInterface;
 
 class Directory implements DirectoryInterface
 {
-    private string $rootDirectory;
+    private string $path;
 
     /**
-     * Operations on files in given root directory.
-     *
-     * @param string $rootDirectory
+     * @param string $path absolute directory path
      *
      * @throws Exception\InvalidDirectoryException
      */
-    public function __construct(string $rootDirectory)
+    public function __construct(string $path)
     {
-        if (!is_dir($rootDirectory)) {
-            $message = "Cannot reach provided root directory `{$rootDirectory}`";
+        if (!is_dir($path)) {
+            $message = "Cannot reach provided root directory `{$path}`";
             throw new Exception\InvalidDirectoryException($message);
         }
 
-        $this->rootDirectory = rtrim($rootDirectory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $this->path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
     }
 
     public function path(): string
     {
-        return $this->rootDirectory;
+        return $this->path;
     }
 
     public function file(string $filename): FileInterface
     {
-        return new File($filename, $this);
-    }
-
-    public function save(FileInterface $file): void
-    {
-        file_put_contents($this->rootDirectory . $file->name(), $file->contents());
+        return new File($this->path . $filename);
     }
 }

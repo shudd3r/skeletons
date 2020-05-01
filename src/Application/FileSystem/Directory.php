@@ -15,19 +15,14 @@ namespace Shudd3r\PackageFiles\Application\FileSystem;
 interface Directory
 {
     /**
-     * @return string Absolute path to directory
+     * @return string absolute path to directory
      */
     public function path(): string;
 
     /**
-     * @param string $filename
+     * @param string $filename file basename or relative file path
      *
      * @return File
      */
     public function file(string $filename): File;
-
-    /**
-     * @param File $file
-     */
-    public function save(File $file): void;
 }
