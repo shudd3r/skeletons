@@ -27,11 +27,6 @@ class Directory implements DirectoryInterface
     public function __construct(string $path)
     {
         $this->path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-
-        if (!$this->exists()) {
-            $message = "Cannot reach provided root directory `{$this->path}`";
-            throw new Exception\InvalidDirectoryException($message);
-        }
     }
 
     public function path(): string

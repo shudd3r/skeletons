@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles;
 use Shudd3r\PackageFiles\Application\Input;
 use Shudd3r\PackageFiles\Application\Output;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Files\Exception;
 
 
 class RuntimeEnv
@@ -31,8 +32,8 @@ class RuntimeEnv
     ) {
         $this->input         = $input;
         $this->output        = $output;
-        $this->packageFiles  = $packageFiles;
-        $this->skeletonFiles = $skeletonFiles;
+        $this->packageFiles  = $this->validDirectory($packageFiles);
+        $this->skeletonFiles = $this->validDirectory($skeletonFiles);
     }
 
     public function input(): Input
@@ -53,5 +54,15 @@ class RuntimeEnv
     public function skeletonFiles(): Directory
     {
         return $this->skeletonFiles;
+    }
+
+    private function validDirectory(Directory $directory): Directory
+    {
+        if (!$directory->exists()) {
+            $message = "Cannot reach provided directory `{$directory->path()}`";
+            throw new Exception\InvalidDirectoryException($message);
+        }
+
+        return $directory;
     }
 }
