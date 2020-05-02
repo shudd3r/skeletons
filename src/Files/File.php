@@ -34,7 +34,7 @@ class File implements FileInterface
 
     public function exists(): bool
     {
-        return file_exists($this->path);
+        return is_file($this->path);
     }
 
     public function contents(): string
