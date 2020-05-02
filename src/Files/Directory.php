@@ -26,17 +26,22 @@ class Directory implements DirectoryInterface
      */
     public function __construct(string $path)
     {
-        if (!is_dir($path)) {
-            $message = "Cannot reach provided root directory `{$path}`";
+        $this->path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
+        if (!$this->exists()) {
+            $message = "Cannot reach provided root directory `{$this->path}`";
             throw new Exception\InvalidDirectoryException($message);
         }
-
-        $this->path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
     }
 
     public function path(): string
     {
         return $this->path;
+    }
+
+    public function exists(): bool
+    {
+        return is_dir($this->path);
     }
 
     public function file(string $filename): FileInterface

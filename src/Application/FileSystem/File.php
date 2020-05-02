@@ -12,18 +12,8 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem;
 
 
-interface File
+interface File extends Node
 {
-    /**
-     * @return string absolute path to file
-     */
-    public function path(): string;
-
-    /**
-     * @return bool
-     */
-    public function exists(): bool;
-
     /**
      * @return string
      */
