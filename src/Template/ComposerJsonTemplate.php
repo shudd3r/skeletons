@@ -29,6 +29,14 @@ class ComposerJsonTemplate implements Template
     {
         $composer = json_decode($this->composerFile->contents(), true);
 
+        if (isset($composer['autoload']['psr-4'])) {
+            $this->removeAutoloadForPath($composer['autoload']['psr-4'], 'src/');
+        }
+
+        if (isset($composer['autoload-dev']['psr-4'])) {
+            $this->removeAutoloadForPath($composer['autoload-dev']['psr-4'], 'tests/');
+        }
+
         $namespace = $properties->sourceNamespace() . '\\';
         $composer['autoload']['psr-4'][$namespace] = 'src/';
         $composer['autoload-dev']['psr-4'][$namespace . 'Tests\\'] = 'tests/';
@@ -47,5 +55,13 @@ class ComposerJsonTemplate implements Template
         ]);
 
         return json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
+    }
+
+    private function removeAutoloadForPath(array &$autoload, string $removePath): void
+    {
+        foreach ($autoload as $namespace => $path) {
+            if ($path !== $removePath) { continue; }
+            unset($autoload[$namespace]);
+        }
     }
 }
