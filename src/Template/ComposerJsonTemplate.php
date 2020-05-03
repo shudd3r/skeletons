@@ -29,17 +29,9 @@ class ComposerJsonTemplate implements Template
     {
         $composer = json_decode($this->composerFile->contents(), true);
 
-        if (isset($composer['autoload']['psr-4'])) {
-            $this->removeAutoloadForPath($composer['autoload']['psr-4'], 'src/');
-        }
-
-        if (isset($composer['autoload-dev']['psr-4'])) {
-            $this->removeAutoloadForPath($composer['autoload-dev']['psr-4'], 'tests/');
-        }
-
-        $namespace = $properties->sourceNamespace() . '\\';
-        $autoload['psr-4']    = [$namespace => 'src/'] + $composer['autoload']['psr-4'];
-        $autoloadDev['psr-4'] = [$namespace . 'Tests\\' => 'tests/'] + $composer['autoload-dev']['psr-4'];
+        $namespace   = $properties->sourceNamespace() . '\\';
+        $autoload    = $this->normalizedAutoload($composer['autoload'], $namespace, 'src/');
+        $autoloadDev = $this->normalizedAutoload($composer['autoload-dev'], $namespace . 'Tests\\', 'tests/');
 
         $newComposer = array_filter([
             'name'              => $properties->packageName(),
@@ -47,8 +39,8 @@ class ComposerJsonTemplate implements Template
             'type'              => 'library',
             'license'           => 'MIT',
             'authors'           => $composer['authors'] ?? [['name' => 'Shudd3r', 'email' => 'q3.shudder@gmail.com']],
-            'autoload'          => $autoload + $composer['autoload'],
-            'autoload-dev'      => $autoloadDev + $composer['autoload-dev'],
+            'autoload'          => $autoload,
+            'autoload-dev'      => $autoloadDev,
             'minimum-stability' => 'stable',
             'require'           => $composer['require'] ?? null,
             'require-dev'       => $composer['require-dev'] ?? null
@@ -57,11 +49,19 @@ class ComposerJsonTemplate implements Template
         return json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
     }
 
-    private function removeAutoloadForPath(array &$autoload, string $removePath): void
+    private function normalizedAutoload(array $autoload, string $namespace, string $path): array
     {
-        foreach ($autoload as $namespace => $path) {
-            if ($path !== $removePath) { continue; }
+        $sortedAutoload = [];
+        $sortedAutoload['psr-4'] = [$namespace => $path] + $this->autoloadWithoutPath($autoload['psr-4'], $path);
+        return $sortedAutoload + $autoload;
+    }
+
+    private function autoloadWithoutPath(array $autoload, string $path): array
+    {
+        while ($namespace = array_search($path, $autoload, true)) {
             unset($autoload[$namespace]);
         }
+
+        return $autoload;
     }
 }
