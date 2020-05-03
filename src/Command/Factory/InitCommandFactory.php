@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Command\Factory;
 use Shudd3r\PackageFiles\Command;
 use Shudd3r\PackageFiles\Command\Factory;
 use Shudd3r\PackageFiles\Command\Subroutine;
+use Shudd3r\PackageFiles\Template;
 
 
 class InitCommandFactory extends Factory
@@ -21,7 +22,8 @@ class InitCommandFactory extends Factory
     public function command(array $options): Command
     {
         $composerFile     = $this->env->packageFiles()->file('composer.json');
-        $generateComposer = new Subroutine\GenerateComposer($composerFile);
+        $template         = new Template\ComposerJsonTemplate($composerFile);
+        $generateComposer = new Subroutine\GenerateFile($template, $composerFile);
         $subroutine       = new Subroutine\ValidateProperties($this->env->output(), $generateComposer);
 
         return new Command($this->properties($options), $subroutine);

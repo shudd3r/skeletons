@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -9,33 +9,33 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Command\Subroutine;
+namespace Shudd3r\PackageFiles\Template;
 
-use Shudd3r\PackageFiles\Command\Subroutine;
+use Shudd3r\PackageFiles\Template;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Properties;
 
 
-class GenerateComposer implements Subroutine
+class ComposerJsonTemplate implements Template
 {
-    private File $file;
+    private File $composerFile;
 
-    public function __construct(File $composer)
+    public function __construct(File $composerFile)
     {
-        $this->file = $composer;
+        $this->composerFile = $composerFile;
     }
 
-    public function process(Properties $data): void
+    public function render(Properties $properties): string
     {
-        $composer = json_decode($this->file->contents(), true);
+        $composer = json_decode($this->composerFile->contents(), true);
 
-        $namespace = $data->sourceNamespace() . '\\';
+        $namespace = $properties->sourceNamespace() . '\\';
         $composer['autoload']['psr-4'][$namespace] = 'src/';
         $composer['autoload-dev']['psr-4'][$namespace . 'Tests\\'] = 'tests/';
 
         $newComposer = array_filter([
-            'name'              => $data->packageName(),
-            'description'       => $data->packageDescription(),
+            'name'              => $properties->packageName(),
+            'description'       => $properties->packageDescription(),
             'type'              => 'library',
             'license'           => 'MIT',
             'authors'           => $composer['authors'] ?? [['name' => 'Shudd3r', 'email' => 'q3.shudder@gmail.com']],
@@ -46,7 +46,6 @@ class GenerateComposer implements Subroutine
             'require-dev'       => $composer['require-dev'] ?? null
         ]);
 
-        $composerJson = json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
-        $this->file->write($composerJson);
+        return json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
     }
 }
