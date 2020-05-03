@@ -38,8 +38,8 @@ class ComposerJsonTemplate implements Template
         }
 
         $namespace = $properties->sourceNamespace() . '\\';
-        $composer['autoload']['psr-4'][$namespace] = 'src/';
-        $composer['autoload-dev']['psr-4'][$namespace . 'Tests\\'] = 'tests/';
+        $autoload['psr-4']    = [$namespace => 'src/'] + $composer['autoload']['psr-4'];
+        $autoloadDev['psr-4'] = [$namespace . 'Tests\\' => 'tests/'] + $composer['autoload-dev']['psr-4'];
 
         $newComposer = array_filter([
             'name'              => $properties->packageName(),
@@ -47,8 +47,8 @@ class ComposerJsonTemplate implements Template
             'type'              => 'library',
             'license'           => 'MIT',
             'authors'           => $composer['authors'] ?? [['name' => 'Shudd3r', 'email' => 'q3.shudder@gmail.com']],
-            'autoload'          => $composer['autoload'],
-            'autoload-dev'      => $composer['autoload-dev'],
+            'autoload'          => $autoload + $composer['autoload'],
+            'autoload-dev'      => $autoloadDev + $composer['autoload-dev'],
             'minimum-stability' => 'stable',
             'require'           => $composer['require'] ?? null,
             'require-dev'       => $composer['require-dev'] ?? null
