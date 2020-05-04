@@ -39,7 +39,7 @@ class File implements FileInterface
 
     public function contents(): string
     {
-        return $this->contents ??= file_get_contents($this->path);
+        return $this->contents ??= $this->exists() ? file_get_contents($this->path) : '';
     }
 
     public function write(string $contents): void
