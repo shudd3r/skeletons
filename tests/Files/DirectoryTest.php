@@ -33,7 +33,7 @@ class DirectoryTest extends TestCase
     }
 
     /**
-     * @dataProvider pathExamples
+     * @dataProvider pathNormalizations
      *
      * @param string $mixedDir
      * @param string $normalizedDir
@@ -60,7 +60,7 @@ class DirectoryTest extends TestCase
     }
 
     /**
-     * @dataProvider pathExamples
+     * @dataProvider pathNormalizations
      *
      * @param string $mixedDir
      * @param string $normalizedDir
@@ -72,7 +72,7 @@ class DirectoryTest extends TestCase
         $this->assertSame($path . $normalizedDir . DIRECTORY_SEPARATOR . 'filename.tmp', $file->path());
     }
 
-    public function pathExamples(): array
+    public function pathNormalizations(): array
     {
         return [
             ['\\', ''],
