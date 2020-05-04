@@ -26,7 +26,7 @@ class Directory implements DirectoryInterface
      */
     public function __construct(string $path)
     {
-        $this->path = $this->normalizedPath(rtrim($path, DIRECTORY_SEPARATOR));
+        $this->path = rtrim($this->normalizedPath($path), DIRECTORY_SEPARATOR);
     }
 
     public function path(): string
@@ -41,12 +41,12 @@ class Directory implements DirectoryInterface
 
     public function file(string $filename): FileInterface
     {
-        $filename = $this->normalizedPath(trim($filename, DIRECTORY_SEPARATOR));
+        $filename = trim($this->normalizedPath($filename), DIRECTORY_SEPARATOR);
         return new File($this->path . DIRECTORY_SEPARATOR . $filename);
     }
 
     private function normalizedPath(string $path): string
     {
-        return str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+        return rtrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
     }
 }
