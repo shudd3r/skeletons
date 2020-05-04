@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Tests\Files;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Files\Directory;
 use Shudd3r\PackageFiles\Application\FileSystem;
+use Shudd3r\PackageFiles\Files\File;
 
 
 class DirectoryTest extends TestCase
@@ -67,9 +68,9 @@ class DirectoryTest extends TestCase
      */
     public function testFileMethod_ReturnsFileWithinDirectory(string $mixedDir, string $normalizedDir)
     {
-        $file = $this->directory($path)->file($mixedDir . 'filename.tmp');
-        $this->assertInstanceOf(FileSystem\File::class, $file);
-        $this->assertSame($path . $normalizedDir . DIRECTORY_SEPARATOR . 'filename.tmp', $file->path());
+        $directory = $this->directory($path);
+        $expected  = new File($directory->path() . $normalizedDir . DIRECTORY_SEPARATOR . 'filename.tmp');
+        $this->assertEquals($expected, $directory->file($mixedDir . 'filename.tmp'));
     }
 
     public function pathNormalizations(): array
