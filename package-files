@@ -36,12 +36,13 @@ $skeletonFiles = new Files\Directory(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton')
 $packageFiles  = new Files\Directory($rootDirectory);
 $environment   = new RuntimeEnv($terminal, $terminal, $packageFiles, $skeletonFiles);
 
-$app = new Application($environment, [
+$routing = new Command\Routing($environment, [
     'init' => Command\Factory\InitCommandFactory::class
 ]);
 
 $options = getopt('i', ['package:', 'repo:', 'desc:', 'interactive'], $commandIdx);
 $command = $argv[$commandIdx] ?? 'init';
 
+$app = new Application($terminal, $routing);
 $exitCode = $app->run($command, $options);
 exit($exitCode);

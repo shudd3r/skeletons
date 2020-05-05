@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles;
 
+use Shudd3r\PackageFiles\Command\Routing;
 use Shudd3r\PackageFiles\Application\Output;
 use InvalidArgumentException;
 use RuntimeException;
@@ -18,15 +19,13 @@ use RuntimeException;
 
 class Application
 {
-    private RuntimeEnv $env;
-    private array      $factories;
-    private Output     $output;
+    private Output  $output;
+    private Routing $routing;
 
-    public function __construct(RuntimeEnv $env, array $factories)
+    public function __construct(Output $output, Routing $routing)
     {
-        $this->env       = $env;
-        $this->factories = $factories;
-        $this->output    = $env->output();
+        $this->output  = $output;
+        $this->routing = $routing;
     }
 
     /**
@@ -53,21 +52,13 @@ class Application
     public function run(string $command, array $options = []): int
     {
         try {
-            $this->factory($command)->command($options)->execute();
+            $this->routing->factory($command)
+                          ->command($options)
+                          ->execute();
         } catch (InvalidArgumentException | RuntimeException $e) {
             $this->output->send($e->getMessage(), 1);
         }
 
         return $this->output->exitCode();
-    }
-
-    private function factory(string $command): Command\Factory
-    {
-        if (!isset($this->factories[$command]) || !class_exists($this->factories[$command])) {
-            throw new RuntimeException("Unknown `{$command}` command");
-        }
-
-        $className = $this->factories[$command];
-        return new $className($this->env);
     }
 }
