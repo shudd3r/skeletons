@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Terminal;
-use Shudd3r\PackageFiles\Files\Directory;
 use Shudd3r\PackageFiles\Files\Exception;
 
 
@@ -30,8 +29,8 @@ class RuntimeEnvTest extends TestCase
         $params = [
             'input'       => $this->terminal(),
             'output'      => $this->terminal(),
-            'packageDir'  => new Directory(__DIR__),
-            'templateDir' => new Directory(__DIR__)
+            'packageDir'  => new Doubles\FakeDirectory(),
+            'templateDir' => new Doubles\FakeDirectory()
         ];
 
         $env = $this->env($params);
@@ -45,13 +44,13 @@ class RuntimeEnvTest extends TestCase
     public function testInstantiatingWithInvalidPackageDirectory_ThrowsException()
     {
         $this->expectException(Exception\InvalidDirectoryException::class);
-        $this->env(['packageDir' => new Directory(__DIR__ . '/not/exists')]);
+        $this->env(['packageDir' => new Doubles\FakeDirectory(false)]);
     }
 
     public function testInstantiatingWithInvalidTemplateDirectory_ThrowsException()
     {
         $this->expectException(Exception\InvalidDirectoryException::class);
-        $this->env(['templateDir' => new Directory(__DIR__ . '/not/exists')]);
+        $this->env(['templateDir' => new Doubles\FakeDirectory(false)]);
     }
 
     private function env(array $params = []): RuntimeEnv
@@ -59,8 +58,8 @@ class RuntimeEnvTest extends TestCase
         return new RuntimeEnv(
             $params['input'] ?? $this->terminal(),
             $params['output'] ?? $this->terminal(),
-            $params['packageDir'] ?? new Directory($packageDirectory ?? __DIR__),
-            $params['templateDir'] ?? new Directory($templateDirectory ?? __DIR__)
+            $params['packageDir'] ?? new Doubles\FakeDirectory(),
+            $params['templateDir'] ?? new Doubles\FakeDirectory()
         );
     }
 
