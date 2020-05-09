@@ -26,13 +26,6 @@ class RuntimeEnvTest extends TestCase
 
     public function testMethods_ReturnCorrespondingValues()
     {
-        $params = [
-            'input'       => $this->terminal(),
-            'output'      => $this->terminal(),
-            'packageDir'  => new Doubles\FakeDirectory(),
-            'templateDir' => new Doubles\FakeDirectory()
-        ];
-
         $env = $this->env($params);
 
         $this->assertSame($params['input'], $env->input());
@@ -43,23 +36,27 @@ class RuntimeEnvTest extends TestCase
 
     public function testInstantiatingWithInvalidPackageDirectory_ThrowsException()
     {
+        $params = ['packageDir' => new Doubles\FakeDirectory(false)];
+
         $this->expectException(Exception\InvalidDirectoryException::class);
-        $this->env(['packageDir' => new Doubles\FakeDirectory(false)]);
+        $this->env($params);
     }
 
     public function testInstantiatingWithInvalidTemplateDirectory_ThrowsException()
     {
+        $params = ['templateDir' => new Doubles\FakeDirectory(false)];
+
         $this->expectException(Exception\InvalidDirectoryException::class);
-        $this->env(['templateDir' => new Doubles\FakeDirectory(false)]);
+        $this->env($params);
     }
 
-    private function env(array $params = []): RuntimeEnv
+    private function env(?array &$params = []): RuntimeEnv
     {
         return new RuntimeEnv(
-            $params['input'] ?? $this->terminal(),
-            $params['output'] ?? $this->terminal(),
-            $params['packageDir'] ?? new Doubles\FakeDirectory(),
-            $params['templateDir'] ?? new Doubles\FakeDirectory()
+            $params['input'] ??= $this->terminal(),
+            $params['output'] ??= $this->terminal(),
+            $params['packageDir'] ??= new Doubles\FakeDirectory(),
+            $params['templateDir'] ??= new Doubles\FakeDirectory()
         );
     }
 
