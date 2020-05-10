@@ -13,55 +13,23 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Command;
-use Shudd3r\PackageFiles\Properties;
 
 
 class CommandTest extends TestCase
 {
     public function testInstantiation()
     {
-        $this->assertInstanceOf(Command::class, $this->command($properties, $subroutine));
+        $command = new Command(new Doubles\FakeProperties(), new Doubles\MockedSubroutine());
+        $this->assertInstanceOf(Command::class, $command);
     }
 
     public function testPropertiesArePassedToSubroutine()
     {
-        $this->command($properties, $subroutine)->execute();
-        $this->assertSame($properties, $subroutine->propertiesPassed);
-    }
+        $properties = new Doubles\FakeProperties();
+        $subroutine = new Doubles\MockedSubroutine();
+        $command    = new Command($properties, $subroutine);
 
-    private function command(&$properties, &$subroutine): Command
-    {
-        $properties = new class() extends Properties {
-            public function repositoryUrl(): string
-            {
-                return 'https://github.com/polymorphine/dev.git';
-            }
-
-            public function packageName(): string
-            {
-                return 'polymorphine/dev';
-            }
-
-            public function packageDescription(): string
-            {
-                return 'Package description';
-            }
-
-            public function sourceNamespace(): string
-            {
-                return 'Polymorphine\Dev';
-            }
-        };
-
-        $subroutine = new class() implements Command\Subroutine {
-            public $propertiesPassed;
-
-            public function process(Properties $properties): void
-            {
-                $this->propertiesPassed = $properties;
-            }
-        };
-
-        return new Command($properties, $subroutine);
+        $command->execute();
+        $this->assertSame($properties, $subroutine->passedProperties);
     }
 }
