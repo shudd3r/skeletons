@@ -14,12 +14,13 @@ namespace Shudd3r\PackageFiles;
 
 abstract class Properties
 {
+    private $repositoryName;
+
     abstract public function repositoryUrl(): string;
 
     public function repositoryName(): string
     {
-        $url = $this->repositoryUrl();
-        return $url ? basename(dirname($url)) . '/' . basename($url, '.git') : '';
+        return $this->repositoryName ??= $this->resolveFromUrl();
     }
 
     abstract public function packageName(): string;
@@ -27,4 +28,10 @@ abstract class Properties
     abstract public function packageDescription(): string;
 
     abstract public function sourceNamespace(): string;
+
+    private function resolveFromUrl(): string
+    {
+        $url = str_replace(':', '/', $this->repositoryUrl());
+        return $url ? basename(dirname($url)) . '/' . basename($url, '.git') : '';
+    }
 }
