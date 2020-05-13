@@ -13,8 +13,7 @@ namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Command\Routing;
 use Shudd3r\PackageFiles\Application\Output;
-use InvalidArgumentException;
-use RuntimeException;
+use Exception;
 
 
 class Application
@@ -55,7 +54,7 @@ class Application
             $this->routing->factory($command)
                           ->command($options)
                           ->execute();
-        } catch (InvalidArgumentException | RuntimeException $e) {
+        } catch (Exception $e) {
             $this->output->send($e->getMessage(), 1);
         }
 
