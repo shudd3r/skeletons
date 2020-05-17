@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Properties;
 
 class MockedSubroutine implements Subroutine
 {
-    public Properties $passedProperties;
+    public ?Properties $passedProperties = null;
 
     public function process(Properties $properties): void
     {
