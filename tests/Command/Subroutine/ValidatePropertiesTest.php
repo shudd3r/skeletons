@@ -23,29 +23,9 @@ class ValidatePropertiesTest extends TestCase
     private MockedTerminal   $output;
     private MockedSubroutine $forwarded;
 
-    /**
-     * @dataProvider githubUrls
-     *
-     * @param string $invalid
-     * @param string $valid
-     */
-    public function testRepoUrlValidation(string $invalid, string $valid)
+    public function testRepoUrlValidation()
     {
-        $properties = new FakeProperties(['repositoryUrl' => $invalid]);
-        $this->subroutine()->process($properties);
-        $this->assertNull($this->forwarded->passedProperties, 'expected invalid name');
-        $this->assertSame(1, $this->output->exitCode());
-        $this->assertSame("Invalid github uri `{$invalid}`", $this->output->messagesSent[0]);
-
-        $properties = new FakeProperties(['repositoryUrl' => $valid]);
-        $this->subroutine()->process($properties);
-        $this->assertSame($properties, $this->forwarded->passedProperties, 'expected valid name');
-        $this->assertSame(0, $this->output->exitCode());
-    }
-
-    public function githubUrls()
-    {
-        return [
+        $githubUrls = [
             ['http://github.com/repo/name.git', 'https://github.com/repo/name.git'],
             ['https://github.com/Repo/Name', 'https://github.com/Repo/Name.git'],
             ['https://github.com/repo/na(me).git', 'https://github.com/repo/na-me.git'],
@@ -61,6 +41,41 @@ class ValidatePropertiesTest extends TestCase
                 'https://github.com/user/100charsName3456789012345678901234567890123456789012345678901234567890123456789012345678901234567890.git'
             ]
         ];
+
+        foreach ($githubUrls as $urls) {
+            $this->assertInvalid($urls[0], 'repositoryUrl', 'Invalid github uri');
+            $this->assertValid($urls[1], 'repositoryUrl');
+        }
+    }
+
+    public function testPackageNameValidation()
+    {
+        $packageNames = [
+            ['-Packa-ge1/na.me', 'Packa-ge1/na.me'],
+            ['1Package000_/na_Me', '1Package000/na_Me']
+        ];
+
+        foreach ($packageNames as $packageName) {
+            $this->assertInvalid($packageName[0], 'packageName', 'Invalid packagist package name');
+            $this->assertValid($packageName[1], 'packageName');
+        }
+    }
+
+    private function assertValid(string $valid, string $propertyName): void
+    {
+        $properties = new FakeProperties([$propertyName => $valid]);
+        $this->subroutine()->process($properties);
+        $this->assertSame($properties, $this->forwarded->passedProperties, 'expected valid name');
+        $this->assertSame(0, $this->output->exitCode());
+    }
+
+    private function assertInvalid(string $invalid, string $propertyName, string $errorMessage): void
+    {
+        $properties = new FakeProperties([$propertyName => $invalid]);
+        $this->subroutine()->process($properties);
+        $this->assertNull($this->forwarded->passedProperties, 'expected invalid name');
+        $this->assertSame(1, $this->output->exitCode());
+        $this->assertSame("$errorMessage `{$invalid}`", $this->output->messagesSent[0]);
     }
 
     private function subroutine(): ValidateProperties
