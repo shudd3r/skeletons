@@ -52,16 +52,17 @@ class ComposerJsonTemplate implements Template
     private function normalizedAutoload(array $autoload, string $namespace, string $path): array
     {
         $sortedAutoload = [];
-        $sortedAutoload['psr-4'] = [$namespace => $path] + $this->autoloadWithoutPath($autoload['psr-4'], $path);
+        $sortedAutoload['psr-4'] = [$namespace => $path] + $this->autoloadWithoutPath($autoload, $path);
         return $sortedAutoload + $autoload;
     }
 
     private function autoloadWithoutPath(array $autoload, string $path): array
     {
-        while ($namespace = array_search($path, $autoload, true)) {
-            unset($autoload[$namespace]);
+        $psrAutoload = $autoload['psr-4'] ?? [];
+        while ($namespace = array_search($path, $psrAutoload, true)) {
+            unset($psrAutoload[$namespace]);
         }
 
-        return $autoload;
+        return $psrAutoload;
     }
 }
