@@ -30,8 +30,8 @@ class ComposerJsonTemplate implements Template
         $composer = json_decode($this->composerFile->contents(), true);
 
         $namespace   = $properties->sourceNamespace() . '\\';
-        $autoload    = $this->normalizedAutoload($composer['autoload'], $namespace, 'src/');
-        $autoloadDev = $this->normalizedAutoload($composer['autoload-dev'], $namespace . 'Tests\\', 'tests/');
+        $autoload    = $this->normalizedAutoload($composer['autoload'] ?? [], $namespace, 'src/');
+        $autoloadDev = $this->normalizedAutoload($composer['autoload-dev'] ?? [], $namespace . 'Tests\\', 'tests/');
 
         $newComposer = array_filter([
             'name'              => $properties->packageName(),
