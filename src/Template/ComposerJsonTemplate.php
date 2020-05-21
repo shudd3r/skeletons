@@ -46,7 +46,7 @@ class ComposerJsonTemplate implements Template
             'require-dev'       => $composer['require-dev'] ?? null
         ]);
 
-        return json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
+        return json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
     }
 
     private function normalizedAutoload(array $autoload, string $namespace, string $path): array
