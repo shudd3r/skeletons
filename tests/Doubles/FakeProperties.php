@@ -35,6 +35,10 @@ class FakeProperties extends Properties
     public function __construct(array $properties = [])
     {
         $this->properties = $properties + $this->properties;
+        if (!isset($this->properties['repositoryName'])) {
+            $this->properties['repositoryName']      = parent::repositoryName();
+            $this->propertiesCalled['repositoryUrl'] = 0;
+        }
     }
 
     public function repositoryUrl(): string
@@ -44,10 +48,6 @@ class FakeProperties extends Properties
 
     public function repositoryName(): string
     {
-        if (!isset($this->properties['repositoryName'])) {
-            $this->properties['repositoryName'] = parent::repositoryName();
-        }
-
         return $this->get('repositoryName');
     }
 
