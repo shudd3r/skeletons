@@ -36,7 +36,7 @@ class CachedProperties extends Properties
 
     public function repositoryName(): string
     {
-        return $this->repoName ??= parent::repositoryName();
+        return $this->repoName ??= $this->properties->repositoryName();
     }
 
     public function packageName(): string
