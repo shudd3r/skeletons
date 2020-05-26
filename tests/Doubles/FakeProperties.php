@@ -16,13 +16,15 @@ use Shudd3r\PackageFiles\Properties;
 
 class FakeProperties extends Properties
 {
-    public array $propertiesCalled = [
+    private const RESET_COUNTERS = [
         'repositoryUrl'      => 0,
         'repositoryName'     => 0,
         'packageName'        => 0,
         'packageDescription' => 0,
         'sourceNamespace'    => 0
     ];
+
+    public array $propertiesCalled = self::RESET_COUNTERS;
 
     public array $properties = [
         'repositoryUrl'      => 'https://github.com/polymorphine/dev.git',
@@ -35,10 +37,13 @@ class FakeProperties extends Properties
     public function __construct(array $properties = [])
     {
         $this->properties = $properties + $this->properties;
-        if (!isset($this->properties['repositoryName'])) {
-            $this->properties['repositoryName']      = parent::repositoryName();
-            $this->propertiesCalled['repositoryUrl'] = 0;
-        }
+        $this->properties['repositoryName'] = parent::repositoryName();
+        $this->propertiesCalled['repositoryUrl'] = 0;
+    }
+
+    public function __clone()
+    {
+        $this->propertiesCalled = self::RESET_COUNTERS;
     }
 
     public function repositoryUrl(): string
