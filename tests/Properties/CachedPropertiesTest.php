@@ -11,12 +11,12 @@
 
 namespace Shudd3r\PackageFiles\Tests\Properties;
 
-use PHPUnit\Framework\TestCase;
+use Shudd3r\PackageFiles\Tests\PropertiesTestCase;
 use Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class CachedPropertiesTest extends TestCase
+class CachedPropertiesTest extends PropertiesTestCase
 {
     public function testPropertiesMemoization()
     {
@@ -25,19 +25,10 @@ class CachedPropertiesTest extends TestCase
 
         $this->assertSame([0, 0, 0, 0, 0], array_values($sourceProperties->propertiesCalled));
 
-        $this->callEachProperty($cachedProperties, $sourceProperties->properties);
+        $this->assertSamePropertyValues($cachedProperties, clone $sourceProperties);
         $this->assertSame([1, 1, 1, 1, 1], array_values($sourceProperties->propertiesCalled));
 
-        $this->callEachProperty($cachedProperties, $sourceProperties->properties);
+        $this->assertSamePropertyValues($cachedProperties, clone $sourceProperties);
         $this->assertSame([1, 1, 1, 1, 1], array_values($sourceProperties->propertiesCalled));
-    }
-
-    private function callEachProperty(Properties $properties, array $expected)
-    {
-        $this->assertSame($expected['repositoryUrl'], $properties->repositoryUrl());
-        $this->assertSame($expected['repositoryName'], $properties->repositoryName());
-        $this->assertSame($expected['packageName'], $properties->packageName());
-        $this->assertSame($expected['packageDescription'], $properties->packageDescription());
-        $this->assertSame($expected['sourceNamespace'], $properties->sourceNamespace());
     }
 }
