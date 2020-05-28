@@ -38,7 +38,7 @@ class ResolvedProperties extends Properties
 
     public function packageDescription(): string
     {
-        return $this->properties->packageDescription() ?: 'Polymorphine library package';
+        return $this->properties->packageDescription() ?: $this->packageName() . ' package';
     }
 
     public function sourceNamespace(): string
