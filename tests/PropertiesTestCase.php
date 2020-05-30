@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Properties;
 
 class PropertiesTestCase extends TestCase
 {
-    protected function assertSamePropertyValues(Properties $properties, Doubles\FakeProperties $expected): void
+    protected function assertSamePropertyValues(Doubles\FakeProperties $expected, Properties $properties): void
     {
         $this->assertSame($expected->repositoryUrl(), $properties->repositoryUrl());
         $this->assertSame($expected->repositoryName(), $properties->repositoryName());

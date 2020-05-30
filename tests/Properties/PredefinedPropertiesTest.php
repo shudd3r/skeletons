@@ -23,7 +23,7 @@ class PredefinedPropertiesTest extends PropertiesTestCase
         $secondary  = new Doubles\FakeProperties();
         $properties = new Properties\PredefinedProperties([], $secondary);
 
-        $this->assertSamePropertyValues($properties, $secondary);
+        $this->assertSamePropertyValues($secondary, $properties);
     }
 
     /**
@@ -37,7 +37,7 @@ class PredefinedPropertiesTest extends PropertiesTestCase
         $secondary  = new Doubles\FakeProperties();
         $properties = new Properties\PredefinedProperties($option, $secondary);
 
-        $this->assertSamePropertyValues($properties, new Doubles\FakeProperties($expected + $secondary->properties));
+        $this->assertSamePropertyValues(new Doubles\FakeProperties($expected + $secondary->properties), $properties);
     }
 
     public function predefinedOption()

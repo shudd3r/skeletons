@@ -30,7 +30,7 @@ class ResolvedPropertiesTest extends PropertiesTestCase
             'packageDescription' => 'directory/path package',
             'sourceNamespace'    => 'Directory\\Path'
         ]);
-        $this->assertSamePropertyValues($properties, $expected);
+        $this->assertSamePropertyValues($expected, $properties);
     }
 
     public function testPropertiesResolvedFromPackageName()
@@ -44,7 +44,7 @@ class ResolvedPropertiesTest extends PropertiesTestCase
             'packageDescription' => 'Random desc',
             'sourceNamespace'    => 'Foo\\Bar'
         ]);
-        $this->assertSamePropertyValues($properties, $expected);
+        $this->assertSamePropertyValues($expected, $properties);
     }
 
     private function fakeProperties(array $properties = []): Doubles\FakeProperties
