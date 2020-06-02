@@ -18,9 +18,18 @@ use Shudd3r\PackageFiles\Properties;
 class MockedSubroutine implements Subroutine
 {
     public ?Properties $passedProperties = null;
+    private $procedure;
+
+    public function __construct(?callable $procedure = null)
+    {
+        $this->procedure = $procedure;
+    }
 
     public function process(Properties $properties): void
     {
         $this->passedProperties = $properties;
+
+        if (!isset($this->procedure)) { return; }
+        ($this->procedure)();
     }
 }

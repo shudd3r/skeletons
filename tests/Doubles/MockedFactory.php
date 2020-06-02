@@ -22,6 +22,6 @@ class MockedFactory extends Command\Factory
     public function command(array $options): Command
     {
         self::$passedOptions = $options;
-        return new Command(new FakeProperties(), new FakeSubroutine(self::$procedure));
+        return new Command(new FakeProperties(), new MockedSubroutine(self::$procedure));
     }
 }
