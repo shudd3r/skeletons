@@ -21,11 +21,26 @@ class InitCommandFactory extends Factory
 {
     public function command(array $options): Command
     {
-        $composerFile     = $this->env->packageFiles()->file('composer.json');
-        $template         = new Template\ComposerJsonTemplate($composerFile);
-        $generateComposer = new Subroutine\GenerateFile($template, $composerFile);
-        $subroutine       = new Subroutine\ValidateProperties($this->env->output(), $generateComposer);
+        $subroutine = new Subroutine\SubroutineSequence($this->generateComposer(), $this->generateMetaFile());
+        $subroutine = new Subroutine\ValidateProperties($this->env->output(), $subroutine);
 
         return new Command($this->properties($options), $subroutine);
+    }
+
+    public function generateComposer(): Subroutine
+    {
+        $composerFile = $this->env->packageFiles()->file('composer.json');
+        $template     = new Template\ComposerJsonTemplate($composerFile);
+
+        return new Subroutine\GenerateFile($template, $composerFile);
+    }
+
+    public function generateMetaFile(): Subroutine
+    {
+        $templateFile = $this->env->skeletonFiles()->file('package.properties');
+        $metaDataFile = $this->env->packageFiles()->file('.github/package.properties');
+        $template     = new Template\FileTemplate($templateFile);
+
+        return new Subroutine\GenerateFile($template, $metaDataFile);
     }
 }
