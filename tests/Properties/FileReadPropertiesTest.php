@@ -13,19 +13,20 @@ namespace Shudd3r\PackageFiles\Tests\Properties;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Properties\FileReadProperties;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeDirectory;
+use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class FileReadPropertiesTest extends TestCase
 {
-    private ?FakeDirectory $directory;
+    private ?Doubles\FakeDirectory $directory;
 
     public function testGithubUrlIsReadFromGitConfigFile()
     {
         $properties = $this->properties();
         $this->assertSame('', $properties->repositoryUrl());
 
-        $this->directory->files['.git/config'] = <<<'INI'
+        $this->directory->files['.git/config'] = new Doubles\MockedFile(
+            <<<'INI'
             [core]
                 repositoryformatversion = 0
                 filemode = false
@@ -40,7 +41,8 @@ class FileReadPropertiesTest extends TestCase
                 remote = origin
                 merge = refs/heads/develop
             
-            INI;
+            INI
+        );
 
         $this->assertSame('https://github.com/username/repository.git', $properties->repositoryUrl());
     }
@@ -48,14 +50,16 @@ class FileReadPropertiesTest extends TestCase
     public function testGithubUrlForUpstreamRepositoryTakesPrecedence()
     {
         $properties = $this->properties();
-        $this->directory->files['.git/config'] = <<<'INI'
+        $this->directory->files['.git/config'] = new Doubles\MockedFile(
+            <<<'INI'
             [remote "origin"]
                 url = https://github.com/username/repositoryOrigin.git
                 fetch = +refs/heads/*:refs/remotes/origin/*
             [remote "upstream"]
                 url = https://github.com/username/repositoryUpstream.git
                 fetch = +refs/heads/*:refs/remotes/origin/*
-            INI;
+            INI
+        );
 
         $this->assertSame('https://github.com/username/repositoryUpstream.git', $properties->repositoryUrl());
     }
@@ -68,7 +72,8 @@ class FileReadPropertiesTest extends TestCase
         $this->assertSame('', $properties->sourceNamespace());
 
         $properties = $this->properties();
-        $this->directory->files['composer.json'] = <<<'JSON'
+        $this->directory->files['composer.json'] = new Doubles\MockedFile(
+            <<<'JSON'
             {
                 "name": "package/name",
                 "description": "Test description",
@@ -80,7 +85,8 @@ class FileReadPropertiesTest extends TestCase
                 }
             }
             
-            JSON;
+            JSON
+        );
 
         $this->assertSame('package/name', $properties->packageName());
         $this->assertSame('Test description', $properties->packageDescription());
@@ -89,6 +95,6 @@ class FileReadPropertiesTest extends TestCase
 
     private function properties()
     {
-        return new FileReadProperties($this->directory ??= new FakeDirectory());
+        return new FileReadProperties($this->directory ??= new Doubles\FakeDirectory());
     }
 }

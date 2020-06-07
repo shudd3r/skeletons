@@ -33,16 +33,14 @@ class InitCommandTest extends TestCase
         $package  = new Doubles\FakeDirectory(true, '/path/to/package/directory');
         $skeleton = new Doubles\FakeDirectory(true, '/path/to/skeleton/files');
 
-        $metaDataTemplate = <<<'TPL'
+        $skeleton->files['package.properties'] = new Doubles\MockedFile(
+            <<<'TPL'
             original_repository={REPO_URL}
             package_name={PACKAGE_NAME}
             package_desc={PACKAGE_DESC}
             source_namespace={PACKAGE_NS}
-            TPL;
-
-        $skeleton->files = [
-            'package.properties' => $metaDataTemplate
-        ];
+            TPL
+        );
 
         $this->env = new Doubles\FakeRuntimeEnv($terminal, $package, $skeleton);
         return new Command\Factory\InitCommandFactory($this->env);
