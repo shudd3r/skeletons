@@ -27,7 +27,7 @@ class ComposerJsonTemplate implements Template
 
     public function render(Properties $properties): string
     {
-        $composer = json_decode($this->composerFile->contents(), true);
+        $composer = json_decode($this->composerFile->contents(), true) ?? [];
 
         $namespace   = $properties->sourceNamespace() . '\\';
         $autoload    = $this->normalizedAutoload($composer['autoload'] ?? [], $namespace, 'src/');

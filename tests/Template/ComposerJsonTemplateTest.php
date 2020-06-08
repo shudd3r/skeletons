@@ -18,38 +18,17 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class ComposerJsonTemplateTest extends TestCase
 {
+    public function testMissingComposerFileIsCreatedWithPropertiesValues()
+    {
+        $template       = new ComposerJsonTemplate(new Doubles\MockedFile('', false));
+        $renderedString = $template->render(new Doubles\FakeProperties());
+        $this->assertSame($this->composerJsonForDefaultValues(), $renderedString);
+    }
+
     public function testEmptyComposerFileIsFilledWithPropertiesValues()
     {
         $renderedString = $this->template('{}')->render(new Doubles\FakeProperties());
-
-        $expectedString = <<<'JSON'
-            {
-                "name": "polymorphine/dev",
-                "description": "Package description",
-                "type": "library",
-                "license": "MIT",
-                "authors": [
-                    {
-                        "name": "Shudd3r",
-                        "email": "q3.shudder@gmail.com"
-                    }
-                ],
-                "autoload": {
-                    "psr-4": {
-                        "Polymorphine\\Dev\\": "src/"
-                    }
-                },
-                "autoload-dev": {
-                    "psr-4": {
-                        "Polymorphine\\Dev\\Tests\\": "tests/"
-                    }
-                },
-                "minimum-stability": "stable"
-            }
-            
-            JSON;
-
-        $this->assertEquals($expectedString, $renderedString);
+        $this->assertEquals($this->composerJsonForDefaultValues(), $renderedString);
     }
 
     public function testFieldsAreReturnedInCorrectOrder()
@@ -100,5 +79,35 @@ class ComposerJsonTemplateTest extends TestCase
     private function template(string $contents)
     {
         return new ComposerJsonTemplate(new Doubles\MockedFile($contents));
+    }
+
+    private function composerJsonForDefaultValues(): string
+    {
+        return <<<'JSON'
+            {
+                "name": "polymorphine/dev",
+                "description": "Package description",
+                "type": "library",
+                "license": "MIT",
+                "authors": [
+                    {
+                        "name": "Shudd3r",
+                        "email": "q3.shudder@gmail.com"
+                    }
+                ],
+                "autoload": {
+                    "psr-4": {
+                        "Polymorphine\\Dev\\": "src/"
+                    }
+                },
+                "autoload-dev": {
+                    "psr-4": {
+                        "Polymorphine\\Dev\\Tests\\": "tests/"
+                    }
+                },
+                "minimum-stability": "stable"
+            }
+            
+            JSON;
     }
 }
