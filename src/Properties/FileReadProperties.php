@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Properties;
 
 use Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use RuntimeException;
 
 
 class FileReadProperties extends Properties
@@ -61,10 +62,21 @@ class FileReadProperties extends Properties
     private function composerValue(string $key)
     {
         if (!isset($this->composerData)) {
-            $composerJsonFile = $this->packageFiles->file('composer.json');
-            $this->composerData = $composerJsonFile->exists() ? json_decode($composerJsonFile->contents(), true) : [];
+            $this->composerData = $this->generateComposerData();
         }
 
         return $this->composerData[$key] ?? null;
+    }
+
+    private function generateComposerData()
+    {
+        $composerJsonFile = $this->packageFiles->file('composer.json');
+        $composerData     = $composerJsonFile->exists() ? json_decode($composerJsonFile->contents(), true) : [];
+
+        if (!is_array($composerData)) {
+            throw new RuntimeException('Invalid composer.json file');
+        }
+
+        return $composerData;
     }
 }

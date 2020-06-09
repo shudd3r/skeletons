@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Tests\Properties;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Properties\FileReadProperties;
 use Shudd3r\PackageFiles\Tests\Doubles;
+use RuntimeException;
 
 
 class FileReadPropertiesTest extends TestCase
@@ -91,6 +92,15 @@ class FileReadPropertiesTest extends TestCase
         $this->assertSame('package/name', $properties->packageName());
         $this->assertSame('Test description', $properties->packageDescription());
         $this->assertSame('Foo\\Bar', $properties->sourceNamespace());
+    }
+
+    public function testInvalidComposerJsonFile_ThrowsException()
+    {
+        $properties = $this->properties();
+        $this->directory->files['composer.json'] = new Doubles\MockedFile('Not json format');
+
+        $this->expectException(RuntimeException::class);
+        $properties->packageName();
     }
 
     private function properties()
