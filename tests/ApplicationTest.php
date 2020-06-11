@@ -20,12 +20,6 @@ use Exception;
 
 class ApplicationTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        Doubles\MockedFactory::$procedure = null;
-        Doubles\MockedFactory::$passedOptions = null;
-    }
-
     public function testInstantiation()
     {
         $this->assertInstanceOf(Application::class, $this->app());
@@ -68,11 +62,12 @@ class ApplicationTest extends TestCase
 
     public function testUncheckedExceptionIsCaught()
     {
+        $app = $this->app($output);
         Doubles\MockedFactory::$procedure = function () {
             throw new Exception('exc.message');
         };
 
-        $exitCode = $this->app($output)->run('command');
+        $exitCode = $app->run('command');
         $this->assertSame(1, $exitCode);
         $this->assertSame(['exc.message'], $output->messagesSent);
     }
@@ -81,8 +76,11 @@ class ApplicationTest extends TestCase
     {
         $terminal ??= new Doubles\MockedTerminal();
 
-        $directory = new Doubles\FakeDirectory();
-        $env       = new RuntimeEnv($terminal, $terminal, $directory, $directory);
+        $dir = new Doubles\FakeDirectory();
+        $env = new RuntimeEnv($terminal, $terminal, $dir, $dir);
+
+        Doubles\MockedFactory::$procedure = null;
+        Doubles\MockedFactory::$passedOptions = null;
 
         return new Application($terminal, new Routing($env, ['command' => Doubles\MockedFactory::class]));
     }
