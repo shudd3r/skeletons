@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Tests\Doubles;
 use Shudd3r\PackageFiles\Command;
 
 
-class MockedFactory extends Command\Factory
+class FakeCommandFactory extends Command\Factory
 {
     public static $procedure;
     public static $passedOptions;

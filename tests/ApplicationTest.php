@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application;
 use Shudd3r\PackageFiles\Command\Routing;
 use Shudd3r\PackageFiles\RuntimeEnv;
+use Shudd3r\PackageFiles\Tests\Doubles\FakeCommandFactory as Factory;
 use Exception;
 
 
@@ -46,13 +47,13 @@ class ApplicationTest extends TestCase
     public function testOptionsArePassedToCommandFactory()
     {
         $this->app()->run('command', $options = ['foo' => 'bar']);
-        $this->assertSame($options, Doubles\MockedFactory::$passedOptions);
+        $this->assertSame($options, Factory::$passedOptions);
     }
 
     public function testCommandIsExecuted()
     {
         $app = $this->app($output);
-        Doubles\MockedFactory::$procedure = function () use ($output) { $output->send('executed'); };
+        Factory::$procedure = function () use ($output) { $output->send('executed'); };
 
         $this->assertSame([], $output->messagesSent);
 
@@ -63,9 +64,7 @@ class ApplicationTest extends TestCase
     public function testUncheckedExceptionIsCaught()
     {
         $app = $this->app($output);
-        Doubles\MockedFactory::$procedure = function () {
-            throw new Exception('exc.message');
-        };
+        Factory::$procedure = function () { throw new Exception('exc.message'); };
 
         $exitCode = $app->run('command');
         $this->assertSame(1, $exitCode);
@@ -79,9 +78,9 @@ class ApplicationTest extends TestCase
         $dir = new Doubles\FakeDirectory();
         $env = new RuntimeEnv($terminal, $terminal, $dir, $dir);
 
-        Doubles\MockedFactory::$procedure = null;
-        Doubles\MockedFactory::$passedOptions = null;
+        Factory::$procedure     = null;
+        Factory::$passedOptions = null;
 
-        return new Application($terminal, new Routing($env, ['command' => Doubles\MockedFactory::class]));
+        return new Application($terminal, new Routing($env, ['command' => Factory::class]));
     }
 }
