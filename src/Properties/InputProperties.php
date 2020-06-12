@@ -18,33 +18,33 @@ use Shudd3r\PackageFiles\Application\Input;
 class InputProperties extends Properties
 {
     private Input      $input;
-    private Properties $properties;
+    private Properties $default;
     private string     $repoUrl;
 
-    public function __construct(Input $input, Properties $properties)
+    public function __construct(Input $input, Properties $default)
     {
-        $this->input      = $input;
-        $this->properties = $properties;
+        $this->input   = $input;
+        $this->default = $default;
     }
 
     public function repositoryUrl(): string
     {
-        return $this->repoUrl ??= $this->input('Github repository URL', $this->properties->repositoryUrl());
+        return $this->repoUrl ??= $this->input('Github repository URL', $this->default->repositoryUrl());
     }
 
     public function packageName(): string
     {
-        return $this->input('Packagist package name', $this->properties->packageName());
+        return $this->input('Packagist package name', $this->default->packageName());
     }
 
     public function packageDescription(): string
     {
-        return $this->input('Package description', $this->properties->packageDescription());
+        return $this->input('Package description', $this->default->packageDescription());
     }
 
     public function sourceNamespace(): string
     {
-        return $this->input('Source files namespace', $this->properties->sourceNamespace());
+        return $this->input('Source files namespace', $this->default->sourceNamespace());
     }
 
     private function input(string $prompt, string $default = ''): string
