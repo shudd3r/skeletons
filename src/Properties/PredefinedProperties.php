@@ -16,32 +16,32 @@ use Shudd3r\PackageFiles\Properties;
 
 class PredefinedProperties extends Properties
 {
-    private Properties $properties;
+    private Properties $default;
     private array      $defined;
 
-    public function __construct(array $definedOptions, Properties $properties)
+    public function __construct(array $definedOptions, Properties $default)
     {
-        $this->properties = $properties;
-        $this->defined    = $definedOptions;
+        $this->default = $default;
+        $this->defined = $definedOptions;
     }
 
     public function repositoryUrl(): string
     {
-        return $this->defined['repo'] ?? $this->properties->repositoryUrl();
+        return $this->defined['repo'] ?? $this->default->repositoryUrl();
     }
 
     public function packageName(): string
     {
-        return $this->defined['package'] ?? $this->properties->packageName();
+        return $this->defined['package'] ?? $this->default->packageName();
     }
 
     public function packageDescription(): string
     {
-        return $this->defined['desc'] ?? $this->properties->packageDescription();
+        return $this->defined['desc'] ?? $this->default->packageDescription();
     }
 
     public function sourceNamespace(): string
     {
-        return $this->defined['ns'] ?? $this->properties->sourceNamespace();
+        return $this->defined['ns'] ?? $this->default->sourceNamespace();
     }
 }
