@@ -1,0 +1,39 @@
+<?php declare(strict_types=1);
+
+/*
+ * This file is part of Shudd3r/Package-Files package.
+ *
+ * (c) Shudd3r <q3.shudder@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+namespace Shudd3r\PackageFiles\Properties\Reader;
+
+use Shudd3r\PackageFiles\RuntimeEnv;
+use Shudd3r\PackageFiles\Properties;
+
+
+class InitialPropertiesReader implements Properties\Reader
+{
+    private RuntimeEnv $env;
+    private array      $options;
+
+    public function __construct(RuntimeEnv $env, array $options)
+    {
+        $this->env     = $env;
+        $this->options = $options;
+    }
+
+    public function properties(): Properties
+    {
+        $properties = new Properties\FileReadProperties($this->env->packageFiles());
+        $properties = new Properties\PredefinedProperties($this->options, $properties);
+        $properties = new Properties\ResolvedProperties($properties, $this->env->packageFiles());
+        if (isset($this->options['i']) || isset($this->options['interactive'])) {
+            $properties = new Properties\InputProperties($this->env->input(), $properties);
+        }
+        return new Properties\CachedProperties($properties);
+    }
+}

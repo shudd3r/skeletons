@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Command;
 
 use Shudd3r\PackageFiles\Command;
 use Shudd3r\PackageFiles\RuntimeEnv;
-use Shudd3r\PackageFiles\Properties;
 
 
 abstract class Factory
@@ -26,15 +25,4 @@ abstract class Factory
     }
 
     abstract public function command(array $options): Command;
-
-    protected function properties(array $options): Properties
-    {
-        $properties = new Properties\FileReadProperties($this->env->packageFiles());
-        $properties = new Properties\PredefinedProperties($options, $properties);
-        $properties = new Properties\ResolvedProperties($properties, $this->env->packageFiles());
-        if (isset($options['i']) || isset($options['interactive'])) {
-            $properties = new Properties\InputProperties($this->env->input(), $properties);
-        }
-        return new Properties\CachedProperties($properties);
-    }
 }

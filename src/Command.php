@@ -11,22 +11,23 @@
 
 namespace Shudd3r\PackageFiles;
 
+use Shudd3r\PackageFiles\Properties\Reader;
 use Shudd3r\PackageFiles\Command\Subroutine;
 
 
 class Command
 {
-    private Properties $properties;
+    private Reader     $reader;
     private Subroutine $subroutine;
 
-    public function __construct(Properties $properties, Subroutine $subroutine)
+    public function __construct(Reader $reader, Subroutine $subroutine)
     {
-        $this->properties = $properties;
+        $this->reader     = $reader;
         $this->subroutine = $subroutine;
     }
 
     public function execute(): void
     {
-        $this->subroutine->process($this->properties);
+        $this->subroutine->process($this->reader->properties());
     }
 }
