@@ -26,8 +26,8 @@ class Command
         $this->subroutine = $subroutine;
     }
 
-    public function execute(): void
+    public function execute(array $options): void
     {
-        $this->subroutine->process($this->reader->properties());
+        $this->subroutine->process($this->reader->properties($options));
     }
 }

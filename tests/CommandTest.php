@@ -31,7 +31,7 @@ class CommandTest extends TestCase
         $subroutine = new Doubles\MockedSubroutine();
         $command    = new Command($reader, $subroutine);
 
-        $command->execute();
+        $command->execute([]);
         $this->assertSame($properties, $subroutine->passedProperties);
     }
 }

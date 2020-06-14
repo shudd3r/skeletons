@@ -23,7 +23,7 @@ class InitCommandTest extends TestCase
 
     public function testInstantiation()
     {
-        $this->assertInstanceOf(Command::class, $this->factory()->command(['i' => false]));
+        $this->assertInstanceOf(Command::class, $this->factory()->command());
         $this->assertInstanceOf(RuntimeEnv::class, $this->env);
     }
 
@@ -39,7 +39,7 @@ class InitCommandTest extends TestCase
         $iniData = '[remote "origin"] url = https://github.com/username/repositoryOrigin.git';
         $this->env->packageFiles()->files['.git/config'] = new Doubles\MockedFile($iniData);
 
-        $factory->command(['i' => false])->execute();
+        $factory->command()->execute(['i' => false]);
 
         $this->assertMetaDataFile([
             'original_repository' => 'https://github.com/username/repositoryOrigin.git',
@@ -51,10 +51,10 @@ class InitCommandTest extends TestCase
 
     public function testUnresolvedPropertiesAreReadFromDirectoryNames()
     {
-        $command = $this->factory()->command(['i' => false]);
+        $command = $this->factory()->command();
         $this->env->packageFiles()->path = '/path/foo/bar';
 
-        $command->execute();
+        $command->execute(['i' => false]);
 
         $this->assertMetaDataFile([
             'original_repository' => 'https://github.com/foo/bar.git',
@@ -70,7 +70,7 @@ class InitCommandTest extends TestCase
         $composer = json_encode(['name' => 'fooBar/baz']);
         $this->env->packageFiles()->files['composer.json'] = new Doubles\MockedFile($composer);
 
-        $factory->command(['i' => false])->execute();
+        $factory->command()->execute(['i' => false]);
 
         $this->assertMetaDataFile([
             'original_repository' => 'https://github.com/fooBar/baz.git',
@@ -84,7 +84,7 @@ class InitCommandTest extends TestCase
     {
         $factory = $this->factory();
 
-        $factory->command([])->execute();
+        $factory->command()->execute([]);
         $this->assertMetaDataFile([
             'original_repository' => 'https://github.com/package/directory.git',
             'package_name'        => 'package/directory',
@@ -100,7 +100,7 @@ class InitCommandTest extends TestCase
             'ns'      => 'Cli\NamespaceX'
         ];
 
-        $factory->command($options)->execute();
+        $factory->command()->execute($options);
         $this->assertMetaDataFile([
             'original_repository' => 'https://github.com/cli/repo.git',
             'package_name'        => 'cli/package',
@@ -127,7 +127,7 @@ class InitCommandTest extends TestCase
             'ns'      => 'Cli\NamespaceX'
         ];
 
-        $factory->command($options)->execute();
+        $factory->command()->execute($options);
         $this->assertMetaDataFile([
             'original_repository' => 'https://github.com/user/repo.git',
             'package_name'        => 'package/name',

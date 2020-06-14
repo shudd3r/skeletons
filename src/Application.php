@@ -52,8 +52,8 @@ class Application
     {
         try {
             $this->routing->factory($command)
-                          ->command($options)
-                          ->execute();
+                          ->command()
+                          ->execute($options);
         } catch (Exception $e) {
             $this->output->send($e->getMessage(), 1);
         }

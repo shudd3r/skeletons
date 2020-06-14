@@ -20,12 +20,12 @@ use Shudd3r\PackageFiles\Template;
 
 class InitCommandFactory extends Factory
 {
-    public function command(array $options): Command
+    public function command(): Command
     {
         $subroutine = new Subroutine\SubroutineSequence($this->generateComposer(), $this->generateMetaFile());
         $subroutine = new Subroutine\ValidateProperties($this->env->output(), $subroutine);
 
-        return new Command(new InitialPropertiesReader($this->env, $options), $subroutine);
+        return new Command(new InitialPropertiesReader($this->env), $subroutine);
     }
 
     public function generateComposer(): Subroutine

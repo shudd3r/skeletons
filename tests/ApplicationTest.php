@@ -44,10 +44,10 @@ class ApplicationTest extends TestCase
         $this->assertNotEmpty($terminal->messagesSent);
     }
 
-    public function testOptionsArePassedToCommandFactory()
+    public function testOptionsArePassedToCommand()
     {
         $this->app()->run('command', $options = ['foo' => 'bar']);
-        $this->assertSame($options, Factory::$passedOptions);
+        $this->assertSame($options, Factory::$reader->passedOptions);
     }
 
     public function testCommandIsExecuted()
@@ -78,8 +78,8 @@ class ApplicationTest extends TestCase
         $dir = new Doubles\FakeDirectory();
         $env = new RuntimeEnv($terminal, $terminal, $dir, $dir);
 
-        Factory::$procedure     = null;
-        Factory::$passedOptions = null;
+        Factory::$procedure = null;
+        Factory::$reader    = null;
 
         return new Application($terminal, new Routing($env, ['command' => Factory::class]));
     }

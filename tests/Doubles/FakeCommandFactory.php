@@ -17,11 +17,11 @@ use Shudd3r\PackageFiles\Command;
 class FakeCommandFactory extends Command\Factory
 {
     public static $procedure;
-    public static $passedOptions;
+    public static ?FakePropertiesReader $reader;
 
-    public function command(array $options): Command
+    public function command(): Command
     {
-        self::$passedOptions = $options;
-        return new Command(new FakePropertiesReader(), new MockedSubroutine(self::$procedure));
+        self::$reader = new FakePropertiesReader();
+        return new Command(self::$reader, new MockedSubroutine(self::$procedure));
     }
 }

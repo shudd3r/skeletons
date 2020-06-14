@@ -16,5 +16,5 @@ use Shudd3r\PackageFiles\Properties;
 
 interface Reader
 {
-    public function properties(): Properties;
+    public function properties(array $options): Properties;
 }
