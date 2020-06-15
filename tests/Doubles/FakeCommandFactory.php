@@ -12,14 +12,15 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Command;
+use Shudd3r\PackageFiles\RuntimeEnv;
 
 
-class FakeCommandFactory extends Command\Factory
+class FakeCommandFactory implements Command\Factory
 {
     public static $procedure;
     public static ?FakePropertiesReader $reader;
 
-    public function command(): Command
+    public function command(RuntimeEnv $env): Command
     {
         self::$reader = new FakePropertiesReader();
         return new Command(self::$reader, new MockedSubroutine(self::$procedure));

@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Command;
 
+use Shudd3r\PackageFiles\Command;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use RuntimeException;
 
@@ -30,13 +31,18 @@ class Routing
         $this->factories  = $factories;
     }
 
-    public function factory(string $command): Factory
+    public function command(string $command): Command
     {
         if (!isset($this->factories[$command]) || !class_exists($this->factories[$command])) {
             throw new RuntimeException("Unknown `{$command}` command");
         }
 
         $className = $this->factories[$command];
-        return new $className($this->runtimeEnv);
+        return $this->factory($className)->command($this->runtimeEnv);
+    }
+
+    private function factory(string $className): Factory
+    {
+        return new $className();
     }
 }

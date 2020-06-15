@@ -51,8 +51,7 @@ class Application
     public function run(string $command, array $options = []): int
     {
         try {
-            $this->routing->factory($command)
-                          ->command()
+            $this->routing->command($command)
                           ->execute($options);
         } catch (Exception $e) {
             $this->output->send($e->getMessage(), 1);

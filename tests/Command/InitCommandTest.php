@@ -12,36 +12,35 @@
 namespace Shudd3r\PackageFiles\Tests\Command;
 
 use PHPUnit\Framework\TestCase;
+use Shudd3r\PackageFiles\Command\Factory\InitCommandFactory as Factory;
 use Shudd3r\PackageFiles\Command;
-use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class InitCommandTest extends TestCase
 {
-    private Doubles\FakeRuntimeEnv $env;
-
-    public function testInstantiation()
+    public function testFactoryCreatesCommand()
     {
-        $this->assertInstanceOf(Command::class, $this->factory()->command());
-        $this->assertInstanceOf(RuntimeEnv::class, $this->env);
+        $factory = new Factory();
+        $this->assertInstanceOf(Command::class, $factory->command($this->env()));
     }
 
     public function testPropertiesAreReadFromProjectFiles()
     {
-        $factory = $this->factory();
-        $composer = json_encode([
+        $factory = new Factory();
+        $env     = $this->env();
+        $composer = [
             'name'        => 'fooBar/baz',
             'description' => 'My library package',
             'autoload'    => ['psr-4' => ['FooBarNamespace\\Baz\\' => 'src/']]
-        ]);
-        $this->env->packageFiles()->files['composer.json'] = new Doubles\MockedFile($composer);
+        ];
+        $env->packageFiles()->files['composer.json'] = new Doubles\MockedFile(json_encode($composer));
         $iniData = '[remote "origin"] url = https://github.com/username/repositoryOrigin.git';
-        $this->env->packageFiles()->files['.git/config'] = new Doubles\MockedFile($iniData);
+        $env->packageFiles()->files['.git/config'] = new Doubles\MockedFile($iniData);
 
-        $factory->command()->execute(['i' => false]);
+        $factory->command($env)->execute(['i' => false]);
 
-        $this->assertMetaDataFile([
+        $this->assertMetaDataFile($env, [
             'original_repository' => 'https://github.com/username/repositoryOrigin.git',
             'package_name'        => 'fooBar/baz',
             'package_desc'        => 'My library package',
@@ -51,12 +50,13 @@ class InitCommandTest extends TestCase
 
     public function testUnresolvedPropertiesAreReadFromDirectoryNames()
     {
-        $command = $this->factory()->command();
-        $this->env->packageFiles()->path = '/path/foo/bar';
+        $factory = new Factory();
+        $env     = $this->env();
+        $env->packageFiles()->path = '/path/foo/bar';
 
-        $command->execute(['i' => false]);
+        $factory->command($env)->execute(['i' => false]);
 
-        $this->assertMetaDataFile([
+        $this->assertMetaDataFile($env, [
             'original_repository' => 'https://github.com/foo/bar.git',
             'package_name'        => 'foo/bar',
             'package_desc'        => 'foo/bar package',
@@ -66,13 +66,14 @@ class InitCommandTest extends TestCase
 
     public function testEstablishedPackageNameWillDetermineOtherProperties()
     {
-        $factory  = $this->factory();
+        $factory  = new Factory();
+        $env      = $this->env();
         $composer = json_encode(['name' => 'fooBar/baz']);
-        $this->env->packageFiles()->files['composer.json'] = new Doubles\MockedFile($composer);
+        $env->packageFiles()->files['composer.json'] = new Doubles\MockedFile($composer);
 
-        $factory->command()->execute(['i' => false]);
+        $factory->command($env)->execute(['i' => false]);
 
-        $this->assertMetaDataFile([
+        $this->assertMetaDataFile($env, [
             'original_repository' => 'https://github.com/fooBar/baz.git',
             'package_name'        => 'fooBar/baz',
             'package_desc'        => 'fooBar/baz package',
@@ -82,10 +83,12 @@ class InitCommandTest extends TestCase
 
     public function testCommandLineDefinedPropertiesHavePriorityOverResolved()
     {
-        $factory = $this->factory();
+        $factory = new Factory();
+        $env     = $this->env();
 
-        $factory->command()->execute([]);
-        $this->assertMetaDataFile([
+        $factory->command($env)->execute([]);
+
+        $this->assertMetaDataFile($env, [
             'original_repository' => 'https://github.com/package/directory.git',
             'package_name'        => 'package/directory',
             'package_desc'        => 'package/directory package',
@@ -100,8 +103,8 @@ class InitCommandTest extends TestCase
             'ns'      => 'Cli\NamespaceX'
         ];
 
-        $factory->command()->execute($options);
-        $this->assertMetaDataFile([
+        $factory->command($env)->execute($options);
+        $this->assertMetaDataFile($env, [
             'original_repository' => 'https://github.com/cli/repo.git',
             'package_name'        => 'cli/package',
             'package_desc'        => 'cli desc',
@@ -111,14 +114,14 @@ class InitCommandTest extends TestCase
 
     public function testInteractiveInputStringsWillOverwriteAllProperties()
     {
-        $factory = $this->factory();
-        $this->env->input()->inputStrings = [
+        $factory = new Factory();
+        $env     = $this->env();
+        $env->input()->inputStrings = [
             'https://github.com/user/repo.git',
             'package/name',
             'My\Namespace',
             'package input description'
         ];
-
         $options = [
             'i'       => true,
             'repo'    => 'https://github.com/cli/repo.git',
@@ -127,8 +130,9 @@ class InitCommandTest extends TestCase
             'ns'      => 'Cli\NamespaceX'
         ];
 
-        $factory->command()->execute($options);
-        $this->assertMetaDataFile([
+        $factory->command($env)->execute($options);
+
+        $this->assertMetaDataFile($env, [
             'original_repository' => 'https://github.com/user/repo.git',
             'package_name'        => 'package/name',
             'package_desc'        => 'package input description',
@@ -136,13 +140,13 @@ class InitCommandTest extends TestCase
         ]);
     }
 
-    private function assertMetaDataFile(array $data): void
+    private function assertMetaDataFile(Doubles\FakeRuntimeEnv $env, array $data): void
     {
-        $metaDataFile = $this->env->packageFiles()->files['.github/package.properties']->contents();
+        $metaDataFile = $env->packageFiles()->files['.github/package.properties']->contents();
         $this->assertSame($data, parse_ini_string($metaDataFile));
     }
 
-    private function factory(): Command\Factory
+    private function env(): Doubles\FakeRuntimeEnv
     {
         $terminal = new Doubles\MockedTerminal();
         $package  = new Doubles\FakeDirectory(true, '/path/to/package/directory');
@@ -157,7 +161,6 @@ class InitCommandTest extends TestCase
             TPL
         );
 
-        $this->env = new Doubles\FakeRuntimeEnv($terminal, $package, $skeleton);
-        return new Command\Factory\InitCommandFactory($this->env);
+        return new Doubles\FakeRuntimeEnv($terminal, $package, $skeleton);
     }
 }

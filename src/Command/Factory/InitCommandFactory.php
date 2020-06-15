@@ -14,32 +14,33 @@ namespace Shudd3r\PackageFiles\Command\Factory;
 use Shudd3r\PackageFiles\Command;
 use Shudd3r\PackageFiles\Command\Factory;
 use Shudd3r\PackageFiles\Command\Subroutine;
+use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Properties\Reader\InitialPropertiesReader;
 use Shudd3r\PackageFiles\Template;
 
 
-class InitCommandFactory extends Factory
+class InitCommandFactory implements Factory
 {
-    public function command(): Command
+    public function command(RuntimeEnv $env): Command
     {
-        $subroutine = new Subroutine\SubroutineSequence($this->generateComposer(), $this->generateMetaFile());
-        $subroutine = new Subroutine\ValidateProperties($this->env->output(), $subroutine);
+        $subroutine = new Subroutine\SubroutineSequence($this->generateComposer($env), $this->generateMetaFile($env));
+        $subroutine = new Subroutine\ValidateProperties($env->output(), $subroutine);
 
-        return new Command(new InitialPropertiesReader($this->env), $subroutine);
+        return new Command(new InitialPropertiesReader($env), $subroutine);
     }
 
-    public function generateComposer(): Subroutine
+    public function generateComposer(RuntimeEnv $env): Subroutine
     {
-        $composerFile = $this->env->packageFiles()->file('composer.json');
+        $composerFile = $env->packageFiles()->file('composer.json');
         $template     = new Template\ComposerJsonTemplate($composerFile);
 
         return new Subroutine\GenerateFile($template, $composerFile);
     }
 
-    public function generateMetaFile(): Subroutine
+    public function generateMetaFile(RuntimeEnv $env): Subroutine
     {
-        $templateFile = $this->env->skeletonFiles()->file('package.properties');
-        $metaDataFile = $this->env->packageFiles()->file('.github/package.properties');
+        $templateFile = $env->skeletonFiles()->file('package.properties');
+        $metaDataFile = $env->packageFiles()->file('.github/package.properties');
         $template     = new Template\FileTemplate($templateFile);
 
         return new Subroutine\GenerateFile($template, $metaDataFile);
