@@ -11,12 +11,13 @@
 
 namespace Shudd3r\PackageFiles\Command;
 
-use Shudd3r\PackageFiles\Command;
+use Shudd3r\PackageFiles\Application\Routing;
+use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use RuntimeException;
 
 
-class Routing
+class Commands implements Routing
 {
     private RuntimeEnv $runtimeEnv;
     private array      $factories;

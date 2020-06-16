@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application;
-use Shudd3r\PackageFiles\Command\Routing;
+use Shudd3r\PackageFiles\Command\Commands;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeCommandFactory as Factory;
 use Exception;
@@ -81,6 +81,6 @@ class ApplicationTest extends TestCase
         Factory::$procedure = null;
         Factory::$reader    = null;
 
-        return new Application($terminal, new Routing($env, ['command' => Factory::class]));
+        return new Application($terminal, new Commands($env, ['command' => Factory::class]));
     }
 }

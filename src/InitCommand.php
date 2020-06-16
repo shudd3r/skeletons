@@ -11,11 +11,12 @@
 
 namespace Shudd3r\PackageFiles;
 
+use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Properties\Reader;
 use Shudd3r\PackageFiles\Command\Subroutine;
 
 
-class Command
+class InitCommand implements Command
 {
     private Reader     $reader;
     private Subroutine $subroutine;

@@ -11,10 +11,11 @@
 
 namespace Shudd3r\PackageFiles\Command\Factory;
 
-use Shudd3r\PackageFiles\Command;
 use Shudd3r\PackageFiles\Command\Factory;
-use Shudd3r\PackageFiles\Command\Subroutine;
+use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\InitCommand;
 use Shudd3r\PackageFiles\RuntimeEnv;
+use Shudd3r\PackageFiles\Command\Subroutine;
 use Shudd3r\PackageFiles\Properties\Reader\InitialPropertiesReader;
 use Shudd3r\PackageFiles\Template;
 
@@ -26,7 +27,7 @@ class InitCommandFactory implements Factory
         $subroutine = new Subroutine\SubroutineSequence($this->generateComposer($env), $this->generateMetaFile($env));
         $subroutine = new Subroutine\ValidateProperties($env->output(), $subroutine);
 
-        return new Command(new InitialPropertiesReader($env), $subroutine);
+        return new InitCommand(new InitialPropertiesReader($env), $subroutine);
     }
 
     public function generateComposer(RuntimeEnv $env): Subroutine

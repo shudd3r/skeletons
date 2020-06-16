@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Command\Routing;
+use Shudd3r\PackageFiles\Application\Routing;
 use Shudd3r\PackageFiles\Application\Output;
 use Exception;
 
@@ -51,8 +51,7 @@ class Application
     public function run(string $command, array $options = []): int
     {
         try {
-            $this->routing->command($command)
-                          ->execute($options);
+            $this->routing->command($command)->execute($options);
         } catch (Exception $e) {
             $this->output->send($e->getMessage(), 1);
         }

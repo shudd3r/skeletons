@@ -9,13 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Command;
-
-use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\RuntimeEnv;
+namespace Shudd3r\PackageFiles\Application;
 
 
-interface Factory
+interface Routing
 {
-    public function command(RuntimeEnv $env): Command;
+    public function command(string $command): Command;
 }
