@@ -12,10 +12,10 @@
 namespace Shudd3r\PackageFiles\Command\Factory;
 
 use Shudd3r\PackageFiles\Command\Factory;
-use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\InitCommand;
-use Shudd3r\PackageFiles\RuntimeEnv;
+use Shudd3r\PackageFiles\Command\InitCommand;
 use Shudd3r\PackageFiles\Command\Subroutine;
+use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Properties\Reader\InitialPropertiesReader;
 use Shudd3r\PackageFiles\Template;
 

@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Command\Factory;
-use Shudd3r\PackageFiles\InitCommand;
+use Shudd3r\PackageFiles\Command\InitCommand;
 use Shudd3r\PackageFiles\RuntimeEnv;
 
 

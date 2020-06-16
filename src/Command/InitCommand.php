@@ -9,11 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles;
+namespace Shudd3r\PackageFiles\Command;
 
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Properties\Reader;
-use Shudd3r\PackageFiles\Command\Subroutine;
 
 
 class InitCommand implements Command

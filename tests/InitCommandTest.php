@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\InitCommand;
+use Shudd3r\PackageFiles\Command\InitCommand;
 use Shudd3r\PackageFiles\Tests\Doubles\FakePropertiesReader;
 
 
