@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use RuntimeException;
 
 
-class FileReadProperties extends Properties
+class FileReadProperties implements Properties
 {
     private Directory $packageFiles;
     private array     $composerData;
@@ -26,13 +26,17 @@ class FileReadProperties extends Properties
         $this->packageFiles = $packageFiles;
     }
 
-    public function repositoryUrl(): string
+    public function repositoryName(): string
     {
         $gitConfigFile = $this->packageFiles->file('.git/config');
         if (!$gitConfigFile->exists()) { return ''; }
 
         $config = parse_ini_string($gitConfigFile->contents(), true);
-        return $config['remote upstream']['url'] ?? $config['remote origin']['url'] ?? '';
+        $uri    = $config['remote upstream']['url'] ?? $config['remote origin']['url'] ?? '';
+        if (!$uri) { return ''; }
+
+        $uriPath = str_replace(':', '/', $uri);
+        return basename(dirname($uriPath)) . '/' . basename($uriPath, '.git');
     }
 
     public function packageName(): string

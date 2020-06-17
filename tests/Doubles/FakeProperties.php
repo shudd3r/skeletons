@@ -14,10 +14,9 @@ namespace Shudd3r\PackageFiles\Tests\Doubles;
 use Shudd3r\PackageFiles\Properties;
 
 
-class FakeProperties extends Properties
+class FakeProperties implements Properties
 {
     private const RESET_COUNTERS = [
-        'repositoryUrl'      => 0,
         'repositoryName'     => 0,
         'packageName'        => 0,
         'packageDescription' => 0,
@@ -27,8 +26,7 @@ class FakeProperties extends Properties
     public array $propertiesCalled = self::RESET_COUNTERS;
 
     public array $properties = [
-        'repositoryUrl'      => 'https://github.com/polymorphine/dev.git',
-        'repositoryName'     => null,
+        'repositoryName'     => 'polymorphine/dev',
         'packageName'        => 'polymorphine/dev',
         'packageDescription' => 'Package description',
         'sourceNamespace'    => 'Polymorphine\Dev'
@@ -37,18 +35,11 @@ class FakeProperties extends Properties
     public function __construct(array $properties = [])
     {
         $this->properties = $properties + $this->properties;
-        $this->properties['repositoryName'] = parent::repositoryName();
-        $this->propertiesCalled['repositoryUrl'] = 0;
     }
 
     public function __clone()
     {
         $this->propertiesCalled = self::RESET_COUNTERS;
-    }
-
-    public function repositoryUrl(): string
-    {
-        return $this->get('repositoryUrl');
     }
 
     public function repositoryName(): string

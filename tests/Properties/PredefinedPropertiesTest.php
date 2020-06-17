@@ -43,7 +43,7 @@ class PredefinedPropertiesTest extends PropertiesTestCase
     public function predefinedOption()
     {
         return [
-            [['repo' => 'https://github.com/repo/name.git'], ['repositoryUrl' => 'https://github.com/repo/name.git', 'repositoryName' => 'repo/name']],
+            [['repo' => 'repo/name'], ['repositoryName' => 'repo/name']],
             [['package' => 'package/name'], ['packageName' => 'package/name']],
             [['desc' => 'Description from options'], ['packageDescription' => 'Description from options']],
             [['ns' => 'Foo\\Bar'], ['sourceNamespace' => 'Foo\\Bar']]

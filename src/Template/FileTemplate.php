@@ -20,7 +20,6 @@ use InvalidArgumentException;
 class FileTemplate implements Template
 {
     private const TOKENS = [
-        '{REPO_URL}'     => 'repositoryUrl',
         '{REPO_NAME}'    => 'repositoryName',
         '{PACKAGE_NAME}' => 'packageName',
         '{PACKAGE_DESC}' => 'packageDescription',

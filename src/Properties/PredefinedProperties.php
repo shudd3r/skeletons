@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Properties;
 
 
-class PredefinedProperties extends Properties
+class PredefinedProperties implements Properties
 {
     private Properties $default;
     private array      $defined;
@@ -25,9 +25,9 @@ class PredefinedProperties extends Properties
         $this->defined = $definedOptions;
     }
 
-    public function repositoryUrl(): string
+    public function repositoryName(): string
     {
-        return $this->defined['repo'] ?? $this->default->repositoryUrl();
+        return $this->defined['repo'] ?? $this->default->repositoryName();
     }
 
     public function packageName(): string

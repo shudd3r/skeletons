@@ -41,7 +41,7 @@ class InitCommandFactoryTest extends TestCase
         $factory->command($env)->execute(['i' => false]);
 
         $this->assertMetaDataFile($env, [
-            'original_repository' => 'https://github.com/username/repositoryOrigin.git',
+            'original_repository' => 'username/repositoryOrigin',
             'package_name'        => 'fooBar/baz',
             'package_desc'        => 'My library package',
             'source_namespace'    => 'FooBarNamespace\\Baz'
@@ -57,7 +57,7 @@ class InitCommandFactoryTest extends TestCase
         $factory->command($env)->execute(['i' => false]);
 
         $this->assertMetaDataFile($env, [
-            'original_repository' => 'https://github.com/foo/bar.git',
+            'original_repository' => 'foo/bar',
             'package_name'        => 'foo/bar',
             'package_desc'        => 'foo/bar package',
             'source_namespace'    => 'Foo\\Bar'
@@ -74,7 +74,7 @@ class InitCommandFactoryTest extends TestCase
         $factory->command($env)->execute(['i' => false]);
 
         $this->assertMetaDataFile($env, [
-            'original_repository' => 'https://github.com/fooBar/baz.git',
+            'original_repository' => 'fooBar/baz',
             'package_name'        => 'fooBar/baz',
             'package_desc'        => 'fooBar/baz package',
             'source_namespace'    => 'FooBar\\Baz'
@@ -89,7 +89,7 @@ class InitCommandFactoryTest extends TestCase
         $factory->command($env)->execute([]);
 
         $this->assertMetaDataFile($env, [
-            'original_repository' => 'https://github.com/package/directory.git',
+            'original_repository' => 'package/directory',
             'package_name'        => 'package/directory',
             'package_desc'        => 'package/directory package',
             'source_namespace'    => 'Package\Directory'
@@ -97,7 +97,7 @@ class InitCommandFactoryTest extends TestCase
 
         $options = [
             'i'       => true,
-            'repo'    => 'https://github.com/cli/repo.git',
+            'repo'    => 'cli/repo',
             'package' => 'cli/package',
             'desc'    => 'cli desc',
             'ns'      => 'Cli\NamespaceX'
@@ -105,7 +105,7 @@ class InitCommandFactoryTest extends TestCase
 
         $factory->command($env)->execute($options);
         $this->assertMetaDataFile($env, [
-            'original_repository' => 'https://github.com/cli/repo.git',
+            'original_repository' => 'cli/repo',
             'package_name'        => 'cli/package',
             'package_desc'        => 'cli desc',
             'source_namespace'    => 'Cli\NamespaceX'
@@ -117,14 +117,14 @@ class InitCommandFactoryTest extends TestCase
         $factory = new Factory();
         $env     = $this->env();
         $env->input()->inputStrings = [
-            'https://github.com/user/repo.git',
+            'user/repo',
             'package/name',
             'My\Namespace',
             'package input description'
         ];
         $options = [
             'i'       => true,
-            'repo'    => 'https://github.com/cli/repo.git',
+            'repo'    => 'cli/repo',
             'package' => 'cli/package',
             'desc'    => 'cli desc',
             'ns'      => 'Cli\NamespaceX'
@@ -133,7 +133,7 @@ class InitCommandFactoryTest extends TestCase
         $factory->command($env)->execute($options);
 
         $this->assertMetaDataFile($env, [
-            'original_repository' => 'https://github.com/user/repo.git',
+            'original_repository' => 'user/repo',
             'package_name'        => 'package/name',
             'package_desc'        => 'package input description',
             'source_namespace'    => 'My\Namespace'
@@ -154,7 +154,7 @@ class InitCommandFactoryTest extends TestCase
 
         $skeleton->files['package.properties'] = new Doubles\MockedFile(
             <<<'TPL'
-            original_repository={REPO_URL}
+            original_repository={REPO_NAME}
             package_name={PACKAGE_NAME}
             package_desc={PACKAGE_DESC}
             source_namespace={PACKAGE_NS}

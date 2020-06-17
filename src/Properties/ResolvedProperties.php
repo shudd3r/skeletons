@@ -15,7 +15,7 @@ use Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 
-class ResolvedProperties extends Properties
+class ResolvedProperties implements Properties
 {
     private Properties $properties;
     private Directory  $packageFiles;
@@ -26,9 +26,9 @@ class ResolvedProperties extends Properties
         $this->packageFiles = $packageFiles;
     }
 
-    public function repositoryUrl(): string
+    public function repositoryName(): string
     {
-        return $this->properties->repositoryUrl() ?: $this->repositoryUrlFromPackageName();
+        return $this->properties->repositoryName() ?: $this->packageName();
     }
 
     public function packageName(): string
@@ -50,11 +50,6 @@ class ResolvedProperties extends Properties
     {
         $directory = $this->packageFiles->path();
         return basename(dirname($directory)) . '/' . basename($directory);
-    }
-
-    private function repositoryUrlFromPackageName(): string
-    {
-        return 'https://github.com/' . $this->packageName() . '.git';
     }
 
     private function namespaceFromPackageName(): string

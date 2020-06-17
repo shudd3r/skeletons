@@ -19,7 +19,6 @@ class PropertiesTestCase extends TestCase
 {
     protected function assertSamePropertyValues(Doubles\FakeProperties $expected, Properties $properties): void
     {
-        $this->assertSame($expected->repositoryUrl(), $properties->repositoryUrl());
         $this->assertSame($expected->repositoryName(), $properties->repositoryName());
         $this->assertSame($expected->packageName(), $properties->packageName());
         $this->assertSame($expected->packageDescription(), $properties->packageDescription());

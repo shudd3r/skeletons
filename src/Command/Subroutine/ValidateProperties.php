@@ -29,7 +29,7 @@ class ValidateProperties implements Subroutine
 
     public function process(Properties $options): void
     {
-        $githubUri = $options->repositoryUrl();
+        $githubUri = $options->repositoryName();
         if (!$this->isValidGithubUri($githubUri)) {
             $this->output->send("Invalid github uri `{$githubUri}`", 1);
         }
@@ -52,14 +52,8 @@ class ValidateProperties implements Subroutine
         $this->nextSubroutine->process($options);
     }
 
-    private function isValidGithubUri(string $uri): bool
+    private function isValidGithubUri(string $repoName): bool
     {
-        $validSuffix = substr($uri, -4) === '.git';
-        $validPrefix = substr($uri, 0, 19) === 'https://github.com/' || substr($uri, 0, 15) === 'git@github.com:';
-
-        if (!$validPrefix || !$validSuffix) { return false; }
-
-        $repoName = $uri[0] === 'h' ? substr($uri, 19, -4) : substr($uri, 15, -4);
         return (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $repoName);
     }
 

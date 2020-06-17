@@ -21,24 +21,27 @@ class ValidatePropertiesTest extends TestCase
     private Doubles\MockedTerminal   $output;
     private Doubles\MockedSubroutine $forwarded;
 
-    public function testRepoUrlValidation()
+    public function testRepoNameValidation()
     {
         $name = function (int $length) { return str_pad('x', $length, 'x'); };
 
+        $longAccount  = $name(40) . '/name';
+        $shortAccount = $name(39) . '/name';
+        $longRepo     = 'user/' . $name(101);
+        $shortRepo    = 'user/' . $name(100);
+
         $githubUrls = [
-            'http://github.com/repo/name.git'          => 'https://github.com/repo/name.git',
-            'https://github.com/Repo/Name'             => 'https://github.com/Repo/Name.git',
-            'https://github.com/repo/na(me).git'       => 'https://github.com/repo/na-me.git',
-            'git@github.com:-repo/name.git'            => 'git@github.com:repo/name.git',
-            'git@github.com:repo_/name.git'            => 'git@github.com:repo/name.git',
-            'git@github.com:re--po/name.git'           => 'git@github.com:re-po/name.git',
-            "git@github.com:{$name(40)}/name.git"      => "git@github.com:{$name(39)}/name.git",
-            "https://github.com/user/{$name(101)}.git" => "https://github.com/user/{$name(100)}.git"
+            'repo/na(me)' => 'repo/na-me',
+            '-repo/name'  => 'r-epo/name',
+            'repo_/name'  => 'repo/name',
+            're--po/name' => 're-po/name',
+            $longAccount  => $shortAccount,
+            $longRepo     => $shortRepo
         ];
 
         foreach ($githubUrls as $invalid => $valid) {
-            $this->assertInvalid($invalid, 'repositoryUrl', 'Invalid github uri');
-            $this->assertValid($valid, 'repositoryUrl');
+            $this->assertInvalid($invalid, 'repositoryName', 'Invalid github uri');
+            $this->assertValid($valid, 'repositoryName');
         }
     }
 

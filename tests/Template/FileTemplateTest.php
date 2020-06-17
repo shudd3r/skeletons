@@ -24,13 +24,13 @@ class FileTemplateTest extends TestCase
         $contents = <<<'TPL'
             This file is part of {PACKAGE_NAME} package.
             {PACKAGE_DESC}.
-            Repository: {REPO_NAME} URL: {REPO_URL}
+            Repository: {REPO_NAME}
             Source files namespace: {PACKAGE_NS}
             TPL;
 
         $template = new FileTemplate(new Doubles\MockedFile($contents));
         $properties = new Doubles\FakeProperties([
-            'repositoryUrl'      => 'https://github.com/polymorphine/package.git',
+            'repositoryName'     => 'polymorphine/package',
             'packageName'        => 'polymorphine/dev',
             'packageDescription' => 'Package description',
             'sourceNamespace'    => 'Polymorphine\Dev'
@@ -41,7 +41,7 @@ class FileTemplateTest extends TestCase
         $expected = <<<'RENDER'
             This file is part of polymorphine/dev package.
             Package description.
-            Repository: polymorphine/package URL: https://github.com/polymorphine/package.git
+            Repository: polymorphine/package
             Source files namespace: Polymorphine\Dev
             RENDER;
 

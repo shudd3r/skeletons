@@ -14,11 +14,10 @@ namespace Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Properties;
 
 
-class CachedProperties extends Properties
+class CachedProperties implements Properties
 {
     private Properties $properties;
 
-    private string $repoUrl;
     private string $repoName;
     private string $package;
     private string $description;
@@ -27,11 +26,6 @@ class CachedProperties extends Properties
     public function __construct(Properties $properties)
     {
         $this->properties = $properties;
-    }
-
-    public function repositoryUrl(): string
-    {
-        return $this->repoUrl ??= $this->properties->repositoryUrl();
     }
 
     public function repositoryName(): string

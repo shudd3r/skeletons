@@ -23,12 +23,12 @@ class CachedPropertiesTest extends PropertiesTestCase
         $sourceProperties = new Doubles\FakeProperties();
         $cachedProperties = new Properties\CachedProperties($sourceProperties);
 
-        $this->assertSame([0, 0, 0, 0, 0], array_values($sourceProperties->propertiesCalled));
+        $this->assertSame([0, 0, 0, 0], array_values($sourceProperties->propertiesCalled));
 
         $this->assertSamePropertyValues(clone $sourceProperties, $cachedProperties);
-        $this->assertSame([1, 1, 1, 1, 1], array_values($sourceProperties->propertiesCalled));
+        $this->assertSame([1, 1, 1, 1], array_values($sourceProperties->propertiesCalled));
 
         $this->assertSamePropertyValues(clone $sourceProperties, $cachedProperties);
-        $this->assertSame([1, 1, 1, 1, 1], array_values($sourceProperties->propertiesCalled));
+        $this->assertSame([1, 1, 1, 1], array_values($sourceProperties->propertiesCalled));
     }
 }

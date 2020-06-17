@@ -15,11 +15,10 @@ use Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Application\Input;
 
 
-class InputProperties extends Properties
+class InputProperties implements Properties
 {
     private Input      $input;
     private Properties $default;
-    private string     $repoUrl;
 
     public function __construct(Input $input, Properties $default)
     {
@@ -27,9 +26,9 @@ class InputProperties extends Properties
         $this->default = $default;
     }
 
-    public function repositoryUrl(): string
+    public function repositoryName(): string
     {
-        return $this->repoUrl ??= $this->input('Github repository URL', $this->default->repositoryUrl());
+        return $this->input('Github repository name', $this->default->repositoryName());
     }
 
     public function packageName(): string

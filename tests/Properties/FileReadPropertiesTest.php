@@ -24,7 +24,7 @@ class FileReadPropertiesTest extends TestCase
     public function testGithubUrlIsReadFromGitConfigFile()
     {
         $properties = $this->properties();
-        $this->assertSame('', $properties->repositoryUrl());
+        $this->assertSame('', $properties->repositoryName());
 
         $this->directory->files['.git/config'] = new Doubles\MockedFile(
             <<<'INI'
@@ -45,7 +45,7 @@ class FileReadPropertiesTest extends TestCase
             INI
         );
 
-        $this->assertSame('https://github.com/username/repository.git', $properties->repositoryUrl());
+        $this->assertSame('username/repository', $properties->repositoryName());
     }
 
     public function testGithubUrlForUpstreamRepositoryTakesPrecedence()
@@ -62,7 +62,7 @@ class FileReadPropertiesTest extends TestCase
             INI
         );
 
-        $this->assertSame('https://github.com/username/repositoryUpstream.git', $properties->repositoryUrl());
+        $this->assertSame('username/repositoryUpstream', $properties->repositoryName());
     }
 
     public function testValuesReadFromComposerJsonFile()

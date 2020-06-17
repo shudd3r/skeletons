@@ -33,7 +33,7 @@ class InputPropertiesTest extends PropertiesTestCase
         $properties = new InputProperties($terminal, $default);
 
         $inputProperties = [
-            'repositoryUrl'      => 'https://github.com/input/package.git',
+            'repositoryName'     => 'input/package',
             'packageName'        => 'input-package/name',
             'packageDescription' => 'Input package description',
             'sourceNamespace'    => 'Input\Namespace'
