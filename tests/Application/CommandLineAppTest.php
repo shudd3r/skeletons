@@ -48,7 +48,7 @@ class CommandLineAppTest extends TestCase
     public function testOptionsArePassedToCommand()
     {
         $this->app()->run('command', $options = ['foo' => 'bar']);
-        $this->assertSame($options, Factory::$reader->passedOptions);
+        $this->assertSame($options, Factory::$command->options);
     }
 
     public function testCommandIsExecuted()
@@ -80,7 +80,7 @@ class CommandLineAppTest extends TestCase
         $env = new RuntimeEnv($terminal, $terminal, $dir, $dir);
 
         Factory::$procedure = null;
-        Factory::$reader    = null;
+        Factory::$command   = null;
 
         return new CommandLineApp($terminal, new Commands($env, ['command' => Factory::class]));
     }
