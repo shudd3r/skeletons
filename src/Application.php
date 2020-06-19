@@ -28,25 +28,10 @@ class Application
     }
 
     /**
-     * Builds package environment files.
+     * @param string $command Command name (usually first CLI argument)
+     * @param array  $options Command options
      *
-     * $options array is config name keys ('package', 'repo', 'desc' & 'ns')
-     * with corresponding values and 'interactive' key (or short version: 'i')
-     * with any not null value (also false) that when given activates CLI input
-     * of not provided options (omitted or assigned to null) otherwise these
-     * values will try to be resolved automatically.
-     *
-     * @example Array with all values defined for this package: [
-     *     'package' => 'polymorphine/dev',
-     *     'repo'    => 'polymorphine/dev',
-     *     'desc'    => 'Development tools & coding standard scripts for Polymorphine libraries',
-     *     'ns'      => 'Polymorphine\Dev'
-     * ]
-     *
-     * @param string $command
-     * @param array  $options
-     *
-     * @return int Exit code
+     * @return int Exit code where 0 means execution without errors
      */
     public function run(string $command, array $options = []): int
     {
