@@ -9,21 +9,22 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests;
+namespace Shudd3r\PackageFiles\Tests\Application;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application;
+use Shudd3r\PackageFiles\Application\CommandLineApp;
 use Shudd3r\PackageFiles\Commands;
 use Shudd3r\PackageFiles\RuntimeEnv;
+use Shudd3r\PackageFiles\Tests\Doubles;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeCommandFactory as Factory;
 use Exception;
 
 
-class ApplicationTest extends TestCase
+class CommandLineAppTest extends TestCase
 {
     public function testInstantiation()
     {
-        $this->assertInstanceOf(Application::class, $this->app());
+        $this->assertInstanceOf(CommandLineApp::class, $this->app());
     }
 
     public function testForExecutedCommand_RunMethod_ReturnsOutputErrorCode()
@@ -71,7 +72,7 @@ class ApplicationTest extends TestCase
         $this->assertSame(['exc.message'], $output->messagesSent);
     }
 
-    private function app(Doubles\MockedTerminal &$terminal = null): Application
+    private function app(Doubles\MockedTerminal &$terminal = null): CommandLineApp
     {
         $terminal ??= new Doubles\MockedTerminal();
 
@@ -81,6 +82,6 @@ class ApplicationTest extends TestCase
         Factory::$procedure = null;
         Factory::$reader    = null;
 
-        return new Application($terminal, new Commands($env, ['command' => Factory::class]));
+        return new CommandLineApp($terminal, new Commands($env, ['command' => Factory::class]));
     }
 }

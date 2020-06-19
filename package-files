@@ -44,6 +44,6 @@ $routing = new Commands($environment, [
 $options = getopt('i', ['package:', 'repo:', 'desc:', 'interactive'], $commandIdx);
 $command = $argv[$commandIdx] ?? 'init';
 
-$app = new Application($terminal, $routing);
+$app = new Application\CommandLineApp($terminal, $routing);
 $exitCode = $app->run($command, $options);
 exit($exitCode);
