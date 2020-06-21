@@ -20,13 +20,16 @@ class FakeRuntimeEnv extends RuntimeEnv
     public FakeDirectory  $directory;
     public FakeDirectory  $templates;
 
-    public function __construct(MockedTerminal $terminal, FakeDirectory $packageFiles, FakeDirectory $skeletonFiles)
-    {
-        $this->terminal  = $terminal;
-        $this->directory = $packageFiles;
-        $this->templates = $skeletonFiles;
+    public function __construct(
+        MockedTerminal $terminal = null,
+        FakeDirectory $packageFiles = null,
+        FakeDirectory $skeletonFiles = null
+    ) {
+        $this->terminal  = $terminal ?? new MockedTerminal();
+        $this->directory = $packageFiles ?? new FakeDirectory();
+        $this->templates = $skeletonFiles ?? new FakeDirectory();
 
-        parent::__construct($terminal, $terminal, $packageFiles, $skeletonFiles);
+        parent::__construct($this->terminal, $this->terminal, $this->directory, $this->templates);
     }
 
     public function input(): MockedTerminal

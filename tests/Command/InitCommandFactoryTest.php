@@ -148,11 +148,11 @@ class InitCommandFactoryTest extends TestCase
 
     private function env(): Doubles\FakeRuntimeEnv
     {
-        $terminal = new Doubles\MockedTerminal();
-        $package  = new Doubles\FakeDirectory(true, '/path/to/package/directory');
-        $skeleton = new Doubles\FakeDirectory(true, '/path/to/skeleton/files');
+        $env = new Doubles\FakeRuntimeEnv();
 
-        $skeleton->files['package.properties'] = new Doubles\MockedFile(
+        $env->directory->path = '/path/to/package/directory';
+        $env->templates->path = '/path/to/skeleton/files';
+        $env->templates->files['package.properties'] = new Doubles\MockedFile(
             <<<'TPL'
             original_repository={REPO_NAME}
             package_name={PACKAGE_NAME}
@@ -161,6 +161,6 @@ class InitCommandFactoryTest extends TestCase
             TPL
         );
 
-        return new Doubles\FakeRuntimeEnv($terminal, $package, $skeleton);
+        return $env;
     }
 }
