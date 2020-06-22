@@ -20,9 +20,11 @@ class FakeCommandFactory implements Factory
 {
     public static $procedure;
     public static ?FakeCommand $command;
+    public static ?RuntimeEnv  $env;
 
     public function command(RuntimeEnv $env): Command
     {
+        self::$env = $env;
         return self::$command = new FakeCommand(self::$procedure);
     }
 }
