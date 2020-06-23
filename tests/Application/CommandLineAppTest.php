@@ -13,9 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Application;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\CommandLineApp;
-use Shudd3r\PackageFiles\Commands;
 use Shudd3r\PackageFiles\Tests\Doubles;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeCommandFactory as Factory;
 use Exception;
 
 
@@ -28,56 +26,43 @@ class CommandLineAppTest extends TestCase
 
     public function testForExecutedCommand_RunMethod_ReturnsOutputErrorCode()
     {
-        $app = $this->app($env);
-        $this->assertSame(0, $app->run('command'));
+        $app = $this->app($output);
+        $this->assertSame(0, $app->run(Doubles\FakeRouting::VALID_COMMAND));
 
-        $env->terminal->errorCode = 123;
-        $this->assertSame(123, $app->run('command'));
+        $output->errorCode = 123;
+        $this->assertSame(123, $app->run(Doubles\FakeRouting::VALID_COMMAND));
     }
 
-    public function testForNotExistingCommand_RunMethod_SendsErrorToOutput()
+    public function testRoutingExceptionMessageIsSentToOutput()
     {
-        $app = $this->app($env);
-        $this->assertEmpty($env->terminal->messagesSent);
+        $app = $this->app($output);
+        $this->assertEmpty($output->messagesSent);
 
         $this->assertSame(1, $app->run('notCommand'));
-        $this->assertNotEmpty($env->terminal->messagesSent);
+        $this->assertSame([Doubles\FakeRouting::EXCEPTION_MESSAGE], $output->messagesSent);
     }
 
     public function testOptionsArePassedToCommand()
     {
-        $this->app()->run('command', $options = ['foo' => 'bar']);
-        $this->assertSame($options, Factory::$command->options);
-    }
+        $command = new Doubles\FakeCommand();
+        $app     = $this->app($output, $command);
 
-    public function testCommandIsExecuted()
-    {
-        $app = $this->app($env);
-        Factory::$procedure = function () use ($env) { $env->terminal->send('executed'); };
-
-        $this->assertSame([], $env->terminal->messagesSent);
-
-        $app->run('command');
-        $this->assertSame(['executed'], $env->terminal->messagesSent);
+        $app->run('command', $options = ['foo' => 'bar']);
+        $this->assertSame($options, $command->options);
     }
 
     public function testUncheckedExceptionIsCaught()
     {
-        $app = $this->app($env);
-        Factory::$procedure = function () { throw new Exception('exc.message'); };
+        $command = new Doubles\FakeCommand(function () { throw new Exception('exc.message'); });
+        $app     = $this->app($output, $command);
 
         $exitCode = $app->run('command');
         $this->assertSame(1, $exitCode);
-        $this->assertSame(['exc.message'], $env->terminal->messagesSent);
+        $this->assertSame(['exc.message'], $output->messagesSent);
     }
 
-    private function app(Doubles\FakeRuntimeEnv &$env = null): CommandLineApp
+    private function app(Doubles\MockedTerminal &$output = null, Doubles\FakeCommand &$command = null): CommandLineApp
     {
-        $env ??= new Doubles\FakeRuntimeEnv();
-
-        Factory::$procedure = null;
-        Factory::$command   = null;
-
-        return new CommandLineApp($env->output(), new Commands($env, ['command' => Factory::class]));
+        return new CommandLineApp($output = new Doubles\MockedTerminal(), new Doubles\FakeRouting($command));
     }
 }
