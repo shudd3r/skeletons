@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Properties;
 
 use Shudd3r\PackageFiles\Tests\PropertiesTestCase;
 use Shudd3r\PackageFiles\Properties\ResolvedProperties;
-use Shudd3r\PackageFiles\Files\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory\LocalDirectory;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -22,7 +22,7 @@ class ResolvedPropertiesTest extends PropertiesTestCase
     public function testPropertiesResolvedFromDirectory()
     {
         $sourceProperties = $this->fakeProperties();
-        $properties       = new ResolvedProperties($sourceProperties, new Directory('some/directory/path'));
+        $properties       = new ResolvedProperties($sourceProperties, new LocalDirectory('some/directory/path'));
 
         $expected = new Doubles\FakeProperties([
             'repositoryUrl'      => 'https://github.com/directory/path.git',
@@ -36,7 +36,7 @@ class ResolvedPropertiesTest extends PropertiesTestCase
     public function testPropertiesResolvedFromPackageName()
     {
         $sourceProperties = $this->fakeProperties(['packageName' => 'foo/bar', 'packageDescription' => 'Random desc']);
-        $properties       = new ResolvedProperties($sourceProperties, new Directory(''));
+        $properties       = new ResolvedProperties($sourceProperties, new LocalDirectory(''));
 
         $expected = new Doubles\FakeProperties([
             'repositoryUrl'      => 'https://github.com/foo/bar.git',

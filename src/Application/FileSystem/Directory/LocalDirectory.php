@@ -9,13 +9,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Files;
+namespace Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
-use Shudd3r\PackageFiles\Application\FileSystem\Directory as DirectoryInterface;
-use Shudd3r\PackageFiles\Application\FileSystem\File as FileInterface;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
-class Directory implements DirectoryInterface
+class LocalDirectory implements Directory
 {
     private string $path;
 
@@ -37,10 +37,10 @@ class Directory implements DirectoryInterface
         return is_dir($this->path);
     }
 
-    public function file(string $filename): FileInterface
+    public function file(string $filename): File
     {
         $filename = trim($this->normalizedPath($filename), DIRECTORY_SEPARATOR);
-        return new File($this->path . DIRECTORY_SEPARATOR . $filename);
+        return new File\LocalFile($this->path . DIRECTORY_SEPARATOR . $filename);
     }
 
     private function normalizedPath(string $path): string

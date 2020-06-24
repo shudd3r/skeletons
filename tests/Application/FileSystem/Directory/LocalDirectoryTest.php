@@ -9,20 +9,20 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Files;
+namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\Directory;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Files\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory\LocalDirectory;
+use Shudd3r\PackageFiles\Application\FileSystem\File\LocalFile;
 use Shudd3r\PackageFiles\Application\FileSystem;
-use Shudd3r\PackageFiles\Files\File;
 
 
-class DirectoryTest extends TestCase
+class LocalDirectoryTest extends TestCase
 {
     public function testInstantiation()
     {
         $directory = $this->directory($path);
-        $this->assertInstanceOf(Directory::class, $directory);
+        $this->assertInstanceOf(LocalDirectory::class, $directory);
         $this->assertInstanceOf(FileSystem\Directory::class, $directory);
         $this->assertInstanceOf(FileSystem\Node::class, $directory);
     }
@@ -69,7 +69,7 @@ class DirectoryTest extends TestCase
     public function testFileMethod_ReturnsFileWithinDirectory(string $mixedDir, string $normalizedDir)
     {
         $directory = $this->directory($path);
-        $expected  = new File($directory->path() . $normalizedDir . DIRECTORY_SEPARATOR . 'filename.tmp');
+        $expected  = new LocalFile($directory->path() . $normalizedDir . DIRECTORY_SEPARATOR . 'filename.tmp');
         $this->assertEquals($expected, $directory->file($mixedDir . 'filename.tmp'));
     }
 
@@ -84,8 +84,8 @@ class DirectoryTest extends TestCase
         ];
     }
 
-    private function directory(?string &$path = null): Directory
+    private function directory(?string &$path = null): LocalDirectory
     {
-        return new Directory($path ??= sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tests');
+        return new LocalDirectory($path ??= sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tests');
     }
 }

@@ -9,19 +9,19 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Files;
+namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\File;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Files\File;
+use Shudd3r\PackageFiles\Application\FileSystem\File\LocalFile;
 use Shudd3r\PackageFiles\Application\FileSystem;
 
 
-class FileTest extends TestCase
+class LocalFileTest extends TestCase
 {
     public function testInstantiation()
     {
         $file = $this->file($path);
-        $this->assertInstanceOf(File::class, $file);
+        $this->assertInstanceOf(LocalFile::class, $file);
         $this->assertInstanceOf(FileSystem\File::class, $file);
         $this->assertInstanceOf(FileSystem\File::class, $file);
     }
@@ -88,8 +88,8 @@ class FileTest extends TestCase
         unlink($filename);
     }
 
-    private function file(?string &$path = null): File
+    private function file(?string &$path = null): LocalFile
     {
-        return new File($path ??= sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'test.txt');
+        return new LocalFile($path ??= sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'test.txt');
     }
 }

@@ -9,12 +9,12 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Files;
+namespace Shudd3r\PackageFiles\Application\FileSystem\File;
 
-use Shudd3r\PackageFiles\Application\FileSystem\File as FileInterface;
+use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
-class File implements FileInterface
+class LocalFile implements File
 {
     private string $path;
     private string $contents;
