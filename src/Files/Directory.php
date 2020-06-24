@@ -21,8 +21,6 @@ class Directory implements DirectoryInterface
 
     /**
      * @param string $path absolute directory path
-     *
-     * @throws Exception\InvalidDirectoryException
      */
     public function __construct(string $path)
     {
