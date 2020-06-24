@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Files\Exception;
+namespace Shudd3r\PackageFiles\Exception;
 
 use InvalidArgumentException;
 

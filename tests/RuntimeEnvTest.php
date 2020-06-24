@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Tests;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Terminal;
-use Shudd3r\PackageFiles\Files\Exception;
+use Shudd3r\PackageFiles\Exception;
 
 
 class RuntimeEnvTest extends TestCase
