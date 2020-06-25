@@ -9,9 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Command\Subroutine;
+namespace Shudd3r\PackageFiles\Subroutine;
 
-use Shudd3r\PackageFiles\Command\Subroutine;
+use Shudd3r\PackageFiles\Subroutine;
 use Shudd3r\PackageFiles\Properties;
 
 

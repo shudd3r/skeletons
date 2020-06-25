@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Command;
 
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Properties\Reader;
+use Shudd3r\PackageFiles\Subroutine;
 
 
 class InitCommand implements Command

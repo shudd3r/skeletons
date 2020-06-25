@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Command\Subroutine;
+use Shudd3r\PackageFiles\Subroutine;
 use Shudd3r\PackageFiles\Properties;
 
 

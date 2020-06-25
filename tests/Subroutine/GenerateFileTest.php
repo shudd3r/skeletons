@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Command\Subroutine;
+namespace Shudd3r\PackageFiles\Tests\Subroutine;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Command\Subroutine\GenerateFile;
+use Shudd3r\PackageFiles\Subroutine\GenerateFile;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeProperties;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeTemplate;
 use Shudd3r\PackageFiles\Tests\Doubles\MockedFile;
