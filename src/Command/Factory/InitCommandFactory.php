@@ -30,7 +30,7 @@ class InitCommandFactory implements Factory
         return new InitCommand(new InitialPropertiesReader($env), $subroutine);
     }
 
-    public function generateComposer(RuntimeEnv $env): Subroutine
+    private function generateComposer(RuntimeEnv $env): Subroutine
     {
         $composerFile = $env->packageFiles()->file('composer.json');
         $template     = new Template\ComposerJsonTemplate($composerFile);
@@ -38,7 +38,7 @@ class InitCommandFactory implements Factory
         return new Subroutine\GenerateFile($template, $composerFile);
     }
 
-    public function generateMetaFile(RuntimeEnv $env): Subroutine
+    private function generateMetaFile(RuntimeEnv $env): Subroutine
     {
         $templateFile = $env->skeletonFiles()->file('package.properties');
         $metaDataFile = $env->packageFiles()->file('.github/package.properties');
