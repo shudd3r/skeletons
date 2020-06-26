@@ -13,20 +13,18 @@ namespace Shudd3r\PackageFiles\Tests\Subroutine;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Subroutine\GenerateFile;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeProperties;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeTemplate;
-use Shudd3r\PackageFiles\Tests\Doubles\MockedFile;
+use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class GenerateFileTest extends TestCase
 {
     public function testRenderedStringIsWrittenToFile()
     {
-        $template   = new FakeTemplate($rendered = 'rendered string');
-        $fileMock   = new MockedFile();
+        $template   = new Doubles\FakeTemplate($rendered = 'rendered string');
+        $fileMock   = new Doubles\MockedFile();
         $subroutine = new GenerateFile($template, $fileMock);
 
-        $subroutine->process($properties = new FakeProperties());
+        $subroutine->process($properties = new Doubles\FakeProperties());
 
         $this->assertSame($properties, $template->receivedProperties);
         $this->assertSame($rendered, $fileMock->contents);
