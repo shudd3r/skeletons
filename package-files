@@ -12,7 +12,7 @@
 
 use Shudd3r\PackageFiles\Application;
 use Shudd3r\PackageFiles\RuntimeEnv;
-use Shudd3r\PackageFiles\Commands;
+use Shudd3r\PackageFiles\FactoryRouting;
 use Shudd3r\PackageFiles\Command\Factory;
 
 
@@ -36,7 +36,7 @@ $skeletonFiles = new Application\FileSystem\Directory\LocalDirectory(__DIR__ . D
 $packageFiles  = new Application\FileSystem\Directory\LocalDirectory($rootDirectory);
 $environment   = new RuntimeEnv($terminal, $terminal, $packageFiles, $skeletonFiles);
 
-$routing = new Commands($environment, [
+$routing = new FactoryRouting($environment, [
     'init' => Factory\InitCommandFactory::class
 ]);
 

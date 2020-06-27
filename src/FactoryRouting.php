@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Command\Factory;
 use RuntimeException;
 
 
-class Commands implements Routing
+class FactoryRouting implements Routing
 {
     private RuntimeEnv $runtimeEnv;
     private array      $factories;

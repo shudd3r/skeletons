@@ -12,13 +12,13 @@
 namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Commands;
+use Shudd3r\PackageFiles\FactoryRouting;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\Routing;
 use RuntimeException;
 
 
-class CommandsTest extends TestCase
+class FactoryRoutingTest extends TestCase
 {
     public function testInstantiation()
     {
@@ -49,8 +49,8 @@ class CommandsTest extends TestCase
         $this->assertSame($env, Doubles\FakeCommandFactory::$env);
     }
 
-    private function commands(array $factories = [], Doubles\FakeRuntimeEnv &$env = null): Commands
+    private function commands(array $factories = [], Doubles\FakeRuntimeEnv &$env = null): FactoryRouting
     {
-        return new Commands($env = new Doubles\FakeRuntimeEnv(), $factories);
+        return new FactoryRouting($env = new Doubles\FakeRuntimeEnv(), $factories);
     }
 }
