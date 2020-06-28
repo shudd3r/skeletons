@@ -9,14 +9,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Command;
+namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Properties\Reader;
-use Shudd3r\PackageFiles\Subroutine;
 
 
-class InitCommand implements Command
+class CommandHandler implements Command
 {
     private Reader     $reader;
     private Subroutine $subroutine;
