@@ -119,8 +119,8 @@ class InitCommandFactoryTest extends TestCase
         $env->input()->inputStrings = [
             'user/repo',
             'package/name',
-            'My\Namespace',
-            'package input description'
+            'package input description',
+            'My\Namespace'
         ];
         $options = [
             'i'       => true,

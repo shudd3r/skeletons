@@ -32,6 +32,11 @@ class InitialPropertiesReader implements Properties\Reader
         if (isset($options['i']) || isset($options['interactive'])) {
             $properties = new Properties\InputProperties($this->env->input(), $properties);
         }
-        return new Properties\CachedProperties($properties);
+        return new Properties\PackageProperties(
+            $properties->repositoryName(),
+            $properties->packageName(),
+            $properties->packageDescription(),
+            $properties->sourceNamespace()
+        );
     }
 }

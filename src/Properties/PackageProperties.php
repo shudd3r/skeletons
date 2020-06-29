@@ -14,37 +14,37 @@ namespace Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Properties;
 
 
-class CachedProperties implements Properties
+class PackageProperties implements Properties
 {
-    private Properties $properties;
-
     private string $repoName;
     private string $package;
     private string $description;
     private string $namespace;
 
-    public function __construct(Properties $properties)
-    {
-        $this->properties = $properties;
+    public function __construct(string $repoName, string $package, string $description, string $namespace) {
+        $this->repoName    = $repoName;
+        $this->package     = $package;
+        $this->description = $description;
+        $this->namespace   = $namespace;
     }
 
     public function repositoryName(): string
     {
-        return $this->repoName ??= $this->properties->repositoryName();
+        return $this->repoName;
     }
 
     public function packageName(): string
     {
-        return $this->package ??= $this->properties->packageName();
+        return $this->package;
     }
 
     public function packageDescription(): string
     {
-        return $this->description ??= $this->properties->packageDescription();
+        return $this->description;
     }
 
     public function sourceNamespace(): string
     {
-        return $this->namespace ??= $this->properties->sourceNamespace();
+        return $this->namespace;
     }
 }

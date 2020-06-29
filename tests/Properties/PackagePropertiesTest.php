@@ -16,19 +16,18 @@ use Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class CachedPropertiesTest extends PropertiesTestCase
+class PackagePropertiesTest extends PropertiesTestCase
 {
     public function testPropertiesMemoization()
     {
         $sourceProperties = new Doubles\FakeProperties();
-        $cachedProperties = new Properties\CachedProperties($sourceProperties);
-
-        $this->assertSame([0, 0, 0, 0], array_values($sourceProperties->propertiesCalled));
+        $cachedProperties = new Properties\PackageProperties(
+            $sourceProperties->repositoryName(),
+            $sourceProperties->repositoryName(),
+            $sourceProperties->packageDescription(),
+            $sourceProperties->sourceNamespace()
+        );
 
         $this->assertSamePropertyValues(clone $sourceProperties, $cachedProperties);
-        $this->assertSame([1, 1, 1, 1], array_values($sourceProperties->propertiesCalled));
-
-        $this->assertSamePropertyValues(clone $sourceProperties, $cachedProperties);
-        $this->assertSame([1, 1, 1, 1], array_values($sourceProperties->propertiesCalled));
     }
 }
