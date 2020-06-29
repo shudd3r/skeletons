@@ -13,7 +13,7 @@
 use Shudd3r\PackageFiles\Application;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\FactoryRouting;
-use Shudd3r\PackageFiles\Command\Factory;
+use Shudd3r\PackageFiles\Factory;
 
 
 // This script is assumed to be one of composer dependencies of the package

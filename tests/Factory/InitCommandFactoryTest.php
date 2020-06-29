@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Command;
+namespace Shudd3r\PackageFiles\Tests\Factory;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Command\Factory\InitCommandFactory as Factory;
+use Shudd3r\PackageFiles\Factory\InitCommandFactory as Factory;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Tests\Doubles;
 

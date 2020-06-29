@@ -9,10 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Command;
+namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\RuntimeEnv;
 
 
 interface Factory
