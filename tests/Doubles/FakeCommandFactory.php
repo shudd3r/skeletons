@@ -13,19 +13,16 @@ namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\RuntimeEnv;
 
 
-class FakeCommandFactory implements Factory
+class FakeCommandFactory extends Factory
 {
     public static $procedure;
     public static ?FakeCommand $command;
-    public static ?RuntimeEnv  $env;
     public static ?array       $options;
 
-    public function command(RuntimeEnv $env, array $options): Command
+    public function command(array $options): Command
     {
-        self::$env     = $env;
         self::$options = $options;
         return self::$command = new FakeCommand(self::$procedure);
     }

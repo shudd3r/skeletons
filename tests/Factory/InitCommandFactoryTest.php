@@ -21,14 +21,14 @@ class InitCommandFactoryTest extends TestCase
 {
     public function testFactoryCreatesCommand()
     {
-        $factory = new Factory();
-        $this->assertInstanceOf(Command::class, $factory->command($this->env(), []));
+        $factory = new Factory($this->env());
+        $this->assertInstanceOf(Command::class, $factory->command([]));
     }
 
     public function testPropertiesAreReadFromProjectFiles()
     {
-        $factory = new Factory();
         $env     = $this->env();
+        $factory = new Factory($env);
         $composer = [
             'name'        => 'fooBar/baz',
             'description' => 'My library package',
@@ -38,7 +38,7 @@ class InitCommandFactoryTest extends TestCase
         $iniData = '[remote "origin"] url = https://github.com/username/repositoryOrigin.git';
         $env->packageFiles()->files['.git/config'] = new Doubles\MockedFile($iniData);
 
-        $factory->command($env, ['i' => false])->execute();
+        $factory->command(['i' => false])->execute();
 
         $this->assertMetaDataFile($env, [
             'original_repository' => 'username/repositoryOrigin',
@@ -50,11 +50,11 @@ class InitCommandFactoryTest extends TestCase
 
     public function testUnresolvedPropertiesAreReadFromDirectoryNames()
     {
-        $factory = new Factory();
         $env     = $this->env();
+        $factory = new Factory($env);
         $env->packageFiles()->path = '/path/foo/bar';
 
-        $factory->command($env, ['i' => false])->execute();
+        $factory->command(['i' => false])->execute();
 
         $this->assertMetaDataFile($env, [
             'original_repository' => 'foo/bar',
@@ -66,12 +66,12 @@ class InitCommandFactoryTest extends TestCase
 
     public function testEstablishedPackageNameWillDetermineOtherProperties()
     {
-        $factory  = new Factory();
         $env      = $this->env();
+        $factory  = new Factory($env);
         $composer = json_encode(['name' => 'fooBar/baz']);
         $env->packageFiles()->files['composer.json'] = new Doubles\MockedFile($composer);
 
-        $factory->command($env, ['i' => false])->execute();
+        $factory->command(['i' => false])->execute();
 
         $this->assertMetaDataFile($env, [
             'original_repository' => 'fooBar/baz',
@@ -83,10 +83,10 @@ class InitCommandFactoryTest extends TestCase
 
     public function testCommandLineDefinedPropertiesHavePriorityOverResolved()
     {
-        $factory = new Factory();
         $env     = $this->env();
+        $factory = new Factory($env);
 
-        $factory->command($env, [])->execute();
+        $factory->command([])->execute();
 
         $this->assertMetaDataFile($env, [
             'original_repository' => 'package/directory',
@@ -103,7 +103,7 @@ class InitCommandFactoryTest extends TestCase
             'ns'      => 'Cli\NamespaceX'
         ];
 
-        $factory->command($env, $options)->execute();
+        $factory->command($options)->execute();
         $this->assertMetaDataFile($env, [
             'original_repository' => 'cli/repo',
             'package_name'        => 'cli/package',
@@ -114,8 +114,8 @@ class InitCommandFactoryTest extends TestCase
 
     public function testInteractiveInputStringsWillOverwriteAllProperties()
     {
-        $factory = new Factory();
         $env     = $this->env();
+        $factory = new Factory($env);
         $env->input()->inputStrings = [
             'user/repo',
             'package/name',
@@ -130,7 +130,7 @@ class InitCommandFactoryTest extends TestCase
             'ns'      => 'Cli\NamespaceX'
         ];
 
-        $factory->command($env, $options)->execute();
+        $factory->command($options)->execute();
 
         $this->assertMetaDataFile($env, [
             'original_repository' => 'user/repo',
