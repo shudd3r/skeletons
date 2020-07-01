@@ -16,8 +16,6 @@ use Shudd3r\PackageFiles\Application\Command;
 
 class FakeCommand implements Command
 {
-    public array $options = [];
-
     private $procedure;
 
     public function __construct(?callable $procedure = null)
@@ -25,9 +23,8 @@ class FakeCommand implements Command
         $this->procedure = $procedure;
     }
 
-    public function execute(array $options): void
+    public function execute(): void
     {
-        $this->options = $options;
         if (isset($this->procedure)) { ($this->procedure)(); }
     }
 }

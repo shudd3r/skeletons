@@ -14,5 +14,5 @@ namespace Shudd3r\PackageFiles\Application;
 
 interface Command
 {
-    public function execute(array $options): void;
+    public function execute(): void;
 }

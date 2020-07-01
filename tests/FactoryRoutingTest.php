@@ -28,24 +28,24 @@ class FactoryRoutingTest extends TestCase
     public function testMissingCommand_ThrowsException()
     {
         $this->expectException(RuntimeException::class);
-        $this->commands(['foo' => Doubles\FakeCommandFactory::class])->command('bar');
+        $this->commands(['foo' => Doubles\FakeCommandFactory::class])->command('bar', []);
     }
 
     public function testUnknownCommandFactoryClass_ThrowsException()
     {
         $this->expectException(RuntimeException::class);
-        $this->commands(['foo' => 'Unknown\\Factory\\ClassName'])->command('foo');
+        $this->commands(['foo' => 'Unknown\\Factory\\ClassName'])->command('foo', []);
     }
 
     public function testCommandFactoryClass_ReturnsCommand()
     {
         $commands = $this->commands(['foo' => Doubles\FakeCommandFactory::class]);
-        $this->assertInstanceOf(Command::class, $commands->command('foo'));
+        $this->assertInstanceOf(Command::class, $commands->command('foo', []));
     }
 
     public function testRuntimeEnvDataIsPassedToFactory()
     {
-        $this->commands(['foo' => Doubles\FakeCommandFactory::class], $env)->command('foo');
+        $this->commands(['foo' => Doubles\FakeCommandFactory::class], $env)->command('foo', []);
         $this->assertSame($env, Doubles\FakeCommandFactory::$env);
     }
 

@@ -16,8 +16,6 @@ use Shudd3r\PackageFiles\Properties\Reader;
 
 class FakePropertiesReader implements Reader
 {
-    public array $passedOptions = [];
-
     private FakeProperties $properties;
 
     public function __construct(FakeProperties $properties = null)
@@ -25,9 +23,8 @@ class FakePropertiesReader implements Reader
         $this->properties = $properties ?? new FakeProperties();
     }
 
-    public function properties(array $options): FakeProperties
+    public function properties(): FakeProperties
     {
-        $this->passedOptions = $options;
         return $this->properties;
     }
 }

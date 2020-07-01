@@ -42,27 +42,27 @@ class CommandLineAppTest extends TestCase
         $this->assertSame([Doubles\FakeRouting::EXCEPTION_MESSAGE], $output->messagesSent);
     }
 
-    public function testOptionsArePassedToCommand()
+    public function testOptionsArePassedToRouting()
     {
-        $command = new Doubles\FakeCommand();
-        $app     = $this->app($output, $command);
+        $app = $this->app($output, $routing);
 
         $app->run('command', $options = ['foo' => 'bar']);
-        $this->assertSame($options, $command->options);
+        $this->assertSame($options, $routing->options);
     }
 
     public function testUncheckedExceptionIsCaught()
     {
         $command = new Doubles\FakeCommand(function () { throw new Exception('exc.message'); });
-        $app     = $this->app($output, $command);
+        $routing = new Doubles\FakeRouting($command);
+        $app     = $this->app($output, $routing);
 
         $exitCode = $app->run('command');
         $this->assertSame(1, $exitCode);
         $this->assertSame(['exc.message'], $output->messagesSent);
     }
 
-    private function app(Doubles\MockedTerminal &$output = null, Doubles\FakeCommand &$command = null): CommandLineApp
+    private function app(Doubles\MockedTerminal &$output = null, Doubles\FakeRouting &$routing = null): CommandLineApp
     {
-        return new CommandLineApp($output = new Doubles\MockedTerminal(), new Doubles\FakeRouting($command));
+        return new CommandLineApp($output = new Doubles\MockedTerminal(), $routing ??= new Doubles\FakeRouting());
     }
 }

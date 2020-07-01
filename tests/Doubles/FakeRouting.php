@@ -22,14 +22,16 @@ class FakeRouting implements Routing
     public const EXCEPTION_MESSAGE = 'Unknown command';
 
     public ?FakeCommand $command;
+    public ?array       $options;
 
     public function __construct(?FakeCommand $command = null)
     {
         $this->command = $command;
     }
 
-    public function command(string $command): Command
+    public function command(string $command, array $options): Command
     {
+        $this->options = $options;
         if ($command !== self::VALID_COMMAND) {
             throw new RuntimeException(self::EXCEPTION_MESSAGE);
         }

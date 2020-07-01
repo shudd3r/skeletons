@@ -14,5 +14,5 @@ namespace Shudd3r\PackageFiles\Application;
 
 interface Routing
 {
-    public function command(string $command): Command;
+    public function command(string $command, array $options): Command;
 }

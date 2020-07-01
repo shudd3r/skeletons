@@ -16,5 +16,5 @@ use Shudd3r\PackageFiles\Application\Command;
 
 interface Factory
 {
-    public function command(RuntimeEnv $env): Command;
+    public function command(RuntimeEnv $env, array $options): Command;
 }

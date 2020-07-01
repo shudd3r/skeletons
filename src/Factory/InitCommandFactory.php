@@ -22,12 +22,12 @@ use Shudd3r\PackageFiles\Template;
 
 class InitCommandFactory implements Factory
 {
-    public function command(RuntimeEnv $env): Command
+    public function command(RuntimeEnv $env, array $options): Command
     {
         $subroutine = new Subroutine\SubroutineSequence($this->generateComposer($env), $this->generateMetaFile($env));
         $subroutine = new Subroutine\ValidateProperties($env->output(), $subroutine);
 
-        return new CommandHandler(new InitialPropertiesReader($env), $subroutine);
+        return new CommandHandler(new InitialPropertiesReader($env, $options), $subroutine);
     }
 
     private function generateComposer(RuntimeEnv $env): Subroutine

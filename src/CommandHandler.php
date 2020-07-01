@@ -26,8 +26,8 @@ class CommandHandler implements Command
         $this->subroutine = $subroutine;
     }
 
-    public function execute(array $options): void
+    public function execute(): void
     {
-        $this->subroutine->process($this->reader->properties($options));
+        $this->subroutine->process($this->reader->properties());
     }
 }

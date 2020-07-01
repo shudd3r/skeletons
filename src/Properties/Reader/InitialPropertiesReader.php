@@ -18,18 +18,20 @@ use Shudd3r\PackageFiles\Properties;
 class InitialPropertiesReader implements Properties\Reader
 {
     private RuntimeEnv $env;
+    private array      $options;
 
-    public function __construct(RuntimeEnv $env)
+    public function __construct(RuntimeEnv $env, array $options)
     {
-        $this->env = $env;
+        $this->env     = $env;
+        $this->options = $options;
     }
 
-    public function properties(array $options): Properties
+    public function properties(): Properties
     {
         $properties = new Properties\FileReadProperties($this->env->packageFiles());
-        $properties = new Properties\PredefinedProperties($options, $properties);
+        $properties = new Properties\PredefinedProperties($this->options, $properties);
         $properties = new Properties\ResolvedProperties($properties, $this->env->packageFiles());
-        if (isset($options['i']) || isset($options['interactive'])) {
+        if (isset($this->options['i']) || isset($this->options['interactive'])) {
             $properties = new Properties\InputProperties($this->env->input(), $properties);
         }
         return new Properties\PackageProperties(

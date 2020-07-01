@@ -22,7 +22,7 @@ class InitCommandFactoryTest extends TestCase
     public function testFactoryCreatesCommand()
     {
         $factory = new Factory();
-        $this->assertInstanceOf(Command::class, $factory->command($this->env()));
+        $this->assertInstanceOf(Command::class, $factory->command($this->env(), []));
     }
 
     public function testPropertiesAreReadFromProjectFiles()
@@ -38,7 +38,7 @@ class InitCommandFactoryTest extends TestCase
         $iniData = '[remote "origin"] url = https://github.com/username/repositoryOrigin.git';
         $env->packageFiles()->files['.git/config'] = new Doubles\MockedFile($iniData);
 
-        $factory->command($env)->execute(['i' => false]);
+        $factory->command($env, ['i' => false])->execute();
 
         $this->assertMetaDataFile($env, [
             'original_repository' => 'username/repositoryOrigin',
@@ -54,7 +54,7 @@ class InitCommandFactoryTest extends TestCase
         $env     = $this->env();
         $env->packageFiles()->path = '/path/foo/bar';
 
-        $factory->command($env)->execute(['i' => false]);
+        $factory->command($env, ['i' => false])->execute();
 
         $this->assertMetaDataFile($env, [
             'original_repository' => 'foo/bar',
@@ -71,7 +71,7 @@ class InitCommandFactoryTest extends TestCase
         $composer = json_encode(['name' => 'fooBar/baz']);
         $env->packageFiles()->files['composer.json'] = new Doubles\MockedFile($composer);
 
-        $factory->command($env)->execute(['i' => false]);
+        $factory->command($env, ['i' => false])->execute();
 
         $this->assertMetaDataFile($env, [
             'original_repository' => 'fooBar/baz',
@@ -86,7 +86,7 @@ class InitCommandFactoryTest extends TestCase
         $factory = new Factory();
         $env     = $this->env();
 
-        $factory->command($env)->execute([]);
+        $factory->command($env, [])->execute();
 
         $this->assertMetaDataFile($env, [
             'original_repository' => 'package/directory',
@@ -103,7 +103,7 @@ class InitCommandFactoryTest extends TestCase
             'ns'      => 'Cli\NamespaceX'
         ];
 
-        $factory->command($env)->execute($options);
+        $factory->command($env, $options)->execute();
         $this->assertMetaDataFile($env, [
             'original_repository' => 'cli/repo',
             'package_name'        => 'cli/package',
@@ -130,7 +130,7 @@ class InitCommandFactoryTest extends TestCase
             'ns'      => 'Cli\NamespaceX'
         ];
 
-        $factory->command($env)->execute($options);
+        $factory->command($env, $options)->execute();
 
         $this->assertMetaDataFile($env, [
             'original_repository' => 'user/repo',

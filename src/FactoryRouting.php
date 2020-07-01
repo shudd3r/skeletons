@@ -31,14 +31,14 @@ class FactoryRouting implements Routing
         $this->factories  = $factories;
     }
 
-    public function command(string $command): Command
+    public function command(string $command, array $options): Command
     {
         if (!isset($this->factories[$command]) || !class_exists($this->factories[$command])) {
             throw new RuntimeException("Unknown `{$command}` command");
         }
 
         $className = $this->factories[$command];
-        return $this->factory($className)->command($this->runtimeEnv);
+        return $this->factory($className)->command($this->runtimeEnv, $options);
     }
 
     private function factory(string $className): Factory

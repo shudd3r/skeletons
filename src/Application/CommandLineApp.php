@@ -34,7 +34,7 @@ class CommandLineApp
     public function run(string $command, array $options = []): int
     {
         try {
-            $this->routing->command($command)->execute($options);
+            $this->routing->command($command, $options)->execute();
         } catch (Exception $e) {
             $this->output->send($e->getMessage(), 1);
         }
