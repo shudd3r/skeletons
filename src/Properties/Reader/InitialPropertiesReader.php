@@ -11,34 +11,25 @@
 
 namespace Shudd3r\PackageFiles\Properties\Reader;
 
-use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Properties;
 
 
 class InitialPropertiesReader implements Properties\Reader
 {
-    private RuntimeEnv $env;
-    private array      $options;
+    private Properties $properties;
 
-    public function __construct(RuntimeEnv $env, array $options)
+    public function __construct(Properties $properties)
     {
-        $this->env     = $env;
-        $this->options = $options;
+        $this->properties = $properties;
     }
 
     public function properties(): Properties
     {
-        $properties = new Properties\FileReadProperties($this->env->packageFiles());
-        $properties = new Properties\PredefinedProperties($this->options, $properties);
-        $properties = new Properties\ResolvedProperties($properties, $this->env->packageFiles());
-        if (isset($this->options['i']) || isset($this->options['interactive'])) {
-            $properties = new Properties\InputProperties($this->env->input(), $properties);
-        }
         return new Properties\PackageProperties(
-            $properties->repositoryName(),
-            $properties->packageName(),
-            $properties->packageDescription(),
-            $properties->sourceNamespace()
+            $this->properties->repositoryName(),
+            $this->properties->packageName(),
+            $this->properties->packageDescription(),
+            $this->properties->sourceNamespace()
         );
     }
 }
