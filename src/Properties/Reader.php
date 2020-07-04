@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -14,7 +14,22 @@ namespace Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Properties;
 
 
-interface Reader
+class Reader
 {
-    public function properties(): Properties;
+    private Properties $properties;
+
+    public function __construct(Properties $properties)
+    {
+        $this->properties = $properties;
+    }
+
+    public function properties(): Properties
+    {
+        return new Properties\PackageProperties(
+            $this->properties->repositoryName(),
+            $this->properties->packageName(),
+            $this->properties->packageDescription(),
+            $this->properties->sourceNamespace()
+        );
+    }
 }

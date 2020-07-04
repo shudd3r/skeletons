@@ -16,7 +16,6 @@ use Shudd3r\PackageFiles\CommandHandler;
 use Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Subroutine;
 use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\Properties\Reader\InitialPropertiesReader;
 use Shudd3r\PackageFiles\Template;
 
 
@@ -27,7 +26,7 @@ class InitCommandFactory extends Factory
         $subroutine = new Subroutine\SubroutineSequence($this->generateComposer(), $this->generateMetaFile());
         $subroutine = new Subroutine\ValidateProperties($this->env->output(), $subroutine);
 
-        return new CommandHandler(new InitialPropertiesReader($this->properties($options)), $subroutine);
+        return new CommandHandler(new Properties\Reader($this->properties($options)), $subroutine);
     }
 
     private function generateComposer(): Subroutine

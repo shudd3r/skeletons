@@ -13,25 +13,25 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\CommandHandler;
-use Shudd3r\PackageFiles\Tests\Doubles\FakePropertiesReader;
+use Shudd3r\PackageFiles\Properties\Reader;
 
 
 class CommandHandlerTest extends TestCase
 {
     public function testInstantiation()
     {
-        $command = new CommandHandler(new Doubles\FakePropertiesReader(), new Doubles\MockedSubroutine());
+        $command = new CommandHandler(new Reader(new Doubles\FakeProperties()), new Doubles\MockedSubroutine());
         $this->assertInstanceOf(CommandHandler::class, $command);
     }
 
     public function testPropertiesArePassedToSubroutine()
     {
-        $properties = new Doubles\FakeProperties();
-        $reader     = new FakePropertiesReader($properties);
+        $properties = new Doubles\FakeProperties(['repositoryName' => 'foo/bar']);
+        $reader     = new Reader($properties);
         $subroutine = new Doubles\MockedSubroutine();
         $command    = new CommandHandler($reader, $subroutine);
 
         $command->execute();
-        $this->assertSame($properties, $subroutine->passedProperties);
+        $this->assertEquals($reader->properties(), $subroutine->passedProperties);
     }
 }
