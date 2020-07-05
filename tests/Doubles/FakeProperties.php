@@ -16,15 +16,6 @@ use Shudd3r\PackageFiles\Properties;
 
 class FakeProperties implements Properties
 {
-    private const RESET_COUNTERS = [
-        'repositoryName'     => 0,
-        'packageName'        => 0,
-        'packageDescription' => 0,
-        'sourceNamespace'    => 0
-    ];
-
-    public array $propertiesCalled = self::RESET_COUNTERS;
-
     public array $properties = [
         'repositoryName'     => 'polymorphine/dev',
         'packageName'        => 'polymorphine/dev',
@@ -37,34 +28,23 @@ class FakeProperties implements Properties
         $this->properties = $properties + $this->properties;
     }
 
-    public function __clone()
-    {
-        $this->propertiesCalled = self::RESET_COUNTERS;
-    }
-
     public function repositoryName(): string
     {
-        return $this->get('repositoryName');
+        return $this->properties['repositoryName'];
     }
 
     public function packageName(): string
     {
-        return $this->get('packageName');
+        return $this->properties['packageName'];
     }
 
     public function packageDescription(): string
     {
-        return $this->get('packageDescription');
+        return $this->properties['packageDescription'];
     }
 
     public function sourceNamespace(): string
     {
-        return $this->get('sourceNamespace');
-    }
-
-    private function get(string $key): string
-    {
-        $this->propertiesCalled[$key]++;
-        return $this->properties[$key];
+        return $this->properties['sourceNamespace'];
     }
 }
