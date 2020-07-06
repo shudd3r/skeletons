@@ -13,7 +13,8 @@ namespace Shudd3r\PackageFiles\Factory;
 
 use Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\CommandHandler;
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Properties\Reader;
+use Shudd3r\PackageFiles\Properties\Source;
 use Shudd3r\PackageFiles\Subroutine;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Template;
@@ -26,7 +27,7 @@ class InitCommandFactory extends Factory
         $subroutine = new Subroutine\SubroutineSequence($this->generateComposer(), $this->generateMetaFile());
         $subroutine = new Subroutine\ValidateProperties($this->env->output(), $subroutine);
 
-        return new CommandHandler(new Properties\Reader($this->properties($options)), $subroutine);
+        return new CommandHandler(new Reader($this->source($options)), $subroutine);
     }
 
     private function generateComposer(): Subroutine
@@ -46,15 +47,15 @@ class InitCommandFactory extends Factory
         return new Subroutine\GenerateFile($template, $metaDataFile);
     }
 
-    private function properties(array $options): Properties
+    private function source(array $options): Source
     {
-        $properties = new Properties\FileReadProperties($this->env->packageFiles());
-        $properties = new Properties\PredefinedProperties($options, $properties);
-        $properties = new Properties\ResolvedProperties($properties, $this->env->packageFiles());
+        $source = new Source\PackageConfigFiles($this->env->packageFiles());
+        $source = new Source\CommandLineOptions($options, $source);
+        $source = new Source\DirectoryStructureFallback($source, $this->env->packageFiles());
         if (isset($options['i']) || isset($options['interactive'])) {
-            $properties = new Properties\InputProperties($this->env->input(), $properties);
+            $source = new Source\InteractiveInput($this->env->input(), $source);
         }
 
-        return $properties;
+        return $source;
     }
 }

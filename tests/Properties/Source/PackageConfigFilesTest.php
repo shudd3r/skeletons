@@ -9,15 +9,15 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Properties;
+namespace Shudd3r\PackageFiles\Tests\Properties\Source;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Properties\FileReadProperties;
+use Shudd3r\PackageFiles\Properties\Source\PackageConfigFiles;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use RuntimeException;
 
 
-class FileReadPropertiesTest extends TestCase
+class PackageConfigFilesTest extends TestCase
 {
     private ?Doubles\FakeDirectory $directory;
 
@@ -105,6 +105,6 @@ class FileReadPropertiesTest extends TestCase
 
     private function properties()
     {
-        return new FileReadProperties($this->directory ??= new Doubles\FakeDirectory());
+        return new PackageConfigFiles($this->directory ??= new Doubles\FakeDirectory());
     }
 }

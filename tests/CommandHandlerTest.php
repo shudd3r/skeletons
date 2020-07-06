@@ -20,13 +20,13 @@ class CommandHandlerTest extends TestCase
 {
     public function testInstantiation()
     {
-        $command = new CommandHandler(new Reader(new Doubles\FakeProperties()), new Doubles\MockedSubroutine());
+        $command = new CommandHandler(new Reader(new Doubles\FakeSource()), new Doubles\MockedSubroutine());
         $this->assertInstanceOf(CommandHandler::class, $command);
     }
 
     public function testPropertiesArePassedToSubroutine()
     {
-        $properties = new Doubles\FakeProperties(['repositoryName' => 'foo/bar']);
+        $properties = new Doubles\FakeSource(['repositoryName' => 'foo/bar']);
         $reader     = new Reader($properties);
         $subroutine = new Doubles\MockedSubroutine();
         $command    = new CommandHandler($reader, $subroutine);

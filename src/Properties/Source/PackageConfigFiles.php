@@ -9,14 +9,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Properties;
+namespace Shudd3r\PackageFiles\Properties\Source;
 
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Properties\Source;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use RuntimeException;
 
 
-class FileReadProperties implements Properties
+class PackageConfigFiles implements Source
 {
     private Directory $packageFiles;
     private array     $composerData;

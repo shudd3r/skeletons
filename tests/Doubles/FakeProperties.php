@@ -11,40 +11,27 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Properties\PackageProperties;
 
 
-class FakeProperties implements Properties
+class FakeProperties extends PackageProperties
 {
-    public array $properties = [
+    private const DEFAULT = [
         'repositoryName'     => 'polymorphine/dev',
         'packageName'        => 'polymorphine/dev',
         'packageDescription' => 'Package description',
         'sourceNamespace'    => 'Polymorphine\Dev'
     ];
 
-    public function __construct(array $properties = [])
+    public function __construct(array $values = [])
     {
-        $this->properties = $properties + $this->properties;
-    }
+        $values += self::DEFAULT;
 
-    public function repositoryName(): string
-    {
-        return $this->properties['repositoryName'];
-    }
-
-    public function packageName(): string
-    {
-        return $this->properties['packageName'];
-    }
-
-    public function packageDescription(): string
-    {
-        return $this->properties['packageDescription'];
-    }
-
-    public function sourceNamespace(): string
-    {
-        return $this->properties['sourceNamespace'];
+        parent::__construct(
+            $values['repositoryName'],
+            $values['packageName'],
+            $values['packageDescription'],
+            $values['sourceNamespace']
+        );
     }
 }

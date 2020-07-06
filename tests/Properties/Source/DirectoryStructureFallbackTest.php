@@ -9,22 +9,22 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Properties;
+namespace Shudd3r\PackageFiles\Tests\Properties\Source;
 
-use Shudd3r\PackageFiles\Tests\PropertiesTestCase;
-use Shudd3r\PackageFiles\Properties\ResolvedProperties;
+use Shudd3r\PackageFiles\Tests\Properties\SourceTestCase;
+use Shudd3r\PackageFiles\Properties\Source\DirectoryStructureFallback;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class ResolvedPropertiesTest extends PropertiesTestCase
+class DirectoryStructureFallbackTest extends SourceTestCase
 {
     public function testPropertiesResolvedFromDirectoryPath()
     {
         $sourceProperties = $this->fakeProperties();
         $packageFiles     = new Doubles\FakeDirectory(true, 'some/directory/path');
-        $properties       = new ResolvedProperties($sourceProperties, $packageFiles);
+        $properties       = new DirectoryStructureFallback($sourceProperties, $packageFiles);
 
-        $expected = new Doubles\FakeProperties([
+        $expected = new Doubles\FakeSource([
             'repositoryUrl'      => 'https://github.com/directory/path.git',
             'packageName'        => 'directory/path',
             'packageDescription' => 'directory/path package',
@@ -36,9 +36,9 @@ class ResolvedPropertiesTest extends PropertiesTestCase
     public function testPropertiesResolvedFromPackageName()
     {
         $sourceProperties = $this->fakeProperties(['packageName' => 'foo/bar', 'packageDescription' => 'Random desc']);
-        $properties       = new ResolvedProperties($sourceProperties, new Doubles\FakeDirectory());
+        $properties       = new DirectoryStructureFallback($sourceProperties, new Doubles\FakeDirectory());
 
-        $expected = new Doubles\FakeProperties([
+        $expected = new Doubles\FakeSource([
             'repositoryUrl'      => 'https://github.com/foo/bar.git',
             'packageName'        => 'foo/bar',
             'packageDescription' => 'Random desc',
@@ -47,9 +47,9 @@ class ResolvedPropertiesTest extends PropertiesTestCase
         $this->assertSamePropertyValues($expected, $properties);
     }
 
-    private function fakeProperties(array $properties = []): Doubles\FakeProperties
+    private function fakeProperties(array $properties = []): Doubles\FakeSource
     {
         $empty = ['repositoryUrl' => '', 'packageName' => '', 'packageDescription' => '', 'sourceNamespace' => ''];
-        return new Doubles\FakeProperties($properties + $empty);
+        return new Doubles\FakeSource($properties + $empty);
     }
 }

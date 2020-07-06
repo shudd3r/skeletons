@@ -9,41 +9,41 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Properties;
+namespace Shudd3r\PackageFiles\Properties\Source;
 
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Properties\Source;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 
-class ResolvedProperties implements Properties
+class DirectoryStructureFallback implements Source
 {
-    private Properties $properties;
-    private Directory  $packageFiles;
+    private Source    $source;
+    private Directory $packageFiles;
 
-    public function __construct(Properties $properties, Directory $packageFiles)
+    public function __construct(Source $source, Directory $packageFiles)
     {
-        $this->properties   = $properties;
+        $this->source       = $source;
         $this->packageFiles = $packageFiles;
     }
 
     public function repositoryName(): string
     {
-        return $this->properties->repositoryName() ?: $this->packageName();
+        return $this->source->repositoryName() ?: $this->packageName();
     }
 
     public function packageName(): string
     {
-        return $this->properties->packageName() ?: $this->packageNameFromDirectory();
+        return $this->source->packageName() ?: $this->packageNameFromDirectory();
     }
 
     public function packageDescription(): string
     {
-        return $this->properties->packageDescription() ?: $this->packageName() . ' package';
+        return $this->source->packageDescription() ?: $this->packageName() . ' package';
     }
 
     public function sourceNamespace(): string
     {
-        return $this->properties->sourceNamespace() ?: $this->namespaceFromPackageName();
+        return $this->source->sourceNamespace() ?: $this->namespaceFromPackageName();
     }
 
     private function packageNameFromDirectory(): string

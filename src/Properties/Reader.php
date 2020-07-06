@@ -16,20 +16,20 @@ use Shudd3r\PackageFiles\Properties;
 
 class Reader
 {
-    private Properties $properties;
+    private Source $source;
 
-    public function __construct(Properties $properties)
+    public function __construct(Source $source)
     {
-        $this->properties = $properties;
+        $this->source = $source;
     }
 
     public function properties(): Properties
     {
         return new Properties\PackageProperties(
-            $this->properties->repositoryName(),
-            $this->properties->packageName(),
-            $this->properties->packageDescription(),
-            $this->properties->sourceNamespace()
+            $this->source->repositoryName(),
+            $this->source->packageName(),
+            $this->source->packageDescription(),
+            $this->source->sourceNamespace()
         );
     }
 }

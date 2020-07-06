@@ -9,17 +9,17 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Properties;
+namespace Shudd3r\PackageFiles\Properties\Source;
 
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Properties\Source;
 
 
-class PredefinedProperties implements Properties
+class CommandLineOptions implements Source
 {
-    private Properties $default;
-    private array      $defined;
+    private Source $default;
+    private array  $defined;
 
-    public function __construct(array $definedOptions, Properties $default)
+    public function __construct(array $definedOptions, Source $default)
     {
         $this->default = $default;
         $this->defined = $definedOptions;

@@ -9,18 +9,18 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Properties;
+namespace Shudd3r\PackageFiles\Properties\Source;
 
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Properties\Source;
 use Shudd3r\PackageFiles\Application\Input;
 
 
-class InputProperties implements Properties
+class InteractiveInput implements Source
 {
-    private Input      $input;
-    private Properties $default;
+    private Input  $input;
+    private Source $default;
 
-    public function __construct(Input $input, Properties $default)
+    public function __construct(Input $input, Source $default)
     {
         $this->input   = $input;
         $this->default = $default;

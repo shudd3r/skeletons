@@ -9,28 +9,28 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Properties;
+namespace Shudd3r\PackageFiles\Tests\Properties\Source;
 
-use Shudd3r\PackageFiles\Tests\PropertiesTestCase;
-use Shudd3r\PackageFiles\Properties\InputProperties;
+use Shudd3r\PackageFiles\Tests\Properties\SourceTestCase;
+use Shudd3r\PackageFiles\Properties\Source\InteractiveInput;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class InputPropertiesTest extends PropertiesTestCase
+class InteractiveInputTest extends SourceTestCase
 {
     public function testWithoutInputDefaultValuesAreUsed()
     {
-        $default    = new Doubles\FakeProperties();
-        $properties = new InputProperties(new Doubles\MockedTerminal(), $default);
+        $default    = new Doubles\FakeSource();
+        $properties = new InteractiveInput(new Doubles\MockedTerminal(), $default);
 
         $this->assertSamePropertyValues($default, $properties);
     }
 
     public function testInputValuesAreSet()
     {
-        $default    = new Doubles\FakeProperties();
+        $default    = new Doubles\FakeSource();
         $terminal   = new Doubles\MockedTerminal();
-        $properties = new InputProperties($terminal, $default);
+        $properties = new InteractiveInput($terminal, $default);
 
         $inputProperties = [
             'repositoryName'     => 'input/package',
@@ -41,6 +41,6 @@ class InputPropertiesTest extends PropertiesTestCase
 
         $terminal->inputStrings = array_values($inputProperties);
 
-        $this->assertSamePropertyValues(new Doubles\FakeProperties($inputProperties), $properties);
+        $this->assertSamePropertyValues(new Doubles\FakeSource($inputProperties), $properties);
     }
 }

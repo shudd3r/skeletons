@@ -9,19 +9,19 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Properties;
+namespace Shudd3r\PackageFiles\Tests\Properties\Source;
 
-use Shudd3r\PackageFiles\Tests\PropertiesTestCase;
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Tests\Properties\SourceTestCase;
+use Shudd3r\PackageFiles\Properties\Source\CommandLineOptions;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class PredefinedPropertiesTest extends PropertiesTestCase
+class CommandLineOptionsTest extends SourceTestCase
 {
     public function testWithoutPredefinedOptions_ReturnsSecondaryProperties()
     {
-        $secondary  = new Doubles\FakeProperties();
-        $properties = new Properties\PredefinedProperties([], $secondary);
+        $secondary  = new Doubles\FakeSource();
+        $properties = new CommandLineOptions([], $secondary);
 
         $this->assertSamePropertyValues($secondary, $properties);
     }
@@ -34,10 +34,10 @@ class PredefinedPropertiesTest extends PropertiesTestCase
      */
     public function testPredefinedOptions(array $option, array $expected)
     {
-        $secondary  = new Doubles\FakeProperties();
-        $properties = new Properties\PredefinedProperties($option, $secondary);
+        $secondary  = new Doubles\FakeSource();
+        $properties = new CommandLineOptions($option, $secondary);
 
-        $this->assertSamePropertyValues(new Doubles\FakeProperties($expected + $secondary->properties), $properties);
+        $this->assertSamePropertyValues(new Doubles\FakeSource($expected + $secondary->properties), $properties);
     }
 
     public function predefinedOption()
