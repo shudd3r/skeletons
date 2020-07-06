@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -12,13 +12,37 @@
 namespace Shudd3r\PackageFiles;
 
 
-interface Properties
+class Properties
 {
-    public function repositoryName(): string;
+    private string $repoName;
+    private string $package;
+    private string $description;
+    private string $namespace;
 
-    public function packageName(): string;
+    public function __construct(string $repoName, string $package, string $description, string $namespace) {
+        $this->repoName    = $repoName;
+        $this->package     = $package;
+        $this->description = $description;
+        $this->namespace   = $namespace;
+    }
 
-    public function packageDescription(): string;
+    public function repositoryName(): string
+    {
+        return $this->repoName;
+    }
 
-    public function sourceNamespace(): string;
+    public function packageName(): string
+    {
+        return $this->package;
+    }
+
+    public function packageDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function sourceNamespace(): string
+    {
+        return $this->namespace;
+    }
 }

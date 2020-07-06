@@ -25,7 +25,7 @@ class Reader
 
     public function properties(): Properties
     {
-        return new Properties\PackageProperties(
+        return new Properties(
             $this->source->repositoryName(),
             $this->source->packageName(),
             $this->source->packageDescription(),

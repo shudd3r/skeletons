@@ -11,10 +11,10 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Properties\PackageProperties;
+use Shudd3r\PackageFiles\Properties;
 
 
-class FakeProperties extends PackageProperties
+class FakeProperties extends Properties
 {
     private const DEFAULT = [
         'repositoryName'     => 'polymorphine/dev',
