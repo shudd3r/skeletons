@@ -28,6 +28,7 @@ class CommandHandler implements Command
 
     public function execute(): void
     {
-        $this->subroutine->process($this->reader->properties());
+        if (!$properties = $this->reader->properties()) { return; }
+        $this->subroutine->process($properties);
     }
 }

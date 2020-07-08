@@ -23,7 +23,7 @@ class Reader
         $this->source = $source;
     }
 
-    public function properties(): Properties
+    public function properties(): ?Properties
     {
         return new Properties(
             $this->source->repositoryName(),
