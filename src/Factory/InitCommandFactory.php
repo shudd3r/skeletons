@@ -25,9 +25,7 @@ class InitCommandFactory extends Factory
     public function command(array $options): Command
     {
         $subroutine = new Subroutine\SubroutineSequence($this->generateComposer(), $this->generateMetaFile());
-        $subroutine = new Subroutine\ValidateProperties($this->env->output(), $subroutine);
-
-        return new CommandHandler(new Reader($this->source($options)), $subroutine);
+        return new CommandHandler(new Reader($this->source($options), $this->env->output()), $subroutine);
     }
 
     private function generateComposer(): Subroutine

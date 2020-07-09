@@ -20,18 +20,33 @@ class CommandHandlerTest extends TestCase
 {
     public function testInstantiation()
     {
-        $command = new CommandHandler(new Reader(new Doubles\FakeSource()), new Doubles\MockedSubroutine());
+        $reader  = new Reader(new Doubles\FakeSource(), new Doubles\MockedTerminal());
+        $command = new CommandHandler($reader, new Doubles\MockedSubroutine());
         $this->assertInstanceOf(CommandHandler::class, $command);
     }
 
     public function testPropertiesArePassedToSubroutine()
     {
         $properties = new Doubles\FakeSource(['repositoryName' => 'foo/bar']);
-        $reader     = new Reader($properties);
+        $reader     = new Reader($properties, new Doubles\MockedTerminal());
         $subroutine = new Doubles\MockedSubroutine();
         $command    = new CommandHandler($reader, $subroutine);
 
         $command->execute();
         $this->assertEquals($reader->properties(), $subroutine->passedProperties);
+    }
+
+    public function testUnresolvedPropertiesStopExecution()
+    {
+        $properties = new Doubles\FakeSource();
+        $output     = new Doubles\MockedTerminal();
+        $reader     = new Reader($properties, $output);
+        $subroutine = new Doubles\MockedSubroutine();
+        $command    = new CommandHandler($reader, $subroutine);
+
+        $output->errorCode = 1;
+
+        $command->execute();
+        $this->assertNull($subroutine->passedProperties);
     }
 }
