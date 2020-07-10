@@ -28,10 +28,9 @@ class FakeProperties extends Properties
         $values += self::DEFAULT;
 
         parent::__construct(
-            $values['repositoryName'],
-            $values['packageName'],
-            $values['packageDescription'],
-            $values['sourceNamespace']
+            new Properties\Repository($values['repositoryName']),
+            new Properties\Package($values['packageName'], $values['packageDescription']),
+            new Properties\MainNamespace($values['sourceNamespace'])
         );
     }
 }

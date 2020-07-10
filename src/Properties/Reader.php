@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Properties;
 
 use Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Application\Output;
+use Exception;
 
 
 class Reader
@@ -28,46 +29,29 @@ class Reader
 
     public function properties(): ?Properties
     {
-        $repository = $this->source->repositoryName();
-        if (!$this->isValidRepositoryName($repository)) {
-            $this->output->send("Invalid github repository name `{$repository}`", 1);
+        try {
+            $repository = new Repository($this->source->repositoryName());
+        } catch (Exception $e) {
+            $this->output->send($e->getMessage(), 1);
+            $repository = null;
         }
 
-        $package = $this->source->packageName();
-        if (!$this->isValidPackagistPackage($package)) {
-            $this->output->send("Invalid packagist package name `{$package}`", 1);
+        try {
+            $package = new Package($this->source->packageName(), $this->source->packageDescription());
+        } catch (Exception $e) {
+            $this->output->send($e->getMessage(), 1);
+            $package = null;
         }
 
-        $description = $this->source->packageDescription();
-        if (!$description) {
-            $this->output->send('Package description cannot be empty', 1);
+        try {
+            $namespace = new MainNamespace($this->source->sourceNamespace());
+        } catch (Exception $e) {
+            $this->output->send($e->getMessage(), 1);
+            $namespace = null;
         }
 
-        $namespace = $this->source->sourceNamespace();
-        if (!$this->isValidNamespace($namespace)) {
-            $this->output->send("Invalid namespace `{$namespace}`", 1);
-        }
-
-        return $this->output->exitCode() ? null : new Properties($repository, $package, $description, $namespace);
-    }
-
-    private function isValidRepositoryName(string $repoName): bool
-    {
-        return (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $repoName);
-    }
-
-    private function isValidPackagistPackage(string $package): bool
-    {
-        return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $package);
-    }
-
-    private function isValidNamespace(string $namespace): bool
-    {
-        foreach (explode('\\', $namespace) as $label) {
-            if (!preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label)) {
-                return false;
-            }
-        }
-        return true;
+        return ($repository && $package && $namespace)
+            ? new Properties($repository, $package, $namespace)
+            : null;
     }
 }

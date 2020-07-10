@@ -16,10 +16,9 @@ class ReaderTest extends TestCase
         $reader = new Reader($source, new Doubles\MockedTerminal());
 
         $expected = new Properties(
-            $source->repositoryName(),
-            $source->packageName(),
-            $source->packageDescription(),
-            $source->sourceNamespace()
+            new Properties\Repository($source->repositoryName()),
+            new Properties\Package($source->packageName(), $source->packageDescription()),
+            new Properties\MainNamespace($source->sourceNamespace())
         );
 
         $this->assertEquals($expected, $reader->properties());
@@ -62,10 +61,12 @@ class ReaderTest extends TestCase
         }
     }
 
-    public function testPackageDescriptionValidation()
+    public function testResolvingPackageDescription()
     {
-        $this->assertInvalid(new Doubles\FakeSource(['packageDescription' => '']));
-        $this->assertValid(new Doubles\FakeSource(['packageDescription' => 'Some package description']));
+        $source = new Doubles\FakeSource(['packageName' => 'foo/bar', 'packageDescription' => '']);
+        $reader = new Reader($source, new Doubles\MockedTerminal());
+
+        $this->assertSame('Foo/Bar package', $reader->properties()->packageDescription());
     }
 
     public function testSrcNamespaceValidation()
@@ -91,7 +92,7 @@ class ReaderTest extends TestCase
             'sourceNamespace'    => '_Foo\1Bar\Baz'
         ]);
 
-        $this->assertInvalid($source, 4);
+        $this->assertInvalid($source, 3);
     }
 
     private function assertInvalid(Properties\Source $source, int $errorMessages = 1): void

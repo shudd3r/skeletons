@@ -38,13 +38,10 @@ class CommandHandlerTest extends TestCase
 
     public function testUnresolvedPropertiesStopExecution()
     {
-        $properties = new Doubles\FakeSource();
-        $output     = new Doubles\MockedTerminal();
-        $reader     = new Reader($properties, $output);
+        $properties = new Doubles\FakeSource(['repositoryName' => '']);
+        $reader     = new Reader($properties, new Doubles\MockedTerminal());
         $subroutine = new Doubles\MockedSubroutine();
         $command    = new CommandHandler($reader, $subroutine);
-
-        $output->errorCode = 1;
 
         $command->execute();
         $this->assertNull($subroutine->passedProperties);

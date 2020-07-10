@@ -11,38 +11,41 @@
 
 namespace Shudd3r\PackageFiles;
 
+use Shudd3r\PackageFiles\Properties\Repository;
+use Shudd3r\PackageFiles\Properties\Package;
+use Shudd3r\PackageFiles\Properties\MainNamespace;
+
 
 class Properties
 {
-    private string $repoName;
-    private string $package;
-    private string $description;
-    private string $namespace;
+    private Repository    $repository;
+    private Package       $package;
+    private MainNamespace $namespace;
 
-    public function __construct(string $repoName, string $package, string $description, string $namespace) {
-        $this->repoName    = $repoName;
-        $this->package     = $package;
-        $this->description = $description;
-        $this->namespace   = $namespace;
+    public function __construct(Repository $repository, Package $package, MainNamespace $namespace)
+    {
+        $this->repository = $repository;
+        $this->package    = $package;
+        $this->namespace  = $namespace;
     }
 
     public function repositoryName(): string
     {
-        return $this->repoName;
+        return $this->repository->name();
     }
 
     public function packageName(): string
     {
-        return $this->package;
+        return $this->package->name();
     }
 
     public function packageDescription(): string
     {
-        return $this->description;
+        return $this->package->description();
     }
 
     public function sourceNamespace(): string
     {
-        return $this->namespace;
+        return $this->namespace->src();
     }
 }
