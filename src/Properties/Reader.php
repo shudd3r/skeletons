@@ -29,29 +29,22 @@ class Reader
 
     public function properties(): ?Properties
     {
-        try {
-            $repository = new Repository($this->source->repositoryName());
-        } catch (Exception $e) {
-            $this->output->send($e->getMessage(), 1);
-            $repository = null;
-        }
-
-        try {
-            $package = new Package($this->source->packageName(), $this->source->packageDescription());
-        } catch (Exception $e) {
-            $this->output->send($e->getMessage(), 1);
-            $package = null;
-        }
-
-        try {
-            $namespace = new MainNamespace($this->source->sourceNamespace());
-        } catch (Exception $e) {
-            $this->output->send($e->getMessage(), 1);
-            $namespace = null;
-        }
+        $repository = $this->create(fn() => new Repository($this->source->repositoryName()));
+        $package    = $this->create(fn() => new Package($this->source->packageName(), $this->source->packageDescription()));
+        $namespace  = $this->create(fn() => new MainNamespace($this->source->sourceNamespace()));
 
         return ($repository && $package && $namespace)
             ? new Properties($repository, $package, $namespace)
             : null;
+    }
+
+    public function create(callable $callback)
+    {
+        try {
+            return $callback();
+        } catch (Exception $e) {
+            $this->output->send($e->getMessage(), 1);
+            return null;
+        }
     }
 }
