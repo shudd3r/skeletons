@@ -27,15 +27,17 @@ class Reader
         $this->output = $output;
     }
 
-    public function properties(): ?Properties
+    public function properties(): Properties
     {
         $repository = $this->create(fn() => new Repository($this->source->repositoryName()));
         $package    = $this->create(fn() => new Package($this->source->packageName(), $this->source->packageDescription()));
         $namespace  = $this->create(fn() => new MainNamespace($this->source->sourceNamespace()));
 
-        return ($repository && $package && $namespace)
-            ? new Properties($repository, $package, $namespace)
-            : null;
+        if (!$repository || !$package || !$namespace) {
+            throw new Exception('Cannot process unresolved properties');
+        }
+
+        return new Properties($repository, $package, $namespace);
     }
 
     public function create(callable $callback)

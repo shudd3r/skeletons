@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Tests;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\CommandHandler;
 use Shudd3r\PackageFiles\Properties\Reader;
+use Exception;
 
 
 class CommandHandlerTest extends TestCase
@@ -38,12 +39,10 @@ class CommandHandlerTest extends TestCase
 
     public function testUnresolvedPropertiesStopExecution()
     {
-        $properties = new Doubles\FakeSource(['repositoryName' => '']);
-        $reader     = new Reader($properties, new Doubles\MockedTerminal());
-        $subroutine = new Doubles\MockedSubroutine();
-        $command    = new CommandHandler($reader, $subroutine);
+        $reader  = new Reader(new Doubles\FakeSource(['repositoryName' => '']), new Doubles\MockedTerminal());
+        $command = new CommandHandler($reader, new Doubles\MockedSubroutine());
 
+        $this->expectException(Exception::class);
         $command->execute();
-        $this->assertNull($subroutine->passedProperties);
     }
 }

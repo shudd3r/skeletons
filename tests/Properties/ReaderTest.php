@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Properties\Reader;
 use Shudd3r\PackageFiles\Properties;
 use Shudd3r\PackageFiles\Tests\Doubles;
+use Exception;
 
 
 class ReaderTest extends TestCase
@@ -100,7 +101,9 @@ class ReaderTest extends TestCase
         $output = new Doubles\MockedTerminal();
         $reader = new Reader($source, $output);
 
-        $this->assertNull($reader->properties());
+        $this->expectException(Exception::class);
+        $reader->properties();
+
         $this->assertNotEquals(0, $output->exitCode());
         $this->assertSame($errorMessages, count($output->messagesSent));
     }
