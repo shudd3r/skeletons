@@ -35,7 +35,7 @@ class ComposerJsonTemplate implements Template
 
         $newComposer = array_filter([
             'name'              => Token\Package::NAME,
-            'description'       => Token\Package::DESC,
+            'description'       => Token\Description::TEXT,
             'type'              => 'library',
             'license'           => 'MIT',
             'authors'           => $composer['authors'] ?? [['name' => 'Shudd3r', 'email' => 'q3.shudder@gmail.com']],

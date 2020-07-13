@@ -31,7 +31,8 @@ class Reader
     {
         $createCallbacks = [
             fn() => new Repository($this->source->repositoryName()),
-            fn() => new Package($this->source->packageName(), $this->source->packageDescription()),
+            fn() => new Package($this->source->packageName()),
+            fn() => new Description($this->source->packageDescription()),
             fn() => new MainNamespace($this->source->sourceNamespace())
         ];
 

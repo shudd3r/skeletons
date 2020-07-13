@@ -18,7 +18,8 @@ class ReaderTest extends TestCase
 
         $expected = new Token\TokenGroup(
             new Token\Repository($source->repositoryName()),
-            new Token\Package($source->packageName(), $source->packageDescription()),
+            new Token\Package($source->packageName()),
+            new Token\Description($source->packageDescription()),
             new Token\MainNamespace($source->sourceNamespace())
         );
 
@@ -62,12 +63,9 @@ class ReaderTest extends TestCase
         }
     }
 
-    public function testResolvingPackageDescription()
+    public function testPackageDescriptionValidation()
     {
-        $source = new Doubles\FakeSource(['packageName' => 'foo/bar', 'packageDescription' => '']);
-        $reader = new Reader($source, new Doubles\MockedTerminal());
-
-        $this->assertEquals('Foo/Bar package', $reader->tokens()->replacePlaceholders(Token\Package::DESC));
+        $this->assertInvalid(new Doubles\FakeSource(['packageDescription' => '']));
     }
 
     public function testSrcNamespaceValidation()

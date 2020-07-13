@@ -156,7 +156,7 @@ class InitCommandFactoryTest extends TestCase
             <<<'TPL'
             original_repository={repository.name}
             package_name={package.name}
-            package_desc={package.desc}
+            package_desc={description.text}
             source_namespace={namespace.src}
             TPL
         );

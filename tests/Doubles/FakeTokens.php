@@ -29,7 +29,8 @@ class FakeTokens extends Token\TokenGroup
 
         parent::__construct(
             new Token\Repository($values['repositoryName']),
-            new Token\Package($values['packageName'], $values['packageDescription']),
+            new Token\Package($values['packageName']),
+            new Token\Description($values['packageDescription']),
             new Token\MainNamespace($values['sourceNamespace'])
         );
     }

@@ -23,7 +23,7 @@ class FileTemplateTest extends TestCase
     {
         $contents = <<<'TPL'
             This file is part of {package.name} package.
-            {package.desc}.
+            {description.text}.
             Repository: {repository.name}
             Source files namespace: {namespace.src}
             TPL;

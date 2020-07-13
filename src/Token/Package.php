@@ -18,26 +18,22 @@ use Exception;
 class Package implements Token
 {
     public const NAME  = '{package.name}';
-    public const DESC  = '{package.desc}';
     public const TITLE = '{package.title}';
 
     private string $name;
-    private string $description;
 
-    public function __construct(string $name, string $description)
+    public function __construct(string $name)
     {
         if (!preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $name)) {
             throw new Exception("Invalid packagist package name `{$name}`");
         }
 
-        $this->name        = $name;
-        $this->description = $description ?: $this->titleName() . ' package';
+        $this->name = $name;
     }
 
     public function replacePlaceholders(string $template): string
     {
         $template = str_replace(self::NAME, $this->name, $template);
-        $template = str_replace(self::DESC, $this->description, $template);
         return str_replace(self::TITLE, $this->titleName(), $template);
     }
 
