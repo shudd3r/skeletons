@@ -21,13 +21,13 @@ class ComposerJsonTemplateTest extends TestCase
     public function testMissingComposerFileIsCreatedWithPropertiesValues()
     {
         $template       = new ComposerJsonTemplate(new Doubles\MockedFile('', false));
-        $renderedString = $template->render(new Doubles\FakeProperties());
+        $renderedString = $template->render(new Doubles\FakeTokens());
         $this->assertSame($this->composerJsonForDefaultValues(), $renderedString);
     }
 
     public function testEmptyComposerFileIsFilledWithPropertiesValues()
     {
-        $renderedString = $this->template('{}')->render(new Doubles\FakeProperties());
+        $renderedString = $this->template('{}')->render(new Doubles\FakeTokens());
         $this->assertEquals($this->composerJsonForDefaultValues(), $renderedString);
     }
 
@@ -46,7 +46,7 @@ class ComposerJsonTemplateTest extends TestCase
             'minimum-stability' => 'stable'
         ];
 
-        $renderedString    = $this->template(json_encode($template))->render(new Doubles\FakeProperties());
+        $renderedString    = $this->template(json_encode($template))->render(new Doubles\FakeTokens());
         $composerArrayKeys = array_keys(json_decode($renderedString, true));
 
         $expectedKeys = [
@@ -64,7 +64,7 @@ class ComposerJsonTemplateTest extends TestCase
             'autoload-dev' => ['psr-4' => ['Foo\\Namespace\\Tests' => 'tests/']]
         ]);
 
-        $renderedString = $this->template($autoload)->render(new Doubles\FakeProperties());
+        $renderedString = $this->template($autoload)->render(new Doubles\FakeTokens());
         $composerArray  = json_decode($renderedString, true);
 
         $expected = [

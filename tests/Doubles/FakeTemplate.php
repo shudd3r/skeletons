@@ -12,24 +12,24 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Template;
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Token;
 
 
 class FakeTemplate implements Template
 {
-    public Properties $receivedProperties;
+    public Token $receivedToken;
 
     private string $rendered;
 
     public function __construct(string $rendered)
     {
-        $this->rendered           = $rendered;
-        $this->receivedProperties = new FakeProperties();
+        $this->rendered      = $rendered;
+        $this->receivedToken = new FakeTokens();
     }
 
-    public function render(Properties $properties): string
+    public function render(Token $token): string
     {
-        $this->receivedProperties = $properties;
+        $this->receivedToken = $token;
         return $this->rendered;
     }
 }

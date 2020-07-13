@@ -154,10 +154,10 @@ class InitCommandFactoryTest extends TestCase
         $env->templates->path = '/path/to/skeleton/files';
         $env->templates->files['package.properties'] = new Doubles\MockedFile(
             <<<'TPL'
-            original_repository={REPO_NAME}
-            package_name={PACKAGE_NAME}
-            package_desc={PACKAGE_DESC}
-            source_namespace={PACKAGE_NS}
+            original_repository={repository.name}
+            package_name={package.name}
+            package_desc={package.desc}
+            source_namespace={namespace.src}
             TPL
         );
 

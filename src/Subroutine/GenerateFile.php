@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Subroutine;
 
 use Shudd3r\PackageFiles\Subroutine;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Template;
 
 
@@ -28,9 +28,9 @@ class GenerateFile implements Subroutine
         $this->file     = $file;
     }
 
-    public function process(Properties $properties): void
+    public function process(Token $token): void
     {
-        $contents = $this->template->render($properties);
+        $contents = $this->template->render($token);
         $this->file->write($contents);
     }
 }

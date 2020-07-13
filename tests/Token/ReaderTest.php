@@ -1,10 +1,10 @@
 <?php
 
-namespace Shudd3r\PackageFiles\Tests\Properties;
+namespace Shudd3r\PackageFiles\Tests\Token;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Properties\Reader;
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Token\Reader;
+use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use Exception;
 
@@ -16,13 +16,13 @@ class ReaderTest extends TestCase
         $source = new Doubles\FakeSource();
         $reader = new Reader($source, new Doubles\MockedTerminal());
 
-        $expected = new Properties(
-            new Properties\Repository($source->repositoryName()),
-            new Properties\Package($source->packageName(), $source->packageDescription()),
-            new Properties\MainNamespace($source->sourceNamespace())
+        $expected = new Token\TokenGroup(
+            new Token\Repository($source->repositoryName()),
+            new Token\Package($source->packageName(), $source->packageDescription()),
+            new Token\MainNamespace($source->sourceNamespace())
         );
 
-        $this->assertEquals($expected, $reader->properties());
+        $this->assertEquals($expected, $reader->tokens());
     }
 
     public function testRepositoryNameValidation()
@@ -67,7 +67,7 @@ class ReaderTest extends TestCase
         $source = new Doubles\FakeSource(['packageName' => 'foo/bar', 'packageDescription' => '']);
         $reader = new Reader($source, new Doubles\MockedTerminal());
 
-        $this->assertSame('Foo/Bar package', $reader->properties()->packageDescription());
+        $this->assertEquals('Foo/Bar package', $reader->tokens()->replacePlaceholders(Token\Package::DESC));
     }
 
     public function testSrcNamespaceValidation()
@@ -96,24 +96,24 @@ class ReaderTest extends TestCase
         $this->assertInvalid($source, 3);
     }
 
-    private function assertInvalid(Properties\Source $source, int $errorMessages = 1): void
+    private function assertInvalid(Token\Source $source, int $errorMessages = 1): void
     {
         $output = new Doubles\MockedTerminal();
         $reader = new Reader($source, $output);
 
         $this->expectException(Exception::class);
-        $reader->properties();
+        $reader->tokens();
 
         $this->assertNotEquals(0, $output->exitCode());
         $this->assertSame($errorMessages, count($output->messagesSent));
     }
 
-    private function assertValid(Properties\Source $source): void
+    private function assertValid(Token\Source $source): void
     {
         $output = new Doubles\MockedTerminal();
         $reader = new Reader($source, $output);
 
-        $this->assertInstanceOf(Properties::class, $reader->properties());
+        $this->assertInstanceOf(Token::class, $reader->tokens());
         $this->assertEquals(0, $output->exitCode());
     }
 }

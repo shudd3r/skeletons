@@ -22,14 +22,14 @@ class FileTemplateTest extends TestCase
     public function testFileTokensAreReplacedByProperties()
     {
         $contents = <<<'TPL'
-            This file is part of {PACKAGE_NAME} package.
-            {PACKAGE_DESC}.
-            Repository: {REPO_NAME}
-            Source files namespace: {PACKAGE_NS}
+            This file is part of {package.name} package.
+            {package.desc}.
+            Repository: {repository.name}
+            Source files namespace: {namespace.src}
             TPL;
 
         $template = new FileTemplate(new Doubles\MockedFile($contents));
-        $properties = new Doubles\FakeProperties([
+        $properties = new Doubles\FakeTokens([
             'repositoryName'     => 'polymorphine/package',
             'packageName'        => 'polymorphine/dev',
             'packageDescription' => 'Package description',

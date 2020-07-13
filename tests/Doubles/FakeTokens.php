@@ -11,10 +11,10 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Token;
 
 
-class FakeProperties extends Properties
+class FakeTokens extends Token\TokenGroup
 {
     private const DEFAULT = [
         'repositoryName'     => 'polymorphine/dev',
@@ -28,9 +28,9 @@ class FakeProperties extends Properties
         $values += self::DEFAULT;
 
         parent::__construct(
-            new Properties\Repository($values['repositoryName']),
-            new Properties\Package($values['packageName'], $values['packageDescription']),
-            new Properties\MainNamespace($values['sourceNamespace'])
+            new Token\Repository($values['repositoryName']),
+            new Token\Package($values['packageName'], $values['packageDescription']),
+            new Token\MainNamespace($values['sourceNamespace'])
         );
     }
 }

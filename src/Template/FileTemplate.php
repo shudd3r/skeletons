@@ -13,19 +13,12 @@ namespace Shudd3r\PackageFiles\Template;
 
 use Shudd3r\PackageFiles\Template;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Token;
 use InvalidArgumentException;
 
 
 class FileTemplate implements Template
 {
-    private const TOKENS = [
-        '{REPO_NAME}'    => 'repositoryName',
-        '{PACKAGE_NAME}' => 'packageName',
-        '{PACKAGE_DESC}' => 'packageDescription',
-        '{PACKAGE_NS}'   => 'sourceNamespace'
-    ];
-
     private File $templateFile;
 
     public function __construct(File $templateFile)
@@ -36,16 +29,8 @@ class FileTemplate implements Template
         $this->templateFile = $templateFile;
     }
 
-    public function render(Properties $properties): string
+    public function render(Token $token): string
     {
-        $contents = $this->templateFile->contents();
-        if (!$contents) { return ''; }
-
-        foreach (self::TOKENS as $token => $valueName) {
-            $value    = $properties->{$valueName}();
-            $contents = str_replace($token, $value, $contents);
-        }
-
-        return $contents;
+        return $token->replacePlaceholders($this->templateFile->contents());
     }
 }

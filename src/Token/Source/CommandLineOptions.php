@@ -9,9 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Properties\Source;
+namespace Shudd3r\PackageFiles\Token\Source;
 
-use Shudd3r\PackageFiles\Properties\Source;
+use Shudd3r\PackageFiles\Token\Source;
 
 
 class CommandLineOptions implements Source

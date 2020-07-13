@@ -9,13 +9,16 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Properties;
+namespace Shudd3r\PackageFiles\Token;
 
+use Shudd3r\PackageFiles\Token;
 use Exception;
 
 
-class Repository
+class Repository implements Token
 {
+    public const NAME = '{repository.name}';
+
     private string $name;
 
     public function __construct(string $name)
@@ -26,8 +29,8 @@ class Repository
         $this->name = $name;
     }
 
-    public function name(): string
+    public function replacePlaceholders(string $template): string
     {
-        return $this->name;
+        return str_replace(self::NAME, $this->name, $template);
     }
 }

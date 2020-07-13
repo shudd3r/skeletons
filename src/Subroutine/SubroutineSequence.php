@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Subroutine;
 
 use Shudd3r\PackageFiles\Subroutine;
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Token;
 
 
 class SubroutineSequence implements Subroutine
@@ -25,10 +25,10 @@ class SubroutineSequence implements Subroutine
         $this->subroutines = $subroutines;
     }
 
-    public function process(Properties $properties): void
+    public function process(Token $token): void
     {
         foreach ($this->subroutines as $subroutine) {
-            $subroutine->process($properties);
+            $subroutine->process($token);
         }
     }
 }

@@ -13,8 +13,8 @@ namespace Shudd3r\PackageFiles\Factory;
 
 use Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\CommandHandler;
-use Shudd3r\PackageFiles\Properties\Reader;
-use Shudd3r\PackageFiles\Properties\Source;
+use Shudd3r\PackageFiles\Token\Reader;
+use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Subroutine;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Template;

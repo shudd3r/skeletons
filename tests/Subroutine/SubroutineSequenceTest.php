@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Subroutine;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Subroutine;
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -31,14 +31,14 @@ class SubroutineSequenceTest extends TestCase
         $sequence = new Subroutine\SubroutineSequence(...$subroutines);
         $this->assertSubroutineCalled(null, ...$subroutines);
 
-        $sequence->process($properties = new Doubles\FakeProperties());
-        $this->assertSubroutineCalled($properties, ...$subroutines);
+        $sequence->process($tokens = new Doubles\FakeTokens());
+        $this->assertSubroutineCalled($tokens, ...$subroutines);
     }
 
-    private function assertSubroutineCalled(?Properties $properties, Doubles\MockedSubroutine ...$subroutines): void
+    private function assertSubroutineCalled(?Token $token, Doubles\MockedSubroutine ...$subroutines): void
     {
         foreach ($subroutines as $subroutine) {
-            $this->assertSame($properties, $subroutine->passedProperties);
+            $this->assertSame($token, $subroutine->passedProperties);
         }
     }
 }

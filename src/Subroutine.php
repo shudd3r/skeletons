@@ -14,5 +14,5 @@ namespace Shudd3r\PackageFiles;
 
 interface Subroutine
 {
-    public function process(Properties $properties): void;
+    public function process(Token $token): void;
 }

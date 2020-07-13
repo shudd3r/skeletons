@@ -12,12 +12,12 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Subroutine;
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Token;
 
 
 class MockedSubroutine implements Subroutine
 {
-    public ?Properties $passedProperties = null;
+    public ?Token $passedProperties = null;
     private $procedure;
 
     public function __construct(?callable $procedure = null)
@@ -25,9 +25,9 @@ class MockedSubroutine implements Subroutine
         $this->procedure = $procedure;
     }
 
-    public function process(Properties $properties): void
+    public function process(Token $token): void
     {
-        $this->passedProperties = $properties;
+        $this->passedProperties = $token;
 
         if (!isset($this->procedure)) { return; }
         ($this->procedure)();

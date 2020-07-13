@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Properties\Source;
+namespace Shudd3r\PackageFiles\Tests\Token\Source;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Properties\Source\PackageConfigFiles;
+use Shudd3r\PackageFiles\Token\Source\PackageConfigFiles;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use RuntimeException;
 

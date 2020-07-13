@@ -9,15 +9,15 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Properties;
+namespace Shudd3r\PackageFiles\Tests\Token;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 class SourceTestCase extends TestCase
 {
-    protected function assertSamePropertyValues(Doubles\FakeSource $expected, Properties\Source $properties): void
+    protected function assertSamePropertyValues(Doubles\FakeSource $expected, Token\Source $properties): void
     {
         $this->assertSame($expected->repositoryName(), $properties->repositoryName());
         $this->assertSame($expected->packageName(), $properties->packageName());

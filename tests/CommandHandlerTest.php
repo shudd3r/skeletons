@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\CommandHandler;
-use Shudd3r\PackageFiles\Properties\Reader;
+use Shudd3r\PackageFiles\Token\Reader;
 use Exception;
 
 
@@ -34,7 +34,7 @@ class CommandHandlerTest extends TestCase
         $command    = new CommandHandler($reader, $subroutine);
 
         $command->execute();
-        $this->assertEquals($reader->properties(), $subroutine->passedProperties);
+        $this->assertEquals($reader->tokens(), $subroutine->passedProperties);
     }
 
     public function testUnresolvedPropertiesStopExecution()

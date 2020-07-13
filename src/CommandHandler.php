@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\Properties\Reader;
+use Shudd3r\PackageFiles\Token\Reader;
 
 
 class CommandHandler implements Command
@@ -28,6 +28,6 @@ class CommandHandler implements Command
 
     public function execute(): void
     {
-        $this->subroutine->process($this->reader->properties());
+        $this->subroutine->process($this->reader->tokens());
     }
 }

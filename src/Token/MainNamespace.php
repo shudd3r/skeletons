@@ -9,13 +9,17 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Properties;
+namespace Shudd3r\PackageFiles\Token;
 
+use Shudd3r\PackageFiles\Token;
 use Exception;
 
 
-class MainNamespace
+class MainNamespace implements Token
 {
+    public const SRC = '{namespace.src}';
+    public const SRC_ESC = '{namespace.src.esc}';
+
     private string $namespace;
 
     public function __construct(string $namespace)
@@ -29,8 +33,9 @@ class MainNamespace
         $this->namespace = $namespace;
     }
 
-    public function src(): string
+    public function replacePlaceholders(string $template): string
     {
-        return $this->namespace;
+        $template = str_replace(self::SRC_ESC, str_replace('\\', '\\\\', $this->namespace), $template);
+        return str_replace(self::SRC, $this->namespace, $template);
     }
 }

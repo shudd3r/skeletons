@@ -9,9 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Properties;
+namespace Shudd3r\PackageFiles\Token;
 
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Application\Output;
 use Exception;
 
@@ -27,20 +27,30 @@ class Reader
         $this->output = $output;
     }
 
-    public function properties(): Properties
+    public function tokens(): Token
     {
-        $repository = $this->create(fn() => new Repository($this->source->repositoryName()));
-        $package    = $this->create(fn() => new Package($this->source->packageName(), $this->source->packageDescription()));
-        $namespace  = $this->create(fn() => new MainNamespace($this->source->sourceNamespace()));
+        $createCallbacks = [
+            fn() => new Repository($this->source->repositoryName()),
+            fn() => new Package($this->source->packageName(), $this->source->packageDescription()),
+            fn() => new MainNamespace($this->source->sourceNamespace())
+        ];
 
-        if (!$repository || !$package || !$namespace) {
+        $tokens     = [];
+        $unresolved = false;
+        foreach ($createCallbacks as $createCallback) {
+            $token = $this->createToken($createCallback);
+            if (!$token) { $unresolved = true; }
+            $tokens[] = $token;
+        }
+
+        if ($unresolved) {
             throw new Exception('Cannot process unresolved properties');
         }
 
-        return new Properties($repository, $package, $namespace);
+        return new TokenGroup(...$tokens);
     }
 
-    public function create(callable $callback)
+    private function createToken(callable $callback): ?Token
     {
         try {
             return $callback();

@@ -9,13 +9,18 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Properties;
+namespace Shudd3r\PackageFiles\Token;
 
+use Shudd3r\PackageFiles\Token;
 use Exception;
 
 
-class Package
+class Package implements Token
 {
+    public const NAME  = '{package.name}';
+    public const DESC  = '{package.desc}';
+    public const TITLE = '{package.title}';
+
     private string $name;
     private string $description;
 
@@ -29,17 +34,14 @@ class Package
         $this->description = $description ?: $this->titleName() . ' package';
     }
 
-    public function name(): string
+    public function replacePlaceholders(string $template): string
     {
-        return $this->name;
+        $template = str_replace(self::NAME, $this->name, $template);
+        $template = str_replace(self::DESC, $this->description, $template);
+        return str_replace(self::TITLE, $this->titleName(), $template);
     }
 
-    public function description(): string
-    {
-        return $this->description;
-    }
-
-    public function titleName(): string
+    private function titleName(): string
     {
         [$vendor, $package] = explode('/', $this->name);
         return ucfirst($vendor) . '/' . ucfirst($package);

@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles;
 
 
-interface Template
+interface Token
 {
-    public function render(Token $token): string;
+    public function replacePlaceholders(string $template): string;
 }

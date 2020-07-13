@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Properties\Source;
+namespace Shudd3r\PackageFiles\Tests\Token\Source;
 
-use Shudd3r\PackageFiles\Tests\Properties\SourceTestCase;
-use Shudd3r\PackageFiles\Properties\Source\InteractiveInput;
+use Shudd3r\PackageFiles\Tests\Token\SourceTestCase;
+use Shudd3r\PackageFiles\Token\Source\InteractiveInput;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 

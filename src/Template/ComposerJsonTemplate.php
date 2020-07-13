@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Template;
 
 use Shudd3r\PackageFiles\Template;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
-use Shudd3r\PackageFiles\Properties;
+use Shudd3r\PackageFiles\Token;
 
 
 class ComposerJsonTemplate implements Template
@@ -25,17 +25,17 @@ class ComposerJsonTemplate implements Template
         $this->composerFile = $composerFile;
     }
 
-    public function render(Properties $properties): string
+    public function render(Token $token): string
     {
         $composer = json_decode($this->composerFile->contents(), true) ?? [];
 
-        $namespace   = $properties->sourceNamespace() . '\\';
+        $namespace   = Token\MainNamespace::SRC_ESC . '\\';
         $autoload    = $this->normalizedAutoload($composer['autoload'] ?? [], $namespace, 'src/');
         $autoloadDev = $this->normalizedAutoload($composer['autoload-dev'] ?? [], $namespace . 'Tests\\', 'tests/');
 
         $newComposer = array_filter([
-            'name'              => $properties->packageName(),
-            'description'       => $properties->packageDescription(),
+            'name'              => Token\Package::NAME,
+            'description'       => Token\Package::DESC,
             'type'              => 'library',
             'license'           => 'MIT',
             'authors'           => $composer['authors'] ?? [['name' => 'Shudd3r', 'email' => 'q3.shudder@gmail.com']],
@@ -46,7 +46,9 @@ class ComposerJsonTemplate implements Template
             'require-dev'       => $composer['require-dev'] ?? null
         ]);
 
-        return json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
+        $json = json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
+
+        return $token->replacePlaceholders($json);
     }
 
     private function normalizedAutoload(array $autoload, string $namespace, string $path): array
