@@ -28,6 +28,6 @@ class CommandHandler implements Command
 
     public function execute(): void
     {
-        $this->subroutine->process($this->reader->tokens());
+        $this->subroutine->process($this->reader->token());
     }
 }

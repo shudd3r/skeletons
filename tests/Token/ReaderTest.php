@@ -1,9 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shudd3r\PackageFiles\Tests\Token;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Token\Reader;
+use Shudd3r\PackageFiles\Token\Reader\CompositeReader;
 use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use Exception;
@@ -14,7 +14,7 @@ class ReaderTest extends TestCase
     public function testPropertiesAreBuiltWithSourceData()
     {
         $source = new Doubles\FakeSource();
-        $reader = new Reader($source, new Doubles\MockedTerminal());
+        $reader = new CompositeReader($source, new Doubles\MockedTerminal());
 
         $expected = new Token\TokenGroup(
             new Token\Repository($source->repositoryName()),
@@ -23,7 +23,7 @@ class ReaderTest extends TestCase
             new Token\MainNamespace($source->sourceNamespace())
         );
 
-        $this->assertEquals($expected, $reader->tokens());
+        $this->assertEquals($expected, $reader->token());
     }
 
     public function testRepositoryNameValidation()
@@ -97,10 +97,10 @@ class ReaderTest extends TestCase
     private function assertInvalid(Token\Source $source, int $errorMessages = 1): void
     {
         $output = new Doubles\MockedTerminal();
-        $reader = new Reader($source, $output);
+        $reader = new CompositeReader($source, $output);
 
         $this->expectException(Exception::class);
-        $reader->tokens();
+        $reader->token();
 
         $this->assertNotEquals(0, $output->exitCode());
         $this->assertSame($errorMessages, count($output->messagesSent));
@@ -109,9 +109,9 @@ class ReaderTest extends TestCase
     private function assertValid(Token\Source $source): void
     {
         $output = new Doubles\MockedTerminal();
-        $reader = new Reader($source, $output);
+        $reader = new CompositeReader($source, $output);
 
-        $this->assertInstanceOf(Token::class, $reader->tokens());
+        $this->assertInstanceOf(Token::class, $reader->token());
         $this->assertEquals(0, $output->exitCode());
     }
 }
