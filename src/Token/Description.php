@@ -26,6 +26,7 @@ class Description implements Token
         if (!$description) {
             throw new Exception("Empty package description");
         }
+
         $this->description = $description;
     }
 

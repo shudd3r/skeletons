@@ -26,6 +26,7 @@ class Repository implements Token
         if (!preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $name)) {
             throw new Exception("Invalid github repository name `{$name}`");
         }
+
         $this->name = $name;
     }
 
