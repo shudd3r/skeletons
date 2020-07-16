@@ -13,8 +13,7 @@ namespace Shudd3r\PackageFiles\Factory;
 
 use Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\CommandHandler;
-use Shudd3r\PackageFiles\Token\Reader;
-use Shudd3r\PackageFiles\Token\Source;
+use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Subroutine;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Template;
@@ -25,7 +24,7 @@ class InitCommandFactory extends Factory
     public function command(array $options): Command
     {
         $subroutine = new Subroutine\SubroutineSequence($this->generateComposer(), $this->generateMetaFile());
-        $reader     = new Reader\CompositeReader($this->source($options), $this->env->output());
+        $reader     = new Token\Reader\CompositeReader($this->env->output(), ...$this->tokenReaderFactories($options));
         return new CommandHandler($reader, $subroutine);
     }
 
@@ -46,15 +45,20 @@ class InitCommandFactory extends Factory
         return new Subroutine\GenerateFile($template, $metaDataFile);
     }
 
-    private function source(array $options): Source
+    private function tokenReaderFactories(array $options): array
     {
-        $source = new Source\PackageConfigFiles($this->env->packageFiles());
-        $source = new Source\CommandLineOptions($options, $source);
-        $source = new Source\DirectoryStructureFallback($source, $this->env->packageFiles());
+        $source = new Token\Source\PackageConfigFiles($this->env->packageFiles());
+        $source = new Token\Source\CommandLineOptions($options, $source);
+        $source = new Token\Source\DirectoryStructureFallback($source, $this->env->packageFiles());
         if (isset($options['i']) || isset($options['interactive'])) {
-            $source = new Source\InteractiveInput($this->env->input(), $source);
+            $source = new Token\Source\InteractiveInput($this->env->input(), $source);
         }
 
-        return $source;
+        return [
+            fn() => new Token\Repository($source->repositoryName()),
+            fn() => new Token\Package($source->packageName()),
+            fn() => new Token\Description($source->packageDescription()),
+            fn() => new Token\MainNamespace($source->sourceNamespace())
+        ];
     }
 }

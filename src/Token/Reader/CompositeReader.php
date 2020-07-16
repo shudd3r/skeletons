@@ -12,35 +12,28 @@
 namespace Shudd3r\PackageFiles\Token\Reader;
 
 use Shudd3r\PackageFiles\Token;
-use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Application\Output;
 use Exception;
 
 
 class CompositeReader implements Token\Reader
 {
-    private Source $source;
+    /** @var callable[] fn() => Token */
+    private array  $factories;
     private Output $output;
 
-    public function __construct(Source $source, Output $output)
+    public function __construct(Output $output, callable ...$factories)
     {
-        $this->source = $source;
-        $this->output = $output;
+        $this->output    = $output;
+        $this->factories = $factories;
     }
 
     public function token(): Token
     {
-        $createCallbacks = [
-            fn() => new Token\Repository($this->source->repositoryName()),
-            fn() => new Token\Package($this->source->packageName()),
-            fn() => new Token\Description($this->source->packageDescription()),
-            fn() => new Token\MainNamespace($this->source->sourceNamespace())
-        ];
-
         $tokens     = [];
         $unresolved = false;
-        foreach ($createCallbacks as $createCallback) {
-            $token = $this->createToken($createCallback);
+        foreach ($this->factories as $factory) {
+            $token = $this->createToken($factory);
             if (!$token) { $unresolved = true; }
             $tokens[] = $token;
         }
