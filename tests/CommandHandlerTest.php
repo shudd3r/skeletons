@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\CommandHandler;
-use Shudd3r\PackageFiles\Token\Reader\CompositeReader;
 use Exception;
 
 
@@ -21,15 +20,13 @@ class CommandHandlerTest extends TestCase
 {
     public function testInstantiation()
     {
-        $reader  = new CompositeReader(new Doubles\FakeSource(), new Doubles\MockedTerminal());
-        $command = new CommandHandler($reader, new Doubles\MockedSubroutine());
+        $command = new CommandHandler(new Doubles\FakeReader(), new Doubles\MockedSubroutine());
         $this->assertInstanceOf(CommandHandler::class, $command);
     }
 
     public function testPropertiesArePassedToSubroutine()
     {
-        $properties = new Doubles\FakeSource(['repositoryName' => 'foo/bar']);
-        $reader     = new CompositeReader($properties, new Doubles\MockedTerminal());
+        $reader     = new Doubles\FakeReader();
         $subroutine = new Doubles\MockedSubroutine();
         $command    = new CommandHandler($reader, $subroutine);
 
@@ -39,8 +36,7 @@ class CommandHandlerTest extends TestCase
 
     public function testUnresolvedPropertiesStopExecution()
     {
-        $reader  = new CompositeReader(new Doubles\FakeSource(['repositoryName' => '']), new Doubles\MockedTerminal());
-        $command = new CommandHandler($reader, new Doubles\MockedSubroutine());
+        $command = new CommandHandler(new Doubles\FakeReader('foo', false), new Doubles\MockedSubroutine());
 
         $this->expectException(Exception::class);
         $command->execute();
