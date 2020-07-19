@@ -9,7 +9,7 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 use Exception;
 
 
-class ReaderTest extends TestCase
+class CompositeReaderTest extends TestCase
 {
     public function testPropertiesAreBuiltWithSourceData()
     {
