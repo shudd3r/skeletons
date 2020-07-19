@@ -18,16 +18,16 @@ use Shudd3r\PackageFiles\Token;
 class FakeReader implements Reader
 {
     private string $value;
-    private bool   $valid;
+    private string $exception;
 
-    public function __construct(string $value = 'foo/bar', bool $valid = true)
+    public function __construct(string $value = 'foo/bar', string $exception = '')
     {
-        $this->value = $value;
-        $this->valid = $valid;
+        $this->value     = $value;
+        $this->exception = $exception;
     }
 
     public function token(): Token
     {
-        return new FakeToken($this->value, $this->valid);
+        return new FakeToken($this->value, $this->exception);
     }
 }

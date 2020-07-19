@@ -36,7 +36,7 @@ class CommandHandlerTest extends TestCase
 
     public function testUnresolvedPropertiesStopExecution()
     {
-        $command = new CommandHandler(new Doubles\FakeReader('foo', false), new Doubles\MockedSubroutine());
+        $command = new CommandHandler(new Doubles\FakeReader('foo', 'exception'), new Doubles\MockedSubroutine());
 
         $this->expectException(Exception::class);
         $command->execute();

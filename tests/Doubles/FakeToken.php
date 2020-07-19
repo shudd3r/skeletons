@@ -21,10 +21,10 @@ class FakeToken implements Token
 
     private string $value;
 
-    public function __construct(string $value = 'foo/bar', bool $valid = true)
+    public function __construct(string $value = 'foo/bar', string $exception = '')
     {
-        if (!$valid) {
-            throw new Exception();
+        if ($exception) {
+            throw new Exception($exception);
         }
 
         $this->value = $value;
