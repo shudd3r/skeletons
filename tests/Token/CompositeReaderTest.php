@@ -1,5 +1,14 @@
 <?php declare(strict_types=1);
 
+/*
+ * This file is part of Shudd3r/Package-Files package.
+ *
+ * (c) Shudd3r <q3.shudder@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Shudd3r\PackageFiles\Tests\Token;
 
 use PHPUnit\Framework\TestCase;
@@ -11,107 +20,31 @@ use Exception;
 
 class CompositeReaderTest extends TestCase
 {
-    public function testPropertiesAreBuiltWithSourceData()
+    public function testTokensAreBuiltWithProvidedCallbacks()
     {
-        $source = new Doubles\FakeSource();
-        $reader = new CompositeReader($source, new Doubles\MockedTerminal());
+        $callbacks = [fn() => new Doubles\FakeToken('foo'), fn() => new Doubles\FakeToken('bar')];
+        $reader    = new CompositeReader(new Doubles\MockedTerminal(), ...$callbacks);
 
-        $expected = new Token\TokenGroup(
-            new Token\Repository($source->repositoryName()),
-            new Token\Package($source->packageName()),
-            new Token\Description($source->packageDescription()),
-            new Token\MainNamespace($source->sourceNamespace())
-        );
-
+        $expected = new Token\TokenGroup(new Doubles\FakeToken('foo'), new Doubles\FakeToken('bar'));
         $this->assertEquals($expected, $reader->token());
     }
 
-    public function testRepositoryNameValidation()
+    public function testInvalidTokens()
     {
-        $name = function (int $length) { return str_pad('x', $length, 'x'); };
+        $errorMessages = ['Invalid Foo token', 'Invalid Bar token'];
 
-        $longAccount  = $name(40) . '/name';
-        $shortAccount = $name(39) . '/name';
-        $longRepo     = 'user/' . $name(101);
-        $shortRepo    = 'user/' . $name(100);
-
-        $githubUrls = [
-            'repo/na(me)' => 'repo/na-me',
-            '-repo/name'  => 'r-epo/name',
-            'repo_/name'  => 'repo/name',
-            're--po/name' => 're-po/name',
-            $longAccount  => $shortAccount,
-            $longRepo     => $shortRepo
+        $factories = [
+            fn() => new Doubles\FakeToken('foo', $errorMessages[0]),
+            fn() => new Doubles\FakeToken('bar', $errorMessages[1]),
+            fn() => new Doubles\FakeToken('baz')
         ];
 
-        foreach ($githubUrls as $invalid => $valid) {
-            $this->assertInvalid(new Doubles\FakeSource(['repositoryName' => $invalid]));
-            $this->assertValid(new Doubles\FakeSource(['repositoryName' => $valid]));
-        }
-    }
-
-    public function testPackageNameValidation()
-    {
-        $packageNames = [
-            '-Packa-ge1/na.me'   => 'Packa-ge1/na.me',
-            '1Package000_/na_Me' => '1Package000/na_Me'
-        ];
-
-        foreach ($packageNames as $invalid => $valid) {
-            $this->assertInvalid(new Doubles\FakeSource(['packageName' => $invalid]));
-            $this->assertValid(new Doubles\FakeSource(['packageName' => $valid]));
-        }
-    }
-
-    public function testPackageDescriptionValidation()
-    {
-        $this->assertInvalid(new Doubles\FakeSource(['packageDescription' => '']));
-    }
-
-    public function testSrcNamespaceValidation()
-    {
-        $namespaces = [
-            'Foo/Bar'           => 'Foo\Bar',
-            '_Foo\1Bar\Baz'     => '_Foo\_1Bar\Baz',
-            'Package:000\na_Me' => 'Package000\na_Me'
-        ];
-
-        foreach ($namespaces as $invalid => $valid) {
-            $this->assertInvalid(new Doubles\FakeSource(['sourceNamespace' => $invalid]));
-            $this->assertValid(new Doubles\FakeSource(['sourceNamespace' => $valid]));
-        }
-    }
-
-    public function testMultipleValidationErrors()
-    {
-        $source = new Doubles\FakeSource([
-            'repositoryName'     => 'repo',
-            'packageName'        => '1Package000_/na_Me',
-            'packageDescription' => '',
-            'sourceNamespace'    => '_Foo\1Bar\Baz'
-        ]);
-
-        $this->assertInvalid($source, 3);
-    }
-
-    private function assertInvalid(Token\Source $source, int $errorMessages = 1): void
-    {
-        $output = new Doubles\MockedTerminal();
-        $reader = new CompositeReader($source, $output);
+        $reader = new CompositeReader($output = new Doubles\MockedTerminal(), ...$factories);
 
         $this->expectException(Exception::class);
         $reader->token();
 
-        $this->assertNotEquals(0, $output->exitCode());
-        $this->assertSame($errorMessages, count($output->messagesSent));
-    }
-
-    private function assertValid(Token\Source $source): void
-    {
-        $output = new Doubles\MockedTerminal();
-        $reader = new CompositeReader($source, $output);
-
-        $this->assertInstanceOf(Token::class, $reader->token());
-        $this->assertEquals(0, $output->exitCode());
+        $this->assertSame($errorMessages, $output->messagesSent);
+        $this->assertNotEquals(0, $output->errorCode);
     }
 }
