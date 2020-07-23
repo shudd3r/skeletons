@@ -17,7 +17,7 @@ use Exception;
 
 class FakeToken implements Token
 {
-    public static string $placeholder = '{fake.token}';
+    public string $placeholder = '{fake.token}';
 
     private string $value;
 
@@ -32,6 +32,6 @@ class FakeToken implements Token
 
     public function replacePlaceholders(string $template): string
     {
-        return str_replace(self::$placeholder, $this->value, $template);
+        return str_replace($this->placeholder, $this->value, $template);
     }
 }
