@@ -17,14 +17,13 @@ use Shudd3r\PackageFiles\Token;
 
 class FakeTemplate implements Template
 {
-    public Token $receivedToken;
+    public ?Token $receivedToken = null;
 
     private string $rendered;
 
     public function __construct(string $rendered)
     {
-        $this->rendered      = $rendered;
-        $this->receivedToken = new FakeTokens();
+        $this->rendered = $rendered;
     }
 
     public function render(Token $token): string
