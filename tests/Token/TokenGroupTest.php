@@ -28,20 +28,12 @@ class TokenGroupTest extends TestCase
 
         $tokens = [];
         foreach ($replace as $value => $placeholder) {
-            $tokens[] = $this->token($placeholder, $value);
+            $tokens[] = Doubles\FakeToken::withPlaceholder($placeholder, $value);
         }
 
         $token = new Token\TokenGroup(...$tokens);
         $template = "Template with {$replace['FOO']}-{$replace['BAR']}-{$replace['BAZ']}";
 
         $this->assertSame('Template with FOO-BAR-BAZ', $token->replacePlaceholders($template));
-    }
-
-    private function token(string $placeholder, string $value): Token
-    {
-        $token = new Doubles\FakeToken($value);
-        $token->placeholder = $placeholder;
-
-        return $token;
     }
 }

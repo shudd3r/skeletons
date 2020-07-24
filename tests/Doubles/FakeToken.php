@@ -30,6 +30,14 @@ class FakeToken implements Token
         $this->value = $value;
     }
 
+    public static function withPlaceholder(string $placeholder, string $value): self
+    {
+        $token = new self($value);
+        $token->placeholder = $placeholder;
+
+        return $token;
+    }
+
     public function replacePlaceholders(string $template): string
     {
         return str_replace($this->placeholder, $this->value, $template);
