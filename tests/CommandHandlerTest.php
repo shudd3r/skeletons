@@ -31,7 +31,7 @@ class CommandHandlerTest extends TestCase
         $command    = new CommandHandler($reader, $subroutine);
 
         $command->execute();
-        $this->assertEquals($reader->token(), $subroutine->passedProperties);
+        $this->assertEquals($reader->token(), $subroutine->passedToken);
     }
 
     public function testUnresolvedPropertiesStopExecution()

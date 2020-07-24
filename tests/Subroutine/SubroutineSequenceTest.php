@@ -31,14 +31,14 @@ class SubroutineSequenceTest extends TestCase
         $sequence = new Subroutine\SubroutineSequence(...$subroutines);
         $this->assertSubroutineCalled(null, ...$subroutines);
 
-        $sequence->process($tokens = new Doubles\FakeTokens());
+        $sequence->process($tokens = new Doubles\FakeToken());
         $this->assertSubroutineCalled($tokens, ...$subroutines);
     }
 
     private function assertSubroutineCalled(?Token $token, Doubles\MockedSubroutine ...$subroutines): void
     {
         foreach ($subroutines as $subroutine) {
-            $this->assertSame($token, $subroutine->passedProperties);
+            $this->assertSame($token, $subroutine->passedToken);
         }
     }
 }
