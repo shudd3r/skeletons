@@ -13,21 +13,22 @@ namespace Shudd3r\PackageFiles\Tests\Template;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Template\ComposerJsonTemplate;
-use Shudd3r\PackageFiles\Tests\Doubles;
+use Shudd3r\PackageFiles\Token;
+use Shudd3r\PackageFiles\Tests\Doubles\MockedFile;
 
 
 class ComposerJsonTemplateTest extends TestCase
 {
     public function testMissingComposerFileIsCreatedWithPropertiesValues()
     {
-        $template       = new ComposerJsonTemplate(new Doubles\MockedFile('', false));
-        $renderedString = $template->render(new Doubles\FakeTokens());
+        $template       = new ComposerJsonTemplate(new MockedFile('', false));
+        $renderedString = $template->render($this->tokens());
         $this->assertSame($this->composerJsonForDefaultValues(), $renderedString);
     }
 
     public function testEmptyComposerFileIsFilledWithPropertiesValues()
     {
-        $renderedString = $this->template('{}')->render(new Doubles\FakeTokens());
+        $renderedString = $this->template('{}')->render($this->tokens());
         $this->assertEquals($this->composerJsonForDefaultValues(), $renderedString);
     }
 
@@ -46,7 +47,7 @@ class ComposerJsonTemplateTest extends TestCase
             'minimum-stability' => 'stable'
         ];
 
-        $renderedString    = $this->template(json_encode($template))->render(new Doubles\FakeTokens());
+        $renderedString    = $this->template(json_encode($template))->render($this->tokens());
         $composerArrayKeys = array_keys(json_decode($renderedString, true));
 
         $expectedKeys = [
@@ -64,12 +65,12 @@ class ComposerJsonTemplateTest extends TestCase
             'autoload-dev' => ['psr-4' => ['Foo\\Namespace\\Tests' => 'tests/']]
         ]);
 
-        $renderedString = $this->template($autoload)->render(new Doubles\FakeTokens());
+        $renderedString = $this->template($autoload)->render($this->tokens());
         $composerArray  = json_decode($renderedString, true);
 
         $expected = [
-            'autoload'     => ['psr-4' => ['Polymorphine\\Dev\\' => 'src/'], 'foo' => ['bar']],
-            'autoload-dev' => ['psr-4' => ['Polymorphine\\Dev\\Tests\\' => 'tests/']]
+            'autoload'     => ['psr-4' => ['Main\\Namespace\\' => 'src/'], 'foo' => ['bar']],
+            'autoload-dev' => ['psr-4' => ['Main\\Namespace\\Tests\\' => 'tests/']]
         ];
 
         $this->assertSame($expected['autoload'], $composerArray['autoload']);
@@ -78,15 +79,24 @@ class ComposerJsonTemplateTest extends TestCase
 
     private function template(string $contents)
     {
-        return new ComposerJsonTemplate(new Doubles\MockedFile($contents));
+        return new ComposerJsonTemplate(new MockedFile($contents));
+    }
+
+    private function tokens(): Token
+    {
+        return new Token\TokenGroup(
+            new Token\Package('package/name'),
+            new Token\Description('Description text'),
+            new Token\MainNamespace('Main\\Namespace')
+        );
     }
 
     private function composerJsonForDefaultValues(): string
     {
         return <<<'JSON'
             {
-                "name": "polymorphine/dev",
-                "description": "Package description",
+                "name": "package/name",
+                "description": "Description text",
                 "type": "library",
                 "license": "MIT",
                 "authors": [
@@ -97,12 +107,12 @@ class ComposerJsonTemplateTest extends TestCase
                 ],
                 "autoload": {
                     "psr-4": {
-                        "Polymorphine\\Dev\\": "src/"
+                        "Main\\Namespace\\": "src/"
                     }
                 },
                 "autoload-dev": {
                     "psr-4": {
-                        "Polymorphine\\Dev\\Tests\\": "tests/"
+                        "Main\\Namespace\\Tests\\": "tests/"
                     }
                 },
                 "minimum-stability": "stable"
