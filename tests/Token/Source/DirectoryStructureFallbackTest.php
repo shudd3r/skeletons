@@ -20,9 +20,9 @@ class DirectoryStructureFallbackTest extends SourceTestCase
 {
     public function testPropertiesResolvedFromDirectoryPath()
     {
-        $sourceProperties = $this->fakeProperties();
-        $packageFiles     = new Doubles\FakeDirectory(true, 'some/directory/path');
-        $properties       = new DirectoryStructureFallback($sourceProperties, $packageFiles);
+        $source       = $this->fakeSource();
+        $packageFiles = new Doubles\FakeDirectory(true, 'some/directory/path');
+        $fallback     = new DirectoryStructureFallback($source, $packageFiles);
 
         $expected = new Doubles\FakeSource([
             'repositoryUrl'      => 'https://github.com/directory/path.git',
@@ -30,13 +30,13 @@ class DirectoryStructureFallbackTest extends SourceTestCase
             'packageDescription' => 'directory/path package',
             'sourceNamespace'    => 'Directory\\Path'
         ]);
-        $this->assertSamePropertyValues($expected, $properties);
+        $this->assertSameSourceValues($expected, $fallback);
     }
 
     public function testPropertiesResolvedFromPackageName()
     {
-        $sourceProperties = $this->fakeProperties(['packageName' => 'foo/bar', 'packageDescription' => 'Random desc']);
-        $properties       = new DirectoryStructureFallback($sourceProperties, new Doubles\FakeDirectory());
+        $source   = $this->fakeSource(['packageName' => 'foo/bar', 'packageDescription' => 'Random desc']);
+        $fallback = new DirectoryStructureFallback($source, new Doubles\FakeDirectory());
 
         $expected = new Doubles\FakeSource([
             'repositoryUrl'      => 'https://github.com/foo/bar.git',
@@ -44,10 +44,10 @@ class DirectoryStructureFallbackTest extends SourceTestCase
             'packageDescription' => 'Random desc',
             'sourceNamespace'    => 'Foo\\Bar'
         ]);
-        $this->assertSamePropertyValues($expected, $properties);
+        $this->assertSameSourceValues($expected, $fallback);
     }
 
-    private function fakeProperties(array $properties = []): Doubles\FakeSource
+    private function fakeSource(array $properties = []): Doubles\FakeSource
     {
         $empty = ['repositoryUrl' => '', 'packageName' => '', 'packageDescription' => '', 'sourceNamespace' => ''];
         return new Doubles\FakeSource($properties + $empty);

@@ -17,11 +17,11 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class SourceTestCase extends TestCase
 {
-    protected function assertSamePropertyValues(Doubles\FakeSource $expected, Token\Source $properties): void
+    protected function assertSameSourceValues(Doubles\FakeSource $expected, Token\Source $source): void
     {
-        $this->assertSame($expected->repositoryName(), $properties->repositoryName());
-        $this->assertSame($expected->packageName(), $properties->packageName());
-        $this->assertSame($expected->packageDescription(), $properties->packageDescription());
-        $this->assertSame($expected->sourceNamespace(), $properties->sourceNamespace());
+        $this->assertSame($expected->repositoryName(), $source->repositoryName());
+        $this->assertSame($expected->packageName(), $source->packageName());
+        $this->assertSame($expected->packageDescription(), $source->packageDescription());
+        $this->assertSame($expected->sourceNamespace(), $source->sourceNamespace());
     }
 }

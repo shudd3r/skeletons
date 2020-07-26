@@ -20,10 +20,10 @@ class CommandLineOptionsTest extends SourceTestCase
 {
     public function testWithoutPredefinedOptions_ReturnsSecondaryProperties()
     {
-        $secondary  = new Doubles\FakeSource();
-        $properties = new CommandLineOptions([], $secondary);
+        $secondary = new Doubles\FakeSource();
+        $source    = new CommandLineOptions([], $secondary);
 
-        $this->assertSamePropertyValues($secondary, $properties);
+        $this->assertSameSourceValues($secondary, $source);
     }
 
     /**
@@ -34,10 +34,10 @@ class CommandLineOptionsTest extends SourceTestCase
      */
     public function testPredefinedOptions(array $option, array $expected)
     {
-        $secondary  = new Doubles\FakeSource();
-        $properties = new CommandLineOptions($option, $secondary);
+        $secondary = new Doubles\FakeSource();
+        $source    = new CommandLineOptions($option, $secondary);
 
-        $this->assertSamePropertyValues(new Doubles\FakeSource($expected + $secondary->properties), $properties);
+        $this->assertSameSourceValues(new Doubles\FakeSource($expected + $secondary->properties), $source);
     }
 
     public function predefinedOption()

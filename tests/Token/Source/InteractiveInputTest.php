@@ -20,17 +20,17 @@ class InteractiveInputTest extends SourceTestCase
 {
     public function testWithoutInputDefaultValuesAreUsed()
     {
-        $default    = new Doubles\FakeSource();
-        $properties = new InteractiveInput(new Doubles\MockedTerminal(), $default);
+        $default = new Doubles\FakeSource();
+        $input   = new InteractiveInput(new Doubles\MockedTerminal(), $default);
 
-        $this->assertSamePropertyValues($default, $properties);
+        $this->assertSameSourceValues($default, $input);
     }
 
     public function testInputValuesAreSet()
     {
-        $default    = new Doubles\FakeSource();
-        $terminal   = new Doubles\MockedTerminal();
-        $properties = new InteractiveInput($terminal, $default);
+        $default  = new Doubles\FakeSource();
+        $terminal = new Doubles\MockedTerminal();
+        $input    = new InteractiveInput($terminal, $default);
 
         $inputProperties = [
             'repositoryName'     => 'input/package',
@@ -41,6 +41,6 @@ class InteractiveInputTest extends SourceTestCase
 
         $terminal->inputStrings = array_values($inputProperties);
 
-        $this->assertSamePropertyValues(new Doubles\FakeSource($inputProperties), $properties);
+        $this->assertSameSourceValues(new Doubles\FakeSource($inputProperties), $input);
     }
 }

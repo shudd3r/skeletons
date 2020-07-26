@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Token\Source;
 
 use PHPUnit\Framework\TestCase;
+use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Token\Source\PackageConfigFiles;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use RuntimeException;
@@ -23,8 +24,8 @@ class PackageConfigFilesTest extends TestCase
 
     public function testGithubUrlIsReadFromGitConfigFile()
     {
-        $properties = $this->properties();
-        $this->assertSame('', $properties->repositoryName());
+        $source = $this->configSource();
+        $this->assertSame('', $source->repositoryName());
 
         $this->directory->files['.git/config'] = new Doubles\MockedFile(
             <<<'INI'
@@ -45,12 +46,12 @@ class PackageConfigFilesTest extends TestCase
             INI
         );
 
-        $this->assertSame('username/repository', $properties->repositoryName());
+        $this->assertSame('username/repository', $source->repositoryName());
     }
 
     public function testGithubUrlForUpstreamRepositoryTakesPrecedence()
     {
-        $properties = $this->properties();
+        $source = $this->configSource();
         $this->directory->files['.git/config'] = new Doubles\MockedFile(
             <<<'INI'
             [remote "origin"]
@@ -62,17 +63,17 @@ class PackageConfigFilesTest extends TestCase
             INI
         );
 
-        $this->assertSame('username/repositoryUpstream', $properties->repositoryName());
+        $this->assertSame('username/repositoryUpstream', $source->repositoryName());
     }
 
     public function testValuesReadFromComposerJsonFile()
     {
-        $properties = $this->properties();
-        $this->assertSame('', $properties->packageName());
-        $this->assertSame('', $properties->packageDescription());
-        $this->assertSame('', $properties->sourceNamespace());
+        $source = $this->configSource();
+        $this->assertSame('', $source->packageName());
+        $this->assertSame('', $source->packageDescription());
+        $this->assertSame('', $source->sourceNamespace());
 
-        $properties = $this->properties();
+        $source = $this->configSource();
         $this->directory->files['composer.json'] = new Doubles\MockedFile(
             <<<'JSON'
             {
@@ -89,21 +90,21 @@ class PackageConfigFilesTest extends TestCase
             JSON
         );
 
-        $this->assertSame('package/name', $properties->packageName());
-        $this->assertSame('Test description', $properties->packageDescription());
-        $this->assertSame('Foo\\Bar', $properties->sourceNamespace());
+        $this->assertSame('package/name', $source->packageName());
+        $this->assertSame('Test description', $source->packageDescription());
+        $this->assertSame('Foo\\Bar', $source->sourceNamespace());
     }
 
     public function testInvalidComposerJsonFile_ThrowsException()
     {
-        $properties = $this->properties();
+        $source = $this->configSource();
         $this->directory->files['composer.json'] = new Doubles\MockedFile('Not json format');
 
         $this->expectException(RuntimeException::class);
-        $properties->packageName();
+        $source->packageName();
     }
 
-    private function properties()
+    private function configSource(): Source
     {
         return new PackageConfigFiles($this->directory ??= new Doubles\FakeDirectory());
     }

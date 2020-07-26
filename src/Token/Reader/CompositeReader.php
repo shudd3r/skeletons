@@ -39,7 +39,7 @@ class CompositeReader implements Token\Reader
         }
 
         if ($unresolved) {
-            throw new Exception('Cannot process unresolved properties');
+            throw new Exception('Cannot process unresolved tokens');
         }
 
         return new Token\TokenGroup(...$tokens);
