@@ -24,8 +24,7 @@ class InitCommandFactory extends Factory
     public function command(array $options): Command
     {
         $subroutine = new Subroutine\SubroutineSequence($this->generateComposer(), $this->generateMetaFile());
-        $reader     = new Token\Reader\CompositeReader($this->env->output(), ...$this->tokenReaderFactories($options));
-        return new CommandHandler($reader, $subroutine);
+        return new CommandHandler($this->tokenReader($options), $subroutine);
     }
 
     private function generateComposer(): Subroutine
@@ -45,7 +44,7 @@ class InitCommandFactory extends Factory
         return new Subroutine\GenerateFile($template, $metaDataFile);
     }
 
-    private function tokenReaderFactories(array $options): array
+    private function tokenReader(array $options): Token\Reader
     {
         $source = new Token\Source\PackageConfigFiles($this->env->packageFiles());
         $source = new Token\Source\CommandLineOptions($options, $source);
@@ -54,11 +53,12 @@ class InitCommandFactory extends Factory
             $source = new Token\Source\InteractiveInput($this->env->input(), $source);
         }
 
-        return [
+        return new Token\Reader\CompositeReader(
+            $this->env->output(),
             fn() => new Token\Repository($source->repositoryName()),
             fn() => new Token\Package($source->packageName()),
             fn() => new Token\Description($source->packageDescription()),
             fn() => new Token\MainNamespace($source->sourceNamespace())
-        ];
+        );
     }
 }
