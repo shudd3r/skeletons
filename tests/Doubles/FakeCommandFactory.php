@@ -12,18 +12,22 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Factory;
-use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Token\Reader;
+use Shudd3r\PackageFiles\Subroutine;
 
 
 class FakeCommandFactory extends Factory
 {
-    public static $procedure;
-    public static ?FakeCommand $command;
-    public static ?array       $options;
+    public static ?array $options = null;
 
-    public function command(array $options): Command
+    protected function tokenReader(array $options): Reader
     {
         self::$options = $options;
-        return self::$command = new FakeCommand(self::$procedure);
+        return new FakeReader();
+    }
+
+    protected function subroutine(array $options): Subroutine
+    {
+        return new MockedSubroutine();
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -23,5 +23,12 @@ abstract class Factory
         $this->env = $env;
     }
 
-    abstract public function command(array $options): Command;
+    public function command(array $options): Command
+    {
+        return new CommandHandler($this->tokenReader($options), $this->subroutine($options));
+    }
+
+    abstract protected function tokenReader(array $options): Token\Reader;
+
+    abstract protected function subroutine(array $options): Subroutine;
 }

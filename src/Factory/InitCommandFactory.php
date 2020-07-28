@@ -12,39 +12,14 @@
 namespace Shudd3r\PackageFiles\Factory;
 
 use Shudd3r\PackageFiles\Factory;
-use Shudd3r\PackageFiles\CommandHandler;
 use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Subroutine;
-use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Template;
 
 
 class InitCommandFactory extends Factory
 {
-    public function command(array $options): Command
-    {
-        $subroutine = new Subroutine\SubroutineSequence($this->generateComposer(), $this->generateMetaFile());
-        return new CommandHandler($this->tokenReader($options), $subroutine);
-    }
-
-    private function generateComposer(): Subroutine
-    {
-        $composerFile = $this->env->packageFiles()->file('composer.json');
-        $template     = new Template\ComposerJsonTemplate($composerFile);
-
-        return new Subroutine\GenerateFile($template, $composerFile);
-    }
-
-    private function generateMetaFile(): Subroutine
-    {
-        $templateFile = $this->env->skeletonFiles()->file('package.properties');
-        $metaDataFile = $this->env->packageFiles()->file('.github/package.properties');
-        $template     = new Template\FileTemplate($templateFile);
-
-        return new Subroutine\GenerateFile($template, $metaDataFile);
-    }
-
-    private function tokenReader(array $options): Token\Reader
+    protected function tokenReader(array $options): Token\Reader
     {
         $source = new Token\Source\PackageConfigFiles($this->env->packageFiles());
         $source = new Token\Source\CommandLineOptions($options, $source);
@@ -60,5 +35,21 @@ class InitCommandFactory extends Factory
             fn() => new Token\Description($source->packageDescription()),
             fn() => new Token\MainNamespace($source->sourceNamespace())
         );
+    }
+
+    protected function subroutine(array $options): Subroutine
+    {
+        $packageFiles = $this->env->packageFiles();
+
+        $composerFile     = $packageFiles->file('composer.json');
+        $template         = new Template\ComposerJsonTemplate($composerFile);
+        $generateComposer = new Subroutine\GenerateFile($template, $composerFile);
+
+        $templateFile     = $this->env->skeletonFiles()->file('package.properties');
+        $metaDataFile     = $packageFiles->file('.github/package.properties');
+        $template         = new Template\FileTemplate($templateFile);
+        $generateMetaFile = new Subroutine\GenerateFile($template, $metaDataFile);
+
+        return new Subroutine\SubroutineSequence($generateComposer, $generateMetaFile);
     }
 }
