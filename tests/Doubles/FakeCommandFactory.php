@@ -23,7 +23,7 @@ class FakeCommandFactory extends Factory
     protected function tokenReader(array $options): Reader
     {
         self::$options = $options;
-        return new FakeReader();
+        return new Reader(new MockedTerminal());
     }
 
     protected function subroutine(array $options): Subroutine

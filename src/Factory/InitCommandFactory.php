@@ -28,7 +28,7 @@ class InitCommandFactory extends Factory
             $source = new Token\Source\InteractiveInput($this->env->input(), $source);
         }
 
-        return new Token\Reader\CompositeReader(
+        return new Token\Reader(
             $this->env->output(),
             fn() => new Token\Repository($source->repositoryName()),
             fn() => new Token\Package($source->packageName()),

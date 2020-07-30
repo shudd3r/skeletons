@@ -12,18 +12,18 @@
 namespace Shudd3r\PackageFiles\Tests\Token;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Token\Reader\CompositeReader;
+use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use Exception;
 
 
-class CompositeReaderTest extends TestCase
+class ReaderTest extends TestCase
 {
     public function testTokensAreBuiltWithProvidedCallbacks()
     {
         $callbacks = [fn() => new Doubles\FakeToken('foo'), fn() => new Doubles\FakeToken('bar')];
-        $reader    = new CompositeReader(new Doubles\MockedTerminal(), ...$callbacks);
+        $reader    = new Reader(new Doubles\MockedTerminal(), ...$callbacks);
 
         $expected = new Token\TokenGroup(new Doubles\FakeToken('foo'), new Doubles\FakeToken('bar'));
         $this->assertEquals($expected, $reader->token());
@@ -39,7 +39,7 @@ class CompositeReaderTest extends TestCase
             fn() => new Doubles\FakeToken('baz')
         ];
 
-        $reader = new CompositeReader($output = new Doubles\MockedTerminal(), ...$factories);
+        $reader = new Reader($output = new Doubles\MockedTerminal(), ...$factories);
 
         $this->expectException(Exception::class);
         $reader->token();
