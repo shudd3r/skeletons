@@ -19,7 +19,7 @@ use Shudd3r\PackageFiles\Template;
 
 class InitCommandFactory extends Factory
 {
-    protected function tokenReader(array $options): Token\Reader
+    protected function tokenCallbacks(array $options): array
     {
         $source = new Token\Source\PackageConfigFiles($this->env->packageFiles());
         $source = new Token\Source\CommandLineOptions($options, $source);
@@ -28,13 +28,12 @@ class InitCommandFactory extends Factory
             $source = new Token\Source\InteractiveInput($this->env->input(), $source);
         }
 
-        return new Token\Reader(
-            $this->env->output(),
+        return [
             fn() => new Token\Repository($source->repositoryName()),
             fn() => new Token\Package($source->packageName()),
             fn() => new Token\Description($source->packageDescription()),
             fn() => new Token\MainNamespace($source->sourceNamespace())
-        );
+        ];
     }
 
     protected function subroutine(array $options): Subroutine

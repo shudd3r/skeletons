@@ -25,10 +25,16 @@ abstract class Factory
 
     public function command(array $options): Command
     {
-        return new CommandHandler($this->tokenReader($options), $this->subroutine($options));
+        $reader = new Token\Reader($this->env->output(), ...$this->tokenCallbacks($options));
+        return new CommandHandler($reader, $this->subroutine($options));
     }
 
-    abstract protected function tokenReader(array $options): Token\Reader;
+    /**
+     * @param array $options
+     *
+     * @return callable[] fn() => Token
+     */
+    abstract protected function tokenCallbacks(array $options): array;
 
     abstract protected function subroutine(array $options): Subroutine;
 }
