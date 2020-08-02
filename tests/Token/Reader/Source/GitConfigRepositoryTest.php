@@ -33,8 +33,8 @@ class GitConfigRepositoryTest extends TestCase
         $remotes = ['origin' => 'https://github.com/username/repository.git'];
         $this->assertSame('username/repository', $this->source($remotes)->value());
 
-        $remotes = ['upstream' => 'https://github.com/upstream/repository.git'];
-        $this->assertSame('upstream/repository', $this->source($remotes)->value());
+        $remotes = ['upstream' => 'git@github.com:upstream/ssh-repo.git'];
+        $this->assertSame('upstream/ssh-repo', $this->source($remotes)->value());
     }
 
     public function testUpstreamNameTakesPrecedenceOverOrigin()
