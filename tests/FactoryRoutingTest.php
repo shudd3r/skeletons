@@ -49,7 +49,7 @@ class FactoryRoutingTest extends TestCase
         $options  = ['foo' => 'option', 'bar' => 'option'];
 
         $commands->command('foo', $options);
-        $this->assertSame($options, Doubles\FakeCommandFactory::$options);
+        $this->assertSame($options, Doubles\FakeCommandFactory::$optionsField);
     }
 
     private function commands(array $factories = [], Doubles\FakeRuntimeEnv &$env = null): FactoryRouting

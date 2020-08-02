@@ -19,14 +19,12 @@ use Shudd3r\PackageFiles\Template;
 
 class InitCommandFactory extends Factory
 {
-    protected function tokenCallbacks(array $options): array
+    protected function tokenCallbacks(): array
     {
         $source = new Token\Source\PackageConfigFiles($this->env->packageFiles());
-        $source = new Token\Source\CommandLineOptions($options, $source);
+        $source = new Token\Source\CommandLineOptions($this->options, $source);
         $source = new Token\Source\DirectoryStructureFallback($source, $this->env->packageFiles());
-        if (isset($options['i']) || isset($options['interactive'])) {
-            $source = new Token\Source\InteractiveInput($this->env->input(), $source);
-        }
+        $source = $this->interactive($source);
 
         return [
             fn() => new Token\Repository($source->repositoryName()),
@@ -36,7 +34,7 @@ class InitCommandFactory extends Factory
         ];
     }
 
-    protected function subroutine(array $options): Subroutine
+    protected function subroutine(): Subroutine
     {
         $packageFiles = $this->env->packageFiles();
 
@@ -50,5 +48,12 @@ class InitCommandFactory extends Factory
         $generateMetaFile = new Subroutine\GenerateFile($template, $metaDataFile);
 
         return new Subroutine\SubroutineSequence($generateComposer, $generateMetaFile);
+    }
+
+    private function interactive(Token\Source $source)
+    {
+        return isset($this->options['i']) || isset($this->options['interactive'])
+            ? new Token\Source\InteractiveInput($this->env->input(), $source)
+            : $source;
     }
 }

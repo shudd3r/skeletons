@@ -17,15 +17,15 @@ use Shudd3r\PackageFiles\Subroutine;
 
 class FakeCommandFactory extends Factory
 {
-    public static ?array $options = null;
+    public static array $optionsField = [];
 
-    protected function tokenCallbacks(array $options): array
+    protected function tokenCallbacks(): array
     {
-        self::$options = $options;
+        self::$optionsField = $this->options;
         return [];
     }
 
-    protected function subroutine(array $options): Subroutine
+    protected function subroutine(): Subroutine
     {
         return new MockedSubroutine();
     }
