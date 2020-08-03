@@ -30,10 +30,22 @@ class GitConfigRepository implements Source
         if (!$gitConfigFile->exists()) { return ''; }
 
         $config = parse_ini_string($gitConfigFile->contents(), true);
-        $uri    = $config['remote upstream']['url'] ?? $config['remote origin']['url'] ?? '';
-        if (!$uri) { return ''; }
+        if (!$url = $this->remoteUrl($config)) { return ''; }
 
-        $uriPath = str_replace(':', '/', $uri);
-        return basename(dirname($uriPath)) . '/' . basename($uriPath, '.git');
+        $path = str_replace(':', '/', $url);
+        return basename(dirname($path)) . '/' . basename($path, '.git');
+    }
+
+    private function remoteUrl(array $config): string
+    {
+        $url = $config['remote upstream']['url'] ?? $config['remote origin']['url'] ?? '';
+        if ($url) { return $url; }
+
+        foreach ($config as $section => $definitions) {
+            if (strpos($section, 'remote ') !== 0) { continue; }
+            return $definitions['url'] ?? '';
+        }
+
+        return '';
     }
 }

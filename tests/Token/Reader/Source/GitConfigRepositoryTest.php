@@ -35,15 +35,20 @@ class GitConfigRepositoryTest extends TestCase
 
         $remotes = ['upstream' => 'git@github.com:upstream/ssh-repo.git'];
         $this->assertSame('upstream/ssh-repo', $this->source($remotes)->value());
+
+        $remotes = ['unusual' => 'git@github.com:foo/bar.git'];
+        $this->assertSame('foo/bar', $this->source($remotes)->value());
     }
 
-    public function testUpstreamNameTakesPrecedenceOverOrigin()
+    public function testRemoteNamePriority()
     {
         $remotes = [
-            'origin'   => 'https://github.com/origin/repo.git',
-            'upstream' => 'https://github.com/upstream/repo.git'
+            'origin' => 'https://github.com/origin/repo-name.git',
+            'exotic' => 'git@github.com:exotic/repo-name.git'
         ];
+        $this->assertSame('origin/repo-name', $this->source($remotes)->value());
 
+        $remotes['upstream'] = 'https://github.com/upstream/repo.git';
         $this->assertSame('upstream/repo', $this->source($remotes)->value());
     }
 
@@ -65,6 +70,7 @@ class GitConfigRepositoryTest extends TestCase
                 [remote "{$name}"]
                     url = {$url}
                     fetch = +refs/heads/*:refs/remotes/{$name}/*
+                
                 INI;
         }
 
@@ -76,8 +82,7 @@ class GitConfigRepositoryTest extends TestCase
                 logallrefupdates = true
                 symlinks = false
                 ignorecase = true
-            {$remoteConfig}
-            [branch "develop"]
+            {$remoteConfig}[branch "develop"]
                 remote = origin
                 merge = refs/heads/develop
             
