@@ -14,6 +14,8 @@ namespace Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Subroutine;
+use Shudd3r\PackageFiles\Token\Reader\Source;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Template;
 
 
@@ -21,16 +23,50 @@ class InitCommandFactory extends Factory
 {
     protected function tokenCallbacks(): array
     {
-        $source = new Token\Source\PackageConfigFiles($this->env->packageFiles());
-        $source = new Token\Source\CommandLineOptions($this->options, $source);
-        $source = new Token\Source\DirectoryStructureFallback($source, $this->env->packageFiles());
-        $source = $this->interactive($source);
+        $files    = $this->env->packageFiles();
+        $composer = new Token\Reader\ComposerJsonData($files->file('composer.json'));
+
+        $package = new Source\CachedSource($this->interactive(
+            'Packagist package name',
+            new Source\PrioritySearch(
+                $this->commandLine('package'),
+                new Source\CallbackSource(fn() => $composer->value('name') ?? ''),
+                new Source\CallbackSource(fn() => $this->directoryFallback($files))
+            )
+        ));
+
+        $repository = $this->interactive(
+            'Github repository name',
+            new Source\PrioritySearch(
+                $this->commandLine('repo'),
+                new Source\GitConfigRepository($files),
+                $package
+            )
+        );
+
+        $description = $this->interactive(
+            'Package description',
+            new Source\PrioritySearch(
+                $this->commandLine('desc'),
+                new Source\CallbackSource(fn() => $composer->value('description') ?? ''),
+                new Source\CallbackSource(fn() => $package->value() . ' package')
+            )
+        );
+
+        $namespace = $this->interactive(
+            'Source files namespace',
+            new Source\PrioritySearch(
+                $this->commandLine('ns'),
+                new Source\CallbackSource(fn() => $this->namespaceFromComposer($composer)),
+                new Source\CallbackSource(fn() => $this->namespaceFromPackageName($package))
+            )
+        );
 
         return [
-            fn() => new Token\Repository($source->repositoryName()),
-            fn() => new Token\Package($source->packageName()),
-            fn() => new Token\Description($source->packageDescription()),
-            fn() => new Token\MainNamespace($source->sourceNamespace())
+            fn() => new Token\Repository($repository->value()),
+            fn() => new Token\Package($package->value()),
+            fn() => new Token\Description($description->value()),
+            fn() => new Token\MainNamespace($namespace->value())
         ];
     }
 
@@ -50,10 +86,40 @@ class InitCommandFactory extends Factory
         return new Subroutine\SubroutineSequence($generateComposer, $generateMetaFile);
     }
 
-    private function interactive(Token\Source $source)
+    private function interactive(string $prompt, Source $source): Source
     {
         return isset($this->options['i']) || isset($this->options['interactive'])
-            ? new Token\Source\InteractiveInput($this->env->input(), $source)
+            ? new Source\InteractiveInput($prompt, $this->env->input(), $source)
             : $source;
+    }
+
+    private function commandLine(string $option): Source
+    {
+        return new Source\CallbackSource(fn() => $this->options[$option] ?? '');
+    }
+
+    private function directoryFallback(Directory $files): string
+    {
+        $path = $files->path();
+        return $path ? basename(dirname($path)) . '/' . basename($path) : '';
+    }
+
+    private function namespaceFromComposer(Token\Reader\ComposerJsonData $composer): string
+    {
+        if (!$psr = $composer->array('autoload.psr-4')) { return ''; }
+        $namespace = array_search('src/', $psr, true);
+        return $namespace ? rtrim($namespace, '\\') : '';
+    }
+
+    private function namespaceFromPackageName(Source $packageSource): string
+    {
+        [$vendor, $package] = explode('/', $packageSource->value());
+        return $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
+    }
+
+    private function toPascalCase(string $name): string
+    {
+        $name = ltrim($name, '0..9');
+        return implode('', array_map(fn ($part) => ucfirst($part), preg_split('#[_.-]#', $name)));
     }
 }
