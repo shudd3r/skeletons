@@ -9,21 +9,20 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Token;
+namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use Exception;
 
 
-class ReaderTest extends TestCase
+class TokenGroupReaderTest extends TestCase
 {
     public function testTokensAreBuiltWithProvidedCallbacks()
     {
         $callbacks = [fn() => new Doubles\FakeToken('foo'), fn() => new Doubles\FakeToken('bar')];
-        $reader    = new Reader(new Doubles\MockedTerminal(), ...$callbacks);
+        $reader    = new Token\Reader\TokenGroupReader(new Doubles\MockedTerminal(), ...$callbacks);
 
         $expected = new Token\TokenGroup(new Doubles\FakeToken('foo'), new Doubles\FakeToken('bar'));
         $this->assertEquals($expected, $reader->token());
@@ -39,7 +38,7 @@ class ReaderTest extends TestCase
             fn() => new Doubles\FakeToken('baz')
         ];
 
-        $reader = new Reader($output = new Doubles\MockedTerminal(), ...$factories);
+        $reader = new Token\Reader\TokenGroupReader($output = new Doubles\MockedTerminal(), ...$factories);
 
         $this->expectException(Exception::class);
         $reader->token();

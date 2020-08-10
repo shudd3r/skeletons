@@ -27,7 +27,7 @@ abstract class Factory
 
     public function command(): Command
     {
-        $reader = new Token\Reader($this->env->output(), ...$this->tokenCallbacks());
+        $reader = new Token\Reader\TokenGroupReader($this->env->output(), ...$this->tokenCallbacks());
         return new CommandHandler($reader, $this->subroutine());
     }
 
