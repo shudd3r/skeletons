@@ -24,9 +24,9 @@ class GenerateFileTest extends TestCase
         $fileMock   = new Doubles\MockedFile();
         $subroutine = new GenerateFile($template, $fileMock);
 
-        $subroutine->process($properties = new Doubles\FakeTokens());
+        $subroutine->process($token = new Doubles\FakeToken());
 
-        $this->assertSame($properties, $template->receivedToken);
+        $this->assertSame($token, $template->receivedToken);
         $this->assertSame($rendered, $fileMock->contents);
     }
 }

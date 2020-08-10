@@ -23,26 +23,15 @@ class FileTemplateTest extends TestCase
     {
         $contents = <<<'TPL'
             This file is part of {package.name} package.
-            {description.text}.
-            Repository: {repository.name}
-            Source files namespace: {namespace.src}
             TPL;
 
         $template = new FileTemplate(new Doubles\MockedFile($contents));
-        $properties = new Doubles\FakeTokens([
-            'repositoryName'     => 'polymorphine/package',
-            'packageName'        => 'polymorphine/dev',
-            'packageDescription' => 'Package description',
-            'sourceNamespace'    => 'Polymorphine\Dev'
-        ]);
+        $token    = Doubles\FakeToken::withPlaceholder('{package.name}', 'package/name');
 
-        $render = $template->render($properties);
+        $render = $template->render($token);
 
         $expected = <<<'RENDER'
-            This file is part of polymorphine/dev package.
-            Package description.
-            Repository: polymorphine/package
-            Source files namespace: Polymorphine\Dev
+            This file is part of package/name package.
             RENDER;
 
         $this->assertSame($expected, $render);

@@ -38,11 +38,11 @@ class FactoryRouting implements Routing
         }
 
         $className = $this->factories[$command];
-        return $this->factory($className)->command($options);
+        return $this->factory($className, $options)->command();
     }
 
-    private function factory(string $className): Factory
+    private function factory(string $className, $options): Factory
     {
-        return new $className($this->runtimeEnv);
+        return new $className($this->runtimeEnv, $options);
     }
 }

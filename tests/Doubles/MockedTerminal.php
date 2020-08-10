@@ -23,6 +23,9 @@ class MockedTerminal implements Input, Output
 
     public function value(string $prompt = ''): string
     {
+        if ($prompt) {
+            $this->messagesSent[] = $prompt;
+        }
         $first = array_shift($this->inputStrings);
         return $first ?: '';
     }

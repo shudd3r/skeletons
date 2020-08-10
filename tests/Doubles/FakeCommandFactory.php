@@ -12,18 +12,21 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Factory;
-use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Subroutine;
 
 
 class FakeCommandFactory extends Factory
 {
-    public static $procedure;
-    public static ?FakeCommand $command;
-    public static ?array       $options;
+    public static array $optionsField = [];
 
-    public function command(array $options): Command
+    protected function tokenCallbacks(): array
     {
-        self::$options = $options;
-        return self::$command = new FakeCommand(self::$procedure);
+        self::$optionsField = $this->options;
+        return [];
+    }
+
+    protected function subroutine(): Subroutine
+    {
+        return new MockedSubroutine();
     }
 }

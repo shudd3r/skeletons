@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -17,11 +17,24 @@ use Shudd3r\PackageFiles\Application\Command;
 abstract class Factory
 {
     protected RuntimeEnv $env;
+    protected array      $options;
 
-    public function __construct(RuntimeEnv $env)
+    public function __construct(RuntimeEnv $env, array $options)
     {
-        $this->env = $env;
+        $this->env     = $env;
+        $this->options = $options;
     }
 
-    abstract public function command(array $options): Command;
+    public function command(): Command
+    {
+        $reader = new Token\Reader($this->env->output(), ...$this->tokenCallbacks());
+        return new CommandHandler($reader, $this->subroutine());
+    }
+
+    /**
+     * @return callable[] fn() => Token
+     */
+    abstract protected function tokenCallbacks(): array;
+
+    abstract protected function subroutine(): Subroutine;
 }

@@ -17,7 +17,8 @@ use Shudd3r\PackageFiles\Token;
 
 class MockedSubroutine implements Subroutine
 {
-    public ?Token $passedProperties = null;
+    public ?Token $passedToken = null;
+
     private $procedure;
 
     public function __construct(?callable $procedure = null)
@@ -27,7 +28,7 @@ class MockedSubroutine implements Subroutine
 
     public function process(Token $token): void
     {
-        $this->passedProperties = $token;
+        $this->passedToken = $token;
 
         if (!isset($this->procedure)) { return; }
         ($this->procedure)();

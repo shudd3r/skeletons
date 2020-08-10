@@ -13,7 +13,9 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\CommandHandler;
-use Shudd3r\PackageFiles\Token\Reader\CompositeReader;
+use Shudd3r\PackageFiles\Tests\Doubles\FakeToken;
+use Shudd3r\PackageFiles\Tests\Doubles\MockedTerminal;
+use Shudd3r\PackageFiles\Token\Reader;
 use Exception;
 
 
@@ -21,26 +23,24 @@ class CommandHandlerTest extends TestCase
 {
     public function testInstantiation()
     {
-        $reader  = new CompositeReader(new Doubles\FakeSource(), new Doubles\MockedTerminal());
-        $command = new CommandHandler($reader, new Doubles\MockedSubroutine());
+        $command = new CommandHandler(new Reader(new MockedTerminal()), new Doubles\MockedSubroutine());
         $this->assertInstanceOf(CommandHandler::class, $command);
     }
 
     public function testPropertiesArePassedToSubroutine()
     {
-        $properties = new Doubles\FakeSource(['repositoryName' => 'foo/bar']);
-        $reader     = new CompositeReader($properties, new Doubles\MockedTerminal());
+        $reader     = new Reader(new MockedTerminal());
         $subroutine = new Doubles\MockedSubroutine();
         $command    = new CommandHandler($reader, $subroutine);
 
         $command->execute();
-        $this->assertEquals($reader->token(), $subroutine->passedProperties);
+        $this->assertEquals($reader->token(), $subroutine->passedToken);
     }
 
     public function testUnresolvedPropertiesStopExecution()
     {
-        $reader  = new CompositeReader(new Doubles\FakeSource(['repositoryName' => '']), new Doubles\MockedTerminal());
-        $command = new CommandHandler($reader, new Doubles\MockedSubroutine());
+        $token   = fn() => new FakeToken('value', 'exception message');
+        $command = new CommandHandler(new Reader(new MockedTerminal(), $token), new Doubles\MockedSubroutine());
 
         $this->expectException(Exception::class);
         $command->execute();

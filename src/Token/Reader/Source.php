@@ -9,16 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Token;
+namespace Shudd3r\PackageFiles\Token\Reader;
 
 
 interface Source
 {
-    public function repositoryName(): string;
-
-    public function packageName(): string;
-
-    public function packageDescription(): string;
-
-    public function sourceNamespace(): string;
+    public function value(): string;
 }

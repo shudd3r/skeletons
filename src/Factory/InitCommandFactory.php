@@ -12,49 +12,114 @@
 namespace Shudd3r\PackageFiles\Factory;
 
 use Shudd3r\PackageFiles\Factory;
-use Shudd3r\PackageFiles\CommandHandler;
-use Shudd3r\PackageFiles\Token\Reader;
-use Shudd3r\PackageFiles\Token\Source;
+use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Subroutine;
-use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Token\Reader\Source;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Template;
 
 
 class InitCommandFactory extends Factory
 {
-    public function command(array $options): Command
+    protected function tokenCallbacks(): array
     {
-        $subroutine = new Subroutine\SubroutineSequence($this->generateComposer(), $this->generateMetaFile());
-        $reader     = new Reader\CompositeReader($this->source($options), $this->env->output());
-        return new CommandHandler($reader, $subroutine);
+        $files    = $this->env->packageFiles();
+        $composer = new Token\Reader\ComposerJsonData($files->file('composer.json'));
+
+        $package = new Source\CachedSource($this->interactive(
+            'Packagist package name',
+            new Source\PrioritySearch(
+                $this->commandLine('package'),
+                new Source\CallbackSource(fn() => $composer->value('name') ?? ''),
+                new Source\CallbackSource(fn() => $this->directoryFallback($files))
+            )
+        ));
+
+        $repository = $this->interactive(
+            'Github repository name',
+            new Source\PrioritySearch(
+                $this->commandLine('repo'),
+                new Source\GitConfigRepository($files),
+                $package
+            )
+        );
+
+        $description = $this->interactive(
+            'Package description',
+            new Source\PrioritySearch(
+                $this->commandLine('desc'),
+                new Source\CallbackSource(fn() => $composer->value('description') ?? ''),
+                new Source\CallbackSource(fn() => $package->value() . ' package')
+            )
+        );
+
+        $namespace = $this->interactive(
+            'Source files namespace',
+            new Source\PrioritySearch(
+                $this->commandLine('ns'),
+                new Source\CallbackSource(fn() => $this->namespaceFromComposer($composer)),
+                new Source\CallbackSource(fn() => $this->namespaceFromPackageName($package))
+            )
+        );
+
+        return [
+            fn() => new Token\Repository($repository->value()),
+            fn() => new Token\Package($package->value()),
+            fn() => new Token\Description($description->value()),
+            fn() => new Token\MainNamespace($namespace->value())
+        ];
     }
 
-    private function generateComposer(): Subroutine
+    protected function subroutine(): Subroutine
     {
-        $composerFile = $this->env->packageFiles()->file('composer.json');
-        $template     = new Template\ComposerJsonTemplate($composerFile);
+        $packageFiles = $this->env->packageFiles();
 
-        return new Subroutine\GenerateFile($template, $composerFile);
+        $composerFile     = $packageFiles->file('composer.json');
+        $template         = new Template\ComposerJsonTemplate($composerFile);
+        $generateComposer = new Subroutine\GenerateFile($template, $composerFile);
+
+        $templateFile     = $this->env->skeletonFiles()->file('package.properties');
+        $metaDataFile     = $packageFiles->file('.github/package.properties');
+        $template         = new Template\FileTemplate($templateFile);
+        $generateMetaFile = new Subroutine\GenerateFile($template, $metaDataFile);
+
+        return new Subroutine\SubroutineSequence($generateComposer, $generateMetaFile);
     }
 
-    private function generateMetaFile(): Subroutine
+    private function interactive(string $prompt, Source $source): Source
     {
-        $templateFile = $this->env->skeletonFiles()->file('package.properties');
-        $metaDataFile = $this->env->packageFiles()->file('.github/package.properties');
-        $template     = new Template\FileTemplate($templateFile);
-
-        return new Subroutine\GenerateFile($template, $metaDataFile);
+        return isset($this->options['i']) || isset($this->options['interactive'])
+            ? new Source\InteractiveInput($prompt, $this->env->input(), $source)
+            : $source;
     }
 
-    private function source(array $options): Source
+    private function commandLine(string $option): Source
     {
-        $source = new Source\PackageConfigFiles($this->env->packageFiles());
-        $source = new Source\CommandLineOptions($options, $source);
-        $source = new Source\DirectoryStructureFallback($source, $this->env->packageFiles());
-        if (isset($options['i']) || isset($options['interactive'])) {
-            $source = new Source\InteractiveInput($this->env->input(), $source);
-        }
+        return new Source\CallbackSource(fn() => $this->options[$option] ?? '');
+    }
 
-        return $source;
+    private function directoryFallback(Directory $files): string
+    {
+        $path = $files->path();
+        return $path ? basename(dirname($path)) . '/' . basename($path) : '';
+    }
+
+    private function namespaceFromComposer(Token\Reader\ComposerJsonData $composer): string
+    {
+        if (!$psr = $composer->array('autoload.psr-4')) { return ''; }
+        $namespace = array_search('src/', $psr, true);
+        return $namespace ? rtrim($namespace, '\\') : '';
+    }
+
+    private function namespaceFromPackageName(Source $packageSource): string
+    {
+        [$vendor, $package] = explode('/', $packageSource->value());
+        return $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
+    }
+
+    private function toPascalCase(string $name): string
+    {
+        $name = ltrim($name, '0..9');
+        return implode('', array_map(fn ($part) => ucfirst($part), preg_split('#[_.-]#', $name)));
     }
 }

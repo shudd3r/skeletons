@@ -43,6 +43,15 @@ class FactoryRoutingTest extends TestCase
         $this->assertInstanceOf(Command::class, $commands->command('foo', []));
     }
 
+    public function testOptionsArePassedToFactory()
+    {
+        $commands = $this->commands(['foo' => Doubles\FakeCommandFactory::class]);
+        $options  = ['foo' => 'option', 'bar' => 'option'];
+
+        $commands->command('foo', $options);
+        $this->assertSame($options, Doubles\FakeCommandFactory::$optionsField);
+    }
+
     private function commands(array $factories = [], Doubles\FakeRuntimeEnv &$env = null): FactoryRouting
     {
         return new FactoryRouting($env = new Doubles\FakeRuntimeEnv(), $factories);
