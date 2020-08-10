@@ -24,7 +24,7 @@ class InitCommandFactory extends Factory
     protected function tokenCallbacks(): array
     {
         $files    = $this->env->packageFiles();
-        $composer = new Token\Reader\ComposerJsonData($files->file('composer.json'));
+        $composer = new Token\Reader\Data\ComposerJsonData($files->file('composer.json'));
 
         $package = new Source\CachedSource($this->interactive(
             'Packagist package name',
@@ -104,7 +104,7 @@ class InitCommandFactory extends Factory
         return $path ? basename(dirname($path)) . '/' . basename($path) : '';
     }
 
-    private function namespaceFromComposer(Token\Reader\ComposerJsonData $composer): string
+    private function namespaceFromComposer(Token\Reader\Data\ComposerJsonData $composer): string
     {
         if (!$psr = $composer->array('autoload.psr-4')) { return ''; }
         $namespace = array_search('src/', $psr, true);
