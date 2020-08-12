@@ -35,14 +35,8 @@ class InitCommandFactory extends Factory
             )
         ));
 
-        $repository = $this->interactive(
-            'Github repository name',
-            new Source\PrioritySearch(
-                $this->commandLine('repo'),
-                new Source\GitConfigRepository($files),
-                $package
-            )
-        );
+        $input = new Token\Reader\Data\UserInputData($this->options, $this->env->input());
+        $repository = new Token\Reader\RepositoryReader($input, $files->file('.git/config'), $package);
 
         $description = $this->interactive(
             'Package description',
@@ -63,7 +57,7 @@ class InitCommandFactory extends Factory
         );
 
         return [
-            fn() => new Token\Repository($repository->value()),
+            fn() => $repository->token(),
             fn() => new Token\Package($package->value()),
             fn() => new Token\Description($description->value()),
             fn() => new Token\MainNamespace($namespace->value())
