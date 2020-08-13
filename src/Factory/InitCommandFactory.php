@@ -47,20 +47,13 @@ class InitCommandFactory extends Factory
             )
         );
 
-        $namespace = $this->interactive(
-            'Source files namespace',
-            new Source\PrioritySearch(
-                $this->commandLine('ns'),
-                new Source\CallbackSource(fn() => $this->namespaceFromComposer($composer)),
-                new Source\CallbackSource(fn() => $this->namespaceFromPackageName($package))
-            )
-        );
+        $namespace = new Token\Reader\NamespaceReader($input, $composer, $package);
 
         return [
             fn() => $repository->token(),
             fn() => new Token\Package($package->value()),
             fn() => new Token\Description($description->value()),
-            fn() => new Token\MainNamespace($namespace->value())
+            fn() => $namespace->token()
         ];
     }
 
@@ -96,24 +89,5 @@ class InitCommandFactory extends Factory
     {
         $path = $files->path();
         return $path ? basename(dirname($path)) . '/' . basename($path) : '';
-    }
-
-    private function namespaceFromComposer(Token\Reader\Data\ComposerJsonData $composer): string
-    {
-        if (!$psr = $composer->array('autoload.psr-4')) { return ''; }
-        $namespace = array_search('src/', $psr, true);
-        return $namespace ? rtrim($namespace, '\\') : '';
-    }
-
-    private function namespaceFromPackageName(Source $packageSource): string
-    {
-        [$vendor, $package] = explode('/', $packageSource->value());
-        return $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
-    }
-
-    private function toPascalCase(string $name): string
-    {
-        $name = ltrim($name, '0..9');
-        return implode('', array_map(fn ($part) => ucfirst($part), preg_split('#[_.-]#', $name)));
     }
 }
