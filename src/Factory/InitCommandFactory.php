@@ -36,23 +36,15 @@ class InitCommandFactory extends Factory
         ));
 
         $input = new Token\Reader\Data\UserInputData($this->options, $this->env->input());
-        $repository = new Token\Reader\RepositoryReader($input, $files->file('.git/config'), $package);
 
-        $description = $this->interactive(
-            'Package description',
-            new Source\PrioritySearch(
-                $this->commandLine('desc'),
-                new Source\CallbackSource(fn() => $composer->value('description') ?? ''),
-                new Source\CallbackSource(fn() => $package->value() . ' package')
-            )
-        );
-
-        $namespace = new Token\Reader\NamespaceReader($input, $composer, $package);
+        $repository  = new Token\Reader\RepositoryReader($input, $files->file('.git/config'), $package);
+        $description = new Token\Reader\DescriptionReader($input, $composer, $package);
+        $namespace   = new Token\Reader\NamespaceReader($input, $composer, $package);
 
         return [
             fn() => $repository->token(),
             fn() => new Token\Package($package->value()),
-            fn() => new Token\Description($description->value()),
+            fn() => $description->token(),
             fn() => $namespace->token()
         ];
     }
