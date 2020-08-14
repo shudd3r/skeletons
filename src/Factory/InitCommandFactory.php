@@ -14,8 +14,6 @@ namespace Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Subroutine;
-use Shudd3r\PackageFiles\Token\Reader\Source;
-use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Template;
 
 
@@ -24,26 +22,17 @@ class InitCommandFactory extends Factory
     protected function tokenCallbacks(): array
     {
         $files    = $this->env->packageFiles();
+        $input    = new Token\Reader\Data\UserInputData($this->options, $this->env->input());
         $composer = new Token\Reader\Data\ComposerJsonData($files->file('composer.json'));
 
-        $package = new Source\CachedSource($this->interactive(
-            'Packagist package name',
-            new Source\PrioritySearch(
-                $this->commandLine('package'),
-                new Source\CallbackSource(fn() => $composer->value('name') ?? ''),
-                new Source\CallbackSource(fn() => $this->directoryFallback($files))
-            )
-        ));
-
-        $input = new Token\Reader\Data\UserInputData($this->options, $this->env->input());
-
+        $package     = new Token\Reader\PackageReader($input, $composer, $files);
         $repository  = new Token\Reader\RepositoryReader($input, $files->file('.git/config'), $package);
         $description = new Token\Reader\DescriptionReader($input, $composer, $package);
         $namespace   = new Token\Reader\NamespaceReader($input, $composer, $package);
 
         return [
             fn() => $repository->token(),
-            fn() => new Token\Package($package->value()),
+            fn() => $package->token(),
             fn() => $description->token(),
             fn() => $namespace->token()
         ];
@@ -63,23 +52,5 @@ class InitCommandFactory extends Factory
         $generateMetaFile = new Subroutine\GenerateFile($template, $metaDataFile);
 
         return new Subroutine\SubroutineSequence($generateComposer, $generateMetaFile);
-    }
-
-    private function interactive(string $prompt, Source $source): Source
-    {
-        return isset($this->options['i']) || isset($this->options['interactive'])
-            ? new Source\InteractiveInput($prompt, $this->env->input(), $source)
-            : $source;
-    }
-
-    private function commandLine(string $option): Source
-    {
-        return new Source\CallbackSource(fn() => $this->options[$option] ?? '');
-    }
-
-    private function directoryFallback(Directory $files): string
-    {
-        $path = $files->path();
-        return $path ? basename(dirname($path)) . '/' . basename($path) : '';
     }
 }
