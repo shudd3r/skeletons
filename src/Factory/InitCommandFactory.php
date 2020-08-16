@@ -19,7 +19,7 @@ use Shudd3r\PackageFiles\Template;
 
 class InitCommandFactory extends Factory
 {
-    protected function tokenCallbacks(): array
+    protected function tokenReaders(): array
     {
         $files    = $this->env->packageFiles();
         $input    = new Token\Reader\Data\UserInputData($this->options, $this->env->input());
@@ -30,12 +30,7 @@ class InitCommandFactory extends Factory
         $description = new Token\Reader\DescriptionReader($input, $composer, $package);
         $namespace   = new Token\Reader\NamespaceReader($input, $composer, $package);
 
-        return [
-            fn() => $repository->token(),
-            fn() => $package->token(),
-            fn() => $description->token(),
-            fn() => $namespace->token()
-        ];
+        return [$package, $repository, $description, $namespace];
     }
 
     protected function subroutine(): Subroutine

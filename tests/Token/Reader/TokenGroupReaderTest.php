@@ -21,7 +21,7 @@ class TokenGroupReaderTest extends TestCase
 {
     public function testTokensAreBuiltWithProvidedCallbacks()
     {
-        $callbacks = [fn() => new Doubles\FakeToken('foo'), fn() => new Doubles\FakeToken('bar')];
+        $callbacks = [new Doubles\FakeReader('foo'), new Doubles\FakeReader('bar')];
         $reader    = new Token\Reader\TokenGroupReader(new Doubles\MockedTerminal(), ...$callbacks);
 
         $expected = new Token\TokenGroup(new Doubles\FakeToken('foo'), new Doubles\FakeToken('bar'));
@@ -33,9 +33,9 @@ class TokenGroupReaderTest extends TestCase
         $errorMessages = ['Invalid Foo token', 'Invalid Bar token'];
 
         $factories = [
-            fn() => new Doubles\FakeToken('foo', $errorMessages[0]),
-            fn() => new Doubles\FakeToken('bar', $errorMessages[1]),
-            fn() => new Doubles\FakeToken('baz')
+            new Doubles\FakeReader('foo', $errorMessages[0]),
+            new Doubles\FakeReader('bar', $errorMessages[1]),
+            new Doubles\FakeReader('baz')
         ];
 
         $reader = new Token\Reader\TokenGroupReader($output = new Doubles\MockedTerminal(), ...$factories);

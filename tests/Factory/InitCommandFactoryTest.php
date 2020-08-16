@@ -117,8 +117,8 @@ class InitCommandFactoryTest extends TestCase
         $env = $this->env();
 
         $env->input()->inputStrings = [
-            'user/repo',
             'package/name',
+            'user/repo',
             'package input description',
             'My\Namespace'
         ];

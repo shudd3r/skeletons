@@ -19,7 +19,7 @@ class FakeCommandFactory extends Factory
 {
     public static array $optionsField = [];
 
-    protected function tokenCallbacks(): array
+    protected function tokenReaders(): array
     {
         self::$optionsField = $this->options;
         return [];

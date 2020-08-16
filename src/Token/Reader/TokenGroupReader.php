@@ -19,22 +19,21 @@ use Exception;
 
 class TokenGroupReader implements Reader
 {
-    /** @var callable[] fn() => Token */
-    private array  $factories;
     private Output $output;
+    private array  $readers;
 
-    public function __construct(Output $output, callable ...$factories)
+    public function __construct(Output $output, Reader ...$readers)
     {
-        $this->output    = $output;
-        $this->factories = $factories;
+        $this->output  = $output;
+        $this->readers = $readers;
     }
 
     public function token(): Token
     {
         $tokens     = [];
         $unresolved = false;
-        foreach ($this->factories as $factory) {
-            $token = $this->createToken($factory);
+        foreach ($this->readers as $reader) {
+            $token = $this->createToken($reader);
             if (!$token) { $unresolved = true; }
             $tokens[] = $token;
         }
@@ -46,10 +45,10 @@ class TokenGroupReader implements Reader
         return new Token\TokenGroup(...$tokens);
     }
 
-    private function createToken(callable $callback): ?Token
+    private function createToken(Reader $reader): ?Token
     {
         try {
-            return $callback();
+            return $reader->token();
         } catch (Exception $e) {
             $this->output->send($e->getMessage(), 1);
             return null;
