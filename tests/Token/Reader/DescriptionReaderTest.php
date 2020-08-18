@@ -38,10 +38,11 @@ class DescriptionReaderTest extends TestCase
     {
         $composer = $composer ? ['description' => 'composer'] : [];
         $composer = new Data\ComposerJsonData(new Doubles\MockedFile(json_encode($composer)));
-        $fallback = new Doubles\FakeSource('Fallback');
-        $input    = new Doubles\MockedTerminal($input ? ['input'] : []);
         $options  = $options ? ['desc' => 'option', 'i' => false] : ['i' => false];
+        $input    = new Doubles\MockedTerminal($input ? ['input'] : []);
+        $input    = new Data\UserInputData($options, $input);
+        $fallback = new Doubles\FakeValueReader($input, 'Fallback');
 
-        return new DescriptionReader(new Data\UserInputData($options, $input), $composer, $fallback);
+        return new DescriptionReader($input, $composer, $fallback);
     }
 }

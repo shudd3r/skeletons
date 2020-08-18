@@ -11,38 +11,33 @@
 
 namespace Shudd3r\PackageFiles\Token\Reader;
 
-use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Token\Reader\Data\UserInputData;
 use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Token;
 
 
-class PackageReader implements Reader, Source
+class PackageReader extends ValueReader
 {
-    private UserInputData    $input;
     private ComposerJsonData $composer;
     private Directory        $directory;
-    private ?string          $value = null;
+
+    protected string $inputPrompt = 'Packagist package name';
+    protected string $optionName  = 'package';
 
     public function __construct(UserInputData $input, ComposerJsonData $composer, Directory $directory)
     {
-        $this->input     = $input;
+        parent::__construct($input);
         $this->composer  = $composer;
         $this->directory = $directory;
     }
 
-    public function token(): Token
+    protected function createToken(string $value): Token
     {
-        return new Token\Package($this->value());
+        return new Token\Package($value);
     }
 
-    public function value(): string
-    {
-        return $this->value ??= $this->input->value('Packagist package name', 'package', fn() => $this->readSource());
-    }
-
-    private function readSource()
+    protected function sourceValue(): string
     {
         return $this->composer->value('name') ?? $this->directoryFallback();
     }

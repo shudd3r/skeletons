@@ -25,21 +25,14 @@ class UserInputData
         $this->input   = $input;
     }
 
-    public function value(string $prompt, ?string $optionName = null, callable $default = null): string
+    public function value(string $prompt, string $default): string
     {
-        if (!$value = $this->commandLineOption($optionName)) {
-            $value = isset($default) ? $default() : '';
-        }
-
-        if (!$this->isInteractive()) { return $value; }
-
-        $defaultInfo = $value ? ' [default: ' . $value . ']:' : ':';
-        return $this->input->value($prompt . $defaultInfo) ?: $value;
+        if (!$this->isInteractive()) { return $default; }
+        return $this->input->value($prompt . ' [default: ' . $default . ']:') ?: $default;
     }
 
-    private function commandLineOption(?string $name): ?string
+    public function commandLineOption(string $name): ?string
     {
-        if ($name === null) { return null; }
         return $this->options[$name] ?? null;
     }
 

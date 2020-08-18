@@ -53,20 +53,19 @@ class RepositoryReaderTest extends TestCase
     {
         $config   = $config ? ['origin' => 'https://github.com/config/repo.git'] : [];
         $config   = new Doubles\MockedFile($this->config($config), (bool) $config);
-        $fallback = new Doubles\FakeSource('fallback/repo');
-        $input    = new Doubles\MockedTerminal($input ? ['input/repo'] : []);
         $options  = $options ? ['repo' => 'option/repo', 'i' => false] : ['i' => false];
+        $input    = new Doubles\MockedTerminal($input ? ['input/repo'] : []);
+        $input    = new Data\UserInputData($options, $input);
+        $fallback = new Doubles\FakeValueReader($input, 'fallback/repo');
 
-        return new RepositoryReader(new Data\UserInputData($options, $input), $config, $fallback);
+        return new RepositoryReader($input, $config, $fallback);
     }
 
     private function configReader(array $config = []): RepositoryReader
     {
-        return new RepositoryReader(
-            new Data\UserInputData([], new Doubles\MockedTerminal()),
-            new Doubles\MockedFile($this->config($config)),
-            new Doubles\FakeSource('fallback/repo')
-        );
+        $input  = new Data\UserInputData([], new Doubles\MockedTerminal());
+        $config = new Doubles\MockedFile($this->config($config));
+        return new RepositoryReader($input, $config, new Doubles\FakeValueReader($input, 'fallback/repo'));
     }
 
     private function config(array $remotes = []): string

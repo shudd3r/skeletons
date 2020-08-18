@@ -11,32 +11,32 @@
 
 namespace Shudd3r\PackageFiles\Token\Reader;
 
-use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Token\Reader\Data\UserInputData;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Token;
 
 
-class RepositoryReader implements Reader
+class RepositoryReader extends ValueReader
 {
-    private UserInputData $input;
-    private File          $gitConfig;
-    private Source        $fallback;
+    private File        $gitConfig;
+    private ValueReader $fallback;
 
-    public function __construct(UserInputData $input, File $gitConfig, Source $fallback)
+    protected string $inputPrompt = 'Github repository name';
+    protected string $optionName  = 'repo';
+
+    public function __construct(UserInputData $input, File $gitConfig, ValueReader $fallback)
     {
-        $this->input     = $input;
+        parent::__construct($input);
         $this->gitConfig = $gitConfig;
         $this->fallback  = $fallback;
     }
 
-    public function token(): Token
+    protected function createToken(string $value): Token
     {
-        $value = $this->input->value('Github repository name', 'repo', fn() => $this->readSource());
         return new Token\Repository($value);
     }
 
-    private function readSource()
+    protected function sourceValue(): string
     {
         return $this->valueFromGitConfig() ?? $this->fallback->value();
     }

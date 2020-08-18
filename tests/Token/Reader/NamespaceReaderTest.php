@@ -38,10 +38,11 @@ class NamespaceReaderTest extends TestCase
     {
         $composer = $composer ? ['autoload' => ['psr-4' => ['Composer\\Namespace' => 'src/']]] : [];
         $composer = new Data\ComposerJsonData(new Doubles\MockedFile(json_encode($composer)));
-        $fallback = new Doubles\FakeSource('fallback/namespace');
-        $input    = new Doubles\MockedTerminal($input ? ['Input\Namespace'] : []);
         $options  = $options ? ['ns' => 'Option\Namespace', 'i' => false] : ['i' => false];
+        $input    = new Doubles\MockedTerminal($input ? ['Input\Namespace'] : []);
+        $input    = new Data\UserInputData($options, $input);
+        $fallback = new Doubles\FakeValueReader($input, 'fallback/namespace');
 
-        return new NamespaceReader(new Data\UserInputData($options, $input), $composer, $fallback);
+        return new NamespaceReader($input, $composer, $fallback);
     }
 }
