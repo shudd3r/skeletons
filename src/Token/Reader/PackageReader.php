@@ -39,10 +39,7 @@ class PackageReader implements Reader, Source
 
     public function value(): string
     {
-        if (isset($this->value)) { return $this->value; }
-
-        $fallback = fn() => $this->readSource();
-        return $this->value = $this->input->value('Packagist package name', 'package', $fallback);
+        return $this->value ??= $this->input->value('Packagist package name', 'package', fn() => $this->readSource());
     }
 
     private function readSource()
