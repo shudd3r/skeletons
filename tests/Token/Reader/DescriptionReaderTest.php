@@ -13,36 +13,43 @@ namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token\Reader\DescriptionReader;
-use Shudd3r\PackageFiles\Token\Reader\Data;
+use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Token\Description;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class DescriptionReaderTest extends TestCase
 {
-    public function testTokensCreatedFromSingleSource()
+    public function testTokenCreatedFromFallbackValue()
     {
-        $this->assertEquals(new Description('Fallback package'), $this->reader(false, false, false)->token());
-        $this->assertEquals(new Description('composer'), $this->reader(false, false, true)->token());
-        $this->assertEquals(new Description('option'), $this->reader(false, true, false)->token());
-        $this->assertEquals(new Description('input'), $this->reader(true, false, false)->token());
+        $this->assertSame('Fallback package', $this->reader(false)->value());
+        $this->assertEquals(new Description('Fallback package'), $this->reader(false)->token());
     }
 
-    public function testTokensCreatedFromSourceWithHigherPriority()
+    public function testTokenCreatedFromComposerValue()
     {
-        $this->assertEquals(new Description('option'), $this->reader(false, true, true)->token());
-        $this->assertEquals(new Description('input'), $this->reader(true, true, false)->token());
+        $this->assertSame('composer description', $this->reader(true)->value());
+        $this->assertEquals(new Description('composer description'), $this->reader(true)->token());
     }
 
-    private function reader(bool $input, bool $options, bool $composer): DescriptionReader
+    public function testTokenCreatedFromParameterValue()
     {
-        $composer = $composer ? ['description' => 'composer'] : [];
-        $composer = new Data\ComposerJsonData(new Doubles\MockedFile(json_encode($composer)));
-        $options  = $options ? ['desc' => 'option', 'i' => false] : ['i' => false];
-        $input    = new Doubles\MockedTerminal($input ? ['input'] : []);
-        $input    = new Data\UserInputData($options, $input);
-        $fallback = new Doubles\FakeValueReader($input, 'Fallback');
+        $this->assertEquals(new Description('Any value'), $this->reader(false)->createToken('Any value'));
+        $this->assertEquals(new Description('Any value'), $this->reader(true)->createToken('Any value'));
+    }
 
-        return new DescriptionReader($input, $composer, $fallback);
+    public function testConstantProperties()
+    {
+        $this->assertSame('Package description', $this->reader(false)->inputPrompt());
+        $this->assertSame('desc', $this->reader(false)->optionName());
+    }
+
+    private function reader(bool $composer): DescriptionReader
+    {
+        $composer = $composer ? ['description' => 'composer description'] : [];
+        $composer = new ComposerJsonData(new Doubles\MockedFile(json_encode($composer)));
+        $fallback = new Doubles\FakeValueReader('Fallback');
+
+        return new DescriptionReader($composer, $fallback);
     }
 }

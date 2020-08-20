@@ -11,7 +11,6 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Token\Reader\Data\UserInputData;
 use Shudd3r\PackageFiles\Token\Reader\ValueReader;
 use Shudd3r\PackageFiles\Token;
 
@@ -20,23 +19,17 @@ class FakeValueReader extends ValueReader
 {
     private string $value;
 
-    public function __construct(UserInputData $input, string $value = '')
+    public function __construct(string $value = '')
     {
-        parent::__construct($input);
         $this->value = $value;
     }
 
-    public function value(): string
-    {
-        return $this->value;
-    }
-
-    protected function createToken(string $value): Token
+    public function createToken(string $value): Token
     {
         return new FakeToken($value);
     }
 
-    protected function sourceValue(): string
+    public function value(): string
     {
         return $this->value;
     }

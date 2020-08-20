@@ -11,32 +11,30 @@
 
 namespace Shudd3r\PackageFiles\Token\Reader;
 
-use Shudd3r\PackageFiles\Token\Reader\Data\UserInputData;
 use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Token;
 
 
 class DescriptionReader extends ValueReader
 {
+    protected const PROMPT = 'Package description';
+    protected const OPTION = 'desc';
+
     private ComposerJsonData $composer;
-    private ValueReader      $fallback;
+    private ValueReader     $fallback;
 
-    protected string $inputPrompt = 'Package description';
-    protected string $optionName  = 'desc';
-
-    public function __construct(UserInputData $input, ComposerJsonData $composer, ValueReader $fallback)
+    public function __construct(ComposerJsonData $composer, ValueReader $fallback)
     {
-        parent::__construct($input);
         $this->composer = $composer;
         $this->fallback = $fallback;
     }
 
-    protected function createToken(string $value): Token
+    public function createToken(string $value): Token
     {
         return new Token\Description($value);
     }
 
-    protected function sourceValue(): string
+    public function value(): string
     {
         return $this->composer->value('description') ?? $this->fallback->value() . ' package';
     }

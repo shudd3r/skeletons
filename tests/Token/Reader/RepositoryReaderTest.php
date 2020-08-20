@@ -13,59 +13,66 @@ namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token\Reader\RepositoryReader;
-use Shudd3r\PackageFiles\Token\Reader\Data;
 use Shudd3r\PackageFiles\Token\Repository;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class RepositoryReaderTest extends TestCase
 {
-    public function testTokensCreatedFromSingleSource()
+    public function testTokenCreatedFromFallbackValue()
     {
-        $this->assertEquals(new Repository('fallback/repo'), $this->reader(false, false, false)->token());
-        $this->assertEquals(new Repository('config/repo'), $this->reader(false, false, true)->token());
-        $this->assertEquals(new Repository('option/repo'), $this->reader(false, true, false)->token());
-        $this->assertEquals(new Repository('input/repo'), $this->reader(true, false, false)->token());
+        $this->assertSame('fallback/repo', $this->reader(false)->value());
+        $this->assertEquals(new Repository('fallback/repo'), $this->reader(false)->token());
     }
 
-    public function testTokensCreatedFromSourceWithHigherPriority()
+    public function testTokenCreatedFromConfigValue()
     {
-        $this->assertEquals(new Repository('option/repo'), $this->reader(false, true, true)->token());
-        $this->assertEquals(new Repository('input/repo'), $this->reader(true, true, false)->token());
+        $this->assertSame('config/repo', $this->reader(true)->value());
+        $this->assertEquals(new Repository('config/repo'), $this->reader(true)->token());
+    }
+
+    public function testTokenCreatedFromParameterValue()
+    {
+        $this->assertEquals(new Repository('repository/foo'), $this->reader(true)->createToken('repository/foo'));
+        $this->assertEquals(new Repository('repository/foo'), $this->reader(false)->createToken('repository/foo'));
+    }
+
+    public function testConstantProperties()
+    {
+        $this->assertSame('Github repository name', $this->reader(true)->inputPrompt());
+        $this->assertSame('repo', $this->reader(true)->optionName());
     }
 
     public function testConfigParsingPriority()
     {
         $reader = $this->configReader($config = []);
-        $this->assertEquals(new Repository('fallback/repo'), $reader->token());
+        $this->assertSame('fallback/repo', $reader->value());
 
         $reader = $this->configReader($config += ['foo' => 'git@github.com:other/repo.git']);
-        $this->assertEquals(new Repository('other/repo'), $reader->token());
+        $this->assertSame('other/repo', $reader->value());
 
         $reader = $this->configReader($config += ['origin' => 'https://github.com/orig/repo.git']);
-        $this->assertEquals(new Repository('orig/repo'), $reader->token());
+        $this->assertSame('orig/repo', $reader->value());
 
         $reader = $this->configReader($config + ['upstream' => 'git@github.com:master/ssh-repo.git']);
-        $this->assertEquals(new Repository('master/ssh-repo'), $reader->token());
+        $this->assertSame('master/ssh-repo', $reader->value());
     }
 
-    private function reader(bool $input, bool $options, bool $config): RepositoryReader
+    private function reader(bool $config): RepositoryReader
     {
         $config   = $config ? ['origin' => 'https://github.com/config/repo.git'] : [];
         $config   = new Doubles\MockedFile($this->config($config), (bool) $config);
-        $options  = $options ? ['repo' => 'option/repo', 'i' => false] : ['i' => false];
-        $input    = new Doubles\MockedTerminal($input ? ['input/repo'] : []);
-        $input    = new Data\UserInputData($options, $input);
-        $fallback = new Doubles\FakeValueReader($input, 'fallback/repo');
+        $fallback = new Doubles\FakeValueReader('fallback/repo');
 
-        return new RepositoryReader($input, $config, $fallback);
+        return new RepositoryReader($config, $fallback);
     }
 
     private function configReader(array $config = []): RepositoryReader
     {
-        $input  = new Data\UserInputData([], new Doubles\MockedTerminal());
-        $config = new Doubles\MockedFile($this->config($config));
-        return new RepositoryReader($input, $config, new Doubles\FakeValueReader($input, 'fallback/repo'));
+        return new RepositoryReader(
+            new Doubles\MockedFile($this->config($config)),
+            new Doubles\FakeValueReader('fallback/repo')
+        );
     }
 
     private function config(array $remotes = []): string

@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Factory;
 
 use Shudd3r\PackageFiles\Factory;
-use Shudd3r\PackageFiles\Token;
+use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Subroutine;
 use Shudd3r\PackageFiles\Template;
 
@@ -22,15 +22,14 @@ class InitCommandFactory extends Factory
     protected function tokenReaders(): array
     {
         $files    = $this->env->packageFiles();
-        $input    = new Token\Reader\Data\UserInputData($this->options, $this->env->input());
-        $composer = new Token\Reader\Data\ComposerJsonData($files->file('composer.json'));
+        $composer = new Reader\Data\ComposerJsonData($files->file('composer.json'));
 
-        $package     = new Token\Reader\PackageReader($input, $composer, $files);
-        $repository  = new Token\Reader\RepositoryReader($input, $files->file('.git/config'), $package);
-        $description = new Token\Reader\DescriptionReader($input, $composer, $package);
-        $namespace   = new Token\Reader\NamespaceReader($input, $composer, $package);
-
-        return [$package, $repository, $description, $namespace];
+        return [
+            $package = $this->cached($this->interactive(new Reader\PackageReader($composer, $files))),
+            $this->interactive(new Reader\RepositoryReader($files->file('.git/config'), $package)),
+            $this->interactive(new Reader\DescriptionReader($composer, $package)),
+            $this->interactive(new Reader\NamespaceReader($composer, $package))
+        ];
     }
 
     protected function subroutine(): Subroutine
@@ -47,5 +46,21 @@ class InitCommandFactory extends Factory
         $generateMetaFile = new Subroutine\GenerateFile($template, $metaDataFile);
 
         return new Subroutine\SubroutineSequence($generateComposer, $generateMetaFile);
+    }
+
+    private function cached(Reader\ValueReader $reader): Reader\ValueReader
+    {
+        return new Reader\CachedValueReader($reader);
+    }
+
+    private function interactive(Reader\ValueReader $reader, bool $commandLine = true): Reader\ValueReader
+    {
+        if ($commandLine) {
+            $reader = new Reader\CommandOptionReader($this->options, $reader);
+        }
+
+        return isset($this->options['i']) || isset($this->options['interactive'])
+            ? new Reader\InputReader($this->env->input(), $reader)
+            : $reader;
     }
 }

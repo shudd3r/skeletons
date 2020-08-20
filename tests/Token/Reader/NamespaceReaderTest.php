@@ -13,36 +13,43 @@ namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token\Reader\NamespaceReader;
-use Shudd3r\PackageFiles\Token\Reader\Data;
+use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Token\MainNamespace;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class NamespaceReaderTest extends TestCase
 {
-    public function testTokensCreatedFromSingleSource()
+    public function testTokenCreatedFromFallbackValue()
     {
-        $this->assertEquals(new MainNamespace('Fallback\Namespace'), $this->reader(false, false, false)->token());
-        $this->assertEquals(new MainNamespace('Composer\Namespace'), $this->reader(false, false, true)->token());
-        $this->assertEquals(new MainNamespace('Option\Namespace'), $this->reader(false, true, false)->token());
-        $this->assertEquals(new MainNamespace('Input\Namespace'), $this->reader(true, false, false)->token());
+        $this->assertSame('Fallback\Namespace', $this->reader(false)->value());
+        $this->assertEquals(new MainNamespace('Fallback\Namespace'), $this->reader(false)->token());
     }
 
-    public function testTokensCreatedFromSourceWithHigherPriority()
+    public function testTokenCreatedFromComposerValue()
     {
-        $this->assertEquals(new MainNamespace('Option\Namespace'), $this->reader(false, true, true)->token());
-        $this->assertEquals(new MainNamespace('Input\Namespace'), $this->reader(true, true, false)->token());
+        $this->assertSame('Composer\Namespace', $this->reader(true)->value());
+        $this->assertEquals(new MainNamespace('Composer\Namespace'), $this->reader(true)->token());
     }
 
-    private function reader(bool $input, bool $options, bool $composer): NamespaceReader
+    public function testTokenCreatedFromParameterValue()
+    {
+        $this->assertEquals(new MainNamespace('Some\Name'), $this->reader(false)->createToken('Some\Name'));
+        $this->assertEquals(new MainNamespace('Some\Name'), $this->reader(true)->createToken('Some\Name'));
+    }
+
+    public function testConstantProperties()
+    {
+        $this->assertSame('Source files namespace', $this->reader(false)->inputPrompt());
+        $this->assertSame('ns', $this->reader(false)->optionName());
+    }
+
+    private function reader(bool $composer): NamespaceReader
     {
         $composer = $composer ? ['autoload' => ['psr-4' => ['Composer\\Namespace' => 'src/']]] : [];
-        $composer = new Data\ComposerJsonData(new Doubles\MockedFile(json_encode($composer)));
-        $options  = $options ? ['ns' => 'Option\Namespace', 'i' => false] : ['i' => false];
-        $input    = new Doubles\MockedTerminal($input ? ['Input\Namespace'] : []);
-        $input    = new Data\UserInputData($options, $input);
-        $fallback = new Doubles\FakeValueReader($input, 'fallback/namespace');
+        $composer = new ComposerJsonData(new Doubles\MockedFile(json_encode($composer)));
+        $fallback = new Doubles\FakeValueReader('fallback/namespace');
 
-        return new NamespaceReader($input, $composer, $fallback);
+        return new NamespaceReader($composer, $fallback);
     }
 }

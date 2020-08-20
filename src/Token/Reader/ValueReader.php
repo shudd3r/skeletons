@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -11,47 +11,31 @@
 
 namespace Shudd3r\PackageFiles\Token\Reader;
 
-use Shudd3r\PackageFiles\Token\Reader;
-use Shudd3r\PackageFiles\Token\Reader\Data\UserInputData;
 use Shudd3r\PackageFiles\Token;
+use Shudd3r\PackageFiles\Token\Reader;
 
 
 abstract class ValueReader implements Reader
 {
-    protected UserInputData $input;
-
-    protected string $inputPrompt;
-    protected string $optionName;
-
-    private string $value;
-
-    public function __construct(UserInputData $input)
-    {
-        $this->input = $input;
-    }
+    protected const PROMPT = null;
+    protected const OPTION = null;
 
     public function token(): Token
     {
         return $this->createToken($this->value());
     }
 
-    public function value(): string
+    abstract public function createToken(string $value): Token;
+
+    abstract public function value(): string;
+
+    public function inputPrompt(): string
     {
-        return $this->value ??= $this->readValue();
+        return static::PROMPT;
     }
 
-    abstract protected function createToken(string $value): Token;
-
-    abstract protected function sourceValue(): string;
-
-    private function readValue(): string
+    public function optionName(): string
     {
-        $default = isset($this->optionName)
-            ? $this->input->commandLineOption($this->optionName) ?? $this->sourceValue()
-            : $this->sourceValue();
-
-        return isset($this->inputPrompt)
-            ? $this->input->value($this->inputPrompt, $default)
-            : $default;
+        return static::OPTION;
     }
 }

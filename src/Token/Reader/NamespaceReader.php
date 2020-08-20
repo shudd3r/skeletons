@@ -11,32 +11,30 @@
 
 namespace Shudd3r\PackageFiles\Token\Reader;
 
-use Shudd3r\PackageFiles\Token\Reader\Data\UserInputData;
 use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Token;
 
 
 class NamespaceReader extends ValueReader
 {
+    protected const PROMPT = 'Source files namespace';
+    protected const OPTION = 'ns';
+
     private ComposerJsonData $composer;
-    private ValueReader      $fallback;
+    private ValueReader     $fallback;
 
-    protected string $inputPrompt = 'Source files namespace';
-    protected string $optionName  = 'ns';
-
-    public function __construct(UserInputData $input, ComposerJsonData $composer, ValueReader $fallback)
+    public function __construct(ComposerJsonData $composer, ValueReader $fallback)
     {
-        parent::__construct($input);
         $this->composer = $composer;
         $this->fallback = $fallback;
     }
 
-    protected function createToken(string $value): Token
+    public function createToken(string $value): Token
     {
         return new Token\MainNamespace($value);
     }
 
-    protected function sourceValue(): string
+    public function value(): string
     {
         return $this->namespaceFromComposer() ?? $this->namespaceFromPackageName();
     }
