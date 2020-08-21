@@ -17,11 +17,17 @@ use Shudd3r\PackageFiles\Token;
 class CachedValueReader extends ValueReader
 {
     private ValueReader $reader;
-    private string       $value;
+    private string      $value;
+    private Token       $token;
 
     public function __construct(ValueReader $reader)
     {
         $this->reader = $reader;
+    }
+
+    public function token(): Token
+    {
+        return $this->token ??= $this->createToken($this->value());
     }
 
     public function createToken(string $value): Token
