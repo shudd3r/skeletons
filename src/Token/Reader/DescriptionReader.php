@@ -21,7 +21,7 @@ class DescriptionReader extends ValueReader
     protected const OPTION = 'desc';
 
     private ComposerJsonData $composer;
-    private ValueReader     $fallback;
+    private ValueReader      $fallback;
 
     public function __construct(ComposerJsonData $composer, ValueReader $fallback)
     {

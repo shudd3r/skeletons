@@ -21,7 +21,7 @@ class NamespaceReader extends ValueReader
     protected const OPTION = 'ns';
 
     private ComposerJsonData $composer;
-    private ValueReader     $fallback;
+    private ValueReader      $fallback;
 
     public function __construct(ComposerJsonData $composer, ValueReader $fallback)
     {

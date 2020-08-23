@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Token;
 
 class InputReader extends ValueReader
 {
-    private Input        $input;
+    private Input       $input;
     private ValueReader $reader;
 
     public function __construct(Input $input, ValueReader $reader)

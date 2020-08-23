@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Token;
 
 class CommandOptionReader extends ValueReader
 {
-    private array        $options;
+    private array       $options;
     private ValueReader $reader;
 
     public function __construct(array $options, ValueReader $reader)
