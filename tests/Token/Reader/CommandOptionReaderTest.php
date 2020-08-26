@@ -12,9 +12,8 @@
 namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeToken;
 use Shudd3r\PackageFiles\Token\Reader\CommandOptionReader;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeValueReader;
+use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class CommandOptionReaderTest extends TestCase
@@ -24,7 +23,7 @@ class CommandOptionReaderTest extends TestCase
         $reader = $this->optionReader($wrapped, 'option value');
         $this->assertNotSame($wrapped->value(), $reader->value());
         $this->assertSame('option value', $reader->value());
-        $this->assertEquals(new FakeToken('option value'), $reader->token());
+        $this->assertEquals(new Doubles\FakeToken('option value'), $reader->token());
     }
 
     public function testForUndefinedWrapperOption_Value_ReturnsWrappedValue()
@@ -32,7 +31,7 @@ class CommandOptionReaderTest extends TestCase
         $reader = $this->optionReader($wrapped);
         $this->assertSame($wrapped->value(), $reader->value());
         $this->assertSame('wrapped', $reader->value());
-        $this->assertEquals(new FakeToken('wrapped'), $reader->token());
+        $this->assertEquals(new Doubles\FakeToken('wrapped'), $reader->token());
     }
 
     public function testConstantPropertiesAreReadFromWrappedReader()
@@ -48,12 +47,13 @@ class CommandOptionReaderTest extends TestCase
         $reader = $this->optionReader($wrapped);
 
         $token = $reader->createToken('foo');
-        $this->assertEquals(new FakeToken('foo'), $token);
+        $this->assertEquals(new Doubles\FakeToken('foo'), $token);
         $this->assertSame($token, $wrapped->created);
     }
 
-    private function optionReader(FakeValueReader &$mock = null, string $option = null): CommandOptionReader
+    private function optionReader(Doubles\FakeValueReader &$mock = null, string $option = null): CommandOptionReader
     {
-        return new CommandOptionReader($option ? ['option' => $option] : [], $mock = new FakeValueReader('wrapped'));
+        $mock = new Doubles\FakeValueReader('wrapped');
+        return new CommandOptionReader($option ? ['option' => $option] : [], $mock);
     }
 }
