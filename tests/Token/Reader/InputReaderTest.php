@@ -58,6 +58,13 @@ class InputReaderTest extends TestCase
         $this->assertSame($terminal->messagesSent[0], $prompt);
     }
 
+    public function testConstantPropertiesAreReadFromWrappedReader()
+    {
+        $reader = $this->inputReader($this->terminal(), $wrapped);
+        $this->assertSame($wrapped->inputPrompt(), $reader->inputPrompt());
+        $this->assertSame($wrapped->optionName(), $reader->optionName());
+    }
+
     private function inputReader(Doubles\MockedTerminal $terminal, Doubles\FakeValueReader &$mock = null): InputReader
     {
         return new InputReader($terminal, $mock = new Doubles\FakeValueReader('wrapped'));
