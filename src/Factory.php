@@ -27,14 +27,14 @@ abstract class Factory
 
     public function command(): Command
     {
-        $reader = new Token\Reader($this->env->output(), ...$this->tokenCallbacks());
+        $reader = new Token\Reader\TokenGroupReader($this->env->output(), ...$this->tokenReaders());
         return new CommandHandler($reader, $this->subroutine());
     }
 
     /**
-     * @return callable[] fn() => Token
+     * @return Token\Reader[]
      */
-    abstract protected function tokenCallbacks(): array;
+    abstract protected function tokenReaders(): array;
 
     abstract protected function subroutine(): Subroutine;
 }

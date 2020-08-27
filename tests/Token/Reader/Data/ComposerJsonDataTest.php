@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Token\Reader;
+namespace Shudd3r\PackageFiles\Tests\Token\Reader\Data;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Token\Reader\ComposerJsonData;
+use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use RuntimeException;
 

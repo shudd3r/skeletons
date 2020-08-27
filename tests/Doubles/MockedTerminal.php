@@ -17,9 +17,14 @@ use Shudd3r\PackageFiles\Application\Input;
 
 class MockedTerminal implements Input, Output
 {
-    public $inputStrings = [];
-    public $messagesSent = [];
-    public $errorCode    = 0;
+    public array $inputStrings;
+    public array $messagesSent = [];
+    public int   $errorCode    = 0;
+
+    public function __construct(array $inputStrings = [])
+    {
+        $this->inputStrings = $inputStrings;
+    }
 
     public function value(string $prompt = ''): string
     {
