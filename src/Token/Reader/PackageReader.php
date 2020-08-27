@@ -18,9 +18,6 @@ use Shudd3r\PackageFiles\Token;
 
 class PackageReader extends ValueReader
 {
-    protected const PROMPT = 'Packagist package name';
-    protected const OPTION = 'package';
-
     private ComposerJsonData $composer;
     private Directory        $directory;
 

@@ -38,12 +38,6 @@ class DescriptionReaderTest extends TestCase
         $this->assertEquals(new Description('Any value'), $this->reader(true)->createToken('Any value'));
     }
 
-    public function testConstantProperties()
-    {
-        $this->assertSame('Package description', $this->reader(false)->inputPrompt());
-        $this->assertSame('desc', $this->reader(false)->optionName());
-    }
-
     private function reader(bool $composer): DescriptionReader
     {
         $composer = $composer ? ['description' => 'composer description'] : [];

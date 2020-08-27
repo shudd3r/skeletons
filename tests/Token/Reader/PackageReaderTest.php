@@ -38,12 +38,6 @@ class PackageReaderTest extends TestCase
         $this->assertEquals(new Package('some/package'), $this->reader(true)->createToken('some/package'));
     }
 
-    public function testConstantProperties()
-    {
-        $this->assertSame('Packagist package name', $this->reader(false)->inputPrompt());
-        $this->assertSame('package', $this->reader(false)->optionName());
-    }
-
     private function reader(bool $composer): PackageReader
     {
         $composer  = new Doubles\MockedFile(json_encode($composer ? ['name' => 'composer/package'] : []));

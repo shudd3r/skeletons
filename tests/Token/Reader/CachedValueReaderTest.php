@@ -29,14 +29,6 @@ class CachedValueReaderTest extends TestCase
         $this->assertSame(1, $wrapped->reads);
     }
 
-    public function testConstantPropertiesAreReadFromWrappedReader()
-    {
-        $cached = $this->cachedReader($wrapped, 'value');
-
-        $this->assertSame($wrapped->inputPrompt(), $cached->inputPrompt());
-        $this->assertSame($wrapped->optionName(), $cached->optionName());
-    }
-
     public function testToken_ReturnsSameInstance()
     {
         $cached = $this->cachedReader($wrapped, 'value');

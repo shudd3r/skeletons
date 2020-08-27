@@ -39,14 +39,4 @@ class CachedValueReader extends ValueReader
     {
         return $this->value ??= $this->reader->value();
     }
-
-    public function inputPrompt(): string
-    {
-        return $this->reader->inputPrompt();
-    }
-
-    public function optionName(): string
-    {
-        return $this->reader->optionName();
-    }
 }

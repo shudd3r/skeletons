@@ -17,9 +17,6 @@ use Shudd3r\PackageFiles\Token;
 
 class NamespaceReader extends ValueReader
 {
-    protected const PROMPT = 'Source files namespace';
-    protected const OPTION = 'ns';
-
     private ComposerJsonData $composer;
     private ValueReader      $fallback;
 

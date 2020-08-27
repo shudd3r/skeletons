@@ -16,13 +16,13 @@ use Shudd3r\PackageFiles\Token;
 
 class CommandOptionReader extends ValueReader
 {
-    private array       $options;
+    private string      $option;
     private ValueReader $reader;
 
-    public function __construct(array $options, ValueReader $reader)
+    public function __construct(string $option, ValueReader $reader)
     {
-        $this->options = $options;
-        $this->reader  = $reader;
+        $this->option = $option;
+        $this->reader = $reader;
     }
 
     public function createToken(string $value): Token
@@ -32,16 +32,6 @@ class CommandOptionReader extends ValueReader
 
     public function value(): string
     {
-        return $this->options[$this->reader->optionName()] ?? $this->reader->value();
-    }
-
-    public function inputPrompt(): string
-    {
-        return $this->reader->inputPrompt();
-    }
-
-    public function optionName(): string
-    {
-        return $this->reader->optionName();
+        return $this->option;
     }
 }

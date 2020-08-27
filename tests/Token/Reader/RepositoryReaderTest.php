@@ -37,12 +37,6 @@ class RepositoryReaderTest extends TestCase
         $this->assertEquals(new Repository('repository/foo'), $this->reader(false)->createToken('repository/foo'));
     }
 
-    public function testConstantProperties()
-    {
-        $this->assertSame('Github repository name', $this->reader(true)->inputPrompt());
-        $this->assertSame('repo', $this->reader(true)->optionName());
-    }
-
     public function testConfigParsingPriority()
     {
         $reader = $this->configReader($config = []);

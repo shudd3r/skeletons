@@ -17,11 +17,13 @@ use Shudd3r\PackageFiles\Token;
 
 class InputReader extends ValueReader
 {
+    private string      $prompt;
     private Input       $input;
     private ValueReader $reader;
 
-    public function __construct(Input $input, ValueReader $reader)
+    public function __construct(string $prompt, Input $input, ValueReader $reader)
     {
+        $this->prompt = $prompt;
         $this->input  = $input;
         $this->reader = $reader;
     }
@@ -35,16 +37,6 @@ class InputReader extends ValueReader
     {
         $default = $this->reader->value();
 
-        return $this->input->value($this->reader->inputPrompt() . ' [default: ' . $default . ']:') ?: $default;
-    }
-
-    public function inputPrompt(): string
-    {
-        return $this->reader->inputPrompt();
-    }
-
-    public function optionName(): string
-    {
-        return $this->reader->optionName();
+        return $this->input->value($this->prompt . ' [default: ' . $default . ']:') ?: $default;
     }
 }

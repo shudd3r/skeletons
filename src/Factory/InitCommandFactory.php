@@ -24,12 +24,20 @@ class InitCommandFactory extends Factory
         $files    = $this->env->packageFiles();
         $composer = new Reader\Data\ComposerJsonData($files->file('composer.json'));
 
-        return [
-            $package = $this->cached($this->interactive(new Reader\PackageReader($composer, $files))),
-            $this->interactive(new Reader\RepositoryReader($files->file('.git/config'), $package)),
-            $this->interactive(new Reader\DescriptionReader($composer, $package)),
-            $this->interactive(new Reader\NamespaceReader($composer, $package))
-        ];
+        $package = new Reader\PackageReader($composer, $files);
+        $package = $this->interactive('Packagist package name', $this->commandOption('package', $package));
+        $package = $this->cached($package);
+
+        $repo = new Reader\RepositoryReader($files->file('.git/config'), $package);
+        $repo = $this->interactive('Github repository name', $this->commandOption('repo', $repo));
+
+        $desc = new Reader\DescriptionReader($composer, $package);
+        $desc = $this->interactive('Package description', $this->commandOption('desc', $desc));
+
+        $namespace = new Reader\NamespaceReader($composer, $package);
+        $namespace = $this->interactive('Source files namespace', $this->commandOption('ns', $namespace));
+
+        return [$package, $repo, $desc, $namespace];
     }
 
     protected function subroutine(): Subroutine
@@ -53,14 +61,17 @@ class InitCommandFactory extends Factory
         return new Reader\CachedValueReader($reader);
     }
 
-    private function interactive(Reader\ValueReader $reader, bool $commandLine = true): Reader\ValueReader
+    private function commandOption(string $option, Reader\ValueReader $reader): Reader\ValueReader
     {
-        if ($commandLine) {
-            $reader = new Reader\CommandOptionReader($this->options, $reader);
-        }
+        return isset($this->options[$option])
+            ? new Reader\CommandOptionReader($this->options[$option], $reader)
+            : $reader;
+    }
 
+    private function interactive(string $prompt, Reader\ValueReader $reader): Reader\ValueReader
+    {
         return isset($this->options['i']) || isset($this->options['interactive'])
-            ? new Reader\InputReader($this->env->input(), $reader)
+            ? new Reader\InputReader($prompt, $this->env->input(), $reader)
             : $reader;
     }
 }

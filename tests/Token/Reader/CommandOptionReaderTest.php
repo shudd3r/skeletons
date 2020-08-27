@@ -18,28 +18,12 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class CommandOptionReaderTest extends TestCase
 {
-    public function testForExistingWrappedOption_Value_ReturnsOptionValue()
+    public function testValue_ReturnsOptionValue()
     {
         $reader = $this->optionReader($wrapped, 'option value');
         $this->assertNotSame($wrapped->value(), $reader->value());
         $this->assertSame('option value', $reader->value());
         $this->assertEquals(new Doubles\FakeToken('option value'), $reader->token());
-    }
-
-    public function testForUndefinedWrapperOption_Value_ReturnsWrappedValue()
-    {
-        $reader = $this->optionReader($wrapped);
-        $this->assertSame($wrapped->value(), $reader->value());
-        $this->assertSame('wrapped', $reader->value());
-        $this->assertEquals(new Doubles\FakeToken('wrapped'), $reader->token());
-    }
-
-    public function testConstantPropertiesAreReadFromWrappedReader()
-    {
-        $reader = $this->optionReader($wrapped);
-
-        $this->assertSame($wrapped->inputPrompt(), $reader->inputPrompt());
-        $this->assertSame($wrapped->optionName(), $reader->optionName());
     }
 
     public function testCreateToken_ReturnsTokenCreatedByWrapper()
@@ -51,9 +35,9 @@ class CommandOptionReaderTest extends TestCase
         $this->assertSame($token, $wrapped->created);
     }
 
-    private function optionReader(Doubles\FakeValueReader &$mock = null, string $option = null): CommandOptionReader
+    private function optionReader(Doubles\FakeValueReader &$mock = null, string $option = ''): CommandOptionReader
     {
         $mock = new Doubles\FakeValueReader('wrapped');
-        return new CommandOptionReader($option ? ['option' => $option] : [], $mock);
+        return new CommandOptionReader($option ?? 'option', $mock);
     }
 }

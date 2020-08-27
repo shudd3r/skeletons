@@ -38,12 +38,6 @@ class NamespaceReaderTest extends TestCase
         $this->assertEquals(new MainNamespace('Some\Name'), $this->reader(true)->createToken('Some\Name'));
     }
 
-    public function testConstantProperties()
-    {
-        $this->assertSame('Source files namespace', $this->reader(false)->inputPrompt());
-        $this->assertSame('ns', $this->reader(false)->optionName());
-    }
-
     private function reader(bool $composer): NamespaceReader
     {
         $composer = $composer ? ['autoload' => ['psr-4' => ['Composer\\Namespace' => 'src/']]] : [];

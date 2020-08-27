@@ -17,9 +17,6 @@ use Shudd3r\PackageFiles\Token;
 
 class DescriptionReader extends ValueReader
 {
-    protected const PROMPT = 'Package description';
-    protected const OPTION = 'desc';
-
     private ComposerJsonData $composer;
     private ValueReader      $fallback;
 

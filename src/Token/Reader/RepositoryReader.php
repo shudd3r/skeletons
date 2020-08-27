@@ -17,9 +17,6 @@ use Shudd3r\PackageFiles\Token;
 
 class RepositoryReader extends ValueReader
 {
-    protected const PROMPT = 'Github repository name';
-    protected const OPTION = 'repo';
-
     private File        $gitConfig;
     private ValueReader $fallback;
 

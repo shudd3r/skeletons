@@ -17,9 +17,6 @@ use Shudd3r\PackageFiles\Token\Reader;
 
 abstract class ValueReader implements Reader
 {
-    protected const PROMPT = null;
-    protected const OPTION = null;
-
     public function token(): Token
     {
         return $this->createToken($this->value());
@@ -28,14 +25,4 @@ abstract class ValueReader implements Reader
     abstract public function createToken(string $value): Token;
 
     abstract public function value(): string;
-
-    public function inputPrompt(): string
-    {
-        return static::PROMPT;
-    }
-
-    public function optionName(): string
-    {
-        return static::OPTION;
-    }
 }
