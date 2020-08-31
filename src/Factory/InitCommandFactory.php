@@ -24,18 +24,17 @@ class InitCommandFactory extends Factory
         $files    = $this->env->packageFiles();
         $composer = new Reader\Data\ComposerJsonData($files->file('composer.json'));
 
-        $package = new Reader\PackageReader($composer, $files);
-        $package = $this->interactive('Packagist package name', $this->commandOption('package', $package));
-        $package = $this->cached($package);
+        $source  = $this->option('package') ?? new Reader\Source\DefaultPackage($composer, $files);
+        $package = new Reader\PackageReader($this->interactive('Packagist package name', $source));
 
-        $repo = new Reader\RepositoryReader($files->file('.git/config'), $package);
-        $repo = $this->interactive('Github repository name', $this->commandOption('repo', $repo));
+        $source = $this->option('repo') ?? new Reader\Source\DefaultRepository($files->file('.git/config'), $package);
+        $repo   = new Reader\RepositoryReader($this->interactive('Github repository name', $source));
 
-        $desc = new Reader\DescriptionReader($composer, $package);
-        $desc = $this->interactive('Package description', $this->commandOption('desc', $desc));
+        $source = $this->option('desc') ?? new Reader\Source\DefaultDescription($composer, $package);
+        $desc   = new Reader\DescriptionReader($this->interactive('Package description', $source));
 
-        $namespace = new Reader\NamespaceReader($composer, $package);
-        $namespace = $this->interactive('Source files namespace', $this->commandOption('ns', $namespace));
+        $source    = $this->option('ns') ?? new Reader\Source\DefaultNamespace($composer, $package);
+        $namespace = new Reader\NamespaceReader($this->interactive('Source files namespace', $source));
 
         return [$package, $repo, $desc, $namespace];
     }
@@ -56,22 +55,15 @@ class InitCommandFactory extends Factory
         return new Subroutine\SubroutineSequence($generateComposer, $generateMetaFile);
     }
 
-    private function cached(Reader\ValueReader $reader): Reader\ValueReader
+    private function option(string $name): ?Reader\Source
     {
-        return new Reader\CachedValueReader($reader);
+        return isset($this->options[$name]) ? new Reader\Source\PredefinedString($this->options[$name]) : null;
     }
 
-    private function commandOption(string $option, Reader\ValueReader $reader): Reader\ValueReader
-    {
-        return isset($this->options[$option])
-            ? new Reader\CommandOptionReader($this->options[$option], $reader)
-            : $reader;
-    }
-
-    private function interactive(string $prompt, Reader\ValueReader $reader): Reader\ValueReader
+    private function interactive(string $prompt, Reader\Source $source): Reader\Source
     {
         return isset($this->options['i']) || isset($this->options['interactive'])
-            ? new Reader\InputReader($prompt, $this->env->input(), $reader)
-            : $reader;
+            ? new Reader\Source\InteractiveInput($prompt, $this->env->input(), $source)
+            : $source;
     }
 }
