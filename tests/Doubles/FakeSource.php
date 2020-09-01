@@ -16,6 +16,8 @@ use Shudd3r\PackageFiles\Token\Reader\Source;
 
 class FakeSource implements Source
 {
+    public int $reads = 0;
+
     private string $value;
 
     public function __construct(string $value)
@@ -25,6 +27,7 @@ class FakeSource implements Source
 
     public function value(): string
     {
+        $this->reads++;
         return $this->value;
     }
 }
