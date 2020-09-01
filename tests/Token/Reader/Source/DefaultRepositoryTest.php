@@ -9,38 +9,35 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Token\Reader;
+namespace Shudd3r\PackageFiles\Tests\Token\Reader\Source;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Token\Reader\RepositoryReader;
-use Shudd3r\PackageFiles\Token\Repository;
+use Shudd3r\PackageFiles\Token\Reader\Source\DefaultRepository;
+use Shudd3r\PackageFiles\Token\Reader\PackageReader;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class RepositoryReaderTest extends TestCase
+class DefaultRepositoryTest extends TestCase
 {
-    public function testTokenCreatedFromFallbackValue()
+    public function testValue_ReturnsGitConfigRemotePath()
     {
-        $this->assertSame('fallback/repo', $this->reader(false)->value());
-        $this->assertEquals(new Repository('fallback/repo'), $this->reader(false)->token());
+        $this->assertSame('config/repo', $this->reader()->value());
     }
 
-    public function testTokenCreatedFromConfigValue()
+    public function testForMissingConfig_Value_ReturnsPackageName()
     {
-        $this->assertSame('config/repo', $this->reader(true)->value());
-        $this->assertEquals(new Repository('config/repo'), $this->reader(true)->token());
+        $this->assertSame('package/name', $this->reader(false)->value());
     }
 
-    public function testTokenCreatedFromParameterValue()
+    public function testForMissingRemoteInGitConfig_Value_ReturnsPackageName()
     {
-        $this->assertEquals(new Repository('repository/foo'), $this->reader(true)->createToken('repository/foo'));
-        $this->assertEquals(new Repository('repository/foo'), $this->reader(false)->createToken('repository/foo'));
+        $this->assertSame('package/name', $this->configReader()->value());
     }
 
-    public function testConfigParsingPriority()
+    public function testPathPriorityForMultipleRemotesInGitConfig()
     {
         $reader = $this->configReader($config = []);
-        $this->assertSame('fallback/repo', $reader->value());
+        $this->assertSame('package/name', $reader->value());
 
         $reader = $this->configReader($config += ['foo' => 'git@github.com:other/repo.git']);
         $this->assertSame('other/repo', $reader->value());
@@ -52,21 +49,21 @@ class RepositoryReaderTest extends TestCase
         $this->assertSame('master/ssh-repo', $reader->value());
     }
 
-    private function reader(bool $config): RepositoryReader
+    private function reader(bool $config = true): DefaultRepository
     {
         $config   = $config ? ['origin' => 'https://github.com/config/repo.git'] : [];
         $config   = new Doubles\MockedFile($this->config($config), (bool) $config);
-        $fallback = new Doubles\FakeValueReader('fallback/repo');
+        $fallback = new PackageReader(new Doubles\FakeSource('package/name'));
 
-        return new RepositoryReader($config, $fallback);
+        return new DefaultRepository($config, $fallback);
     }
 
-    private function configReader(array $config = []): RepositoryReader
+    private function configReader(array $config = []): DefaultRepository
     {
-        return new RepositoryReader(
-            new Doubles\MockedFile($this->config($config)),
-            new Doubles\FakeValueReader('fallback/repo')
-        );
+        $config   = new Doubles\MockedFile($this->config($config));
+        $fallback = new PackageReader(new Doubles\FakeSource('package/name'));
+
+        return new DefaultRepository($config, $fallback);
     }
 
     private function config(array $remotes = []): string

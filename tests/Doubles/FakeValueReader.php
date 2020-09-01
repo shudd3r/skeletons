@@ -17,28 +17,8 @@ use Shudd3r\PackageFiles\Token;
 
 class FakeValueReader extends ValueReader
 {
-    protected const PROMPT = 'Prompt';
-    protected const OPTION = 'option';
-
-    public int   $reads = 0;
-    public Token $created;
-
-    private string $value;
-
-    public function __construct(string $value = '')
+    protected function createToken(string $value): Token
     {
-        $this->value   = $value;
-        $this->created = new FakeToken($value);
-    }
-
-    public function createToken(string $value): Token
-    {
-        return $this->created = new FakeToken($value);
-    }
-
-    public function value(): string
-    {
-        $this->reads++;
-        return $this->value;
+        return new FakeToken($value);
     }
 }

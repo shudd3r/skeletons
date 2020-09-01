@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -11,13 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Token\Reader;
 
-use Shudd3r\PackageFiles\Token;
 
-
-class NamespaceReader extends ValueReader
+interface Source
 {
-    protected function createToken(string $value): Token
-    {
-        return new Token\MainNamespace($value);
-    }
+    public function value(): string;
 }
