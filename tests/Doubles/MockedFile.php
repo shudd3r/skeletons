@@ -39,11 +39,12 @@ class MockedFile implements FileInterface
 
     public function contents(): string
     {
-        return $this->contents;
+        return $this->exists ? $this->contents : '';
     }
 
     public function write(string $contents): void
     {
         $this->contents = $contents;
+        $this->exists   = true;
     }
 }
