@@ -20,4 +20,21 @@ interface Directory extends Node
      * @return File
      */
     public function file(string $filename): File;
+
+    /**
+     * @param string $name directory name or relative directory path
+     *
+     * @return Directory
+     */
+    public function subdirectory(string $name): Directory;
+
+    /**
+     * @return File[]
+     */
+    public function files(): array;
+
+    /**
+     * @return Directory[]
+     */
+    public function subdirectories(): array;
 }
