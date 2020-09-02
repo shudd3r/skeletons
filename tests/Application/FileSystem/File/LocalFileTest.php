@@ -88,6 +88,23 @@ class LocalFileTest extends TestCase
         unlink($filename);
     }
 
+    public function testWriteMethodForNotExistingPath_CreatesDirectoriesAndFileWWithGivenContent()
+    {
+        $contents  = 'Test file contents...';
+        $directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'foo' . DIRECTORY_SEPARATOR . 'bar';
+        $filename  = $directory . DIRECTORY_SEPARATOR . 'fooBar.test';
+        $file      = $this->file($filename);
+        $this->assertFalse($file->exists());
+
+        $file->write($contents);
+        $this->assertSame(file_get_contents($filename), $contents);
+        $this->assertSame($contents, $file->contents());
+        $this->assertTrue($file->exists());
+        unlink($filename);
+        rmdir($directory);
+        rmdir(dirname($directory));
+    }
+
     private function file(?string &$path = null): LocalFile
     {
         return new LocalFile($path ??= sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'test.txt');
