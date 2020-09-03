@@ -43,6 +43,14 @@ class LocalFileTest extends TestCase
         self::clear();
     }
 
+    public function testExistsMethodForDirectoryPath()
+    {
+        self::create('foo/bar.dir/baz.tmp');
+        $this->assertFalse(self::file('foo/bar.dir')->exists());
+        $this->assertTrue(self::file('foo/bar.dir/baz.tmp')->exists());
+        self::clear();
+    }
+
     public function testForNotExistingFile_ContentsMethod_ReturnsEmptyString()
     {
         $this->assertSame('', self::file('test.tmp')->contents());

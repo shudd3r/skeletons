@@ -51,6 +51,14 @@ class LocalDirectoryTest extends TestCase
         $this->assertFalse(self::directory('foo/bar')->exists());
     }
 
+    public function testExistsMethodForFilePath()
+    {
+        self::create('foo/bar.dir/baz.tmp');
+        $this->assertTrue(self::directory('foo/bar.dir')->exists());
+        $this->assertFalse(self::directory('foo/bar.dir/baz.tmp')->exists());
+        self::clear();
+    }
+
     /**
      * @dataProvider pathNormalizations
      *
