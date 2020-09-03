@@ -19,8 +19,8 @@ class LocalDirectoryTest extends FileSystemTests
 {
     public function testInstantiation()
     {
-        $directory = new FileSystem\Directory\LocalDirectory(self::$root);
-        $this->assertEquals(self::directory(), $directory);
+        $directory = new FileSystem\Directory\LocalDirectory(self::$root . DIRECTORY_SEPARATOR . 'test');
+        $this->assertEquals(self::directory('test'), $directory);
         $this->assertInstanceOf(FileSystem\Directory\LocalDirectory::class, $directory);
         $this->assertInstanceOf(FileSystem\Directory::class, $directory);
         $this->assertInstanceOf(FileSystem\Node::class, $directory);
@@ -28,7 +28,7 @@ class LocalDirectoryTest extends FileSystemTests
 
     public function testPath_ReturnsConstructorPath()
     {
-        $this->assertSame(self::$root, self::directory()->path());
+        $this->assertSame(self::$root . DIRECTORY_SEPARATOR . 'test', self::directory('test')->path());
     }
 
     /**
@@ -48,7 +48,7 @@ class LocalDirectoryTest extends FileSystemTests
         $this->assertFalse(self::directory('foo/bar')->exists());
     }
 
-    public function testExistsMethodForFilePath()
+    public function testExistsMethodForFilePath_ReturnsFalse()
     {
         self::create('foo/bar.dir/baz.tmp');
         $this->assertTrue(self::directory('foo/bar.dir')->exists());
