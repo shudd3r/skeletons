@@ -9,17 +9,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\File;
+namespace Shudd3r\PackageFiles\Tests\Application\FileSystem;
 
-use PHPUnit\Framework\TestCase;
+use Shudd3r\PackageFiles\Tests\Application\FileSystemTests;
 use Shudd3r\PackageFiles\Application\FileSystem;
-use Shudd3r\PackageFiles\Tests\Application\FileSystem\LocalFileSystemMethods;
 
 
-class LocalFileTest extends TestCase
+class LocalFileTest extends FileSystemTests
 {
-    use LocalFileSystemMethods;
-
     public function testInstantiation()
     {
         $file = self::file('test.tmp');

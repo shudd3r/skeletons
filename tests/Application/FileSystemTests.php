@@ -9,12 +9,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\FileSystem;
+namespace Shudd3r\PackageFiles\Tests\Application;
 
+use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\FileSystem;
 
 
-trait LocalFileSystemMethods
+class FileSystemTests extends TestCase
 {
     protected static string $root;
 
@@ -29,27 +30,27 @@ trait LocalFileSystemMethods
         rmdir(self::$root);
     }
 
-    private static function files(array $names): array
+    protected static function files(array $names): array
     {
         return array_map(fn($filename) => self::file($filename), $names);
     }
 
-    private static function directories(array $names): array
+    protected static function directories(array $names): array
     {
         return array_map(fn($dirname) => self::directory($dirname), $names);
     }
 
-    private static function file(string $filename): FileSystem\File
+    protected static function file(string $filename): FileSystem\File
     {
         return self::directory()->file($filename);
     }
 
-    private static function directory(string $dirname = ''): FileSystem\Directory
+    protected static function directory(string $dirname = ''): FileSystem\Directory
     {
         return new FileSystem\Directory\LocalDirectory(self::$root . DIRECTORY_SEPARATOR . $dirname);
     }
 
-    private static function create(string $path, string $contents = 'x'): void
+    protected static function create(string $path, string $contents = 'x'): void
     {
         $segments = explode(DIRECTORY_SEPARATOR, str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path));
         $basename = array_pop($segments);
@@ -64,7 +65,7 @@ trait LocalFileSystemMethods
         file_put_contents($path . DIRECTORY_SEPARATOR . $basename, $contents);
     }
 
-    private static function clear(string $name = ''): void
+    protected static function clear(string $name = ''): void
     {
         $path = $name ? self::$root . DIRECTORY_SEPARATOR . $name : self::$root;
         if (is_file($path) && unlink($path)) { return; }
