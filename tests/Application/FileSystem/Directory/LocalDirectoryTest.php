@@ -85,27 +85,26 @@ class LocalDirectoryTest extends TestCase
         $directory = self::directory();
         $this->assertEmpty($directory->files());
 
-        self::create('c.tmp');
-        self::create('a.tmp');
-        self::create('b.tmp');
-        $this->assertEquals(self::files(['a.tmp', 'b.tmp', 'c.tmp']), $directory->files());
+        $files = ['a.tmp', 'b.tmp', 'c.tmp'];
+        array_walk($files, fn($file) => self::create($file));
+        $this->assertEquals(self::files($files), $directory->files());
         self::clear();
     }
 
     public function testSubdirectoriesMethod_ReturnsArrayOfExistingSubdirectories()
     {
-        self::create('first/a.tmp');
-        self::create('second/a.tmp');
-        $this->assertEquals(self::directories(['first', 'second']), self::directory()->subdirectories());
+        $directory = self::directory();
+        $this->assertEmpty($directory->subdirectories());
+
+        $directories = ['a', 'b', 'c'];
+        array_walk($directories, fn($dir) => self::create($dir . '/file.tmp'));
+        $this->assertEquals(self::directories($directories), $directory->subdirectories());
         self::clear();
     }
 
     public function testFileStructure()
     {
         $directory = self::directory();
-        $this->assertEmpty($directory->files());
-        $this->assertEmpty($directory->subdirectories());
-
         $files = ['b.tmp', 'a.tmp', 'foo/c.tmp', 'foo/d.tmp', 'bar/e.tmp', 'foo/baz/f.tmp'];
         array_walk($files, fn($file) => self::create($file));
 
