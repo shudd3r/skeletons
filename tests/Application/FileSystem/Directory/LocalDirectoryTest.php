@@ -22,7 +22,8 @@ class LocalDirectoryTest extends TestCase
 
     public function testInstantiation()
     {
-        $directory = self::directory();
+        $directory = new FileSystem\Directory\LocalDirectory(self::$root);
+        $this->assertEquals(self::directory(), $directory);
         $this->assertInstanceOf(FileSystem\Directory\LocalDirectory::class, $directory);
         $this->assertInstanceOf(FileSystem\Directory::class, $directory);
         $this->assertInstanceOf(FileSystem\Node::class, $directory);
@@ -30,7 +31,7 @@ class LocalDirectoryTest extends TestCase
 
     public function testPath_ReturnsConstructorPath()
     {
-        $this->assertSame(__DIR__, self::directory(__DIR__)->path());
+        $this->assertSame(self::$root, self::directory()->path());
     }
 
     /**
@@ -39,15 +40,15 @@ class LocalDirectoryTest extends TestCase
      * @param string $mixedDir
      * @param string $normalizedDir
      */
-    public function testPath_ReturnsNormalizedPath(string $mixedDir, string $normalizedDir)
+    public function testPathIsNormalized(string $mixedDir, string $normalizedDir)
     {
-        $this->assertSame(self::$root . $normalizedDir, self::directory(self::$root . $mixedDir)->path());
+        $this->assertEquals(self::directory($mixedDir), self::directory($normalizedDir));
     }
 
     public function testExistsMethod()
     {
-        $this->assertTrue(self::directory(__DIR__)->exists());
-        $this->assertFalse(self::directory(__DIR__ . '/foo/bar/baz')->exists());
+        $this->assertTrue(self::directory()->exists());
+        $this->assertFalse(self::directory('foo/bar')->exists());
     }
 
     /**
@@ -56,71 +57,57 @@ class LocalDirectoryTest extends TestCase
      * @param string $mixedDir
      * @param string $normalizedDir
      */
-    public function testFileMethod_ReturnsFileWithNormalizedDirectoryPath(string $mixedDir, string $normalizedDir)
+    public function testFileMethod_ReturnsFileWithNormalizedPath(string $mixedDir, string $normalizedDir)
     {
-        $directory = self::directory();
-        $filename  = $directory->path() . $normalizedDir . DIRECTORY_SEPARATOR . 'filename.tmp';
-        $this->assertEquals(self::file($filename), $directory->file($mixedDir . 'filename.tmp'));
+        $file = self::directory()->file($mixedDir . 'filename.tmp');
+        $this->assertEquals(self::$root . $normalizedDir . DIRECTORY_SEPARATOR . 'filename.tmp', $file->path());
     }
 
     public function testFileMethod_ReturnsBothExistingAndNotExistingFile()
     {
-        $directory = self::directory(__DIR__);
-        $this->assertFalse($directory->file('notExistingFile.txt')->exists());
-        $this->assertTrue($directory->file(basename(__FILE__))->exists());
+        self::create('exists.tmp');
+        $directory = self::directory();
+        $this->assertTrue($directory->file('exists.tmp')->exists());
+        $this->assertFalse($directory->file('notExists.tmp')->exists());
+        self::clear();
     }
 
-    public function testFilesMethod_ReturnsArrayOfExistingFiles()
+    public function testFilesMethod_ReturnsArrayOfExistingFilesInAlphabeticalOrder()
     {
         $directory = self::directory();
         $this->assertEmpty($directory->files());
 
-        $this->create('one.tmp');
-        $this->create('two.tmp');
-
-        $this->assertEquals(self::files(['one.tmp', 'two.tmp']), $directory->files());
-
-        self::remove();
+        self::create('c.tmp');
+        self::create('a.tmp');
+        self::create('b.tmp');
+        $this->assertEquals(self::files(['a.tmp', 'b.tmp', 'c.tmp']), $directory->files());
+        self::clear();
     }
 
     public function testSubdirectoriesMethod_ReturnsArrayOfExistingSubdirectories()
     {
         self::create('first/a.tmp');
         self::create('second/a.tmp');
-
         $this->assertEquals(self::directories(['first', 'second']), self::directory()->subdirectories());
-
-        self::remove();
+        self::clear();
     }
 
     public function testFileStructure()
     {
-        $root = self::directory();
+        $directory = self::directory();
+        $this->assertEmpty($directory->files());
+        $this->assertEmpty($directory->subdirectories());
 
-        $this->assertEmpty($root->files());
-        $this->assertEmpty($root->subdirectories());
+        $files = ['b.tmp', 'a.tmp', 'foo/c.tmp', 'foo/d.tmp', 'bar/e.tmp', 'foo/baz/f.tmp'];
+        array_walk($files, fn($file) => self::create($file));
 
-        $filenames = ['b.tmp', 'a.tmp', 'foo/c.tmp', 'foo/d.tmp', 'bar/e.tmp', 'foo/baz/f.tmp'];
-        $files     = self::files($filenames);
-
-        $this->assertEmpty($root->files());
-        $this->assertEmpty($root->subdirectories());
-
-        foreach ($files as $file) {
-            $this->assertFalse($file->exists());
-            $file->write('x');
-            $this->assertTrue($file->exists());
-        }
-
-        $this->assertEquals(self::files(['a.tmp', 'b.tmp']), $root->files());
-        $this->assertEquals(self::files(['foo/c.tmp', 'foo/d.tmp']), $root->subdirectory('foo')->files());
-        $this->assertEquals(self::files(['bar/e.tmp']), $root->subdirectory('bar')->files());
-        $this->assertEquals(self::files(['foo/baz/f.tmp']), $root->subdirectory('foo/baz')->files());
-
-        $this->assertEquals(self::directories(['bar', 'foo']), $root->subdirectories());
-        $this->assertEquals(self::directories(['foo/baz']), $root->subdirectory('foo')->subdirectories());
-
-        self::remove();
+        $this->assertEquals(self::files(['a.tmp', 'b.tmp']), $directory->files());
+        $this->assertEquals(self::files(['foo/c.tmp', 'foo/d.tmp']), $directory->subdirectory('foo')->files());
+        $this->assertEquals(self::files(['bar/e.tmp']), $directory->subdirectory('bar')->files());
+        $this->assertEquals(self::files(['foo/baz/f.tmp']), $directory->subdirectory('foo/baz')->files());
+        $this->assertEquals(self::directories(['bar', 'foo']), $directory->subdirectories());
+        $this->assertEquals(self::directories(['foo/baz']), $directory->subdirectory('foo')->subdirectories());
+        self::clear();
     }
 
     public function pathNormalizations(): array

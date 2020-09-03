@@ -26,32 +26,27 @@ trait LocalFileSystemMethods
 
     public static function tearDownAfterClass(): void
     {
-        if (!is_dir(self::$root)) { return; }
-        $message = 'Temporary directory (' . self::$root . ') state was not restored after tests';
-        trigger_error($message, E_USER_WARNING);
-        self::remove();
+        rmdir(self::$root);
     }
 
     private static function files(array $names): array
     {
-        $createFile = fn($filename) => self::directory()->file($filename);
-        return array_map($createFile, $names);
+        return array_map(fn($filename) => self::file($filename), $names);
     }
 
     private static function directories(array $names): array
     {
-        $createDirectory = fn($dirname) => self::directory(self::$root . DIRECTORY_SEPARATOR . $dirname);
-        return array_map($createDirectory, $names);
+        return array_map(fn($dirname) => self::directory($dirname), $names);
     }
 
     private static function file(string $filename): FileSystem\File
     {
-        return new FileSystem\File\LocalFile($filename);
+        return self::directory()->file($filename);
     }
 
-    private static function directory(string $dirname = null): FileSystem\Directory
+    private static function directory(string $dirname = ''): FileSystem\Directory
     {
-        return new FileSystem\Directory\LocalDirectory($dirname ?? self::$root);
+        return new FileSystem\Directory\LocalDirectory(self::$root . DIRECTORY_SEPARATOR . $dirname);
     }
 
     private static function create(string $path, string $contents = 'x'): void
@@ -60,25 +55,22 @@ trait LocalFileSystemMethods
         $basename = array_pop($segments);
 
         $path = self::$root;
-        if (!is_dir($path)) { mkdir($path); }
-
         foreach ($segments as $segment) {
             $path .= DIRECTORY_SEPARATOR . $segment;
             if (is_dir($path)) { continue; }
             mkdir($path);
         }
 
-        $path .= DIRECTORY_SEPARATOR . $basename;
-        file_put_contents($path, $contents);
+        file_put_contents($path . DIRECTORY_SEPARATOR . $basename, $contents);
     }
 
-    private static function remove(string $name = null): void
+    private static function clear(string $name = ''): void
     {
         $path = $name ? self::$root . DIRECTORY_SEPARATOR . $name : self::$root;
         if (is_file($path) && unlink($path)) { return; }
 
         $elements = array_diff(scandir($path), ['.', '..']);
-        array_map(fn($element) => self::remove($name . DIRECTORY_SEPARATOR . $element), $elements);
-        rmdir($path);
+        array_map(fn($element) => self::clear($name . DIRECTORY_SEPARATOR . $element), $elements);
+        if ($name) { rmdir($path); }
     }
 }
