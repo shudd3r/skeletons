@@ -54,7 +54,7 @@ trait LocalFileSystemMethods
         return new FileSystem\Directory\LocalDirectory($dirname ?? self::$root);
     }
 
-    private static function create(string $path): void
+    private static function create(string $path, string $contents = 'x'): void
     {
         $segments = explode(DIRECTORY_SEPARATOR, str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path));
         $basename = array_pop($segments);
@@ -69,7 +69,7 @@ trait LocalFileSystemMethods
         }
 
         $path .= DIRECTORY_SEPARATOR . $basename;
-        file_put_contents($path, 'x');
+        file_put_contents($path, $contents);
     }
 
     private static function remove(string $name = null): void

@@ -12,101 +12,75 @@
 namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\File;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\FileSystem\File\LocalFile;
 use Shudd3r\PackageFiles\Application\FileSystem;
+use Shudd3r\PackageFiles\Tests\Application\FileSystem\LocalFileSystemMethods;
 
 
 class LocalFileTest extends TestCase
 {
+    use LocalFileSystemMethods;
+
     public function testInstantiation()
     {
-        $file = $this->file($path);
-        $this->assertInstanceOf(LocalFile::class, $file);
+        $file = self::file('test.tmp');
+        $this->assertInstanceOf(FileSystem\File\LocalFile::class, $file);
         $this->assertInstanceOf(FileSystem\File::class, $file);
         $this->assertInstanceOf(FileSystem\File::class, $file);
     }
 
     public function testPathMethod_ReturnsConstructorPath()
     {
-        $path = __FILE__;
-        $file = $this->file($path);
-        $this->assertSame($path, $file->path());
+        $this->assertSame(__FILE__, self::file(__FILE__)->path());
     }
 
-    public function testExistsMethodForNotExistingFilename_ReturnsFalse()
+    public function testExistsMethod()
     {
-        $path = __DIR__ . DIRECTORY_SEPARATOR . 'fooBar.txt';
-        $this->assertFalse($this->file($path)->exists());
+        $this->assertTrue(self::file(__FILE__)->exists());
+        $this->assertFalse(self::file(__DIR__ . '/foo/file.tmp')->exists());
     }
 
-    public function testExistsMethodForExistingFilename_ReturnsTrue()
+    public function testForNotExistingFile_ContentsMethod_ReturnsEmptyString()
     {
-        $path = __FILE__;
-        $this->assertTrue($this->file($path)->exists());
+        $this->assertSame('', self::file(__DIR__ . '/foo/file.tmp')->contents());
     }
 
-    public function testContentsMethodForNotExistingFile_ReturnsEmptyString()
+    public function testForExistingFile_ContentsMethod_ReturnsFileContents()
     {
-        $path = __DIR__ . DIRECTORY_SEPARATOR . 'fooBar.txt';
-        $this->assertSame('', $this->file($path)->contents());
-    }
-
-    public function testContentsMethod_ReturnsFileContents()
-    {
-        $contents = 'Test file contents...';
-        $filename = tempnam(sys_get_temp_dir(), 'test');
-        file_put_contents($filename, $contents);
-
-        $fileContents = $this->file($filename)->contents();
-        $this->assertSame($contents, $fileContents);
-        unlink($filename);
+        self::create('test.tmp', $contents = 'Test file contents...');
+        $this->assertSame($contents, self::file(self::$root . '/test.tmp')->contents());
+        self::remove();
     }
 
     public function testWriteMethod_SavesPassedStringInFile()
     {
-        $contents = 'Test file contents...';
-        $filename = tempnam(sys_get_temp_dir(), 'test');
-        $file     = $this->file($filename);
+        self::create('test.tmp', 'Initial file contents...');
+        $file = self::file(self::$root . '/test.tmp');
 
-        $file->write($contents);
-        $this->assertSame(file_get_contents($filename), $contents);
+        $file->write($contents = 'Written file contents...');
         $this->assertSame($contents, $file->contents());
-        unlink($filename);
+        $this->assertSame($contents, file_get_contents($file->path()));
+        self::remove();
     }
 
-    public function testWriteMethodForNotExistingFile_CreatesFileWithPassedStringContent()
+    public function testForNotExistingFile_WriteMethod_CreatesFileWithPassedStringContent()
     {
-        $contents = 'Test file contents...';
-        $filename = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'fooBar.test';
-        $file     = $this->file($filename);
+        $file = self::file(self::$root . '/test.tmp');
         $this->assertFalse($file->exists());
 
-        $file->write($contents);
-        $this->assertSame(file_get_contents($filename), $contents);
-        $this->assertSame($contents, $file->contents());
+        $file->write($contents = 'Test file contents...');
         $this->assertTrue($file->exists());
-        unlink($filename);
+        $this->assertSame($contents, file_get_contents($file->path()));
+        $this->assertSame($contents, $file->contents());
+        self::remove();
     }
 
-    public function testWriteMethodForNotExistingPath_CreatesDirectoriesAndFileWWithGivenContent()
+    public function testForNotExistingFile_WriteMethod_CreatesRequiredDirectoryStructure()
     {
-        $contents  = 'Test file contents...';
-        $directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'foo' . DIRECTORY_SEPARATOR . 'bar';
-        $filename  = $directory . DIRECTORY_SEPARATOR . 'fooBar.test';
-        $file      = $this->file($filename);
+        $file = self::file(self::$root . '/missing/directory/structure/file.tmp');
         $this->assertFalse($file->exists());
 
-        $file->write($contents);
-        $this->assertSame(file_get_contents($filename), $contents);
-        $this->assertSame($contents, $file->contents());
+        $file->write('Test file contents...');
         $this->assertTrue($file->exists());
-        unlink($filename);
-        rmdir($directory);
-        rmdir(dirname($directory));
-    }
-
-    private function file(?string &$path = null): LocalFile
-    {
-        return new LocalFile($path ??= sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'test.txt');
+        self::remove();
     }
 }
