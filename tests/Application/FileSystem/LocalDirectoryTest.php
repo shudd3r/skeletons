@@ -56,6 +56,22 @@ class LocalDirectoryTest extends FileSystemTests
         self::clear();
     }
 
+    public function testCreateMethod()
+    {
+        $directory = self::directory('new');
+        $this->assertFalse($directory->exists());
+        $this->assertEquals(self::directory('new'), $directory);
+
+        $directory->create();
+        $this->assertTrue($directory->exists());
+        $this->assertEquals(self::directory('new'), $directory);
+
+        $directory->create();
+        $this->assertTrue($directory->exists());
+        $this->assertEquals(self::directory('new'), $directory);
+        self::clear();
+    }
+
     /**
      * @dataProvider pathNormalizations
      *

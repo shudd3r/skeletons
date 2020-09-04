@@ -37,6 +37,12 @@ class LocalDirectory implements Directory
         return is_dir($this->path);
     }
 
+    public function create(): void
+    {
+        if ($this->exists()) { return; }
+        mkdir($this->path);
+    }
+
     public function file(string $filename): File
     {
         $filename = trim($this->normalizedPath($filename), DIRECTORY_SEPARATOR);
