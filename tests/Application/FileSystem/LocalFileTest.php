@@ -26,7 +26,7 @@ class LocalFileTest extends FileSystemTests
         $this->assertInstanceOf(FileSystem\Node::class, $file);
     }
 
-    public function testPathMethod_ReturnsConstructorPath()
+    public function testPathMethod_ReturnsPathProperty()
     {
         $this->assertSame(self::$root . DIRECTORY_SEPARATOR . 'test.tmp', self::file('test.tmp')->path());
     }
@@ -37,9 +37,10 @@ class LocalFileTest extends FileSystemTests
      * @param string $mixedFilename
      * @param string $normalizedFilename
      */
-    public function testPathsIsNormalized(string $mixedFilename, string $normalizedFilename)
+    public function testPathIsNormalized(string $mixedFilename, string $normalizedFilename)
     {
-        $this->assertEquals(self::file($mixedFilename), self::file($normalizedFilename));
+        $this->assertEquals(self::file($normalizedFilename, true), $file = self::file($mixedFilename, true));
+        $this->assertSame($normalizedFilename, $file->path());
     }
 
     public function testExistsMethod()
@@ -111,7 +112,7 @@ class LocalFileTest extends FileSystemTests
         return [
             ['file\\', 'file'],
             ['file.tmp/', 'file.tmp'],
-            ['\\Foo.tmp/file/', "{$ds}Foo.tmp{$ds}file"],
+            ['\\\\Foo.tmp/file/', "{$ds}{$ds}Foo.tmp{$ds}file"],
             ['/Foo/Bar\\baz.tmp\\', "{$ds}Foo{$ds}Bar{$ds}baz.tmp"],
             ['/Foo\\Bar/file.tmp', "{$ds}Foo{$ds}Bar{$ds}file.tmp"]
         ];

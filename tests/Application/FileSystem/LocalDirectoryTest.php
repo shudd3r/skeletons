@@ -26,7 +26,7 @@ class LocalDirectoryTest extends FileSystemTests
         $this->assertInstanceOf(FileSystem\Node::class, $directory);
     }
 
-    public function testPathMethod_ReturnsConstructorPath()
+    public function testPathMethod_ReturnsPathProperty()
     {
         $this->assertSame(self::$root . DIRECTORY_SEPARATOR . 'test', self::directory('test')->path());
     }
@@ -39,7 +39,8 @@ class LocalDirectoryTest extends FileSystemTests
      */
     public function testPathIsNormalized(string $mixedDir, string $normalizedDir)
     {
-        $this->assertEquals(self::directory($mixedDir), self::directory($normalizedDir));
+        $this->assertEquals(self::directory($normalizedDir, true), $directory = self::directory($mixedDir, true));
+        $this->assertSame($normalizedDir, $directory->path());
     }
 
     public function testExistsMethod()
@@ -129,12 +130,13 @@ class LocalDirectoryTest extends FileSystemTests
 
     public function pathNormalizations(): array
     {
+        $ds = DIRECTORY_SEPARATOR;
         return [
             ['\\', ''],
             ['/', ''],
-            ['\\Foo/', DIRECTORY_SEPARATOR . 'Foo'],
-            ['/Foo/Bar\\', DIRECTORY_SEPARATOR . 'Foo' . DIRECTORY_SEPARATOR . 'Bar'],
-            ['/Foo\\Bar/', DIRECTORY_SEPARATOR . 'Foo' . DIRECTORY_SEPARATOR . 'Bar']
+            ['//Foo/', "{$ds}{$ds}Foo"],
+            ['\Foo/Bar\\', "{$ds}Foo{$ds}Bar"],
+            ['Foo\\Bar/baz////', "Foo{$ds}Bar{$ds}baz"]
         ];
     }
 }

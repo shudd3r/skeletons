@@ -40,14 +40,16 @@ class FileSystemTests extends TestCase
         return array_map(fn($dirname) => self::directory($dirname), $names);
     }
 
-    protected static function file(string $filename): FileSystem\File
+    protected static function file(string $filename, bool $absolute = false): FileSystem\File
     {
-        return self::directory()->file($filename);
+        $path = $absolute ? $filename : self::$root . DIRECTORY_SEPARATOR . $filename;
+        return new FileSystem\File\LocalFile($path);
     }
 
-    protected static function directory(string $dirname = ''): FileSystem\Directory
+    protected static function directory(string $dirname = '', bool $absolute = false): FileSystem\Directory
     {
-        return new FileSystem\Directory\LocalDirectory(self::$root . DIRECTORY_SEPARATOR . $dirname);
+        $path = $absolute ? $dirname : self::$root . DIRECTORY_SEPARATOR . $dirname;
+        return new FileSystem\Directory\LocalDirectory($path);
     }
 
     protected static function create(string $path, string $contents = 'x'): void
