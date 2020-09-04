@@ -26,7 +26,7 @@ class LocalDirectoryTest extends FileSystemTests
         $this->assertInstanceOf(FileSystem\Node::class, $directory);
     }
 
-    public function testPath_ReturnsConstructorPath()
+    public function testPathMethod_ReturnsConstructorPath()
     {
         $this->assertSame(self::$root . DIRECTORY_SEPARATOR . 'test', self::directory('test')->path());
     }
@@ -73,25 +73,21 @@ class LocalDirectoryTest extends FileSystemTests
         self::clear();
     }
 
-    /**
-     * @dataProvider pathNormalizations
-     *
-     * @param string $mixedDir
-     * @param string $normalizedDir
-     */
-    public function testFileMethod_ReturnsFileWithNormalizedPath(string $mixedDir, string $normalizedDir)
-    {
-        $file = self::directory()->file($mixedDir . 'filename.tmp');
-        $this->assertEquals(self::$root . $normalizedDir . DIRECTORY_SEPARATOR . 'filename.tmp', $file->path());
-    }
-
-    public function testFileMethod_ReturnsBothExistingAndNotExistingFile()
+    public function testFileMethod()
     {
         self::create('exists.tmp');
         $directory = self::directory();
         $this->assertTrue($directory->file('exists.tmp')->exists());
         $this->assertFalse($directory->file('notExists.tmp')->exists());
         self::clear();
+    }
+
+    public function testFileMethod_RemovesSuperfluousSlashes()
+    {
+        $directory = self::directory();
+        $file      = self::file('dir/path/file.tmp');
+        $this->assertEquals($directory->file('dir/path/file.tmp/'), $file);
+        $this->assertEquals($directory->file('\dir\path\file.tmp'), $file);
     }
 
     public function testFilesMethod_ReturnsArrayOfExistingFilesInAlphabeticalOrder()

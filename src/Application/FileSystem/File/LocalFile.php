@@ -12,11 +12,13 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem\File;
 
 use Shudd3r\PackageFiles\Application\FileSystem\File;
+use Shudd3r\PackageFiles\Application\FileSystem\PathNormalizationMethods;
 use Shudd3r\PackageFiles\Application\FileSystem\DirectoryStructureMethods;
 
 
 class LocalFile implements File
 {
+    use PathNormalizationMethods;
     use DirectoryStructureMethods;
 
     private string $path;
@@ -27,7 +29,7 @@ class LocalFile implements File
      */
     public function __construct(string $path)
     {
-        $this->path = $path;
+        $this->path = $this->normalizedPath($path);
     }
 
     public function path(): string

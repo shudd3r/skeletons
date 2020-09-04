@@ -12,12 +12,14 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\PathNormalizationMethods;
 use Shudd3r\PackageFiles\Application\FileSystem\DirectoryStructureMethods;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
 class LocalDirectory implements Directory
 {
+    use PathNormalizationMethods;
     use DirectoryStructureMethods;
 
     private string $path;
@@ -27,7 +29,7 @@ class LocalDirectory implements Directory
      */
     public function __construct(string $path)
     {
-        $this->path = rtrim($this->normalizedPath($path), DIRECTORY_SEPARATOR);
+        $this->path = $this->normalizedPath($path);
     }
 
     public function path(): string
@@ -48,14 +50,12 @@ class LocalDirectory implements Directory
 
     public function file(string $filename): File
     {
-        $filename = trim($this->normalizedPath($filename), DIRECTORY_SEPARATOR);
-        return new File\LocalFile($this->path . DIRECTORY_SEPARATOR . $filename);
+        return new File\LocalFile($this->expandedPath($filename));
     }
 
     public function subdirectory(string $name): Directory
     {
-        $name = trim($this->normalizedPath($name), DIRECTORY_SEPARATOR);
-        return new self($this->path . DIRECTORY_SEPARATOR . $name);
+        return new self($this->expandedPath($name));
     }
 
     public function files(): array
@@ -78,15 +78,15 @@ class LocalDirectory implements Directory
         return $this->nodes($map, $filter);
     }
 
-    private function normalizedPath(string $path): string
-    {
-        return rtrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
-    }
-
     private function nodes(callable $map, callable $filter): array
     {
         $names = array_diff(scandir($this->path), ['.', '..']);
         $nodes = array_map($map, $names);
         return array_values(array_filter($nodes, $filter));
+    }
+
+    private function expandedPath(string $postfix): string
+    {
+        return $this->path . DIRECTORY_SEPARATOR . ltrim($postfix, '\\/');
     }
 }
