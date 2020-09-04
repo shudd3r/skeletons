@@ -12,10 +12,13 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem\File;
 
 use Shudd3r\PackageFiles\Application\FileSystem\File;
+use Shudd3r\PackageFiles\Application\FileSystem\DirectoryStructureMethods;
 
 
 class LocalFile implements File
 {
+    use DirectoryStructureMethods;
+
     private string $path;
     private string $contents;
 
@@ -45,23 +48,10 @@ class LocalFile implements File
     public function write(string $contents): void
     {
         if (!$this->exists()) {
-            $this->createMissingDirectories(dirname($this->path));
+            $this->createDirectoryStructure(dirname($this->path));
         }
 
         $this->contents = $contents;
         file_put_contents($this->path, $this->contents);
-    }
-
-    private function createMissingDirectories(string $path): void
-    {
-        $missingDir = [];
-        while (!is_dir($path)) {
-            $missingDir[] = basename($path);
-            $path = dirname($path);
-        }
-
-        while ($dir = array_pop($missingDir)) {
-            mkdir($path .= DIRECTORY_SEPARATOR . $dir);
-        }
     }
 }

@@ -12,11 +12,14 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\DirectoryStructureMethods;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
 class LocalDirectory implements Directory
 {
+    use DirectoryStructureMethods;
+
     private string $path;
 
     /**
@@ -40,7 +43,7 @@ class LocalDirectory implements Directory
     public function create(): void
     {
         if ($this->exists()) { return; }
-        mkdir($this->path);
+        $this->createDirectoryStructure($this->path);
     }
 
     public function file(string $filename): File
