@@ -12,11 +12,16 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\PathNormalizationMethods;
+use Shudd3r\PackageFiles\Application\FileSystem\DirectoryStructureMethods;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
 class LocalDirectory implements Directory
 {
+    use PathNormalizationMethods;
+    use DirectoryStructureMethods;
+
     private string $path;
 
     /**
@@ -24,7 +29,7 @@ class LocalDirectory implements Directory
      */
     public function __construct(string $path)
     {
-        $this->path = rtrim($this->normalizedPath($path), DIRECTORY_SEPARATOR);
+        $this->path = $this->normalizedPath($path);
     }
 
     public function path(): string
@@ -37,14 +42,51 @@ class LocalDirectory implements Directory
         return is_dir($this->path);
     }
 
-    public function file(string $filename): File
+    public function create(): void
     {
-        $filename = trim($this->normalizedPath($filename), DIRECTORY_SEPARATOR);
-        return new File\LocalFile($this->path . DIRECTORY_SEPARATOR . $filename);
+        if ($this->exists()) { return; }
+        $this->createDirectoryStructure($this->path);
     }
 
-    private function normalizedPath(string $path): string
+    public function file(string $filename): File
     {
-        return rtrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
+        return new File\LocalFile($this->expandedPath($filename));
+    }
+
+    public function subdirectory(string $name): Directory
+    {
+        return new self($this->expandedPath($name));
+    }
+
+    public function files(): array
+    {
+        if (!$this->exists()) { return []; }
+
+        $map    = fn($filename) => $this->file($filename);
+        $filter = fn(File $file) => $file->exists();
+
+        return $this->nodes($map, $filter);
+    }
+
+    public function subdirectories(): array
+    {
+        if (!$this->exists()) { return []; }
+
+        $map    = fn($name) => $this->subdirectory($name);
+        $filter = fn(Directory $directory) => $directory->exists();
+
+        return $this->nodes($map, $filter);
+    }
+
+    private function nodes(callable $map, callable $filter): array
+    {
+        $names = array_diff(scandir($this->path), ['.', '..']);
+        $nodes = array_map($map, $names);
+        return array_values(array_filter($nodes, $filter));
+    }
+
+    private function expandedPath(string $postfix): string
+    {
+        return $this->path . DIRECTORY_SEPARATOR . ltrim($postfix, '\\/');
     }
 }

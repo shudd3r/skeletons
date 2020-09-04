@@ -12,10 +12,15 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem\File;
 
 use Shudd3r\PackageFiles\Application\FileSystem\File;
+use Shudd3r\PackageFiles\Application\FileSystem\PathNormalizationMethods;
+use Shudd3r\PackageFiles\Application\FileSystem\DirectoryStructureMethods;
 
 
 class LocalFile implements File
 {
+    use PathNormalizationMethods;
+    use DirectoryStructureMethods;
+
     private string $path;
     private string $contents;
 
@@ -24,7 +29,7 @@ class LocalFile implements File
      */
     public function __construct(string $path)
     {
-        $this->path = $path;
+        $this->path = $this->normalizedPath($path);
     }
 
     public function path(): string
@@ -44,6 +49,10 @@ class LocalFile implements File
 
     public function write(string $contents): void
     {
+        if (!$this->exists()) {
+            $this->createDirectoryStructure(dirname($this->path));
+        }
+
         $this->contents = $contents;
         file_put_contents($this->path, $this->contents);
     }

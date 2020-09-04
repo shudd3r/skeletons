@@ -23,6 +23,9 @@ class FakeDirectory implements DirectoryInterface
     /** @var MockedFile[] */
     public array $files = [];
 
+    /** @var FakeDirectory[] */
+    public array $subdirectories = [];
+
     public function __construct(bool $exists = true, string $path = __DIR__)
     {
         $this->exists = $exists;
@@ -39,8 +42,28 @@ class FakeDirectory implements DirectoryInterface
         return $this->exists;
     }
 
+    public function create(): void
+    {
+        $this->exists = true;
+    }
+
     public function file(string $filename): FileInterface
     {
         return $this->files[$filename] ??= new MockedFile('', false, $this->path . DIRECTORY_SEPARATOR . $filename);
+    }
+
+    public function subdirectory(string $name): DirectoryInterface
+    {
+        return $this->subdirectories[$name] ??= new self(false, $this->path . DIRECTORY_SEPARATOR . $name);
+    }
+
+    public function files(): array
+    {
+        return array_values($this->files);
+    }
+
+    public function subdirectories(): array
+    {
+        return array_values($this->subdirectories);
     }
 }
