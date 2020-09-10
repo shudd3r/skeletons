@@ -22,7 +22,6 @@ class LocalFile implements File
     use DirectoryStructureMethods;
 
     private string $path;
-    private string $contents;
 
     /**
      * @param string $path absolute file path
@@ -44,7 +43,7 @@ class LocalFile implements File
 
     public function contents(): string
     {
-        return $this->contents ??= $this->exists() ? file_get_contents($this->path) : '';
+        return $this->exists() ? file_get_contents($this->path) : '';
     }
 
     public function write(string $contents): void
@@ -53,7 +52,6 @@ class LocalFile implements File
             $this->createDirectoryStructure(dirname($this->path));
         }
 
-        $this->contents = $contents;
-        file_put_contents($this->path, $this->contents);
+        file_put_contents($this->path, $contents);
     }
 }
