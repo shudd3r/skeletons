@@ -153,14 +153,19 @@ class InitCommandFactoryTest extends TestCase
 
         $env->directory->path = '/path/to/package/directory';
         $env->templates->path = '/path/to/skeleton/files';
-        $env->templates->files['package.properties'] = new Doubles\MockedFile(
-            <<<'TPL'
+
+        $metaFileContents = <<<'TPL'
             original_repository={repository.name}
             package_name={package.name}
             package_desc={description.text}
             source_namespace={namespace.src}
-            TPL
-        );
+            TPL;
+        $metaFilePath = '/path/to/skeleton/files/.github/package.properties';
+        $metaFile     = new Doubles\MockedFile($metaFileContents, true, $metaFilePath);
+        $subdirectory = new Doubles\FakeDirectory(true, '/path/to/skeleton/files/.github');
+
+        $subdirectory->files['package.properties'] = $metaFile;
+        $env->templates->subdirectories['.github'] = $subdirectory;
 
         return $env;
     }
