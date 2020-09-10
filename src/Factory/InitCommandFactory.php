@@ -48,12 +48,10 @@ class InitCommandFactory extends Factory
         $template         = new Template\ComposerJsonTemplate($composerFile);
         $generateComposer = new Subroutine\GenerateFile($template, $composerFile);
 
-        $templateFile     = $this->env->skeletonFiles()->file('.github/package.properties');
-        $metaDataFile     = $packageFiles->file('.github/package.properties');
-        $template         = new Template\FileTemplate($templateFile);
-        $generateMetaFile = new Subroutine\GenerateFile($template, $metaDataFile);
+        $generatorFactory = new Subroutine\Factory\PackageGenerator($this->env->skeletonFiles(), $packageFiles);
+        $generatePackage  = new Subroutine\RuntimeSubroutine($generatorFactory);
 
-        return new Subroutine\SubroutineSequence($generateComposer, $generateMetaFile);
+        return new Subroutine\SubroutineSequence($generateComposer, $generatePackage);
     }
 
     private function option(string $name): ?Reader\Source
