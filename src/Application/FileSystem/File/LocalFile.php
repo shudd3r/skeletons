@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem\File;
 
 use Shudd3r\PackageFiles\Application\FileSystem\File;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\FileSystem\PathNormalizationMethods;
 use Shudd3r\PackageFiles\Application\FileSystem\DirectoryStructureMethods;
 
@@ -34,6 +35,16 @@ class LocalFile implements File
     public function path(): string
     {
         return $this->path;
+    }
+
+    public function pathRelativeTo(Directory $directory): string
+    {
+        $parentPath = $directory->path();
+        if (strpos($this->path, $parentPath) !== 0) {
+            return $this->path;
+        }
+
+        return substr($this->path, strlen($parentPath) + 1);
     }
 
     public function exists(): bool

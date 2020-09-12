@@ -15,9 +15,16 @@ namespace Shudd3r\PackageFiles\Application\FileSystem;
 interface Node
 {
     /**
-     * @return string absolute path to file
+     * @return string absolute path to node
      */
     public function path(): string;
+
+    /**
+     * @param Directory $directory
+     *
+     * @return string path to node relative to given directory
+     */
+    public function pathRelativeTo(Directory $directory): string;
 
     /**
      * @return bool

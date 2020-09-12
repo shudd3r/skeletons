@@ -43,6 +43,16 @@ class LocalFileTest extends FileSystemTests
         $this->assertSame($normalizedFilename, $file->path());
     }
 
+    public function testRelativePath()
+    {
+        $path = 'foo' . DIRECTORY_SEPARATOR . 'bar' . DIRECTORY_SEPARATOR . 'baz.txt';
+        $root = self::directory();
+        $file = $root->file($path);
+
+        $this->assertSame($path, $file->pathRelativeTo($root));
+        $this->assertSame($file->path(), $file->pathRelativeTo(self::directory(__DIR__, true)));
+    }
+
     public function testExistsMethod()
     {
         $file = self::file('test.tmp');

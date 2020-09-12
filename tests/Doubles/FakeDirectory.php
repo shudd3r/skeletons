@@ -37,6 +37,11 @@ class FakeDirectory implements DirectoryInterface
         return $this->path;
     }
 
+    public function pathRelativeTo(DirectoryInterface $directory): string
+    {
+        return substr($this->path, strlen($directory->path()) + 1);
+    }
+
     public function exists(): bool
     {
         return $this->exists;
