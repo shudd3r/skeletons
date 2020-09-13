@@ -33,9 +33,9 @@ class MockedFile implements FileInterface
         return $this->path;
     }
 
-    public function pathRelativeTo(DirectoryInterface $directory): string
+    public function pathRelativeTo(DirectoryInterface $ancestorDirectory): string
     {
-        return substr($this->path, strlen($directory->path()) + 1);
+        return substr($this->path, strlen($ancestorDirectory->path()) + 1);
     }
 
     public function exists(): bool

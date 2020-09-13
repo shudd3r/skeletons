@@ -43,14 +43,23 @@ class LocalFileTest extends FileSystemTests
         $this->assertSame($normalizedFilename, $file->path());
     }
 
-    public function testRelativePath()
+    public function testPathRelativeToMethod_ForAncestorDirectory_ReturnsRelativePath()
     {
-        $path = 'foo' . DIRECTORY_SEPARATOR . 'bar' . DIRECTORY_SEPARATOR . 'baz.txt';
+        $path = 'foo' . DIRECTORY_SEPARATOR . 'bar' . DIRECTORY_SEPARATOR . 'baz';
         $root = self::directory();
         $file = $root->file($path);
 
         $this->assertSame($path, $file->pathRelativeTo($root));
-        $this->assertSame($file->path(), $file->pathRelativeTo(self::directory(__DIR__, true)));
+    }
+
+    public function testPathRelativeToMethod_ForNonAncestorDirectory_ThrowsException()
+    {
+        $path = 'foo' . DIRECTORY_SEPARATOR . 'bar' . DIRECTORY_SEPARATOR . 'baz';
+        $root = self::directory();
+        $file = $root->file($path);
+
+        $this->expectException(FileSystem\Exception\InvalidAncestorDirectory::class);
+        $file->pathRelativeTo(self::directory(__DIR__, true));
     }
 
     public function testExistsMethod()

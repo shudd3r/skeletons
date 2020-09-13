@@ -15,6 +15,7 @@ use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Application\FileSystem\PathNormalizationMethods;
 use Shudd3r\PackageFiles\Application\FileSystem\DirectoryStructureMethods;
+use Shudd3r\PackageFiles\Application\FileSystem\Exception\InvalidAncestorDirectory;
 
 
 class LocalDirectory implements Directory
@@ -37,14 +38,14 @@ class LocalDirectory implements Directory
         return $this->path;
     }
 
-    public function pathRelativeTo(Directory $directory): string
+    public function pathRelativeTo(Directory $ancestorDirectory): string
     {
-        $parentPath = $directory->path();
-        if (strpos($this->path, $parentPath) !== 0) {
-            return $this->path;
+        $ancestorPath = $ancestorDirectory->path();
+        if (strpos($this->path, $ancestorPath) !== 0) {
+            throw new InvalidAncestorDirectory();
         }
 
-        return substr($this->path, strlen($parentPath) + 1);
+        return substr($this->path, strlen($ancestorPath) + 1);
     }
 
     public function exists(): bool

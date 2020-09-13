@@ -11,6 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Application\FileSystem;
 
+use Shudd3r\PackageFiles\Application\FileSystem\Exception\InvalidAncestorDirectory;
+
 
 interface Node
 {
@@ -20,11 +22,13 @@ interface Node
     public function path(): string;
 
     /**
-     * @param Directory $directory
+     * @param Directory $ancestorDirectory
      *
-     * @return string path to node relative to given directory
+     * @return string path to node relative to given ancestor directory
+     *
+     * @throws InvalidAncestorDirectory
      */
-    public function pathRelativeTo(Directory $directory): string;
+    public function pathRelativeTo(Directory $ancestorDirectory): string;
 
     /**
      * @return bool
