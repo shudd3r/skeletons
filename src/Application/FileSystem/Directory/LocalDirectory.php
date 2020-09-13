@@ -11,43 +11,13 @@
 
 namespace Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
+use Shudd3r\PackageFiles\Application\FileSystem\AbstractNode;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
-use Shudd3r\PackageFiles\Application\FileSystem\PathNormalizationMethods;
-use Shudd3r\PackageFiles\Application\FileSystem\DirectoryStructureMethods;
-use Shudd3r\PackageFiles\Application\FileSystem\Exception\InvalidAncestorDirectory;
 
 
-class LocalDirectory implements Directory
+class LocalDirectory extends AbstractNode implements Directory
 {
-    use PathNormalizationMethods;
-    use DirectoryStructureMethods;
-
-    private string $path;
-
-    /**
-     * @param string $path absolute directory path
-     */
-    public function __construct(string $path)
-    {
-        $this->path = $this->normalizedPath($path);
-    }
-
-    public function path(): string
-    {
-        return $this->path;
-    }
-
-    public function pathRelativeTo(Directory $ancestorDirectory): string
-    {
-        $ancestorPath = $ancestorDirectory->path();
-        if (strpos($this->path, $ancestorPath) !== 0) {
-            throw new InvalidAncestorDirectory();
-        }
-
-        return substr($this->path, strlen($ancestorPath) + 1);
-    }
-
     public function exists(): bool
     {
         return is_dir($this->path);
