@@ -9,13 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\FileSystem;
+namespace Shudd3r\PackageFiles\Application\FileSystem\Exception;
+
+use InvalidArgumentException;
 
 
-trait PathNormalizationMethods
+class InvalidAncestorDirectory extends InvalidArgumentException
 {
-    private function normalizedPath(string $path): string
-    {
-        return rtrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
-    }
 }

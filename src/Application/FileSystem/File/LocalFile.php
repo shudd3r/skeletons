@@ -11,32 +11,12 @@
 
 namespace Shudd3r\PackageFiles\Application\FileSystem\File;
 
+use Shudd3r\PackageFiles\Application\FileSystem\AbstractNode;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
-use Shudd3r\PackageFiles\Application\FileSystem\PathNormalizationMethods;
-use Shudd3r\PackageFiles\Application\FileSystem\DirectoryStructureMethods;
 
 
-class LocalFile implements File
+class LocalFile extends AbstractNode implements File
 {
-    use PathNormalizationMethods;
-    use DirectoryStructureMethods;
-
-    private string $path;
-    private string $contents;
-
-    /**
-     * @param string $path absolute file path
-     */
-    public function __construct(string $path)
-    {
-        $this->path = $this->normalizedPath($path);
-    }
-
-    public function path(): string
-    {
-        return $this->path;
-    }
-
     public function exists(): bool
     {
         return is_file($this->path);
@@ -44,7 +24,7 @@ class LocalFile implements File
 
     public function contents(): string
     {
-        return $this->contents ??= $this->exists() ? file_get_contents($this->path) : '';
+        return $this->exists() ? file_get_contents($this->path) : '';
     }
 
     public function write(string $contents): void
@@ -53,7 +33,6 @@ class LocalFile implements File
             $this->createDirectoryStructure(dirname($this->path));
         }
 
-        $this->contents = $contents;
-        file_put_contents($this->path, $this->contents);
+        file_put_contents($this->path, $contents);
     }
 }

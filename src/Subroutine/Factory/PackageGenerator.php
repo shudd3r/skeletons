@@ -52,13 +52,7 @@ class PackageGenerator implements Subroutine\Factory
     {
         return new Subroutine\GenerateFile(
             new Template\FileTemplate($skeletonFile),
-            $this->packageFileEquivalent($skeletonFile)
+            $this->package->file($skeletonFile->pathRelativeTo($this->skeleton))
         );
-    }
-
-    private function packageFileEquivalent(File $skeletonFile): File
-    {
-        $path = substr($skeletonFile->path(), strlen($this->skeleton->path()) + 1);
-        return $this->package->file($path);
     }
 }

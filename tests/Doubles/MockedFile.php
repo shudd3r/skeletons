@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
+use Shudd3r\PackageFiles\Application\FileSystem\Directory as DirectoryInterface;
 use Shudd3r\PackageFiles\Application\FileSystem\File as FileInterface;
 
 
@@ -30,6 +31,11 @@ class MockedFile implements FileInterface
     public function path(): string
     {
         return $this->path;
+    }
+
+    public function pathRelativeTo(DirectoryInterface $ancestorDirectory): string
+    {
+        return substr($this->path, strlen($ancestorDirectory->path()) + 1);
     }
 
     public function exists(): bool
