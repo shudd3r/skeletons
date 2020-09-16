@@ -28,7 +28,7 @@ abstract class Factory
     public function command(): Command
     {
         $reader = new Token\Reader\TokenGroupReader($this->env->output(), ...$this->tokenReaders());
-        return new CommandHandler($reader, $this->subroutine());
+        return new CommandHandler($reader, $this->processor());
     }
 
     /**
@@ -36,5 +36,5 @@ abstract class Factory
      */
     abstract protected function tokenReaders(): array;
 
-    abstract protected function subroutine(): Subroutine;
+    abstract protected function processor(): Processor;
 }

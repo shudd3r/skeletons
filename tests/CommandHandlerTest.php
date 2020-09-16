@@ -20,23 +20,23 @@ class CommandHandlerTest extends TestCase
 {
     public function testInstantiation()
     {
-        $command = new CommandHandler(new Doubles\FakeReader(), new Doubles\MockedSubroutine());
+        $command = new CommandHandler(new Doubles\FakeReader(), new Doubles\MockedProcessor());
         $this->assertInstanceOf(CommandHandler::class, $command);
     }
 
-    public function testPropertiesArePassedToSubroutine()
+    public function testPropertiesArePassedToProcessor()
     {
         $reader     = new Doubles\FakeReader();
-        $subroutine = new Doubles\MockedSubroutine();
-        $command    = new CommandHandler($reader, $subroutine);
+        $processor = new Doubles\MockedProcessor();
+        $command    = new CommandHandler($reader, $processor);
 
         $command->execute();
-        $this->assertEquals($reader->token(), $subroutine->passedToken);
+        $this->assertEquals($reader->token(), $processor->passedToken);
     }
 
     public function testUnresolvedPropertiesStopExecution()
     {
-        $command = new CommandHandler(new Doubles\FakeReader('value', 'exception'), new Doubles\MockedSubroutine());
+        $command = new CommandHandler(new Doubles\FakeReader('value', 'exception'), new Doubles\MockedProcessor());
 
         $this->expectException(Exception::class);
         $command->execute();

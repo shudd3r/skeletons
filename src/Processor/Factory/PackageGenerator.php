@@ -9,15 +9,15 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Subroutine\Factory;
+namespace Shudd3r\PackageFiles\Processor\Factory;
 
-use Shudd3r\PackageFiles\Subroutine;
+use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Template;
 
 
-class PackageGenerator implements Subroutine\Factory
+class PackageGenerator implements Processor\Factory
 {
     private Directory $skeleton;
     private Directory $package;
@@ -28,14 +28,14 @@ class PackageGenerator implements Subroutine\Factory
         $this->package  = $package;
     }
 
-    public function subroutine(): Subroutine
+    public function processor(): Processor
     {
-        $subroutines = [];
+        $processors = [];
         foreach ($this->skeletonFiles($this->skeleton) as $skeletonFile) {
-            $subroutines[] = $this->createFor($skeletonFile);
+            $processors[] = $this->createFor($skeletonFile);
         }
 
-        return new Subroutine\SubroutineSequence(...$subroutines);
+        return new Processor\ProcessorSequence(...$processors);
     }
 
     private function skeletonFiles(Directory $directory): array
@@ -48,9 +48,9 @@ class PackageGenerator implements Subroutine\Factory
         return $files;
     }
 
-    public function createFor(File $skeletonFile): Subroutine
+    public function createFor(File $skeletonFile): Processor
     {
-        return new Subroutine\GenerateFile(
+        return new Processor\GenerateFile(
             new Template\FileTemplate($skeletonFile),
             $this->package->file($skeletonFile->pathRelativeTo($this->skeleton))
         );

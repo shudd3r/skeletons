@@ -9,15 +9,15 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Subroutine;
+namespace Shudd3r\PackageFiles\Processor;
 
-use Shudd3r\PackageFiles\Subroutine;
+use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Template;
 
 
-class GenerateFile implements Subroutine
+class GenerateFile implements Processor
 {
     private Template $template;
     private File     $file;

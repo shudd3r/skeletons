@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Factory;
-use Shudd3r\PackageFiles\Subroutine;
+use Shudd3r\PackageFiles\Processor;
 
 
 class FakeCommandFactory extends Factory
@@ -25,8 +25,8 @@ class FakeCommandFactory extends Factory
         return [];
     }
 
-    protected function subroutine(): Subroutine
+    protected function processor(): Processor
     {
-        return new MockedSubroutine();
+        return new MockedProcessor();
     }
 }

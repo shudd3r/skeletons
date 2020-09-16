@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Factory;
 
 use Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Token\Reader;
-use Shudd3r\PackageFiles\Subroutine;
+use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Template;
 
 
@@ -40,18 +40,18 @@ class InitCommandFactory extends Factory
         return [$package, $repo, $desc, $namespace];
     }
 
-    protected function subroutine(): Subroutine
+    protected function processor(): Processor
     {
         $packageFiles = $this->env->packageFiles();
 
         $composerFile     = $packageFiles->file('composer.json');
         $template         = new Template\ComposerJsonTemplate($composerFile);
-        $generateComposer = new Subroutine\GenerateFile($template, $composerFile);
+        $generateComposer = new Processor\GenerateFile($template, $composerFile);
 
-        $generatorFactory = new Subroutine\Factory\PackageGenerator($this->env->skeletonFiles(), $packageFiles);
-        $generatePackage  = new Subroutine\RuntimeSubroutine($generatorFactory);
+        $generatorFactory = new Processor\Factory\PackageGenerator($this->env->skeletonFiles(), $packageFiles);
+        $generatePackage  = new Processor\RuntimeProcessor($generatorFactory);
 
-        return new Subroutine\SubroutineSequence($generateComposer, $generatePackage);
+        return new Processor\ProcessorSequence($generateComposer, $generatePackage);
     }
 
     private function option(string $name): ?Reader\Source

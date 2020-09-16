@@ -11,11 +11,11 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Subroutine;
+use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Token;
 
 
-class MockedSubroutine implements Subroutine
+class MockedProcessor implements Processor
 {
     public ?Token $passedToken = null;
 

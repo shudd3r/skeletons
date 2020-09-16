@@ -9,12 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Subroutine;
-
-use Shudd3r\PackageFiles\Subroutine;
+namespace Shudd3r\PackageFiles;
 
 
-interface Factory
+interface Processor
 {
-    public function subroutine(): Subroutine;
+    public function process(Token $token): void;
 }

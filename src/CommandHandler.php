@@ -18,16 +18,16 @@ use Shudd3r\PackageFiles\Token\Reader;
 class CommandHandler implements Command
 {
     private Reader     $reader;
-    private Subroutine $subroutine;
+    private Processor $processor;
 
-    public function __construct(Reader $reader, Subroutine $subroutine)
+    public function __construct(Reader $reader, Processor $processor)
     {
         $this->reader     = $reader;
-        $this->subroutine = $subroutine;
+        $this->processor = $processor;
     }
 
     public function execute(): void
     {
-        $this->subroutine->process($this->reader->token());
+        $this->processor->process($this->reader->token());
     }
 }

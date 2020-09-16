@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Subroutine;
+namespace Shudd3r\PackageFiles\Tests\Processor;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Subroutine\GenerateFile;
+use Shudd3r\PackageFiles\Processor\GenerateFile;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -22,9 +22,9 @@ class GenerateFileTest extends TestCase
     {
         $template   = new Doubles\FakeTemplate($rendered = 'rendered string');
         $fileMock   = new Doubles\MockedFile();
-        $subroutine = new GenerateFile($template, $fileMock);
+        $processor = new GenerateFile($template, $fileMock);
 
-        $subroutine->process($token = new Doubles\FakeToken());
+        $processor->process($token = new Doubles\FakeToken());
 
         $this->assertSame($token, $template->receivedToken);
         $this->assertSame($rendered, $fileMock->contents);

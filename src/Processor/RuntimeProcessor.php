@@ -9,13 +9,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Subroutine;
+namespace Shudd3r\PackageFiles\Processor;
 
-use Shudd3r\PackageFiles\Subroutine;
+use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Token;
 
 
-class RuntimeSubroutine implements Subroutine
+class RuntimeProcessor implements Processor
 {
     private Factory $factory;
 
@@ -26,6 +26,6 @@ class RuntimeSubroutine implements Subroutine
 
     public function process(Token $token): void
     {
-        $this->factory->subroutine()->process($token);
+        $this->factory->processor()->process($token);
     }
 }
