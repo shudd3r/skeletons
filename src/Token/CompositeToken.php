@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Token;
 
 
-class TokenGroup implements Token
+class CompositeToken implements Token
 {
     /** @var Token[] */
     private array $tokens;

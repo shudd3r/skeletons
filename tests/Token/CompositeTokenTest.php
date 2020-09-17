@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class TokenGroupTest extends TestCase
+class CompositeTokenTest extends TestCase
 {
     public function testTokenReplacesAllInternalPlaceholders()
     {
@@ -31,7 +31,7 @@ class TokenGroupTest extends TestCase
             $tokens[] = Doubles\FakeToken::withPlaceholder($placeholder, $value);
         }
 
-        $token = new Token\TokenGroup(...$tokens);
+        $token = new Token\CompositeToken(...$tokens);
         $template = "Template with {$replace['FOO']}-{$replace['BAR']}-{$replace['BAZ']}";
 
         $this->assertSame('Template with FOO-BAR-BAZ', $token->replacePlaceholders($template));

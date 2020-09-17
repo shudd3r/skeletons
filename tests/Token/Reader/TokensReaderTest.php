@@ -17,14 +17,14 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 use Exception;
 
 
-class TokenGroupReaderTest extends TestCase
+class TokensReaderTest extends TestCase
 {
     public function testTokensAreBuiltWithProvidedCallbacks()
     {
         $callbacks = [new Doubles\FakeReader('foo'), new Doubles\FakeReader('bar')];
-        $reader    = new Token\Reader\TokenGroupReader(new Doubles\MockedTerminal(), ...$callbacks);
+        $reader    = new Token\Reader\TokensReader(new Doubles\MockedTerminal(), ...$callbacks);
 
-        $expected = new Token\TokenGroup(new Doubles\FakeToken('foo'), new Doubles\FakeToken('bar'));
+        $expected = new Token\CompositeToken(new Doubles\FakeToken('foo'), new Doubles\FakeToken('bar'));
         $this->assertEquals($expected, $reader->token());
     }
 
@@ -38,7 +38,7 @@ class TokenGroupReaderTest extends TestCase
             new Doubles\FakeReader('baz')
         ];
 
-        $reader = new Token\Reader\TokenGroupReader($output = new Doubles\MockedTerminal(), ...$factories);
+        $reader = new Token\Reader\TokensReader($output = new Doubles\MockedTerminal(), ...$factories);
 
         $this->expectException(Exception::class);
         $reader->token();

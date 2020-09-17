@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Token;
 use Exception;
 
 
-class TokenGroupReader implements Reader
+class TokensReader implements Reader
 {
     private Output $output;
     private array  $readers;
@@ -42,7 +42,7 @@ class TokenGroupReader implements Reader
             throw new Exception('Cannot process unresolved tokens');
         }
 
-        return new Token\TokenGroup(...$tokens);
+        return new Token\CompositeToken(...$tokens);
     }
 
     private function createToken(Reader $reader): ?Token
