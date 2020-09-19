@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\FileSystem;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
+use Shudd3r\PackageFiles\Application\FileSystem\Exception\InvalidAncestorDirectory;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -21,18 +22,25 @@ class DirectoryFilesTest extends TestCase
     public function testInstantiation()
     {
         $this->assertInstanceOf(DirectoryFiles::class, new DirectoryFiles(new Doubles\FakeDirectory()));
+
+        $directory = $this->directoryStructure();
+        $files     = $directory->files();
+        $this->assertInstanceOf(DirectoryFiles::class, new DirectoryFiles($directory, $files));
     }
 
-    public function testRecursiveFileIteration()
+    public function testInstantiationWithNotMatchingFiles_ThrowsException()
+    {
+        $directory = new Doubles\FakeDirectory(true, '/invalid/root/path');
+        $files     = $this->directoryStructure()->files();
+        $this->expectException(InvalidAncestorDirectory::class);
+        new DirectoryFiles($directory, $files);
+    }
+
+    public function testToArrayMethod_ReturnsRecursivelyFoundFiles()
     {
         $directory  = $this->directoryStructure();
         $collection = new DirectoryFiles($directory);
-        $files = [];
-        $paths = [];
-        foreach ($collection as $path => $file) {
-            $files[] = $file;
-            $paths[] = $path;
-        }
+        $files      = $collection->toArray();
 
         $this->assertCount(6, $files);
 
@@ -42,13 +50,6 @@ class DirectoryFilesTest extends TestCase
             $directory->subdirectories[1]->files
         );
         $this->assertSame($expectedFiles, $files);
-
-        $expectedPaths = [
-            'foo1.txt', 'foo2.txt',
-            'subDirBar/bar1.txt',
-            'subDirBaz/baz1.txt', 'subDirBaz/baz2.txt', 'subDirBaz/baz3.txt'
-        ];
-        $this->assertSame($expectedPaths, $paths);
     }
 
     private function directoryStructure(): Doubles\FakeDirectory

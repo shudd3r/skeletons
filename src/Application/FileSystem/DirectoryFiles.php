@@ -11,46 +11,28 @@
 
 namespace Shudd3r\PackageFiles\Application\FileSystem;
 
-use Iterator;
 
-
-class DirectoryFiles implements Iterator
+class DirectoryFiles
 {
     private Directory $directory;
-
-    /** @var File[]  */
     private array $files;
-    private int   $idx = 0;
 
-    public function __construct(Directory $directory)
+    /**
+     * @param Directory $directory
+     * @param File[]    $files
+     */
+    public function __construct(Directory $directory, array $files = null)
     {
         $this->directory = $directory;
+        $this->files     = $files ? $this->validScopeFiles($files) : $this->readDirectory($this->directory);
     }
 
-    public function current(): File
+    /**
+     * @return File[]
+     */
+    public function toArray(): array
     {
-        return $this->files[$this->idx];
-    }
-
-    public function next(): void
-    {
-        $this->idx++;
-    }
-
-    public function key(): string
-    {
-        return $this->files[$this->idx]->pathRelativeTo($this->directory);
-    }
-
-    public function valid(): bool
-    {
-        if (!isset($this->files)) { $this->files = $this->readDirectory($this->directory); }
-        return isset($this->files[$this->idx]);
-    }
-
-    public function rewind(): void
-    {
-        $this->idx = 0;
+        return $this->files;
     }
 
     private function readDirectory(Directory $directory): array
@@ -58,6 +40,18 @@ class DirectoryFiles implements Iterator
         $files = $directory->files();
         foreach ($directory->subdirectories() as $subdirectory) {
             $files = array_merge($files, $this->readDirectory($subdirectory));
+        }
+
+        return $files;
+    }
+
+    private function validScopeFiles(array $files): array
+    {
+        $directoryPath = $this->directory->path();
+        foreach ($files as $file) {
+            if (strpos($file->path(), $directoryPath) !== 0) {
+                throw new Exception\InvalidAncestorDirectory();
+            }
         }
 
         return $files;
