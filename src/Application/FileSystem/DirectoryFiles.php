@@ -40,6 +40,12 @@ class DirectoryFiles
         return new self($this->directory, array_values(array_filter($this->files, $keepFile)));
     }
 
+    public function withinDirectory(Directory $directory): self
+    {
+        $contextSwitch = fn(File $file) => $directory->file($file->pathRelativeTo($this->directory));
+        return new self($directory, array_map($contextSwitch, $this->files));
+    }
+
     private function readDirectory(Directory $directory): array
     {
         $files = $directory->files();

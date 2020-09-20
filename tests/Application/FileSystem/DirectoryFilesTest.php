@@ -66,12 +66,30 @@ class DirectoryFilesTest extends TestCase
         $this->assertTrue($expected[0]->exists() && $expected[1]->exists());
     }
 
-    private function directoryStructure(): Doubles\FakeDirectory
+    public function testWithinDirectoryMethod()
     {
-        $directory = $this->directory('/root/path', 'foo', 2);
+        $directory   = $this->directoryStructure();
+        $collection  = new DirectoryFiles($directory);
+        $newRootPath = '/new/directory';
+
+        $newCollection = $collection->withinDirectory(new Doubles\FakeDirectory(true, $newRootPath));
+        $expectedFiles = [
+            new Doubles\MockedFile('', false, '/new/directory/foo1.txt'),
+            new Doubles\MockedFile('', false, '/new/directory/foo2.txt'),
+            new Doubles\MockedFile('', false, '/new/directory/subDirBar/bar1.txt'),
+            new Doubles\MockedFile('', false, '/new/directory/subDirBaz/baz1.txt'),
+            new Doubles\MockedFile('', false, '/new/directory/subDirBaz/baz2.txt'),
+            new Doubles\MockedFile('', false, '/new/directory/subDirBaz/baz3.txt'),
+        ];
+        $this->assertEquals($expectedFiles, $newCollection->toArray());
+    }
+
+    private function directoryStructure(string $rootPath = '/root/path'): Doubles\FakeDirectory
+    {
+        $directory = $this->directory($rootPath, 'foo', 2);
         $directory->subdirectories = [
-            $this->directory('/root/path/subDirBar', 'bar', 1),
-            $this->directory('/root/path/subDirBaz', 'baz', 3)
+            $this->directory($rootPath . '/subDirBar', 'bar', 1),
+            $this->directory($rootPath . '/subDirBaz', 'baz', 3)
         ];
 
         return $directory;

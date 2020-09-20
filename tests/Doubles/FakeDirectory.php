@@ -54,12 +54,12 @@ class FakeDirectory implements DirectoryInterface
 
     public function file(string $filename): FileInterface
     {
-        return $this->files[$filename] ??= new MockedFile('', false, $this->path . DIRECTORY_SEPARATOR . $filename);
+        return $this->files[$filename] ??= new MockedFile('', false, $this->path . '/' . $filename);
     }
 
     public function subdirectory(string $name): DirectoryInterface
     {
-        return $this->subdirectories[$name] ??= new self(false, $this->path . DIRECTORY_SEPARATOR . $name);
+        return $this->subdirectories[$name] ??= new self(false, $this->path . '/' . $name);
     }
 
     public function files(): array
