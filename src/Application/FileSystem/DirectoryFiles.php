@@ -35,6 +35,11 @@ class DirectoryFiles
         return $this->files;
     }
 
+    public function filter(callable $keepFile): self
+    {
+        return new self($this->directory, array_values(array_filter($this->files, $keepFile)));
+    }
+
     private function readDirectory(Directory $directory): array
     {
         $files = $directory->files();

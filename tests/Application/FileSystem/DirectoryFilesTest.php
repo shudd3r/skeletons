@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\FileSystem;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Application\FileSystem\Exception\InvalidAncestorDirectory;
+use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -52,6 +53,19 @@ class DirectoryFilesTest extends TestCase
         $this->assertSame($expectedFiles, $files);
     }
 
+    public function testFilterMethod()
+    {
+        $directory  = $this->directoryStructure();
+        $collection = new DirectoryFiles($directory);
+
+        $this->assertEquals($collection, $collection->filter(fn(File $file) => true));
+
+        $existingOnly = fn(File $file) => $file->exists();
+        $expected     = [$directory->files[1], $directory->subdirectories[1]->files[1]];
+        $this->assertSame($expected, $collection->filter($existingOnly)->toArray());
+        $this->assertTrue($expected[0]->exists() && $expected[1]->exists());
+    }
+
     private function directoryStructure(): Doubles\FakeDirectory
     {
         $directory = $this->directory('/root/path', 'foo', 2);
@@ -67,9 +81,17 @@ class DirectoryFilesTest extends TestCase
     {
         $directory  = new Doubles\FakeDirectory(true, $path);
 
-        $toFile = fn(int $num) => new Doubles\MockedFile($fileId . $num, true, $path . '/' . $fileId . $num . '.txt');
+        $toFile = fn(int $num) => $this->file($path, $num, $fileId);
         $directory->files = array_map($toFile, range(1, $files));
 
         return $directory;
+    }
+
+    private function file(string $path, int $num, string $fileId): Doubles\MockedFile
+    {
+        $name   = $fileId . $num;
+        $exists = $num % 2 === 0;
+        $path   = $path . '/' . $name . '.txt';
+        return new Doubles\MockedFile($name, $exists, $path);
     }
 }
