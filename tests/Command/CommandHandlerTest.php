@@ -9,10 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests;
+namespace Shudd3r\PackageFiles\Tests\Command;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\CommandHandler;
+use Shudd3r\PackageFiles\Command\CommandHandler;
+use Shudd3r\PackageFiles\Tests\Doubles;
 use Exception;
 
 

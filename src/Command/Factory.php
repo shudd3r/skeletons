@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Command;
 
 use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\CommandHandler;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Processor;
