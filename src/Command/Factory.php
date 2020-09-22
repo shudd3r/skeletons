@@ -9,9 +9,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles;
+namespace Shudd3r\PackageFiles\Command;
 
 use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\CommandHandler;
+use Shudd3r\PackageFiles\RuntimeEnv;
+use Shudd3r\PackageFiles\Token\Reader;
+use Shudd3r\PackageFiles\Processor;
 
 
 abstract class Factory
@@ -27,12 +31,12 @@ abstract class Factory
 
     public function command(): Command
     {
-        $reader = new Token\Reader\TokensReader($this->env->output(), ...$this->tokenReaders());
+        $reader = new Reader\TokensReader($this->env->output(), ...$this->tokenReaders());
         return new CommandHandler($reader, $this->processor());
     }
 
     /**
-     * @return Token\Reader[]
+     * @return Reader[]
      */
     abstract protected function tokenReaders(): array;
 

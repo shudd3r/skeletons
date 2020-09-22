@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Command\Factory;
 
-use Shudd3r\PackageFiles\Factory;
+use Shudd3r\PackageFiles\Command\Factory;
 use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Template;
