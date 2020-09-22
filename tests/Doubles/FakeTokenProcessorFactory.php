@@ -15,7 +15,7 @@ use Shudd3r\PackageFiles\Command\Factory;
 use Shudd3r\PackageFiles\Processor;
 
 
-class FakeCommandFactory extends Factory
+class FakeTokenProcessorFactory extends Factory\TokenProcessorFactory
 {
     public static array $optionsField = [];
 
