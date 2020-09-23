@@ -1,0 +1,33 @@
+<?php declare(strict_types=1);
+
+/*
+ * This file is part of Shudd3r/Package-Files package.
+ *
+ * (c) Shudd3r <q3.shudder@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+namespace Shudd3r\PackageFiles\Command;
+
+use Shudd3r\PackageFiles\Application\Command;
+
+
+class CommandSequence implements Command
+{
+    /** @var Command[] */
+    private array $commands;
+
+    public function __construct(Command ...$commands)
+    {
+        $this->commands = $commands;
+    }
+
+    public function execute(): void
+    {
+        foreach ($this->commands as $command) {
+            $command->execute();
+        }
+    }
+}
