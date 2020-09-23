@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Command\Factory;
 
 use Shudd3r\PackageFiles\Command\Factory;
-use Shudd3r\PackageFiles\Command\CommandHandler;
+use Shudd3r\PackageFiles\Command\TokenProcessor;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Token\Reader;
@@ -33,7 +33,7 @@ abstract class TokenProcessorFactory implements Factory
     public function command(): Command
     {
         $reader = new Reader\TokensReader($this->env->output(), ...$this->tokenReaders());
-        return new CommandHandler($reader, $this->processor());
+        return new TokenProcessor($reader, $this->processor());
     }
 
     /**

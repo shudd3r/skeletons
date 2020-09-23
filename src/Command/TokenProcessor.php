@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Processor;
 
 
-class CommandHandler implements Command
+class TokenProcessor implements Command
 {
     private Reader     $reader;
     private Processor $processor;
