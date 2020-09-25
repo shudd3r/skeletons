@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Command\Factory;
 
+use Shudd3r\PackageFiles\Command\CommandSequence;
 use Shudd3r\PackageFiles\Command\Factory;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Command\TokenProcessor;
@@ -24,7 +25,7 @@ class InitCommandFactory extends Factory
     public function command(): Command
     {
         $reader = new Reader\TokensReader($this->env->output(), ...$this->tokenReaders());
-        return new TokenProcessor($reader, $this->processor());
+        return new CommandSequence(new TokenProcessor($reader, $this->processor()));
     }
 
     protected function tokenReaders(): array
