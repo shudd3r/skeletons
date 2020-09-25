@@ -12,9 +12,19 @@
 namespace Shudd3r\PackageFiles\Command;
 
 use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\RuntimeEnv;
 
 
-interface Factory
+abstract class Factory
 {
-    public function command(): Command;
+    protected RuntimeEnv $env;
+    protected array      $options;
+
+    public function __construct(RuntimeEnv $env, array $options)
+    {
+        $this->env     = $env;
+        $this->options = $options;
+    }
+
+    abstract public function command(): Command;
 }

@@ -12,21 +12,16 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Command\Factory;
-use Shudd3r\PackageFiles\Processor;
+use Shudd3r\PackageFiles\Application\Command;
 
 
-class FakeTokenProcessorFactory extends Factory\TokenProcessorFactory
+class FakeCommandFactory extends Factory
 {
     public static array $optionsField = [];
 
-    protected function tokenReaders(): array
+    public function command(): Command
     {
         self::$optionsField = $this->options;
-        return [];
-    }
-
-    protected function processor(): Processor
-    {
-        return new MockedProcessor();
+        return new FakeCommand();
     }
 }

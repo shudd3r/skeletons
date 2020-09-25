@@ -11,13 +11,22 @@
 
 namespace Shudd3r\PackageFiles\Command\Factory;
 
+use Shudd3r\PackageFiles\Command\Factory;
+use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Command\TokenProcessor;
 use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Template;
 
 
-class InitCommandFactory extends TokenProcessorFactory
+class InitCommandFactory extends Factory
 {
+    public function command(): Command
+    {
+        $reader = new Reader\TokensReader($this->env->output(), ...$this->tokenReaders());
+        return new TokenProcessor($reader, $this->processor());
+    }
+
     protected function tokenReaders(): array
     {
         $files    = $this->env->packageFiles();

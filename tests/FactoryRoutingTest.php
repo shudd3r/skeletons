@@ -28,7 +28,7 @@ class FactoryRoutingTest extends TestCase
     public function testMissingCommand_ThrowsException()
     {
         $this->expectException(RuntimeException::class);
-        $this->commands(['foo' => Doubles\FakeTokenProcessorFactory::class])->command('bar', []);
+        $this->commands(['foo' => Doubles\FakeCommandFactory::class])->command('bar', []);
     }
 
     public function testUnknownCommandFactoryClass_ThrowsException()
@@ -39,17 +39,17 @@ class FactoryRoutingTest extends TestCase
 
     public function testCommandFactoryClass_ReturnsCommand()
     {
-        $commands = $this->commands(['foo' => Doubles\FakeTokenProcessorFactory::class]);
+        $commands = $this->commands(['foo' => Doubles\FakeCommandFactory::class]);
         $this->assertInstanceOf(Command::class, $commands->command('foo', []));
     }
 
     public function testOptionsArePassedToFactory()
     {
-        $commands = $this->commands(['foo' => Doubles\FakeTokenProcessorFactory::class]);
+        $commands = $this->commands(['foo' => Doubles\FakeCommandFactory::class]);
         $options  = ['foo' => 'option', 'bar' => 'option'];
 
         $commands->command('foo', $options);
-        $this->assertSame($options, Doubles\FakeTokenProcessorFactory::$optionsField);
+        $this->assertSame($options, Doubles\FakeCommandFactory::$optionsField);
     }
 
     private function commands(array $factories = [], Doubles\FakeRuntimeEnv &$env = null): FactoryRouting
