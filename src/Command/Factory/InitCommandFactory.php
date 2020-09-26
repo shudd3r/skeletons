@@ -9,9 +9,12 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Factory;
+namespace Shudd3r\PackageFiles\Command\Factory;
 
-use Shudd3r\PackageFiles\Factory;
+use Shudd3r\PackageFiles\Command\CommandSequence;
+use Shudd3r\PackageFiles\Command\Factory;
+use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Command\TokenProcessor;
 use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Template;
@@ -19,6 +22,12 @@ use Shudd3r\PackageFiles\Template;
 
 class InitCommandFactory extends Factory
 {
+    public function command(): Command
+    {
+        $reader = new Reader\TokensReader($this->env->output(), ...$this->tokenReaders());
+        return new CommandSequence(new TokenProcessor($reader, $this->processor()));
+    }
+
     protected function tokenReaders(): array
     {
         $files    = $this->env->packageFiles();

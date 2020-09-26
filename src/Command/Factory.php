@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -9,9 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles;
+namespace Shudd3r\PackageFiles\Command;
 
 use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\RuntimeEnv;
 
 
 abstract class Factory
@@ -25,16 +26,5 @@ abstract class Factory
         $this->options = $options;
     }
 
-    public function command(): Command
-    {
-        $reader = new Token\Reader\TokensReader($this->env->output(), ...$this->tokenReaders());
-        return new CommandHandler($reader, $this->processor());
-    }
-
-    /**
-     * @return Token\Reader[]
-     */
-    abstract protected function tokenReaders(): array;
-
-    abstract protected function processor(): Processor;
+    abstract public function command(): Command;
 }

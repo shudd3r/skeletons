@@ -9,26 +9,27 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests;
+namespace Shudd3r\PackageFiles\Tests\Command;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\CommandHandler;
+use Shudd3r\PackageFiles\Command\TokenProcessor;
+use Shudd3r\PackageFiles\Tests\Doubles;
 use Exception;
 
 
-class CommandHandlerTest extends TestCase
+class TokenProcessorTest extends TestCase
 {
     public function testInstantiation()
     {
-        $command = new CommandHandler(new Doubles\FakeReader(), new Doubles\MockedProcessor());
-        $this->assertInstanceOf(CommandHandler::class, $command);
+        $command = new TokenProcessor(new Doubles\FakeReader(), new Doubles\MockedProcessor());
+        $this->assertInstanceOf(TokenProcessor::class, $command);
     }
 
     public function testPropertiesArePassedToProcessor()
     {
         $reader     = new Doubles\FakeReader();
         $processor = new Doubles\MockedProcessor();
-        $command    = new CommandHandler($reader, $processor);
+        $command    = new TokenProcessor($reader, $processor);
 
         $command->execute();
         $this->assertEquals($reader->token(), $processor->passedToken);
@@ -36,7 +37,7 @@ class CommandHandlerTest extends TestCase
 
     public function testUnresolvedPropertiesStopExecution()
     {
-        $command = new CommandHandler(new Doubles\FakeReader('value', 'exception'), new Doubles\MockedProcessor());
+        $command = new TokenProcessor(new Doubles\FakeReader('value', 'exception'), new Doubles\MockedProcessor());
 
         $this->expectException(Exception::class);
         $command->execute();

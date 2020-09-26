@@ -9,20 +9,21 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles;
+namespace Shudd3r\PackageFiles\Command;
 
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Token\Reader;
+use Shudd3r\PackageFiles\Processor;
 
 
-class CommandHandler implements Command
+class TokenProcessor implements Command
 {
     private Reader     $reader;
     private Processor $processor;
 
     public function __construct(Reader $reader, Processor $processor)
     {
-        $this->reader     = $reader;
+        $this->reader    = $reader;
         $this->processor = $processor;
     }
 
