@@ -15,7 +15,7 @@ namespace Shudd3r\PackageFiles\Application\FileSystem;
 class DirectoryFiles
 {
     private Directory $directory;
-    private array $files;
+    private ?array    $files;
 
     /**
      * @param Directory $directory
@@ -24,7 +24,7 @@ class DirectoryFiles
     public function __construct(Directory $directory, array $files = null)
     {
         $this->directory = $directory;
-        $this->files     = $files ? $this->validScopeFiles($files) : $this->readDirectory($this->directory);
+        $this->files     = $files ? $this->validScopeFiles($files) : null;
     }
 
     /**
@@ -32,18 +32,24 @@ class DirectoryFiles
      */
     public function toArray(): array
     {
-        return $this->files;
+        return $this->files ??= $this->readDirectory($this->directory);
     }
 
+    /**
+     * @param callable $keepFile fn(File) => bool
+     *
+     * @return self
+     */
     public function filter(callable $keepFile): self
     {
-        return new self($this->directory, array_values(array_filter($this->files, $keepFile)));
+        $files = array_values(array_filter($this->toArray(), $keepFile));
+        return new self($this->directory, $files);
     }
 
     public function withinDirectory(Directory $directory): self
     {
         $contextSwitch = fn(File $file) => $directory->file($file->pathRelativeTo($this->directory));
-        return new self($directory, array_map($contextSwitch, $this->files));
+        return new self($directory, array_map($contextSwitch, $this->toArray()));
     }
 
     private function readDirectory(Directory $directory): array
