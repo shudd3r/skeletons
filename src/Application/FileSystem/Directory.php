@@ -30,13 +30,5 @@ interface Directory extends Node
      */
     public function subdirectory(string $name): Directory;
 
-    /**
-     * @return File[]
-     */
-    public function files(): array;
-
-    /**
-     * @return Directory[]
-     */
-    public function subdirectories(): array;
+    public function files(): DirectoryFiles;
 }

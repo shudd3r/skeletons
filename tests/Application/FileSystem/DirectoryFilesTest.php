@@ -20,19 +20,10 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class DirectoryFilesTest extends TestCase
 {
-    public function testInstantiation()
-    {
-        $this->assertInstanceOf(DirectoryFiles::class, new DirectoryFiles(new Doubles\FakeDirectory()));
-
-        $directory = $this->directoryStructure();
-        $files     = $directory->files();
-        $this->assertInstanceOf(DirectoryFiles::class, new DirectoryFiles($directory, $files));
-    }
-
     public function testInstantiationWithNotMatchingFiles_ThrowsException()
     {
         $directory = new Doubles\FakeDirectory(true, '/invalid/root/path');
-        $files     = $this->directoryStructure()->files();
+        $files     = $this->directoryStructure()->files()->toArray();
         $this->expectException(InvalidAncestorDirectory::class);
         new DirectoryFiles($directory, $files);
     }
@@ -40,7 +31,7 @@ class DirectoryFilesTest extends TestCase
     public function testToArrayMethod_ReturnsRecursivelyFoundFiles()
     {
         $directory  = $this->directoryStructure();
-        $collection = new DirectoryFiles($directory);
+        $collection = $directory->files();
         $files      = $collection->toArray();
 
         $this->assertCount(6, $files);
@@ -56,7 +47,7 @@ class DirectoryFilesTest extends TestCase
     public function testFilterMethod()
     {
         $directory  = $this->directoryStructure();
-        $collection = new DirectoryFiles($directory);
+        $collection = $directory->files();
 
         $this->assertEquals($collection, $collection->filter(fn(File $file) => true));
 
@@ -69,7 +60,7 @@ class DirectoryFilesTest extends TestCase
     public function testWithinDirectoryMethod()
     {
         $directory   = $this->directoryStructure();
-        $collection  = new DirectoryFiles($directory);
+        $collection  = $directory->files();
         $newRootPath = '/new/directory';
 
         $newCollection = $collection->withinDirectory(new Doubles\FakeDirectory(true, $newRootPath));

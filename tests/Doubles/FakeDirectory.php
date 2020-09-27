@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Application\FileSystem\Directory as DirectoryInterface;
+use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Application\FileSystem\File as FileInterface;
 
 
@@ -62,13 +63,14 @@ class FakeDirectory implements DirectoryInterface
         return $this->subdirectories[$name] ??= new self(false, $this->path . '/' . $name);
     }
 
-    public function files(): array
+    public function files(): DirectoryFiles
     {
-        return array_values($this->files);
-    }
+        $files = array_values($this->files);
 
-    public function subdirectories(): array
-    {
-        return array_values($this->subdirectories);
+        foreach ($this->subdirectories as $subdirectory) {
+            $files = array_merge($files, $subdirectory->files()->toArray());
+        }
+
+        return new DirectoryFiles($this, $files);
     }
 }

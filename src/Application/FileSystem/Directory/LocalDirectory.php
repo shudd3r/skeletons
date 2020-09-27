@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 use Shudd3r\PackageFiles\Application\FileSystem\AbstractNode;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
@@ -39,17 +40,27 @@ class LocalDirectory extends AbstractNode implements Directory
         return new self($this->expandedPath($name));
     }
 
-    public function files(): array
+    public function files(): DirectoryFiles
     {
-        if (!$this->exists()) { return []; }
+        if (!$this->exists()) { return new DirectoryFiles($this, []); }
 
-        $map    = fn($filename) => $this->file($filename);
-        $filter = fn(File $file) => $file->exists();
-
-        return $this->nodes($map, $filter);
+        return new DirectoryFiles($this, $this->readDirectory());
     }
 
-    public function subdirectories(): array
+    private function readDirectory(): array
+    {
+        $map    = fn($filename) => $this->file($filename);
+        $filter = fn(File $file) => $file->exists();
+        $files  = $this->nodes($map, $filter);
+
+        foreach ($this->subdirectories() as $subdirectory) {
+            $files = array_merge($files, $subdirectory->files()->toArray());
+        }
+
+        return $files;
+    }
+
+    private function subdirectories(): array
     {
         if (!$this->exists()) { return []; }
 
