@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -11,18 +11,29 @@
 
 namespace Shudd3r\PackageFiles\Token\Reader;
 
-use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Token\Reader;
+use Shudd3r\PackageFiles\Token;
 
 
-abstract class ValueReader implements Reader
+abstract class ValueReader implements Reader, Source
 {
+    private Source  $source;
+    private ?string $value = null;
+
+    public function __construct(Source $source)
+    {
+        $this->source = $source;
+    }
+
     public function token(): Token
     {
         return $this->createToken($this->value());
     }
 
-    abstract public function createToken(string $value): Token;
+    public function value(): string
+    {
+        return $this->value ??= $this->source->value();
+    }
 
-    abstract public function value(): string;
+    abstract protected function createToken(string $value): Token;
 }
