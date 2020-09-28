@@ -55,4 +55,9 @@ abstract class AbstractNode implements Node
             mkdir($path .= DIRECTORY_SEPARATOR . $directory);
         }
     }
+
+    protected function expandedPath(string $postfix): string
+    {
+        return $this->path . DIRECTORY_SEPARATOR . ltrim($postfix, '\\/');
+    }
 }

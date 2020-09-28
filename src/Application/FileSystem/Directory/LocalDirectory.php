@@ -76,9 +76,4 @@ class LocalDirectory extends AbstractNode implements Directory
         $nodes = array_map($map, $names);
         return array_values(array_filter($nodes, $filter));
     }
-
-    private function expandedPath(string $postfix): string
-    {
-        return $this->path . DIRECTORY_SEPARATOR . ltrim($postfix, '\\/');
-    }
 }
