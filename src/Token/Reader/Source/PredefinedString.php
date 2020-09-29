@@ -14,17 +14,17 @@ namespace Shudd3r\PackageFiles\Token\Reader\Source;
 use Shudd3r\PackageFiles\Token\Reader\Source;
 
 
-class CommandOption implements Source
+class PredefinedString implements Source
 {
-    private string $option;
+    private string $value;
 
-    public function __construct(string $option)
+    public function __construct(string $value)
     {
-        $this->option = $option;
+        $this->value = $value;
     }
 
     public function value(): string
     {
-        return $this->option;
+        return $this->value;
     }
 }
