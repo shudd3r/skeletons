@@ -56,8 +56,8 @@ abstract class AbstractNode implements Node
         }
     }
 
-    protected function expandedPath(string $postfix): string
+    protected function expandedPath(Directory $rootDir, string $postfix): string
     {
-        return $this->path . DIRECTORY_SEPARATOR . ltrim($postfix, '\\/');
+        return $rootDir->path() . DIRECTORY_SEPARATOR . ltrim($postfix, '\\/');
     }
 }

@@ -19,7 +19,7 @@ class LocalFileTest extends FileSystemTests
 {
     public function testInstantiation()
     {
-        $file = new FileSystem\File\LocalFile(self::$root . DIRECTORY_SEPARATOR . 'test.tmp');
+        $file = new FileSystem\File\LocalFile(self::directory(), 'test.tmp');
         $this->assertEquals(self::file('test.tmp'), $file);
         $this->assertInstanceOf(FileSystem\File\LocalFile::class, $file);
         $this->assertInstanceOf(FileSystem\File::class, $file);
@@ -39,8 +39,8 @@ class LocalFileTest extends FileSystemTests
      */
     public function testPathIsNormalized(string $mixedFilename, string $normalizedFilename)
     {
-        $this->assertEquals(self::file($normalizedFilename, true), $file = self::file($mixedFilename, true));
-        $this->assertSame($normalizedFilename, $file->path());
+        $this->assertEquals(self::file($normalizedFilename), $file = self::file($mixedFilename));
+        $this->assertSame(self::$root . DIRECTORY_SEPARATOR . $normalizedFilename, $file->path());
     }
 
     public function testPathRelativeToMethod_ForAncestorDirectory_ReturnsRelativePath()
@@ -129,11 +129,11 @@ class LocalFileTest extends FileSystemTests
     {
         $ds = DIRECTORY_SEPARATOR;
         return [
-            ['file\\', 'file'],
-            ['file.tmp/', 'file.tmp'],
-            ['\\\\Foo.tmp/file/', "{$ds}{$ds}Foo.tmp{$ds}file"],
-            ['/Foo/Bar\\baz.tmp\\', "{$ds}Foo{$ds}Bar{$ds}baz.tmp"],
-            ['/Foo\\Bar/file.tmp', "{$ds}Foo{$ds}Bar{$ds}file.tmp"]
+            ['file\\', "file"],
+            ['file.tmp/', "file.tmp"],
+            ['\\\\Foo.tmp/file/', "Foo.tmp{$ds}file"],
+            ['/Foo/Bar\\baz.tmp\\', "Foo{$ds}Bar{$ds}baz.tmp"],
+            ['/Foo\\Bar/file.tmp', "Foo{$ds}Bar{$ds}file.tmp"]
         ];
     }
 }

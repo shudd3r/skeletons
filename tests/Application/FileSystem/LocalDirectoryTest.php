@@ -130,11 +130,11 @@ class LocalDirectoryTest extends FileSystemTests
         $expected = self::files(['a.tmp', 'b.tmp', 'bar/e.tmp', 'foo/c.tmp', 'foo/d.tmp', 'foo/baz/f.tmp']);
         $this->assertEquals($expected, $directory->files()->toArray());
 
-        $expected = self::files(['foo/c.tmp', 'foo/d.tmp', 'foo/baz/f.tmp']);
+        $expected = self::files(['c.tmp', 'd.tmp', 'baz/f.tmp'], 'foo');
         $this->assertEquals($expected, $directory->subdirectory('foo')->files()->toArray());
 
-        $this->assertEquals(self::files(['bar/e.tmp']), $directory->subdirectory('bar')->files()->toArray());
-        $this->assertEquals(self::files(['foo/baz/f.tmp']), $directory->subdirectory('foo/baz')->files()->toArray());
+        $this->assertEquals(self::files(['e.tmp'], 'bar'), $directory->subdirectory('bar')->files()->toArray());
+        $this->assertEquals(self::files(['f.tmp'], 'foo/baz'), $directory->subdirectory('foo/baz')->files()->toArray());
         self::clear();
     }
 

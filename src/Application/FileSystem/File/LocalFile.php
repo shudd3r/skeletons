@@ -11,12 +11,21 @@
 
 namespace Shudd3r\PackageFiles\Application\FileSystem\File;
 
-use Shudd3r\PackageFiles\Application\FileSystem\AbstractNode;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
+use Shudd3r\PackageFiles\Application\FileSystem\AbstractNode;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 
 class LocalFile extends AbstractNode implements File
 {
+    private Directory $rootDir;
+
+    public function __construct(Directory $rootDir, string $path)
+    {
+        $this->rootDir = $rootDir;
+        parent::__construct($this->expandedPath($rootDir, $path));
+    }
+
     public function exists(): bool
     {
         return is_file($this->path);

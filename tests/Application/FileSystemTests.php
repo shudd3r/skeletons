@@ -30,9 +30,9 @@ class FileSystemTests extends TestCase
         rmdir(self::$root);
     }
 
-    protected static function files(array $names): array
+    protected static function files(array $names, string $subdirectory = ''): array
     {
-        return array_map(fn($filename) => self::file($filename), $names);
+        return array_map(fn($filename) => self::file($filename, $subdirectory), $names);
     }
 
     protected static function directories(array $names): array
@@ -40,10 +40,9 @@ class FileSystemTests extends TestCase
         return array_map(fn($dirname) => self::directory($dirname), $names);
     }
 
-    protected static function file(string $filename, bool $absolute = false): FileSystem\File
+    protected static function file(string $filename, string $subdirectory = ''): FileSystem\File
     {
-        $path = $absolute ? $filename : self::$root . DIRECTORY_SEPARATOR . $filename;
-        return new FileSystem\File\LocalFile($path);
+        return new FileSystem\File\LocalFile(self::directory($subdirectory), $filename);
     }
 
     protected static function directory(string $dirname = '', bool $absolute = false): FileSystem\Directory

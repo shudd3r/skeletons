@@ -32,12 +32,12 @@ class LocalDirectory extends AbstractNode implements Directory
 
     public function file(string $filename): File
     {
-        return new File\LocalFile($this->expandedPath($filename));
+        return new File\LocalFile($this, $filename);
     }
 
     public function subdirectory(string $name): Directory
     {
-        return new self($this->expandedPath($name));
+        return new self($this->expandedPath($this, $name));
     }
 
     public function files(): DirectoryFiles
@@ -54,7 +54,9 @@ class LocalDirectory extends AbstractNode implements Directory
         $files  = $this->nodes($map, $filter);
 
         foreach ($this->subdirectories() as $subdirectory) {
-            $files = array_merge($files, $subdirectory->files()->toArray());
+            foreach ($subdirectory->files()->toArray() as $file) {
+                $files[] = $this->file($file->pathRelativeTo($this));
+            }
         }
 
         return $files;
