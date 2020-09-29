@@ -26,6 +26,11 @@ class LocalFile extends AbstractNode implements File
         parent::__construct($this->expandedPath($rootDir, $path));
     }
 
+    public function reflectedIn(Directory $rootDirectory): self
+    {
+        return new self($rootDirectory, $this->pathRelativeTo($this->rootDir));
+    }
+
     public function exists(): bool
     {
         return is_file($this->path);

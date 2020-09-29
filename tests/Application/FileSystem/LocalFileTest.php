@@ -62,6 +62,12 @@ class LocalFileTest extends FileSystemTests
         $file->pathRelativeTo(self::directory(__DIR__, true));
     }
 
+    public function testReflectedInMethod()
+    {
+        $reflectedFile = self::file('foo.tmp', 'root/dir')->reflectedIn(self::directory('new/root'));
+        $this->assertEquals(self::file('foo.tmp', 'new/root'), $reflectedFile);
+    }
+
     public function testExistsMethod()
     {
         $file = self::file('test.tmp');

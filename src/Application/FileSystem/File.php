@@ -14,6 +14,8 @@ namespace Shudd3r\PackageFiles\Application\FileSystem;
 
 interface File extends Node
 {
+    public function reflectedIn(Directory $rootDirectory): self;
+
     /**
      * @return string
      */
