@@ -48,11 +48,6 @@ class FakeDirectory implements DirectoryInterface
         return $this->exists;
     }
 
-    public function create(): void
-    {
-        $this->exists = true;
-    }
-
     public function file(string $filename): FileInterface
     {
         return $this->files[$filename] ??= new MockedFile('', false, $this->path . '/' . $filename);

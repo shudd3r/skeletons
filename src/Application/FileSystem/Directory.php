@@ -14,8 +14,6 @@ namespace Shudd3r\PackageFiles\Application\FileSystem;
 
 interface Directory extends Node
 {
-    public function create(): void;
-
     /**
      * @param string $filename file basename or relative file path
      *

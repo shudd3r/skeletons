@@ -24,12 +24,6 @@ class LocalDirectory extends AbstractNode implements Directory
         return is_dir($this->path);
     }
 
-    public function create(): void
-    {
-        if ($this->exists()) { return; }
-        $this->createDirectoryStructure($this->path);
-    }
-
     public function file(string $filename): File
     {
         return new File\LocalFile($this, $filename);
