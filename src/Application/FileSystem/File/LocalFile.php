@@ -44,9 +44,25 @@ class LocalFile extends AbstractNode implements File
     public function write(string $contents): void
     {
         if (!$this->exists()) {
-            $this->createDirectoryStructure(dirname($this->path));
+            $this->createDirectoryStructure();
         }
 
         file_put_contents($this->path, $contents);
+    }
+
+    private function createDirectoryStructure(): void
+    {
+        $path = dirname($this->path);
+        if (is_dir($path)) { return; }
+
+        $missingDir = [];
+        while (!is_dir($path)) {
+            $missingDir[] = basename($path);
+            $path = dirname($path);
+        }
+
+        foreach (array_reverse($missingDir) as $directory) {
+            mkdir($path .= DIRECTORY_SEPARATOR . $directory);
+        }
     }
 }
