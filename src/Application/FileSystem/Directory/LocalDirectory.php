@@ -36,9 +36,9 @@ class LocalDirectory extends AbstractNode implements Directory
 
     public function files(): DirectoryFiles
     {
-        if (!$this->exists()) { return new DirectoryFiles($this, []); }
+        if (!$this->exists()) { return new DirectoryFiles([]); }
 
-        return new DirectoryFiles($this, $this->readDirectory());
+        return new DirectoryFiles($this->readDirectory());
     }
 
     private function readDirectory(): array

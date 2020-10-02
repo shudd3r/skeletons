@@ -45,7 +45,7 @@ class MockedFile implements FileInterface
 
     public function reflectedIn(DirectoryInterface $rootDirectory): self
     {
-        return new self($this->contents, $this->exists, $rootDirectory->path() . DIRECTORY_SEPARATOR . 'file.txt');
+        return new self($this->contents, $this->exists, $rootDirectory->path() . '/file.txt');
     }
 
     public function contents(): string

@@ -66,6 +66,6 @@ class FakeDirectory implements DirectoryInterface
             $files = array_merge($files, $subdirectory->files()->toArray());
         }
 
-        return new DirectoryFiles($this, $files);
+        return new DirectoryFiles($files);
     }
 }

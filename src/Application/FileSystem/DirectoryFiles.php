@@ -14,17 +14,14 @@ namespace Shudd3r\PackageFiles\Application\FileSystem;
 
 class DirectoryFiles
 {
-    private Directory $directory;
-    private array     $files;
+    private array $files;
 
     /**
-     * @param Directory $directory
      * @param File[]    $files
      */
-    public function __construct(Directory $directory, array $files)
+    public function __construct(array $files)
     {
-        $this->directory = $directory;
-        $this->files     = $this->validScopeFiles($files);
+        $this->files = $files;
     }
 
     /**
@@ -43,24 +40,12 @@ class DirectoryFiles
     public function filter(callable $keepFile): self
     {
         $files = array_values(array_filter($this->files, $keepFile));
-        return new self($this->directory, $files);
+        return new self($files);
     }
 
     public function withinDirectory(Directory $directory): self
     {
-        $contextSwitch = fn(File $file) => $directory->file($file->pathRelativeTo($this->directory));
-        return new self($directory, array_map($contextSwitch, $this->files));
-    }
-
-    private function validScopeFiles(array $files): array
-    {
-        $directoryPath = $this->directory->path();
-        foreach ($files as $file) {
-            if (strpos($file->path(), $directoryPath) !== 0) {
-                throw new Exception\InvalidAncestorDirectory();
-            }
-        }
-
-        return $files;
+        $contextSwitch = fn(File $file) => $file->reflectedIn($directory);
+        return new self(array_map($contextSwitch, $this->files));
     }
 }
