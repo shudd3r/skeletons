@@ -46,8 +46,8 @@ class DirectoryFilesTest extends TestCase
 
         $newCollection = $directoryFiles->withinDirectory($newRootDirectory);
         $expectedFiles = [
-            new Doubles\MockedFile('', true, '/new/directory/file.txt'),
-            new Doubles\MockedFile('', true, '/new/directory/file.txt'),
+            new Doubles\MockedFile('', true, $newRootDirectory),
+            new Doubles\MockedFile('', true, $newRootDirectory),
         ];
         $this->assertEquals($expectedFiles, $newCollection->toArray());
     }

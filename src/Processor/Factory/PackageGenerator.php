@@ -42,7 +42,7 @@ class PackageGenerator implements Processor\Factory
     {
         return new Processor\GenerateFile(
             new Template\FileTemplate($skeletonFile),
-            $this->package->file($skeletonFile->pathRelativeTo($this->skeleton))
+            $skeletonFile->reflectedIn($this->package)
         );
     }
 }

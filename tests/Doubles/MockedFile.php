@@ -17,25 +17,31 @@ use Shudd3r\PackageFiles\Application\FileSystem\File as FileInterface;
 
 class MockedFile implements FileInterface
 {
-    public string $contents;
-    public bool   $exists;
-    public string $path;
+    public string             $contents;
+    public bool               $exists;
+    public DirectoryInterface $root;
+    public string             $name;
 
-    public function __construct(string $contents = '', bool $exists = true, string $path = __DIR__)
-    {
+    public function __construct(
+        string $contents = '',
+        bool $exists = true,
+        DirectoryInterface $root = null,
+        string $name = 'file.txt'
+    ) {
         $this->contents = $contents;
         $this->exists   = $exists;
-        $this->path     = $path;
+        $this->root     = $root ?? new FakeDirectory();
+        $this->name     = $name;
     }
 
     public function path(): string
     {
-        return $this->path;
+        return $this->root->path() . '/' . $this->name;
     }
 
     public function pathRelativeTo(DirectoryInterface $ancestorDirectory): string
     {
-        return substr($this->path, strlen($ancestorDirectory->path()) + 1);
+        return substr($this->path(), strlen($ancestorDirectory->path()) + 1);
     }
 
     public function exists(): bool
@@ -45,7 +51,11 @@ class MockedFile implements FileInterface
 
     public function reflectedIn(DirectoryInterface $rootDirectory): self
     {
-        return new self($this->contents, $this->exists, $rootDirectory->path() . '/file.txt');
+        $file = new self($this->contents, $this->exists, $rootDirectory, $this->name);
+
+        /** @var $rootDirectory FakeDirectory */
+        $rootDirectory->files[$this->name] = $file;
+        return $file;
     }
 
     public function contents(): string

@@ -50,7 +50,7 @@ class FakeDirectory implements DirectoryInterface
 
     public function file(string $filename): FileInterface
     {
-        return $this->files[$filename] ??= new MockedFile('', false, $this->path . '/' . $filename);
+        return $this->files[$filename] ??= new MockedFile('', false, $this, $filename);
     }
 
     public function subdirectory(string $name): DirectoryInterface
@@ -60,12 +60,6 @@ class FakeDirectory implements DirectoryInterface
 
     public function files(): DirectoryFiles
     {
-        $files = array_values($this->files);
-
-        foreach ($this->subdirectories as $subdirectory) {
-            $files = array_merge($files, $subdirectory->files()->toArray());
-        }
-
-        return new DirectoryFiles($files);
+        return new DirectoryFiles(array_values($this->files));
     }
 }
