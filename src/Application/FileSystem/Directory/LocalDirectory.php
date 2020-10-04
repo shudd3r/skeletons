@@ -41,35 +41,27 @@ class LocalDirectory extends AbstractNode implements Directory
         return new DirectoryFiles($this->readDirectory());
     }
 
-    private function readDirectory(): array
+    private function readDirectory(string $subdirectory = ''): array
     {
-        $map    = fn($filename) => $this->file($filename);
-        $filter = fn(File $file) => $file->exists();
-        $files  = $this->nodes($map, $filter);
+        $absolutePath = $subdirectory ? $this->path . DIRECTORY_SEPARATOR . $subdirectory : $this->path;
+        $names        = array_diff(scandir($absolutePath), ['.', '..']);
 
-        foreach ($this->subdirectories() as $subdirectory) {
-            foreach ($subdirectory->files()->toArray() as $file) {
-                $files[] = $this->file($file->pathRelativeTo($this));
+        $files       = [];
+        $directories = [];
+        foreach ($names as $name) {
+            $relativePath = $subdirectory ? $subdirectory . DIRECTORY_SEPARATOR . $name : $name;
+            $filename     = $absolutePath . DIRECTORY_SEPARATOR . $name;
+            if (is_file($filename)) {
+                $files[] = $this->file($relativePath);
+            } elseif (is_dir($filename)) {
+                $directories[] = $relativePath;
             }
         }
 
+        foreach ($directories as $directory) {
+            $files = array_merge($files, $this->readDirectory($directory));
+        }
+
         return $files;
-    }
-
-    private function subdirectories(): array
-    {
-        if (!$this->exists()) { return []; }
-
-        $map    = fn($name) => $this->subdirectory($name);
-        $filter = fn(Directory $directory) => $directory->exists();
-
-        return $this->nodes($map, $filter);
-    }
-
-    private function nodes(callable $map, callable $filter): array
-    {
-        $names = array_diff(scandir($this->path), ['.', '..']);
-        $nodes = array_map($map, $names);
-        return array_values(array_filter($nodes, $filter));
     }
 }
