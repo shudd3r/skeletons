@@ -19,16 +19,18 @@ use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 class LocalFile extends AbstractNode implements File
 {
     private Directory $rootDir;
+    private string    $name;
 
-    public function __construct(Directory $rootDir, string $path)
+    public function __construct(Directory $rootDir, string $name)
     {
         $this->rootDir = $rootDir;
-        parent::__construct($this->expandedPath($rootDir, $path));
+        $this->name    = $this->normalizedPath(ltrim($name, '\\/'));
+        parent::__construct($rootDir->path() . DIRECTORY_SEPARATOR . $this->name);
     }
 
     public function reflectedIn(Directory $rootDirectory): self
     {
-        return new self($rootDirectory, $this->pathRelativeTo($this->rootDir));
+        return new self($rootDirectory, $this->name);
     }
 
     public function exists(): bool
