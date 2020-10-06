@@ -42,9 +42,4 @@ abstract class AbstractNode implements Node
     {
         return rtrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
     }
-
-    protected function expandedPath(Directory $rootDir, string $postfix): string
-    {
-        return $rootDir->path() . DIRECTORY_SEPARATOR . ltrim($postfix, '\\/');
-    }
 }

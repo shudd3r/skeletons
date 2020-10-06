@@ -31,7 +31,7 @@ class LocalDirectory extends AbstractNode implements Directory
 
     public function subdirectory(string $name): Directory
     {
-        return new self($this->expandedPath($this, $name));
+        return new self($this->path . DIRECTORY_SEPARATOR . ltrim($name, '\\/'));
     }
 
     public function files(): DirectoryFiles
