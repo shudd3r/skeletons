@@ -26,16 +26,6 @@ abstract class AbstractNode implements Node
         return $this->path;
     }
 
-    public function pathRelativeTo(Directory $ancestorDirectory): string
-    {
-        $ancestorPath = $ancestorDirectory->path();
-        if (strpos($this->path, $ancestorPath) !== 0) {
-            throw new Exception\InvalidAncestorDirectory();
-        }
-
-        return substr($this->path, strlen($ancestorPath) + 1);
-    }
-
     abstract public function exists(): bool;
 
     protected function normalizedPath(string $path): string
