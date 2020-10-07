@@ -18,13 +18,11 @@ use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 class LocalFile extends AbstractNode implements File
 {
-    private Directory $rootDir;
-    private string    $name;
+    private string $name;
 
     public function __construct(Directory $rootDir, string $name)
     {
-        $this->rootDir = $rootDir;
-        $this->name    = $this->normalizedPath(ltrim($name, '\\/'));
+        $this->name = $this->normalizedPath(ltrim($name, '\\/'));
         parent::__construct($rootDir->path() . DIRECTORY_SEPARATOR . $this->name);
     }
 
