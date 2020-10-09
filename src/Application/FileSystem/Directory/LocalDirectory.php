@@ -11,27 +11,38 @@
 
 namespace Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
-use Shudd3r\PackageFiles\Application\FileSystem\AbstractNode;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
-class LocalDirectory extends AbstractNode implements Directory
+class LocalDirectory implements Directory
 {
+    private string $path;
+
+    public function __construct(string $path)
+    {
+        $this->path = rtrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
+    }
+
+    public function path(): string
+    {
+        return $this->path;
+    }
+
     public function exists(): bool
     {
         return is_dir($this->path);
     }
 
+    public function subdirectory(string $name): self
+    {
+        return new self($this->path . DIRECTORY_SEPARATOR . ltrim($name, '\\/'));
+    }
+
     public function file(string $filename): File
     {
         return new File\LocalFile($this, $filename);
-    }
-
-    public function subdirectory(string $name): Directory
-    {
-        return new self($this->path . DIRECTORY_SEPARATOR . ltrim($name, '\\/'));
     }
 
     public function files(): DirectoryFiles

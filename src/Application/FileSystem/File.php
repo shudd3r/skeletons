@@ -12,17 +12,18 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem;
 
 
-interface File extends Node
+interface File
 {
-    public function reflectedIn(Directory $rootDirectory): self;
-
     /**
-     * @return string
+     * @return string absolute path to file
      */
+    public function path(): string;
+
+    public function exists(): bool;
+
     public function contents(): string;
 
-    /**
-     * @param string $contents
-     */
     public function write(string $contents): void;
+
+    public function reflectedIn(Directory $rootDirectory): self;
 }

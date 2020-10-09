@@ -23,7 +23,6 @@ class LocalFileTest extends FileSystemTests
         $this->assertEquals(self::file('test.tmp'), $file);
         $this->assertInstanceOf(FileSystem\File\LocalFile::class, $file);
         $this->assertInstanceOf(FileSystem\File::class, $file);
-        $this->assertInstanceOf(FileSystem\Node::class, $file);
     }
 
     public function testPathMethod_ReturnsPathProperty()

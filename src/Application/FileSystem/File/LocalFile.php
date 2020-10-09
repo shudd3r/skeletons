@@ -12,23 +12,23 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem\File;
 
 use Shudd3r\PackageFiles\Application\FileSystem\File;
-use Shudd3r\PackageFiles\Application\FileSystem\AbstractNode;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 
-class LocalFile extends AbstractNode implements File
+class LocalFile implements File
 {
     private string $name;
+    private string $path;
 
     public function __construct(Directory $rootDir, string $name)
     {
-        $this->name = $this->normalizedPath(ltrim($name, '\\/'));
-        parent::__construct($rootDir->path() . DIRECTORY_SEPARATOR . $this->name);
+        $this->name = trim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $name), DIRECTORY_SEPARATOR);
+        $this->path = $rootDir->path() . DIRECTORY_SEPARATOR . $this->name;
     }
 
-    public function reflectedIn(Directory $rootDirectory): self
+    public function path(): string
     {
-        return new self($rootDirectory, $this->name);
+        return $this->path;
     }
 
     public function exists(): bool
@@ -48,6 +48,11 @@ class LocalFile extends AbstractNode implements File
         }
 
         file_put_contents($this->path, $contents);
+    }
+
+    public function reflectedIn(Directory $rootDirectory): self
+    {
+        return new self($rootDirectory, $this->name);
     }
 
     private function createDirectoryStructure(): void

@@ -12,8 +12,15 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem;
 
 
-interface Directory extends Node
+interface Directory
 {
+    /**
+     * @return string absolute path to directory
+     */
+    public function path(): string;
+
+    public function exists(): bool;
+
     /**
      * @param string $filename file basename or relative file path
      *

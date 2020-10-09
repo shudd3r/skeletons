@@ -23,7 +23,6 @@ class LocalDirectoryTest extends FileSystemTests
         $this->assertEquals(self::directory('test'), $directory);
         $this->assertInstanceOf(FileSystem\Directory\LocalDirectory::class, $directory);
         $this->assertInstanceOf(FileSystem\Directory::class, $directory);
-        $this->assertInstanceOf(FileSystem\Node::class, $directory);
     }
 
     public function testPathMethod_ReturnsPathProperty()
