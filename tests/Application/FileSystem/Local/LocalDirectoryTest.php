@@ -9,19 +9,19 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\FileSystem;
+namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\Local;
 
-use Shudd3r\PackageFiles\Tests\Application\FileSystemTests;
+use Shudd3r\PackageFiles\Tests\Application\FileSystem\LocalFileSystemTests;
 use Shudd3r\PackageFiles\Application\FileSystem;
 
 
-class LocalDirectoryTest extends FileSystemTests
+class LocalDirectoryTest extends LocalFileSystemTests
 {
     public function testInstantiation()
     {
-        $directory = new FileSystem\Directory\LocalDirectory(self::$root . DIRECTORY_SEPARATOR . 'test');
+        $directory = new FileSystem\Local\LocalDirectory(self::$root . DIRECTORY_SEPARATOR . 'test');
         $this->assertEquals(self::directory('test'), $directory);
-        $this->assertInstanceOf(FileSystem\Directory\LocalDirectory::class, $directory);
+        $this->assertInstanceOf(FileSystem\Local\LocalDirectory::class, $directory);
         $this->assertInstanceOf(FileSystem\Directory::class, $directory);
     }
 

@@ -11,12 +11,12 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\FileSystem\Directory as DirectoryInterface;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
-use Shudd3r\PackageFiles\Application\FileSystem\File as FileInterface;
+use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
-class FakeDirectory implements DirectoryInterface
+class FakeDirectory implements Directory
 {
     public string $path;
     public bool   $exists;
@@ -43,14 +43,14 @@ class FakeDirectory implements DirectoryInterface
         return $this->exists;
     }
 
-    public function file(string $filename): FileInterface
-    {
-        return $this->files[$filename] ??= new MockedFile('', false, $this, $filename);
-    }
-
-    public function subdirectory(string $name): DirectoryInterface
+    public function subdirectory(string $name): self
     {
         return $this->subdirectories[$name] ??= new self(false, $this->path . '/' . $name);
+    }
+
+    public function file(string $filename): File
+    {
+        return $this->files[$filename] ??= new MockedFile('', false, $this, $filename);
     }
 
     public function files(): DirectoryFiles

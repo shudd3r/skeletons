@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\FileSystem\Directory;
+namespace Shudd3r\PackageFiles\Application\FileSystem\Local;
 
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
@@ -42,7 +42,7 @@ class LocalDirectory implements Directory
 
     public function file(string $filename): File
     {
-        return new File\LocalFile($this, $filename);
+        return new LocalFile($this, $filename);
     }
 
     public function files(): DirectoryFiles

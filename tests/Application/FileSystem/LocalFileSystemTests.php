@@ -9,13 +9,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application;
+namespace Shudd3r\PackageFiles\Tests\Application\FileSystem;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\FileSystem;
 
 
-class FileSystemTests extends TestCase
+class LocalFileSystemTests extends TestCase
 {
     protected static string $root;
 
@@ -42,13 +42,13 @@ class FileSystemTests extends TestCase
 
     protected static function file(string $filename, string $subdirectory = ''): FileSystem\File
     {
-        return new FileSystem\File\LocalFile(self::directory($subdirectory), $filename);
+        return new FileSystem\Local\LocalFile(self::directory($subdirectory), $filename);
     }
 
     protected static function directory(string $dirname = '', bool $absolute = false): FileSystem\Directory
     {
         $path = $absolute ? $dirname : self::$root . DIRECTORY_SEPARATOR . $dirname;
-        return new FileSystem\Directory\LocalDirectory($path);
+        return new FileSystem\Local\LocalDirectory($path);
     }
 
     protected static function create(string $path, string $contents = 'x'): void

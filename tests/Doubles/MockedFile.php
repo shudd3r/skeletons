@@ -11,21 +11,21 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\FileSystem\Directory as DirectoryInterface;
-use Shudd3r\PackageFiles\Application\FileSystem\File as FileInterface;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
-class MockedFile implements FileInterface
+class MockedFile implements File
 {
-    public string             $contents;
-    public bool               $exists;
-    public DirectoryInterface $root;
-    public string             $name;
+    public string    $contents;
+    public bool      $exists;
+    public Directory $root;
+    public string    $name;
 
     public function __construct(
         string $contents = '',
         bool $exists = true,
-        DirectoryInterface $root = null,
+        Directory $root = null,
         string $name = 'file.txt'
     ) {
         $this->contents = $contents;
@@ -44,15 +44,6 @@ class MockedFile implements FileInterface
         return $this->exists;
     }
 
-    public function reflectedIn(DirectoryInterface $rootDirectory): self
-    {
-        $file = new self($this->contents, $this->exists, $rootDirectory, $this->name);
-
-        /** @var $rootDirectory FakeDirectory */
-        $rootDirectory->files[$this->name] = $file;
-        return $file;
-    }
-
     public function contents(): string
     {
         return $this->exists ? $this->contents : '';
@@ -62,5 +53,14 @@ class MockedFile implements FileInterface
     {
         $this->contents = $contents;
         $this->exists   = true;
+    }
+
+    public function reflectedIn(Directory $rootDirectory): self
+    {
+        $file = new self($this->contents, $this->exists, $rootDirectory, $this->name);
+
+        /** @var $rootDirectory FakeDirectory */
+        $rootDirectory->files[$this->name] = $file;
+        return $file;
     }
 }
