@@ -11,11 +11,12 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\FileSystem\Directory as DirectoryInterface;
-use Shudd3r\PackageFiles\Application\FileSystem\File as FileInterface;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
+use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
-class FakeDirectory implements DirectoryInterface
+class FakeDirectory implements Directory
 {
     public string $path;
     public bool   $exists;
@@ -37,38 +38,23 @@ class FakeDirectory implements DirectoryInterface
         return $this->path;
     }
 
-    public function pathRelativeTo(DirectoryInterface $ancestorDirectory): string
-    {
-        return substr($this->path, strlen($ancestorDirectory->path()) + 1);
-    }
-
     public function exists(): bool
     {
         return $this->exists;
     }
 
-    public function create(): void
-    {
-        $this->exists = true;
-    }
-
-    public function file(string $filename): FileInterface
-    {
-        return $this->files[$filename] ??= new MockedFile('', false, $this->path . '/' . $filename);
-    }
-
-    public function subdirectory(string $name): DirectoryInterface
+    public function subdirectory(string $name): self
     {
         return $this->subdirectories[$name] ??= new self(false, $this->path . '/' . $name);
     }
 
-    public function files(): array
+    public function file(string $filename): File
     {
-        return array_values($this->files);
+        return $this->files[$filename] ??= new MockedFile('', false, $this, $filename);
     }
 
-    public function subdirectories(): array
+    public function files(): DirectoryFiles
     {
-        return array_values($this->subdirectories);
+        return new DirectoryFiles(array_values($this->files));
     }
 }

@@ -9,21 +9,20 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\FileSystem;
+namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\Local;
 
-use Shudd3r\PackageFiles\Tests\Application\FileSystemTests;
+use Shudd3r\PackageFiles\Tests\Application\FileSystem\LocalFileSystemTests;
 use Shudd3r\PackageFiles\Application\FileSystem;
 
 
-class LocalFileTest extends FileSystemTests
+class LocalFileTest extends LocalFileSystemTests
 {
     public function testInstantiation()
     {
-        $file = new FileSystem\File\LocalFile(self::$root . DIRECTORY_SEPARATOR . 'test.tmp');
+        $file = new FileSystem\Local\LocalFile(self::directory(), 'test.tmp');
         $this->assertEquals(self::file('test.tmp'), $file);
-        $this->assertInstanceOf(FileSystem\File\LocalFile::class, $file);
+        $this->assertInstanceOf(FileSystem\Local\LocalFile::class, $file);
         $this->assertInstanceOf(FileSystem\File::class, $file);
-        $this->assertInstanceOf(FileSystem\Node::class, $file);
     }
 
     public function testPathMethod_ReturnsPathProperty()
@@ -39,27 +38,14 @@ class LocalFileTest extends FileSystemTests
      */
     public function testPathIsNormalized(string $mixedFilename, string $normalizedFilename)
     {
-        $this->assertEquals(self::file($normalizedFilename, true), $file = self::file($mixedFilename, true));
-        $this->assertSame($normalizedFilename, $file->path());
+        $this->assertEquals(self::file($normalizedFilename), $file = self::file($mixedFilename));
+        $this->assertSame(self::$root . DIRECTORY_SEPARATOR . $normalizedFilename, $file->path());
     }
 
-    public function testPathRelativeToMethod_ForAncestorDirectory_ReturnsRelativePath()
+    public function testReflectedInMethod()
     {
-        $path = 'foo' . DIRECTORY_SEPARATOR . 'bar' . DIRECTORY_SEPARATOR . 'baz';
-        $root = self::directory();
-        $file = $root->file($path);
-
-        $this->assertSame($path, $file->pathRelativeTo($root));
-    }
-
-    public function testPathRelativeToMethod_ForNonAncestorDirectory_ThrowsException()
-    {
-        $path = 'foo' . DIRECTORY_SEPARATOR . 'bar' . DIRECTORY_SEPARATOR . 'baz';
-        $root = self::directory();
-        $file = $root->file($path);
-
-        $this->expectException(FileSystem\Exception\InvalidAncestorDirectory::class);
-        $file->pathRelativeTo(self::directory(__DIR__, true));
+        $reflectedFile = self::file('foo.tmp', 'root/dir')->reflectedIn(self::directory('new/root'));
+        $this->assertEquals(self::file('foo.tmp', 'new/root'), $reflectedFile);
     }
 
     public function testExistsMethod()
@@ -129,11 +115,11 @@ class LocalFileTest extends FileSystemTests
     {
         $ds = DIRECTORY_SEPARATOR;
         return [
-            ['file\\', 'file'],
-            ['file.tmp/', 'file.tmp'],
-            ['\\\\Foo.tmp/file/', "{$ds}{$ds}Foo.tmp{$ds}file"],
-            ['/Foo/Bar\\baz.tmp\\', "{$ds}Foo{$ds}Bar{$ds}baz.tmp"],
-            ['/Foo\\Bar/file.tmp', "{$ds}Foo{$ds}Bar{$ds}file.tmp"]
+            ['file\\', "file"],
+            ['file.tmp/', "file.tmp"],
+            ['\\\\Foo.tmp/file/', "Foo.tmp{$ds}file"],
+            ['/Foo/Bar\\baz.tmp\\', "Foo{$ds}Bar{$ds}baz.tmp"],
+            ['/Foo\\Bar/file.tmp', "Foo{$ds}Bar{$ds}file.tmp"]
         ];
     }
 }

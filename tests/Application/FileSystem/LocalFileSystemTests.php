@@ -9,13 +9,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application;
+namespace Shudd3r\PackageFiles\Tests\Application\FileSystem;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\FileSystem;
 
 
-class FileSystemTests extends TestCase
+class LocalFileSystemTests extends TestCase
 {
     protected static string $root;
 
@@ -30,9 +30,9 @@ class FileSystemTests extends TestCase
         rmdir(self::$root);
     }
 
-    protected static function files(array $names): array
+    protected static function files(array $names, string $subdirectory = ''): array
     {
-        return array_map(fn($filename) => self::file($filename), $names);
+        return array_map(fn($filename) => self::file($filename, $subdirectory), $names);
     }
 
     protected static function directories(array $names): array
@@ -40,16 +40,15 @@ class FileSystemTests extends TestCase
         return array_map(fn($dirname) => self::directory($dirname), $names);
     }
 
-    protected static function file(string $filename, bool $absolute = false): FileSystem\File
+    protected static function file(string $filename, string $subdirectory = ''): FileSystem\File
     {
-        $path = $absolute ? $filename : self::$root . DIRECTORY_SEPARATOR . $filename;
-        return new FileSystem\File\LocalFile($path);
+        return new FileSystem\Local\LocalFile(self::directory($subdirectory), $filename);
     }
 
     protected static function directory(string $dirname = '', bool $absolute = false): FileSystem\Directory
     {
         $path = $absolute ? $dirname : self::$root . DIRECTORY_SEPARATOR . $dirname;
-        return new FileSystem\Directory\LocalDirectory($path);
+        return new FileSystem\Local\LocalDirectory($path);
     }
 
     protected static function create(string $path, string $contents = 'x'): void

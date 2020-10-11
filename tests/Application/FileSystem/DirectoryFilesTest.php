@@ -13,103 +13,42 @@ namespace Shudd3r\PackageFiles\Tests\Application\FileSystem;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
-use Shudd3r\PackageFiles\Application\FileSystem\Exception\InvalidAncestorDirectory;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class DirectoryFilesTest extends TestCase
 {
-    public function testInstantiation()
+    public function testToArrayMethod_ReturnsArrayOfFiles()
     {
-        $this->assertInstanceOf(DirectoryFiles::class, new DirectoryFiles(new Doubles\FakeDirectory()));
-
-        $directory = $this->directoryStructure();
-        $files     = $directory->files();
-        $this->assertInstanceOf(DirectoryFiles::class, new DirectoryFiles($directory, $files));
-    }
-
-    public function testInstantiationWithNotMatchingFiles_ThrowsException()
-    {
-        $directory = new Doubles\FakeDirectory(true, '/invalid/root/path');
-        $files     = $this->directoryStructure()->files();
-        $this->expectException(InvalidAncestorDirectory::class);
-        new DirectoryFiles($directory, $files);
-    }
-
-    public function testToArrayMethod_ReturnsRecursivelyFoundFiles()
-    {
-        $directory  = $this->directoryStructure();
-        $collection = new DirectoryFiles($directory);
-        $files      = $collection->toArray();
-
-        $this->assertCount(6, $files);
-
-        $expectedFiles = array_merge(
-            $directory->files,
-            $directory->subdirectories[0]->files,
-            $directory->subdirectories[1]->files
-        );
-        $this->assertSame($expectedFiles, $files);
+        $directoryFiles = new DirectoryFiles($files = [new Doubles\MockedFile(), new Doubles\MockedFile()]);
+        $this->assertSame($files, $directoryFiles->toArray());
     }
 
     public function testFilterMethod()
     {
-        $directory  = $this->directoryStructure();
-        $collection = new DirectoryFiles($directory);
+        $directoryFiles = new DirectoryFiles([
+            $file1 = new Doubles\MockedFile('', true),
+            new Doubles\MockedFile('', false),
+            $file3 = new Doubles\MockedFile('', true)
+        ]);
 
-        $this->assertEquals($collection, $collection->filter(fn(File $file) => true));
+        $this->assertEquals($directoryFiles, $directoryFiles->filteredWith(fn(File $file) => true));
 
         $existingOnly = fn(File $file) => $file->exists();
-        $expected     = [$directory->files[1], $directory->subdirectories[1]->files[1]];
-        $this->assertSame($expected, $collection->filter($existingOnly)->toArray());
-        $this->assertTrue($expected[0]->exists() && $expected[1]->exists());
+        $this->assertSame([$file1, $file3], $directoryFiles->filteredWith($existingOnly)->toArray());
     }
 
     public function testWithinDirectoryMethod()
     {
-        $directory   = $this->directoryStructure();
-        $collection  = new DirectoryFiles($directory);
-        $newRootPath = '/new/directory';
+        $directoryFiles   = new DirectoryFiles([new Doubles\MockedFile(), new Doubles\MockedFile()]);
+        $newRootDirectory = new Doubles\FakeDirectory(true, '/new/directory');
 
-        $newCollection = $collection->withinDirectory(new Doubles\FakeDirectory(true, $newRootPath));
+        $newCollection = $directoryFiles->reflectedIn($newRootDirectory);
         $expectedFiles = [
-            new Doubles\MockedFile('', false, '/new/directory/foo1.txt'),
-            new Doubles\MockedFile('', false, '/new/directory/foo2.txt'),
-            new Doubles\MockedFile('', false, '/new/directory/subDirBar/bar1.txt'),
-            new Doubles\MockedFile('', false, '/new/directory/subDirBaz/baz1.txt'),
-            new Doubles\MockedFile('', false, '/new/directory/subDirBaz/baz2.txt'),
-            new Doubles\MockedFile('', false, '/new/directory/subDirBaz/baz3.txt'),
+            new Doubles\MockedFile('', true, $newRootDirectory),
+            new Doubles\MockedFile('', true, $newRootDirectory),
         ];
         $this->assertEquals($expectedFiles, $newCollection->toArray());
-    }
-
-    private function directoryStructure(string $rootPath = '/root/path'): Doubles\FakeDirectory
-    {
-        $directory = $this->directory($rootPath, 'foo', 2);
-        $directory->subdirectories = [
-            $this->directory($rootPath . '/subDirBar', 'bar', 1),
-            $this->directory($rootPath . '/subDirBaz', 'baz', 3)
-        ];
-
-        return $directory;
-    }
-
-    private function directory(string $path, string $fileId, int $files): Doubles\FakeDirectory
-    {
-        $directory  = new Doubles\FakeDirectory(true, $path);
-
-        $toFile = fn(int $num) => $this->file($path, $num, $fileId);
-        $directory->files = array_map($toFile, range(1, $files));
-
-        return $directory;
-    }
-
-    private function file(string $path, int $num, string $fileId): Doubles\MockedFile
-    {
-        $name   = $fileId . $num;
-        $exists = $num % 2 === 0;
-        $path   = $path . '/' . $name . '.txt';
-        return new Doubles\MockedFile($name, $exists, $path);
     }
 }

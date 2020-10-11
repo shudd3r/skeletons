@@ -12,16 +12,14 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem;
 
 
-interface Directory extends Node
+interface Directory
 {
-    public function create(): void;
-
     /**
-     * @param string $filename file basename or relative file path
-     *
-     * @return File
+     * @return string absolute path to directory
      */
-    public function file(string $filename): File;
+    public function path(): string;
+
+    public function exists(): bool;
 
     /**
      * @param string $name directory name or relative directory path
@@ -31,12 +29,11 @@ interface Directory extends Node
     public function subdirectory(string $name): Directory;
 
     /**
-     * @return File[]
+     * @param string $filename file basename or relative file path
+     *
+     * @return File
      */
-    public function files(): array;
+    public function file(string $filename): File;
 
-    /**
-     * @return Directory[]
-     */
-    public function subdirectories(): array;
+    public function files(): DirectoryFiles;
 }

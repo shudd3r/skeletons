@@ -31,28 +31,18 @@ class PackageGenerator implements Processor\Factory
     public function processor(): Processor
     {
         $processors = [];
-        foreach ($this->skeletonFiles($this->skeleton) as $skeletonFile) {
+        foreach ($this->skeleton->files()->toArray() as $skeletonFile) {
             $processors[] = $this->createFor($skeletonFile);
         }
 
         return new Processor\ProcessorSequence(...$processors);
     }
 
-    private function skeletonFiles(Directory $directory): array
-    {
-        $files = $directory->files();
-        foreach ($directory->subdirectories() as $subdirectory) {
-            $files = array_merge($files, $this->skeletonFiles($subdirectory));
-        }
-
-        return $files;
-    }
-
     public function createFor(File $skeletonFile): Processor
     {
         return new Processor\GenerateFile(
             new Template\FileTemplate($skeletonFile),
-            $this->package->file($skeletonFile->pathRelativeTo($this->skeleton))
+            $skeletonFile->reflectedIn($this->package)
         );
     }
 }

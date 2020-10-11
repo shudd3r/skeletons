@@ -14,17 +14,14 @@ namespace Shudd3r\PackageFiles\Application\FileSystem;
 
 class DirectoryFiles
 {
-    private Directory $directory;
     private array $files;
 
     /**
-     * @param Directory $directory
-     * @param File[]    $files
+     * @param File[] $files
      */
-    public function __construct(Directory $directory, array $files = null)
+    public function __construct(array $files)
     {
-        $this->directory = $directory;
-        $this->files     = $files ? $this->validScopeFiles($files) : $this->readDirectory($this->directory);
+        $this->files = $files;
     }
 
     /**
@@ -35,36 +32,20 @@ class DirectoryFiles
         return $this->files;
     }
 
-    public function filter(callable $keepFile): self
+    /**
+     * @param callable $isValidFile fn(File) => bool
+     *
+     * @return self
+     */
+    public function filteredWith(callable $isValidFile): self
     {
-        return new self($this->directory, array_values(array_filter($this->files, $keepFile)));
+        $files = array_values(array_filter($this->files, $isValidFile));
+        return new self($files);
     }
 
-    public function withinDirectory(Directory $directory): self
+    public function reflectedIn(Directory $directory): self
     {
-        $contextSwitch = fn(File $file) => $directory->file($file->pathRelativeTo($this->directory));
-        return new self($directory, array_map($contextSwitch, $this->files));
-    }
-
-    private function readDirectory(Directory $directory): array
-    {
-        $files = $directory->files();
-        foreach ($directory->subdirectories() as $subdirectory) {
-            $files = array_merge($files, $this->readDirectory($subdirectory));
-        }
-
-        return $files;
-    }
-
-    private function validScopeFiles(array $files): array
-    {
-        $directoryPath = $this->directory->path();
-        foreach ($files as $file) {
-            if (strpos($file->path(), $directoryPath) !== 0) {
-                throw new Exception\InvalidAncestorDirectory();
-            }
-        }
-
-        return $files;
+        $contextSwitch = fn(File $file) => $file->reflectedIn($directory);
+        return new self(array_map($contextSwitch, $this->files));
     }
 }
