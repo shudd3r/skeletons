@@ -17,7 +17,7 @@ class DirectoryFiles
     private array $files;
 
     /**
-     * @param File[]    $files
+     * @param File[] $files
      */
     public function __construct(array $files)
     {
@@ -33,17 +33,17 @@ class DirectoryFiles
     }
 
     /**
-     * @param callable $keepFile fn(File) => bool
+     * @param callable $isValidFile fn(File) => bool
      *
      * @return self
      */
-    public function filter(callable $keepFile): self
+    public function filteredWith(callable $isValidFile): self
     {
-        $files = array_values(array_filter($this->files, $keepFile));
+        $files = array_values(array_filter($this->files, $isValidFile));
         return new self($files);
     }
 
-    public function withinDirectory(Directory $directory): self
+    public function reflectedIn(Directory $directory): self
     {
         $contextSwitch = fn(File $file) => $file->reflectedIn($directory);
         return new self(array_map($contextSwitch, $this->files));

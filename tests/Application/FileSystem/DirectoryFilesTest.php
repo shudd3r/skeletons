@@ -33,10 +33,10 @@ class DirectoryFilesTest extends TestCase
             $file3 = new Doubles\MockedFile('', true)
         ]);
 
-        $this->assertEquals($directoryFiles, $directoryFiles->filter(fn(File $file) => true));
+        $this->assertEquals($directoryFiles, $directoryFiles->filteredWith(fn(File $file) => true));
 
         $existingOnly = fn(File $file) => $file->exists();
-        $this->assertSame([$file1, $file3], $directoryFiles->filter($existingOnly)->toArray());
+        $this->assertSame([$file1, $file3], $directoryFiles->filteredWith($existingOnly)->toArray());
     }
 
     public function testWithinDirectoryMethod()
@@ -44,7 +44,7 @@ class DirectoryFilesTest extends TestCase
         $directoryFiles   = new DirectoryFiles([new Doubles\MockedFile(), new Doubles\MockedFile()]);
         $newRootDirectory = new Doubles\FakeDirectory(true, '/new/directory');
 
-        $newCollection = $directoryFiles->withinDirectory($newRootDirectory);
+        $newCollection = $directoryFiles->reflectedIn($newRootDirectory);
         $expectedFiles = [
             new Doubles\MockedFile('', true, $newRootDirectory),
             new Doubles\MockedFile('', true, $newRootDirectory),
