@@ -15,7 +15,7 @@ use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Token;
 
 
-class RuntimeProcessor implements Processor
+class SkeletonFilesProcessor implements Processor
 {
     private Factory $factory;
 
