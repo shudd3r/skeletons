@@ -57,8 +57,8 @@ class InitCommandFactory extends Factory
         $template         = new Template\ComposerJsonTemplate($composerFile);
         $generateComposer = new Processor\GenerateFile($template, $composerFile);
 
-        $generatorFactory = new Processor\Factory\PackageGenerator($this->env->skeletonFiles(), $packageFiles);
-        $generatePackage  = new Processor\SkeletonFilesProcessor($generatorFactory);
+        $generatorFactory = new Processor\Factory\PackageGenerator($packageFiles);
+        $generatePackage  = new Processor\SkeletonFilesProcessor($this->env->skeletonFiles(), $generatorFactory);
 
         return new Processor\ProcessorSequence($generateComposer, $generatePackage);
     }

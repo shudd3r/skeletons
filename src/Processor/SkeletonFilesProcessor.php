@@ -12,20 +12,23 @@
 namespace Shudd3r\PackageFiles\Processor;
 
 use Shudd3r\PackageFiles\Processor;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Token;
 
 
 class SkeletonFilesProcessor implements Processor
 {
-    private Factory $factory;
+    private Directory $skeleton;
+    private Factory   $factory;
 
-    public function __construct(Factory $factory)
+    public function __construct(Directory $skeleton, Factory $factory)
     {
-        $this->factory = $factory;
+        $this->factory  = $factory;
+        $this->skeleton = $skeleton;
     }
 
     public function process(Token $token): void
     {
-        $this->factory->processor()->process($token);
+        $this->factory->processor($this->skeleton->files())->process($token);
     }
 }
