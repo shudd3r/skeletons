@@ -31,17 +31,17 @@ class PackageGenerator implements Processor\Factory
     {
         $processors = [];
         foreach ($skeletonFiles->toArray() as $skeletonFile) {
-            $processors[] = $this->createFor($skeletonFile);
+            $processors[] = $this->fileProcessor($skeletonFile);
         }
 
         return new Processor\ProcessorSequence(...$processors);
     }
 
-    public function createFor(File $skeletonFile): Processor
+    public function fileProcessor(File $skeletonFile): Processor
     {
-        return new Processor\GenerateFile(
-            new Template\FileTemplate($skeletonFile),
-            $skeletonFile->reflectedIn($this->package)
-        );
+        $template    = new Template\FileTemplate($skeletonFile);
+        $packageFile = $skeletonFile->reflectedIn($this->package);
+
+        return new Processor\GenerateFile($template, $packageFile);
     }
 }
