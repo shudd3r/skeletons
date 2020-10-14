@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Template;
 
 
-class PackageGenerator implements Processor\Factory
+class FileGeneratorFactory implements Processor\Factory
 {
     private Directory $package;
 
