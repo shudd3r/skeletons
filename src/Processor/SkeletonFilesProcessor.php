@@ -29,6 +29,8 @@ class SkeletonFilesProcessor implements Processor
 
     public function process(Token $token): void
     {
-        $this->factory->processor($this->skeleton->files())->process($token);
+        foreach ($this->skeleton->files()->toArray() as $skeletonFile) {
+            $this->factory->processor($skeletonFile)->process($token);
+        }
     }
 }

@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Processor\Factory;
 
 use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Template;
 
@@ -24,20 +23,10 @@ class PackageGenerator implements Processor\Factory
 
     public function __construct(Directory $package)
     {
-        $this->package  = $package;
+        $this->package = $package;
     }
 
-    public function processor(DirectoryFiles $skeletonFiles): Processor
-    {
-        $processors = [];
-        foreach ($skeletonFiles->toArray() as $skeletonFile) {
-            $processors[] = $this->fileProcessor($skeletonFile);
-        }
-
-        return new Processor\ProcessorSequence(...$processors);
-    }
-
-    public function fileProcessor(File $skeletonFile): Processor
+    public function processor(File $skeletonFile): Processor
     {
         $template    = new Template\FileTemplate($skeletonFile);
         $packageFile = $skeletonFile->reflectedIn($this->package);
