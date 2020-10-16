@@ -42,12 +42,12 @@ class FakeRuntimeEnv extends RuntimeEnv
         return $this->terminal;
     }
 
-    public function packageFiles(): FakeDirectory
+    public function packageDirectory(): FakeDirectory
     {
         return $this->directory;
     }
 
-    public function skeletonFiles(): FakeDirectory
+    public function skeletonDirectory(): FakeDirectory
     {
         return $this->templates;
     }

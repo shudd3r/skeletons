@@ -30,8 +30,8 @@ class RuntimeEnvTest extends TestCase
 
         $this->assertSame($params['input'], $env->input());
         $this->assertSame($params['output'], $env->output());
-        $this->assertSame($params['packageDir'], $env->packageFiles());
-        $this->assertSame($params['templateDir'], $env->skeletonFiles());
+        $this->assertSame($params['packageDir'], $env->packageDirectory());
+        $this->assertSame($params['templateDir'], $env->skeletonDirectory());
     }
 
     public function testInstantiatingWithInvalidPackageDirectory_ThrowsException()
