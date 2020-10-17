@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Terminal;
 use Shudd3r\PackageFiles\Exception;
 
 
@@ -32,6 +31,19 @@ class RuntimeEnvTest extends TestCase
         $this->assertSame($params['output'], $env->output());
         $this->assertSame($params['packageDir'], $env->packageDirectory());
         $this->assertSame($params['templateDir'], $env->skeletonDirectory());
+        $this->assertSame($params['backupDir'], $env->backupDirectory());
+    }
+
+    public function testDefaultBackupFile()
+    {
+        $env = new RuntimeEnv(
+            new Doubles\MockedTerminal(),
+            new Doubles\MockedTerminal(),
+            $packageDirectory = new Doubles\FakeDirectory(true, 'root/directory'),
+            new Doubles\FakeDirectory()
+        );
+
+        $this->assertEquals($env->backupDirectory(), $packageDirectory->subdirectory('.skeleton-backup'));
     }
 
     public function testInstantiatingWithInvalidPackageDirectory_ThrowsException()
@@ -53,16 +65,11 @@ class RuntimeEnvTest extends TestCase
     private function env(?array &$params = []): RuntimeEnv
     {
         return new RuntimeEnv(
-            $params['input'] ??= $this->terminal(),
-            $params['output'] ??= $this->terminal(),
+            $params['input'] ??= new Doubles\MockedTerminal(),
+            $params['output'] ??= new Doubles\MockedTerminal(),
             $params['packageDir'] ??= new Doubles\FakeDirectory(),
-            $params['templateDir'] ??= new Doubles\FakeDirectory()
+            $params['templateDir'] ??= new Doubles\FakeDirectory(),
+            $params['backupDir'] ??= new Doubles\FakeDirectory()
         );
-    }
-
-    private function terminal(): Terminal
-    {
-        $stream = fopen('php://memory', 'r+');
-        return new Terminal($stream, $stream, $stream);
     }
 }
