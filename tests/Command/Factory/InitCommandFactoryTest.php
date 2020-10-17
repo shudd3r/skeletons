@@ -151,8 +151,8 @@ class InitCommandFactoryTest extends TestCase
     {
         $env = new Doubles\FakeRuntimeEnv();
 
-        $env->directory->path = '/path/to/package/directory';
-        $env->templates->path = '/path/to/skeleton/files';
+        $env->packageDirectory()->path  = '/path/to/package/directory';
+        $env->skeletonDirectory()->path = '/path/to/skeleton/files';
 
         $metaFileContents = <<<'TPL'
             original_repository={repository.name}
@@ -160,10 +160,10 @@ class InitCommandFactoryTest extends TestCase
             package_desc={description.text}
             source_namespace={namespace.src}
             TPL;
-        $metaFilePath = '/path/to/skeleton/files/.github/package.properties';
-        $metaFile     = new Doubles\MockedFile($metaFileContents, true, $env->templates, '.github/package.properties');
 
-        $env->templates->files['.github/package.properties'] = $metaFile;
+        $env->skeletonDirectory()->files['.github/package.properties'] = new Doubles\MockedFile(
+            $metaFileContents, true, $env->skeletonDirectory(), '.github/package.properties'
+        );
 
         return $env;
     }
