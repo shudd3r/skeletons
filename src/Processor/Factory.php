@@ -11,10 +11,11 @@
 
 namespace Shudd3r\PackageFiles\Processor;
 
+use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Processor;
 
 
 interface Factory
 {
-    public function processor(): Processor;
+    public function processor(File $skeletonFile): Processor;
 }
