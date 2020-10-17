@@ -21,22 +21,22 @@ class RuntimeEnv
 {
     private Input     $input;
     private Output    $output;
-    private Directory $packageFiles;
-    private Directory $skeletonFiles;
-    private Directory $backupFiles;
+    private Directory $package;
+    private Directory $skeleton;
+    private Directory $backup;
 
     public function __construct(
         Input $input,
         Output $output,
-        Directory $packageFiles,
-        Directory $skeletonFiles,
-        Directory $backupFiles = null
+        Directory $package,
+        Directory $skeleton,
+        Directory $backup = null
     ) {
-        $this->input         = $input;
-        $this->output        = $output;
-        $this->packageFiles  = $this->validDirectory($packageFiles);
-        $this->skeletonFiles = $this->validDirectory($skeletonFiles);
-        $this->backupFiles   = $backupFiles ?? $this->packageFiles->subdirectory('.skeleton-backup');
+        $this->input    = $input;
+        $this->output   = $output;
+        $this->package  = $this->validDirectory($package);
+        $this->skeleton = $this->validDirectory($skeleton);
+        $this->backup   = $backup ?? $this->package->subdirectory('.skeleton-backup');
     }
 
     public function input(): Input
@@ -51,17 +51,17 @@ class RuntimeEnv
 
     public function packageDirectory(): Directory
     {
-        return $this->packageFiles;
+        return $this->package;
     }
 
     public function skeletonDirectory(): Directory
     {
-        return $this->skeletonFiles;
+        return $this->skeleton;
     }
 
     public function backupDirectory(): Directory
     {
-        return $this->backupFiles;
+        return $this->backup;
     }
 
     private function validDirectory(Directory $directory): Directory
