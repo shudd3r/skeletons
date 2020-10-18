@@ -34,9 +34,9 @@ class InitCommandFactoryTest extends TestCase
             'description' => 'My library package',
             'autoload'    => ['psr-4' => ['FooBarNamespace\\Baz\\' => 'src/']]
         ];
-        $env->packageFiles()->files['composer.json'] = new Doubles\MockedFile(json_encode($composer));
+        $env->package()->files['composer.json'] = new Doubles\MockedFile(json_encode($composer));
         $iniData = '[remote "origin"] url = https://github.com/username/repositoryOrigin.git';
-        $env->packageFiles()->files['.git/config'] = new Doubles\MockedFile($iniData);
+        $env->package()->files['.git/config'] = new Doubles\MockedFile($iniData);
 
         $factory->command()->execute();
 
@@ -52,7 +52,7 @@ class InitCommandFactoryTest extends TestCase
     {
         $env     = $this->env();
         $factory = new Factory($env, ['i' => false]);
-        $env->packageFiles()->path = '/path/foo/bar';
+        $env->package()->path = '/path/foo/bar';
 
         $factory->command()->execute();
 
@@ -69,7 +69,7 @@ class InitCommandFactoryTest extends TestCase
         $env      = $this->env();
         $factory  = new Factory($env, ['i' => false]);
         $composer = json_encode(['name' => 'fooBar/baz']);
-        $env->packageFiles()->files['composer.json'] = new Doubles\MockedFile($composer);
+        $env->package()->files['composer.json'] = new Doubles\MockedFile($composer);
 
         $factory->command()->execute();
 
@@ -143,7 +143,7 @@ class InitCommandFactoryTest extends TestCase
 
     private function assertMetaDataFile(Doubles\FakeRuntimeEnv $env, array $data): void
     {
-        $metaDataFile = $env->packageFiles()->files['.github/package.properties']->contents();
+        $metaDataFile = $env->package()->files['.github/package.properties']->contents();
         $this->assertSame($data, parse_ini_string($metaDataFile));
     }
 
@@ -151,8 +151,8 @@ class InitCommandFactoryTest extends TestCase
     {
         $env = new Doubles\FakeRuntimeEnv();
 
-        $env->directory->path = '/path/to/package/directory';
-        $env->templates->path = '/path/to/skeleton/files';
+        $env->package()->path  = '/path/to/package/directory';
+        $env->skeleton()->path = '/path/to/skeleton/files';
 
         $metaFileContents = <<<'TPL'
             original_repository={repository.name}
@@ -160,10 +160,10 @@ class InitCommandFactoryTest extends TestCase
             package_desc={description.text}
             source_namespace={namespace.src}
             TPL;
-        $metaFilePath = '/path/to/skeleton/files/.github/package.properties';
-        $metaFile     = new Doubles\MockedFile($metaFileContents, true, $env->templates, '.github/package.properties');
 
-        $env->templates->files['.github/package.properties'] = $metaFile;
+        $env->skeleton()->files['.github/package.properties'] = new Doubles\MockedFile(
+            $metaFileContents, true, $env->skeleton(), '.github/package.properties'
+        );
 
         return $env;
     }

@@ -16,39 +16,42 @@ use Shudd3r\PackageFiles\RuntimeEnv;
 
 class FakeRuntimeEnv extends RuntimeEnv
 {
-    public MockedTerminal $terminal;
-    public FakeDirectory  $directory;
-    public FakeDirectory  $templates;
+    private MockedTerminal $cli;
+    private FakeDirectory  $pkg;
+    private FakeDirectory  $tpl;
+    private FakeDirectory  $bkp;
 
-    public function __construct(
-        MockedTerminal $terminal = null,
-        FakeDirectory $packageFiles = null,
-        FakeDirectory $skeletonFiles = null
-    ) {
-        $this->terminal  = $terminal ?? new MockedTerminal();
-        $this->directory = $packageFiles ?? new FakeDirectory();
-        $this->templates = $skeletonFiles ?? new FakeDirectory();
+    public function __construct() {
+        $this->cli = new MockedTerminal();
+        $this->pkg = new FakeDirectory();
+        $this->tpl = new FakeDirectory();
+        $this->bkp = new FakeDirectory();
 
-        parent::__construct($this->terminal, $this->terminal, $this->directory, $this->templates);
+        parent::__construct($this->cli, $this->cli, $this->pkg, $this->tpl);
     }
 
     public function input(): MockedTerminal
     {
-        return $this->terminal;
+        return $this->cli;
     }
 
     public function output(): MockedTerminal
     {
-        return $this->terminal;
+        return $this->cli;
     }
 
-    public function packageFiles(): FakeDirectory
+    public function package(): FakeDirectory
     {
-        return $this->directory;
+        return $this->pkg;
     }
 
-    public function skeletonFiles(): FakeDirectory
+    public function skeleton(): FakeDirectory
     {
-        return $this->templates;
+        return $this->tpl;
+    }
+
+    public function backup(): FakeDirectory
+    {
+        return $this->bkp;
     }
 }
