@@ -49,17 +49,17 @@ class RuntimeEnv
         return $this->output;
     }
 
-    public function packageDirectory(): Directory
+    public function package(): Directory
     {
         return $this->package;
     }
 
-    public function skeletonDirectory(): Directory
+    public function skeleton(): Directory
     {
         return $this->skeleton;
     }
 
-    public function backupDirectory(): Directory
+    public function backup(): Directory
     {
         return $this->backup;
     }

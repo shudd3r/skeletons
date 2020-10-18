@@ -30,7 +30,7 @@ class InitCommandFactory extends Factory
 
     protected function tokenReaders(): array
     {
-        $files    = $this->env->packageDirectory();
+        $files    = $this->env->package();
         $composer = new Reader\Data\ComposerJsonData($files->file('composer.json'));
 
         $source  = $this->option('package') ?? new Reader\Source\DefaultPackage($composer, $files);
@@ -51,14 +51,14 @@ class InitCommandFactory extends Factory
 
     protected function processor(): Processor
     {
-        $packageFiles = $this->env->packageDirectory();
+        $packageFiles = $this->env->package();
 
         $composerFile     = $packageFiles->file('composer.json');
         $template         = new Template\ComposerJsonTemplate($composerFile);
         $generateComposer = new Processor\GenerateFile($template, $composerFile);
 
         $generatorFactory = new Processor\Factory\FileGeneratorFactory($packageFiles);
-        $generatePackage  = new Processor\SkeletonFilesProcessor($this->env->skeletonDirectory(), $generatorFactory);
+        $generatePackage  = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
 
         return new Processor\ProcessorSequence($generateComposer, $generatePackage);
     }

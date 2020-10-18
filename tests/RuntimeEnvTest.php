@@ -29,9 +29,9 @@ class RuntimeEnvTest extends TestCase
 
         $this->assertSame($params['input'], $env->input());
         $this->assertSame($params['output'], $env->output());
-        $this->assertSame($params['packageDir'], $env->packageDirectory());
-        $this->assertSame($params['templateDir'], $env->skeletonDirectory());
-        $this->assertSame($params['backupDir'], $env->backupDirectory());
+        $this->assertSame($params['packageDir'], $env->package());
+        $this->assertSame($params['templateDir'], $env->skeleton());
+        $this->assertSame($params['backupDir'], $env->backup());
     }
 
     public function testDefaultBackupFile()
@@ -43,7 +43,7 @@ class RuntimeEnvTest extends TestCase
             new Doubles\FakeDirectory()
         );
 
-        $this->assertEquals($env->backupDirectory(), $packageDirectory->subdirectory('.skeleton-backup'));
+        $this->assertEquals($env->backup(), $packageDirectory->subdirectory('.skeleton-backup'));
     }
 
     public function testInstantiatingWithInvalidPackageDirectory_ThrowsException()

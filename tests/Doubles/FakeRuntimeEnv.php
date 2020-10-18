@@ -40,17 +40,17 @@ class FakeRuntimeEnv extends RuntimeEnv
         return $this->cli;
     }
 
-    public function packageDirectory(): FakeDirectory
+    public function package(): FakeDirectory
     {
         return $this->pkg;
     }
 
-    public function skeletonDirectory(): FakeDirectory
+    public function skeleton(): FakeDirectory
     {
         return $this->tpl;
     }
 
-    public function backupDirectory(): FakeDirectory
+    public function backup(): FakeDirectory
     {
         return $this->bkp;
     }
