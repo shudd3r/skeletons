@@ -28,9 +28,9 @@ class DirectoryFilesTest extends TestCase
     public function testFilterMethod()
     {
         $directoryFiles = new DirectoryFiles([
-            $file1 = new Doubles\MockedFile('', true),
-            new Doubles\MockedFile('', false),
-            $file3 = new Doubles\MockedFile('', true)
+            $file1 = new Doubles\MockedFile('file1', null, '', true),
+            new Doubles\MockedFile('file', null, '', false),
+            $file3 = new Doubles\MockedFile('file2', null, '', true)
         ]);
 
         $this->assertEquals($directoryFiles, $directoryFiles->filteredWith(fn(File $file) => true));
@@ -46,8 +46,8 @@ class DirectoryFilesTest extends TestCase
 
         $newCollection = $directoryFiles->reflectedIn($newRootDirectory);
         $expectedFiles = [
-            new Doubles\MockedFile('', true, $newRootDirectory),
-            new Doubles\MockedFile('', true, $newRootDirectory),
+            new Doubles\MockedFile('file.txt', $newRootDirectory, ''),
+            new Doubles\MockedFile('file.txt', $newRootDirectory, ''),
         ];
         $this->assertEquals($expectedFiles, $newCollection->toArray());
     }

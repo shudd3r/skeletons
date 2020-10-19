@@ -17,21 +17,21 @@ use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 class MockedFile implements File
 {
+    public string    $name;
+    public Directory $root;
     public string    $contents;
     public bool      $exists;
-    public Directory $root;
-    public string    $name;
 
     public function __construct(
+        string $name = 'file.txt',
+        ?Directory $root = null,
         string $contents = '',
-        bool $exists = true,
-        Directory $root = null,
-        string $name = 'file.txt'
+        bool $exists = true
     ) {
+        $this->name     = $name;
+        $this->root     = $root ?? new FakeDirectory();
         $this->contents = $contents;
         $this->exists   = $exists;
-        $this->root     = $root ?? new FakeDirectory();
-        $this->name     = $name;
     }
 
     public function path(): string
@@ -57,7 +57,7 @@ class MockedFile implements File
 
     public function reflectedIn(Directory $rootDirectory): self
     {
-        $file = new self($this->contents, $this->exists, $rootDirectory, $this->name);
+        $file = new self($this->name, $rootDirectory, $this->contents, $this->exists);
 
         /** @var $rootDirectory FakeDirectory */
         $rootDirectory->files[$this->name] = $file;

@@ -31,7 +31,8 @@ class DefaultPackageTest extends TestCase
 
     private function reader(bool $composer = true): DefaultPackage
     {
-        $composer  = new Doubles\MockedFile(json_encode($composer ? ['name' => 'composer/package'] : []));
+        $contents  = json_encode($composer ? ['name' => 'composer/package'] : []);
+        $composer  = new Doubles\MockedFile('composer.json', null, $contents);
         $directory = new Doubles\FakeDirectory(true, '/foo/bar/directory/package');
 
         return new DefaultPackage(new ComposerJsonData($composer), $directory);

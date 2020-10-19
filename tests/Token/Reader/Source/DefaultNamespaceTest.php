@@ -30,10 +30,10 @@ class DefaultNamespaceTest extends TestCase
         $this->assertSame('Package\\Name', $this->reader(false)->value());
     }
 
-    private function reader(bool $composer = true): DefaultNamespace
+    private function reader(bool $composerData = true): DefaultNamespace
     {
-        $composer = $composer ? ['autoload' => ['psr-4' => ['Composer\\Namespace' => 'src/']]] : [];
-        $composer = new ComposerJsonData(new Doubles\MockedFile(json_encode($composer)));
+        $contents = json_encode($composerData ? ['autoload' => ['psr-4' => ['Composer\\Namespace' => 'src/']]] : []);
+        $composer = new ComposerJsonData(new Doubles\MockedFile('composer.json', null, $contents));
         $fallback = new PackageReader(new Doubles\FakeSource('package/name'));
 
         return new DefaultNamespace($composer, $fallback);
