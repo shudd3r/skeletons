@@ -19,19 +19,13 @@ class MockedFile implements File
 {
     public string    $name;
     public Directory $root;
-    public string    $contents;
-    public bool      $exists;
+    public ?string   $contents;
 
-    public function __construct(
-        string $name = 'file.txt',
-        ?Directory $root = null,
-        string $contents = '',
-        bool $exists = true
-    ) {
+    public function __construct(string $name = 'file.txt', ?Directory $root = null, ?string $contents = '')
+    {
         $this->name     = $name;
         $this->root     = $root ?? new FakeDirectory();
         $this->contents = $contents;
-        $this->exists   = $exists;
     }
 
     public function path(): string
@@ -41,23 +35,22 @@ class MockedFile implements File
 
     public function exists(): bool
     {
-        return $this->exists;
+        return isset($this->contents);
     }
 
     public function contents(): string
     {
-        return $this->exists ? $this->contents : '';
+        return $this->contents ?? '';
     }
 
     public function write(string $contents): void
     {
         $this->contents = $contents;
-        $this->exists   = true;
     }
 
     public function reflectedIn(Directory $rootDirectory): self
     {
-        $file = new self($this->name, $rootDirectory, $this->contents, $this->exists);
+        $file = new self($this->name, $rootDirectory, $this->contents);
 
         /** @var $rootDirectory FakeDirectory */
         $rootDirectory->files[$this->name] = $file;

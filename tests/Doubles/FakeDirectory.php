@@ -50,7 +50,7 @@ class FakeDirectory implements Directory
 
     public function file(string $filename): File
     {
-        return $this->files[$filename] ??= new MockedFile($filename, $this, '', false);
+        return $this->files[$filename] ??= new MockedFile($filename, $this, null);
     }
 
     public function files(): DirectoryFiles
