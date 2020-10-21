@@ -25,7 +25,7 @@ class FileTemplateTest extends TestCase
             This file is part of {package.name} package.
             TPL;
 
-        $template = new FileTemplate(new Doubles\MockedFile('filename.txt', null, $contents));
+        $template = new FileTemplate(Doubles\MockedFile::withContents($contents));
         $token    = Doubles\FakeToken::withPlaceholder('{package.name}', 'package/name');
 
         $render = $template->render($token);
@@ -39,7 +39,7 @@ class FileTemplateTest extends TestCase
 
     public function testNotExistingTemplateFile_ThrowsException()
     {
-        $templateFile = new Doubles\MockedFile('filename.txt', null, null);
+        $templateFile = Doubles\MockedFile::withContents(null);
 
         $this->expectException(InvalidArgumentException::class);
         new FileTemplate($templateFile);

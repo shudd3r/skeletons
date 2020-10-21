@@ -28,6 +28,11 @@ class MockedFile implements File
         $this->contents = $contents;
     }
 
+    public static function withContents(?string $contents = ''): self
+    {
+        return new self('filename.txt', null, $contents);
+    }
+
     public function path(): string
     {
         return $this->root->path() . '/' . $this->name;

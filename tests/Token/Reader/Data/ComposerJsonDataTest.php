@@ -21,7 +21,7 @@ class ComposerJsonDataTest extends TestCase
 {
     public function testNotJsonData_ThrowsException()
     {
-        $composer = new ComposerJsonData($this->composerFile('some string'));
+        $composer = new ComposerJsonData(Doubles\MockedFile::withContents('some string'));
         $this->expectException(RuntimeException::class);
         $composer->value('foo');
     }
@@ -108,11 +108,6 @@ class ComposerJsonDataTest extends TestCase
             ]
         ];
 
-        return new ComposerJsonData($this->composerFile(json_encode($data)));
-    }
-
-    private function composerFile(string $contents): Doubles\MockedFile
-    {
-        return new Doubles\MockedFile('composer.json', null, $contents);
+        return new ComposerJsonData(Doubles\MockedFile::withContents(json_encode($data)));
     }
 }

@@ -34,9 +34,9 @@ class InitCommandFactoryTest extends TestCase
             'description' => 'My library package',
             'autoload'    => ['psr-4' => ['FooBarNamespace\\Baz\\' => 'src/']]
         ];
-        $env->package()->files['composer.json'] = new Doubles\MockedFile('composer.json', null, json_encode($composer));
+        $env->package()->files['composer.json'] = Doubles\MockedFile::withContents(json_encode($composer));
         $iniData = '[remote "origin"] url = https://github.com/username/repositoryOrigin.git';
-        $env->package()->files['.git/config'] = new Doubles\MockedFile('config', null, $iniData);
+        $env->package()->files['.git/config'] = Doubles\MockedFile::withContents($iniData);
 
         $factory->command()->execute();
 
@@ -69,7 +69,7 @@ class InitCommandFactoryTest extends TestCase
         $env      = $this->env();
         $factory  = new Factory($env, ['i' => false]);
         $composer = json_encode(['name' => 'fooBar/baz']);
-        $env->package()->files['composer.json'] = new Doubles\MockedFile('composer.json', null, $composer);
+        $env->package()->files['composer.json'] = Doubles\MockedFile::withContents($composer);
 
         $factory->command()->execute();
 
@@ -162,7 +162,7 @@ class InitCommandFactoryTest extends TestCase
             TPL;
 
         $env->skeleton()->files['.github/package.properties'] = new Doubles\MockedFile(
-            '.github/package.properties', $env->skeleton(), $metaFileContents
+            '.github/package.properties', null, $metaFileContents
         );
 
         return $env;

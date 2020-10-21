@@ -21,7 +21,7 @@ class ComposerJsonTemplateTest extends TestCase
 {
     public function testMissingComposerFileIsCreatedWithPropertiesValues()
     {
-        $template       = new ComposerJsonTemplate(new MockedFile('filename.txt', null, '', false));
+        $template       = new ComposerJsonTemplate(MockedFile::withContents(null));
         $renderedString = $template->render($this->tokens());
         $this->assertSame($this->composerJsonForDefaultValues(), $renderedString);
     }
@@ -79,7 +79,7 @@ class ComposerJsonTemplateTest extends TestCase
 
     private function template(string $contents)
     {
-        return new ComposerJsonTemplate(new MockedFile('filename.txt', null, $contents));
+        return new ComposerJsonTemplate(MockedFile::withContents($contents));
     }
 
     private function tokens(): Token
