@@ -50,11 +50,21 @@ class FakeDirectory implements Directory
 
     public function file(string $filename): File
     {
-        return $this->files[$filename] ??= new MockedFile($filename, $this, null);
+        $file = $this->files[$filename] ?? MockedFile::withContents(null);
+
+        $file->name = $filename;
+        $file->root = $this;
+
+        return $file;
     }
 
     public function files(): DirectoryFiles
     {
-        return new DirectoryFiles(array_values($this->files));
+        $files = [];
+        foreach ($this->files as $filename => $file) {
+            $files[] = $this->file($filename);
+        }
+
+        return new DirectoryFiles($files);
     }
 }

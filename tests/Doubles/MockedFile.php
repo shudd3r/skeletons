@@ -51,14 +51,11 @@ class MockedFile implements File
     public function write(string $contents): void
     {
         $this->contents = $contents;
+        $this->root->files[$this->name] = $this;
     }
 
-    public function reflectedIn(Directory $rootDirectory): self
+    public function reflectedIn(Directory $rootDirectory): File
     {
-        $file = new self($this->name, $rootDirectory, $this->contents);
-
-        /** @var $rootDirectory FakeDirectory */
-        $rootDirectory->files[$this->name] = $file;
-        return $file;
+        return $rootDirectory->file($this->name) ?? new self($this->name, $rootDirectory, null);
     }
 }
