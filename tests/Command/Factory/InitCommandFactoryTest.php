@@ -161,9 +161,7 @@ class InitCommandFactoryTest extends TestCase
             source_namespace={namespace.src}
             TPL;
 
-        $env->skeleton()->files['.github/package.properties'] = new Doubles\MockedFile(
-            '.github/package.properties', null, $metaFileContents
-        );
+        $env->skeleton()->files['.github/package.properties'] = Doubles\MockedFile::withContents($metaFileContents);
 
         return $env;
     }
