@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
+use Exception;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
@@ -66,5 +67,15 @@ class FakeDirectory implements Directory
         }
 
         return new DirectoryFiles($files);
+    }
+
+    public function addFile(string $name, string $contents = ''): void
+    {
+        $file = $this->file($name);
+        if ($file->exists()) {
+            throw new Exception('File already exists');
+        }
+
+        $file->write($contents);
     }
 }
