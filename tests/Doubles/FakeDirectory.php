@@ -28,7 +28,7 @@ class FakeDirectory implements Directory
     /** @var FakeDirectory[] */
     public array $subdirectories = [];
 
-    public function __construct(bool $exists = true, string $path = __DIR__)
+    public function __construct(string $path = '/fake/directory', bool $exists = true)
     {
         $this->exists = $exists;
         $this->path   = $path;
@@ -46,7 +46,7 @@ class FakeDirectory implements Directory
 
     public function subdirectory(string $name): self
     {
-        return $this->subdirectories[$name] ??= new self(false, $this->path . '/' . $name);
+        return $this->subdirectories[$name] ??= new self($this->path . '/' . $name, false);
     }
 
     public function file(string $filename): File

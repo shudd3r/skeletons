@@ -41,13 +41,13 @@ class DirectoryFilesTest extends TestCase
 
     public function testReflectedInMethod()
     {
-        $rootDirectory  = new Doubles\FakeDirectory();
+        $rootDirectory  = new Doubles\FakeDirectory('/root/directory');
         $directoryFiles = new DirectoryFiles([
             $file1 = $rootDirectory->file('foo/test.one'),
             $file2 = $rootDirectory->file('bar.two')
         ]);
 
-        $newRootDirectory = new Doubles\FakeDirectory(true, '/new/directory');
+        $newRootDirectory = new Doubles\FakeDirectory('/new/directory');
         $expectedFiles    = new DirectoryFiles([
             $file1->reflectedIn($newRootDirectory),
             $file2->reflectedIn($newRootDirectory)
