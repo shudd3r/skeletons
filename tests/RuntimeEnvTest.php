@@ -39,16 +39,16 @@ class RuntimeEnvTest extends TestCase
         $env = new RuntimeEnv(
             new Doubles\MockedTerminal(),
             new Doubles\MockedTerminal(),
-            $packageDirectory = new Doubles\FakeDirectory(true, 'root/directory'),
+            $packageDirectory = new Doubles\FakeDirectory(),
             new Doubles\FakeDirectory()
         );
 
-        $this->assertEquals($env->backup(), $packageDirectory->subdirectory('.skeleton-backup'));
+        $this->assertSame($env->backup(), $packageDirectory->subdirectory('.skeleton-backup'));
     }
 
     public function testInstantiatingWithInvalidPackageDirectory_ThrowsException()
     {
-        $params = ['packageDir' => new Doubles\FakeDirectory(false)];
+        $params = ['packageDir' => new Doubles\FakeDirectory('/package/dir', false)];
 
         $this->expectException(Exception\InvalidDirectoryException::class);
         $this->env($params);
@@ -56,7 +56,7 @@ class RuntimeEnvTest extends TestCase
 
     public function testInstantiatingWithInvalidTemplateDirectory_ThrowsException()
     {
-        $params = ['templateDir' => new Doubles\FakeDirectory(false)];
+        $params = ['templateDir' => new Doubles\FakeDirectory('/template/dir', false)];
 
         $this->expectException(Exception\InvalidDirectoryException::class);
         $this->env($params);

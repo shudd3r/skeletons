@@ -17,21 +17,15 @@ use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 class MockedFile implements File
 {
-    public string    $contents;
-    public bool      $exists;
-    public Directory $root;
     public string    $name;
+    public Directory $root;
+    public ?string   $contents;
 
-    public function __construct(
-        string $contents = '',
-        bool $exists = true,
-        Directory $root = null,
-        string $name = 'file.txt'
-    ) {
+    public function __construct(?string $contents = '')
+    {
+        $this->name     = 'file.txt';
+        $this->root     = new FakeDirectory();
         $this->contents = $contents;
-        $this->exists   = $exists;
-        $this->root     = $root ?? new FakeDirectory();
-        $this->name     = $name;
     }
 
     public function path(): string
@@ -41,26 +35,31 @@ class MockedFile implements File
 
     public function exists(): bool
     {
-        return $this->exists;
+        return isset($this->contents);
     }
 
     public function contents(): string
     {
-        return $this->exists ? $this->contents : '';
+        return $this->contents ?? '';
     }
 
     public function write(string $contents): void
     {
         $this->contents = $contents;
-        $this->exists   = true;
+        $this->root->files[$this->name] = $this;
     }
 
-    public function reflectedIn(Directory $rootDirectory): self
+    public function reflectedIn(Directory $rootDirectory): File
     {
-        $file = new self($this->contents, $this->exists, $rootDirectory, $this->name);
+        if ($rootDirectory->file($this->name)->exists()) {
+            return $rootDirectory->file($this->name);
+        }
 
-        /** @var $rootDirectory FakeDirectory */
-        $rootDirectory->files[$this->name] = $file;
+        $file = new self(null);
+
+        $file->name = $this->name;
+        $file->root = $rootDirectory;
+
         return $file;
     }
 }

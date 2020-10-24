@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
+use Exception;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
@@ -27,7 +28,7 @@ class FakeDirectory implements Directory
     /** @var FakeDirectory[] */
     public array $subdirectories = [];
 
-    public function __construct(bool $exists = true, string $path = __DIR__)
+    public function __construct(string $path = '/fake/directory', bool $exists = true)
     {
         $this->exists = $exists;
         $this->path   = $path;
@@ -45,16 +46,36 @@ class FakeDirectory implements Directory
 
     public function subdirectory(string $name): self
     {
-        return $this->subdirectories[$name] ??= new self(false, $this->path . '/' . $name);
+        return $this->subdirectories[$name] ??= new self($this->path . '/' . $name, false);
     }
 
     public function file(string $filename): File
     {
-        return $this->files[$filename] ??= new MockedFile('', false, $this, $filename);
+        $file = $this->files[$filename] ?? new MockedFile(null);
+
+        $file->name = $filename;
+        $file->root = $this;
+
+        return $file;
     }
 
     public function files(): DirectoryFiles
     {
-        return new DirectoryFiles(array_values($this->files));
+        $files = [];
+        foreach ($this->files as $filename => $file) {
+            $files[] = $this->file($filename);
+        }
+
+        return new DirectoryFiles($files);
+    }
+
+    public function addFile(string $name, string $contents = ''): void
+    {
+        $file = $this->file($name);
+        if ($file->exists()) {
+            throw new Exception('File already exists');
+        }
+
+        $file->write($contents);
     }
 }

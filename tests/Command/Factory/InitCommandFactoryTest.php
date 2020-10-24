@@ -34,9 +34,9 @@ class InitCommandFactoryTest extends TestCase
             'description' => 'My library package',
             'autoload'    => ['psr-4' => ['FooBarNamespace\\Baz\\' => 'src/']]
         ];
-        $env->package()->files['composer.json'] = new Doubles\MockedFile(json_encode($composer));
+        $env->package()->addFile('composer.json', json_encode($composer));
         $iniData = '[remote "origin"] url = https://github.com/username/repositoryOrigin.git';
-        $env->package()->files['.git/config'] = new Doubles\MockedFile($iniData);
+        $env->package()->addFile('.git/config', $iniData);
 
         $factory->command()->execute();
 
@@ -69,7 +69,7 @@ class InitCommandFactoryTest extends TestCase
         $env      = $this->env();
         $factory  = new Factory($env, ['i' => false]);
         $composer = json_encode(['name' => 'fooBar/baz']);
-        $env->package()->files['composer.json'] = new Doubles\MockedFile($composer);
+        $env->package()->addFile('composer.json', $composer);
 
         $factory->command()->execute();
 
@@ -143,7 +143,7 @@ class InitCommandFactoryTest extends TestCase
 
     private function assertMetaDataFile(Doubles\FakeRuntimeEnv $env, array $data): void
     {
-        $metaDataFile = $env->package()->files['.github/package.properties']->contents();
+        $metaDataFile = $env->package()->file('.github/package.properties')->contents();
         $this->assertSame($data, parse_ini_string($metaDataFile));
     }
 
@@ -161,9 +161,7 @@ class InitCommandFactoryTest extends TestCase
             source_namespace={namespace.src}
             TPL;
 
-        $env->skeleton()->files['.github/package.properties'] = new Doubles\MockedFile(
-            $metaFileContents, true, $env->skeleton(), '.github/package.properties'
-        );
+        $env->skeleton()->addFile('.github/package.properties', $metaFileContents);
 
         return $env;
     }

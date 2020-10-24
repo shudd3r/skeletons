@@ -28,9 +28,9 @@ class DirectoryFilesTest extends TestCase
     public function testFilterMethod()
     {
         $directoryFiles = new DirectoryFiles([
-            $file1 = new Doubles\MockedFile('', true),
-            new Doubles\MockedFile('', false),
-            $file3 = new Doubles\MockedFile('', true)
+            $file1 = new Doubles\MockedFile(),
+            new Doubles\MockedFile(null),
+            $file3 = new Doubles\MockedFile()
         ]);
 
         $this->assertEquals($directoryFiles, $directoryFiles->filteredWith(fn(File $file) => true));
@@ -39,16 +39,19 @@ class DirectoryFilesTest extends TestCase
         $this->assertSame([$file1, $file3], $directoryFiles->filteredWith($existingOnly)->toArray());
     }
 
-    public function testWithinDirectoryMethod()
+    public function testReflectedInMethod()
     {
-        $directoryFiles   = new DirectoryFiles([new Doubles\MockedFile(), new Doubles\MockedFile()]);
-        $newRootDirectory = new Doubles\FakeDirectory(true, '/new/directory');
+        $rootDirectory  = new Doubles\FakeDirectory('/root/directory');
+        $directoryFiles = new DirectoryFiles([
+            $file1 = $rootDirectory->file('foo/test.one'),
+            $file2 = $rootDirectory->file('bar.two')
+        ]);
 
-        $newCollection = $directoryFiles->reflectedIn($newRootDirectory);
-        $expectedFiles = [
-            new Doubles\MockedFile('', true, $newRootDirectory),
-            new Doubles\MockedFile('', true, $newRootDirectory),
-        ];
-        $this->assertEquals($expectedFiles, $newCollection->toArray());
+        $newRootDirectory = new Doubles\FakeDirectory('/new/directory');
+        $expectedFiles    = new DirectoryFiles([
+            $file1->reflectedIn($newRootDirectory),
+            $file2->reflectedIn($newRootDirectory)
+        ]);
+        $this->assertEquals($expectedFiles, $directoryFiles->reflectedIn($newRootDirectory));
     }
 }

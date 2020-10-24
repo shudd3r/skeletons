@@ -39,7 +39,7 @@ class FileTemplateTest extends TestCase
 
     public function testNotExistingTemplateFile_ThrowsException()
     {
-        $templateFile = new Doubles\MockedFile('', false);
+        $templateFile = new Doubles\MockedFile(null);
 
         $this->expectException(InvalidArgumentException::class);
         new FileTemplate($templateFile);

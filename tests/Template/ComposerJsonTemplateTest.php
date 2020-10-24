@@ -21,7 +21,7 @@ class ComposerJsonTemplateTest extends TestCase
 {
     public function testMissingComposerFileIsCreatedWithPropertiesValues()
     {
-        $template       = new ComposerJsonTemplate(new MockedFile('', false));
+        $template       = new ComposerJsonTemplate(new MockedFile(null));
         $renderedString = $template->render($this->tokens());
         $this->assertSame($this->composerJsonForDefaultValues(), $renderedString);
     }
