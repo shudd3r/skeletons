@@ -21,16 +21,11 @@ class MockedFile implements File
     public Directory $root;
     public ?string   $contents;
 
-    public function __construct(string $name = 'file.txt', ?Directory $root = null, ?string $contents = '')
+    public function __construct(?string $contents = '')
     {
-        $this->name     = $name;
-        $this->root     = $root ?? new FakeDirectory();
+        $this->name     = 'file.txt';
+        $this->root     = new FakeDirectory();
         $this->contents = $contents;
-    }
-
-    public static function withContents(?string $contents = ''): self
-    {
-        return new self('filename.txt', null, $contents);
     }
 
     public function path(): string
@@ -56,6 +51,15 @@ class MockedFile implements File
 
     public function reflectedIn(Directory $rootDirectory): File
     {
-        return $rootDirectory->file($this->name) ?? new self($this->name, $rootDirectory, null);
+        if ($rootDirectory->file($this->name)->exists()) {
+            return $rootDirectory->file($this->name);
+        }
+
+        $file = new self(null);
+
+        $file->name = $this->name;
+        $file->root = $rootDirectory;
+
+        return $file;
     }
 }

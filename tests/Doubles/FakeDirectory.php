@@ -51,7 +51,7 @@ class FakeDirectory implements Directory
 
     public function file(string $filename): File
     {
-        $file = $this->files[$filename] ?? MockedFile::withContents(null);
+        $file = $this->files[$filename] ?? new MockedFile(null);
 
         $file->name = $filename;
         $file->root = $this;

@@ -28,9 +28,9 @@ class DirectoryFilesTest extends TestCase
     public function testFilterMethod()
     {
         $directoryFiles = new DirectoryFiles([
-            $file1 = Doubles\MockedFile::withContents(),
-            Doubles\MockedFile::withContents(null),
-            $file3 = Doubles\MockedFile::withContents()
+            $file1 = new Doubles\MockedFile(),
+            new Doubles\MockedFile(null),
+            $file3 = new Doubles\MockedFile()
         ]);
 
         $this->assertEquals($directoryFiles, $directoryFiles->filteredWith(fn(File $file) => true));
