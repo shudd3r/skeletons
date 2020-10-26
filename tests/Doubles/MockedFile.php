@@ -28,9 +28,9 @@ class MockedFile implements File
         $this->contents = $contents;
     }
 
-    public function path(): string
+    public function name(): string
     {
-        return $this->root->path() . '/' . $this->name;
+        return $this->name;
     }
 
     public function exists(): bool

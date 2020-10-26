@@ -26,9 +26,9 @@ class LocalFile implements File
         $this->path = $rootDir->path() . DIRECTORY_SEPARATOR . $this->name;
     }
 
-    public function path(): string
+    public function name(): string
     {
-        return $this->path;
+        return $this->name;
     }
 
     public function exists(): bool

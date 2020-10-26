@@ -21,13 +21,12 @@ class LocalFileTest extends LocalFileSystemTests
     {
         $file = new FileSystem\Local\LocalFile(self::directory(), 'test.tmp');
         $this->assertEquals(self::file('test.tmp'), $file);
-        $this->assertInstanceOf(FileSystem\Local\LocalFile::class, $file);
         $this->assertInstanceOf(FileSystem\File::class, $file);
     }
 
     public function testPathMethod_ReturnsPathProperty()
     {
-        $this->assertSame(self::$root . DIRECTORY_SEPARATOR . 'test.tmp', self::file('test.tmp')->path());
+        $this->assertSame('test.tmp', self::file('test.tmp')->name());
     }
 
     /**
@@ -39,7 +38,7 @@ class LocalFileTest extends LocalFileSystemTests
     public function testPathIsNormalized(string $mixedFilename, string $normalizedFilename)
     {
         $this->assertEquals(self::file($normalizedFilename), $file = self::file($mixedFilename));
-        $this->assertSame(self::$root . DIRECTORY_SEPARATOR . $normalizedFilename, $file->path());
+        $this->assertSame($normalizedFilename, $file->name());
     }
 
     public function testReflectedInMethod()
@@ -84,7 +83,7 @@ class LocalFileTest extends LocalFileSystemTests
 
         $file->write($contents = 'Written file contents...');
         $this->assertSame($contents, $file->contents());
-        $this->assertSame($contents, file_get_contents($file->path()));
+        $this->assertSame($contents, file_get_contents(self::$root . DIRECTORY_SEPARATOR . $file->name()));
         self::clear();
     }
 
@@ -96,7 +95,7 @@ class LocalFileTest extends LocalFileSystemTests
         $file->write($contents = 'Test file contents...');
 
         $this->assertTrue($file->exists());
-        $this->assertSame($contents, file_get_contents($file->path()));
+        $this->assertSame($contents, file_get_contents(self::$root . DIRECTORY_SEPARATOR . $file->name()));
         $this->assertSame($contents, $file->contents());
         self::clear();
     }
