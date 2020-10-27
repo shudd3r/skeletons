@@ -49,8 +49,8 @@ class DirectoryFilesTest extends TestCase
 
         $newRootDirectory = new Doubles\FakeDirectory('/new/directory');
         $expectedFiles    = new DirectoryFiles([
-            $file1->reflectedIn($newRootDirectory),
-            $file2->reflectedIn($newRootDirectory)
+            $newRootDirectory->file($file1->name()),
+            $newRootDirectory->file($file2->name())
         ]);
         $this->assertEquals($expectedFiles, $directoryFiles->reflectedIn($newRootDirectory));
     }

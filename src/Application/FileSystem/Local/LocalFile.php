@@ -50,11 +50,6 @@ class LocalFile implements File
         file_put_contents($this->path, $contents);
     }
 
-    public function reflectedIn(Directory $rootDirectory): self
-    {
-        return new self($rootDirectory, $this->name);
-    }
-
     private function createDirectoryStructure(): void
     {
         $path = dirname($this->path);

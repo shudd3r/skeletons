@@ -45,7 +45,7 @@ class DirectoryFiles
 
     public function reflectedIn(Directory $directory): self
     {
-        $contextSwitch = fn(File $file) => $file->reflectedIn($directory);
+        $contextSwitch = fn(File $file) => $directory->file($file->name());
         return new self(array_map($contextSwitch, $this->files));
     }
 }

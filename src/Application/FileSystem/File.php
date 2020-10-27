@@ -24,6 +24,4 @@ interface File
     public function contents(): string;
 
     public function write(string $contents): void;
-
-    public function reflectedIn(Directory $rootDirectory): self;
 }

@@ -48,18 +48,4 @@ class MockedFile implements File
         $this->contents = $contents;
         $this->root->files[$this->name] = $this;
     }
-
-    public function reflectedIn(Directory $rootDirectory): File
-    {
-        if ($rootDirectory->file($this->name)->exists()) {
-            return $rootDirectory->file($this->name);
-        }
-
-        $file = new self(null);
-
-        $file->name = $this->name;
-        $file->root = $rootDirectory;
-
-        return $file;
-    }
 }
