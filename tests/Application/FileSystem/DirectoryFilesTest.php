@@ -25,6 +25,15 @@ class DirectoryFilesTest extends TestCase
         $this->assertSame($files, $directoryFiles->toArray());
     }
 
+    public function testForEachMethod()
+    {
+        $directoryFiles = new DirectoryFiles($files = [new Doubles\MockedFile(), new Doubles\MockedFile()]);
+
+        $iterated = [];
+        $directoryFiles->forEach(function (File $file) use (&$iterated) { $iterated[] = $file; });
+        $this->assertSame($files, $iterated);
+    }
+
     public function testFilterMethod()
     {
         $directoryFiles = new DirectoryFiles([

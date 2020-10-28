@@ -33,6 +33,14 @@ class DirectoryFiles
     }
 
     /**
+     * @param callable $callback fn(File) => void
+     */
+    public function forEach(callable $callback): void
+    {
+        array_walk($this->files, $callback);
+    }
+
+    /**
      * @param callable $isValidFile fn(File) => bool
      *
      * @return self
