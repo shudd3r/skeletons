@@ -32,6 +32,15 @@ class DirectoryFiles
         return $this->files;
     }
 
+    public function exist(): bool
+    {
+        foreach ($this->files as $file) {
+            if ($file->exists()) { return true; }
+        }
+
+        return false;
+    }
+
     /**
      * @param callable $callback fn(File) => void
      */

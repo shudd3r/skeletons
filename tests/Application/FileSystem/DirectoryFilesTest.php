@@ -25,6 +25,18 @@ class DirectoryFilesTest extends TestCase
         $this->assertSame($files, $directoryFiles->toArray());
     }
 
+    public function testExistMethod()
+    {
+        $files = new DirectoryFiles([]);
+        $this->assertFalse($files->exist());
+
+        $files = new DirectoryFiles([new Doubles\MockedFile(null), new Doubles\MockedFile(null)]);
+        $this->assertFalse($files->exist());
+
+        $files = new DirectoryFiles([new Doubles\MockedFile(null), new Doubles\MockedFile()]);
+        $this->assertTrue($files->exist());
+    }
+
     public function testForEachMethod()
     {
         $directoryFiles = new DirectoryFiles($files = [new Doubles\MockedFile(), new Doubles\MockedFile()]);
