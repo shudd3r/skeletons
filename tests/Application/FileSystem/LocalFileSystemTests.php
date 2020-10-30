@@ -42,13 +42,13 @@ class LocalFileSystemTests extends TestCase
 
     protected static function file(string $filename, string $subdirectory = ''): FileSystem\File
     {
-        return new FileSystem\Local\LocalFile(self::directory($subdirectory), $filename);
+        return new FileSystem\File\LocalFile(self::directory($subdirectory), $filename);
     }
 
     protected static function directory(string $dirname = '', bool $absolute = false): FileSystem\Directory
     {
         $path = $absolute ? $dirname : self::$root . DIRECTORY_SEPARATOR . $dirname;
-        return new FileSystem\Local\LocalDirectory($path);
+        return new FileSystem\Directory\LocalDirectory($path);
     }
 
     protected static function create(string $path, string $contents = 'x'): void
