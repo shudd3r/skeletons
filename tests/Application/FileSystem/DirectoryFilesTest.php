@@ -19,12 +19,6 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class DirectoryFilesTest extends TestCase
 {
-    public function testToArrayMethod_ReturnsArrayOfFiles()
-    {
-        $directoryFiles = new DirectoryFiles($files = [new Doubles\MockedFile(), new Doubles\MockedFile()]);
-        $this->assertSame($files, $directoryFiles->toArray());
-    }
-
     public function testExistMethod()
     {
         $files = new DirectoryFiles([]);
@@ -57,7 +51,7 @@ class DirectoryFilesTest extends TestCase
         $this->assertEquals($directoryFiles, $directoryFiles->filteredWith(fn(File $file) => true));
 
         $existingOnly = fn(File $file) => $file->exists();
-        $this->assertSame([$file1, $file3], $directoryFiles->filteredWith($existingOnly)->toArray());
+        $this->assertEquals(new DirectoryFiles([$file1, $file3]), $directoryFiles->filteredWith($existingOnly));
     }
 
     public function testReflectedInMethod()

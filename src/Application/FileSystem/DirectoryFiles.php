@@ -24,14 +24,6 @@ class DirectoryFiles
         $this->files = $files;
     }
 
-    /**
-     * @return File[]
-     */
-    public function toArray(): array
-    {
-        return $this->files;
-    }
-
     public function exist(): bool
     {
         foreach ($this->files as $file) {

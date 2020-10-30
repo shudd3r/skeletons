@@ -21,7 +21,6 @@ class LocalDirectoryTest extends LocalFileSystemTests
     {
         $directory = new FileSystem\Local\LocalDirectory(self::$root . DIRECTORY_SEPARATOR . 'test');
         $this->assertEquals(self::directory('test'), $directory);
-        $this->assertInstanceOf(FileSystem\Local\LocalDirectory::class, $directory);
         $this->assertInstanceOf(FileSystem\Directory::class, $directory);
     }
 
@@ -80,7 +79,7 @@ class LocalDirectoryTest extends LocalFileSystemTests
 
         $files = ['a.tmp', 'b.tmp', 'c.tmp'];
         array_walk($files, fn($file) => self::create($file));
-        $this->assertEquals(self::files($files), $directory->files()->toArray());
+        $this->assertDirectoryFiles(self::files($files), $directory);
         self::clear();
     }
 
@@ -91,13 +90,13 @@ class LocalDirectoryTest extends LocalFileSystemTests
         array_walk($files, fn($file) => self::create($file));
 
         $expected = self::files(['a.tmp', 'b.tmp', 'bar/e.tmp', 'foo/c.tmp', 'foo/d.tmp', 'foo/baz/f.tmp']);
-        $this->assertEquals($expected, $directory->files()->toArray());
+        $this->assertDirectoryFiles($expected, $directory);
 
         $expected = self::files(['c.tmp', 'd.tmp', 'baz/f.tmp'], 'foo');
-        $this->assertEquals($expected, $directory->subdirectory('foo')->files()->toArray());
+        $this->assertDirectoryFiles($expected, $directory->subdirectory('foo'));
 
-        $this->assertEquals(self::files(['e.tmp'], 'bar'), $directory->subdirectory('bar')->files()->toArray());
-        $this->assertEquals(self::files(['f.tmp'], 'foo/baz'), $directory->subdirectory('foo/baz')->files()->toArray());
+        $this->assertDirectoryFiles(self::files(['e.tmp'], 'bar'), $directory->subdirectory('bar'));
+        $this->assertDirectoryFiles(self::files(['f.tmp'], 'foo/baz'), $directory->subdirectory('foo/baz'));
         self::clear();
     }
 
@@ -111,5 +110,10 @@ class LocalDirectoryTest extends LocalFileSystemTests
             ['\Foo/Bar\\', "{$ds}Foo{$ds}Bar"],
             ['Foo\\Bar/baz////', "Foo{$ds}Bar{$ds}baz"]
         ];
+    }
+
+    private function assertDirectoryFiles(array $files, FileSystem\Directory $directory): void
+    {
+        $this->assertEquals(new FileSystem\DirectoryFiles($files), $directory->files());
     }
 }
