@@ -19,10 +19,25 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class DirectoryFilesTest extends TestCase
 {
-    public function testToArrayMethod_ReturnsArrayOfFiles()
+    public function testExistMethod()
+    {
+        $files = new DirectoryFiles([]);
+        $this->assertFalse($files->exist());
+
+        $files = new DirectoryFiles([new Doubles\MockedFile(null), new Doubles\MockedFile(null)]);
+        $this->assertFalse($files->exist());
+
+        $files = new DirectoryFiles([new Doubles\MockedFile(null), new Doubles\MockedFile()]);
+        $this->assertTrue($files->exist());
+    }
+
+    public function testForEachMethod()
     {
         $directoryFiles = new DirectoryFiles($files = [new Doubles\MockedFile(), new Doubles\MockedFile()]);
-        $this->assertSame($files, $directoryFiles->toArray());
+
+        $iterated = [];
+        $directoryFiles->forEach(function (File $file) use (&$iterated) { $iterated[] = $file; });
+        $this->assertSame($files, $iterated);
     }
 
     public function testFilterMethod()
@@ -36,7 +51,7 @@ class DirectoryFilesTest extends TestCase
         $this->assertEquals($directoryFiles, $directoryFiles->filteredWith(fn(File $file) => true));
 
         $existingOnly = fn(File $file) => $file->exists();
-        $this->assertSame([$file1, $file3], $directoryFiles->filteredWith($existingOnly)->toArray());
+        $this->assertEquals(new DirectoryFiles([$file1, $file3]), $directoryFiles->filteredWith($existingOnly));
     }
 
     public function testReflectedInMethod()
@@ -49,8 +64,8 @@ class DirectoryFilesTest extends TestCase
 
         $newRootDirectory = new Doubles\FakeDirectory('/new/directory');
         $expectedFiles    = new DirectoryFiles([
-            $file1->reflectedIn($newRootDirectory),
-            $file2->reflectedIn($newRootDirectory)
+            $newRootDirectory->file($file1->name()),
+            $newRootDirectory->file($file2->name())
         ]);
         $this->assertEquals($expectedFiles, $directoryFiles->reflectedIn($newRootDirectory));
     }

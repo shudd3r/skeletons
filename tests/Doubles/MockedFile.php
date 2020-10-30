@@ -28,9 +28,9 @@ class MockedFile implements File
         $this->contents = $contents;
     }
 
-    public function path(): string
+    public function name(): string
     {
-        return $this->root->path() . '/' . $this->name;
+        return $this->name;
     }
 
     public function exists(): bool
@@ -47,19 +47,5 @@ class MockedFile implements File
     {
         $this->contents = $contents;
         $this->root->files[$this->name] = $this;
-    }
-
-    public function reflectedIn(Directory $rootDirectory): File
-    {
-        if ($rootDirectory->file($this->name)->exists()) {
-            return $rootDirectory->file($this->name);
-        }
-
-        $file = new self(null);
-
-        $file->name = $this->name;
-        $file->root = $rootDirectory;
-
-        return $file;
     }
 }

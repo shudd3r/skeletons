@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Processor;
 
 use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Token;
 
 
@@ -29,8 +30,7 @@ class SkeletonFilesProcessor implements Processor
 
     public function process(Token $token): void
     {
-        foreach ($this->skeleton->files()->toArray() as $skeletonFile) {
-            $this->factory->processor($skeletonFile)->process($token);
-        }
+        $processToken = fn(File $file) => $this->factory->processor($file)->process($token);
+        $this->skeleton->files()->forEach($processToken);
     }
 }

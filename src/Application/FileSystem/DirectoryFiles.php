@@ -24,12 +24,21 @@ class DirectoryFiles
         $this->files = $files;
     }
 
-    /**
-     * @return File[]
-     */
-    public function toArray(): array
+    public function exist(): bool
     {
-        return $this->files;
+        foreach ($this->files as $file) {
+            if ($file->exists()) { return true; }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param callable $callback fn(File) => void
+     */
+    public function forEach(callable $callback): void
+    {
+        array_walk($this->files, $callback);
     }
 
     /**
@@ -45,7 +54,7 @@ class DirectoryFiles
 
     public function reflectedIn(Directory $directory): self
     {
-        $contextSwitch = fn(File $file) => $file->reflectedIn($directory);
+        $contextSwitch = fn(File $file) => $directory->file($file->name());
         return new self(array_map($contextSwitch, $this->files));
     }
 }

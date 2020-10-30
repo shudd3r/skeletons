@@ -26,9 +26,9 @@ class LocalFile implements File
         $this->path = $rootDir->path() . DIRECTORY_SEPARATOR . $this->name;
     }
 
-    public function path(): string
+    public function name(): string
     {
-        return $this->path;
+        return $this->name;
     }
 
     public function exists(): bool
@@ -48,11 +48,6 @@ class LocalFile implements File
         }
 
         file_put_contents($this->path, $contents);
-    }
-
-    public function reflectedIn(Directory $rootDirectory): self
-    {
-        return new self($rootDirectory, $this->name);
     }
 
     private function createDirectoryStructure(): void

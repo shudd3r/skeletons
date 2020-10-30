@@ -29,7 +29,7 @@ class FileGeneratorFactory implements Processor\Factory
     public function processor(File $skeletonFile): Processor
     {
         $template    = new Template\FileTemplate($skeletonFile);
-        $packageFile = $skeletonFile->reflectedIn($this->package);
+        $packageFile = $this->package->file($skeletonFile->name());
 
         return new Processor\GenerateFile($template, $packageFile);
     }
