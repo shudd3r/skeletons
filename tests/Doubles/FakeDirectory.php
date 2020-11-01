@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Exception;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
@@ -59,14 +58,14 @@ class FakeDirectory implements Directory
         return $file;
     }
 
-    public function files(): DirectoryFiles
+    public function files(): array
     {
         $files = [];
         foreach ($this->files as $filename => $file) {
             $files[] = $this->file($filename);
         }
 
-        return new DirectoryFiles($files);
+        return $files;
     }
 
     public function addFile(string $name, string $contents = ''): void

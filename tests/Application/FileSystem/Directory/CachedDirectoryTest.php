@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\Directory;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory\CachedDirectory;
-use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeDirectory;
 
 

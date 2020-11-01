@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
@@ -47,8 +46,13 @@ class ReflectedDirectory implements Directory
         return $this->root->file($filename);
     }
 
-    public function files(): DirectoryFiles
+    public function files(): array
     {
-        return $this->origin->files()->reflectedIn($this->root);
+        $files = [];
+        foreach ($this->origin->files() as $file) {
+            $files[] = $this->root->file($file->name());
+        }
+
+        return $files;
     }
 }

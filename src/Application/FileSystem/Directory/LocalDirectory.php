@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
@@ -45,11 +44,9 @@ class LocalDirectory implements Directory
         return new File\LocalFile($this, $filename);
     }
 
-    public function files(): DirectoryFiles
+    public function files(): array
     {
-        if (!$this->exists()) { return new DirectoryFiles([]); }
-
-        return new DirectoryFiles($this->readDirectory());
+        return $this->exists() ? $this->readDirectory() : [];
     }
 
     private function readDirectory(string $subdirectory = ''): array

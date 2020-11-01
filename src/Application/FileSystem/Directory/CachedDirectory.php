@@ -12,14 +12,13 @@
 namespace Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
 class CachedDirectory implements Directory
 {
-    private Directory       $origin;
-    private ?DirectoryFiles $files;
+    private Directory $origin;
+    private ?array    $files;
 
     public function __construct(Directory $origin)
     {
@@ -46,7 +45,7 @@ class CachedDirectory implements Directory
         return $this->origin->file($filename);
     }
 
-    public function files(): DirectoryFiles
+    public function files(): array
     {
         return $this->files ??= $this->origin->files();
     }

@@ -35,5 +35,8 @@ interface Directory
      */
     public function file(string $filename): File;
 
-    public function files(): DirectoryFiles;
+    /**
+     * @return File[]
+     */
+    public function files(): array;
 }

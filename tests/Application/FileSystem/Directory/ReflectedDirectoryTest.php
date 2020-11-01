@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\Directory;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory\ReflectedDirectory;
-use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeDirectory;
 
 
@@ -28,9 +27,8 @@ class ReflectedDirectoryTest extends TestCase
         $origin->addFile('foo.txt');
         $origin->addFile('foo/bar.txt');
 
-        $this->assertEquals(new DirectoryFiles([]), $root->files());
-        $expected = new DirectoryFiles([$root->file('foo.txt'), $root->file('foo/bar.txt')]);
-        $this->assertEquals($expected, $reflected->files());
+        $this->assertEquals([], $root->files());
+        $this->assertEquals([$root->file('foo.txt'), $root->file('foo/bar.txt')], $reflected->files());
     }
 
     public function testPath_ReturnsRootPath()
