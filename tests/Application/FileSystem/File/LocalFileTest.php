@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\Local;
+namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\File;
 
 use Shudd3r\PackageFiles\Tests\Application\FileSystem\LocalFileSystemTests;
 use Shudd3r\PackageFiles\Application\FileSystem;
@@ -19,7 +19,7 @@ class LocalFileTest extends LocalFileSystemTests
 {
     public function testInstantiation()
     {
-        $file = new FileSystem\Local\LocalFile(self::directory(), 'test.tmp');
+        $file = new FileSystem\File\LocalFile(self::directory(), 'test.tmp');
         $this->assertEquals(self::file('test.tmp'), $file);
         $this->assertInstanceOf(FileSystem\File::class, $file);
     }

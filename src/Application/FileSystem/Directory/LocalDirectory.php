@@ -9,10 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\FileSystem\Local;
+namespace Shudd3r\PackageFiles\Application\FileSystem\Directory;
 
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\FileSystem\DirectoryFiles;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 
 
@@ -42,14 +41,12 @@ class LocalDirectory implements Directory
 
     public function file(string $filename): File
     {
-        return new LocalFile($this, $filename);
+        return new File\LocalFile($this, $filename);
     }
 
-    public function files(): DirectoryFiles
+    public function files(): array
     {
-        if (!$this->exists()) { return new DirectoryFiles([]); }
-
-        return new DirectoryFiles($this->readDirectory());
+        return $this->exists() ? $this->readDirectory() : [];
     }
 
     private function readDirectory(string $subdirectory = ''): array

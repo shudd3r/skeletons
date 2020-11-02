@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\Local;
+namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\Directory;
 
 use Shudd3r\PackageFiles\Tests\Application\FileSystem\LocalFileSystemTests;
 use Shudd3r\PackageFiles\Application\FileSystem;
@@ -19,7 +19,7 @@ class LocalDirectoryTest extends LocalFileSystemTests
 {
     public function testInstantiation()
     {
-        $directory = new FileSystem\Local\LocalDirectory(self::$root . DIRECTORY_SEPARATOR . 'test');
+        $directory = new FileSystem\Directory\LocalDirectory(self::$root . DIRECTORY_SEPARATOR . 'test');
         $this->assertEquals(self::directory('test'), $directory);
         $this->assertInstanceOf(FileSystem\Directory::class, $directory);
     }
@@ -72,14 +72,13 @@ class LocalDirectoryTest extends LocalFileSystemTests
         $this->assertEquals($directory->file('\dir\path\file.tmp'), $file);
     }
 
-    public function testFilesMethod_ReturnsDirectoryFilesInstance()
+    public function testFilesMethod_ReturnsFilesArray()
     {
         $directory = self::directory();
-        $this->assertInstanceOf(FileSystem\DirectoryFiles::class, $directory->files());
-
-        $files = ['a.tmp', 'b.tmp', 'c.tmp'];
+        $files     = ['a.tmp', 'b.tmp', 'c.tmp'];
         array_walk($files, fn($file) => self::create($file));
-        $this->assertDirectoryFiles(self::files($files), $directory);
+
+        $this->assertEquals(self::files($files), $directory->files());
         self::clear();
     }
 
@@ -90,13 +89,13 @@ class LocalDirectoryTest extends LocalFileSystemTests
         array_walk($files, fn($file) => self::create($file));
 
         $expected = self::files(['a.tmp', 'b.tmp', 'bar/e.tmp', 'foo/c.tmp', 'foo/d.tmp', 'foo/baz/f.tmp']);
-        $this->assertDirectoryFiles($expected, $directory);
+        $this->assertEquals($expected, $directory->files());
 
         $expected = self::files(['c.tmp', 'd.tmp', 'baz/f.tmp'], 'foo');
-        $this->assertDirectoryFiles($expected, $directory->subdirectory('foo'));
+        $this->assertEquals($expected, $directory->subdirectory('foo')->files());
 
-        $this->assertDirectoryFiles(self::files(['e.tmp'], 'bar'), $directory->subdirectory('bar'));
-        $this->assertDirectoryFiles(self::files(['f.tmp'], 'foo/baz'), $directory->subdirectory('foo/baz'));
+        $this->assertEquals(self::files(['e.tmp'], 'bar'), $directory->subdirectory('bar')->files());
+        $this->assertEquals(self::files(['f.tmp'], 'foo/baz'), $directory->subdirectory('foo/baz')->files());
         self::clear();
     }
 
@@ -110,10 +109,5 @@ class LocalDirectoryTest extends LocalFileSystemTests
             ['\Foo/Bar\\', "{$ds}Foo{$ds}Bar"],
             ['Foo\\Bar/baz////', "Foo{$ds}Bar{$ds}baz"]
         ];
-    }
-
-    private function assertDirectoryFiles(array $files, FileSystem\Directory $directory): void
-    {
-        $this->assertEquals(new FileSystem\DirectoryFiles($files), $directory->files());
     }
 }
