@@ -141,6 +141,21 @@ class InitCommandFactoryTest extends TestCase
         ]);
     }
 
+    public function testOverwrittenPackageFilesAreCopiedIntoBackupDirectory()
+    {
+        $env = new Doubles\FakeRuntimeEnv();
+        $factory = new Factory($env, []);
+
+        $env->package()->addFile('file.ini', 'original');
+        $env->skeleton()->addFile('file.ini', 'generated');
+
+        $this->assertFalse($env->backup()->file('file.ini')->exists());
+        $factory->command()->execute();
+        $this->assertTrue($env->backup()->file('file.ini')->exists());
+        $this->assertSame('original', $env->backup()->file('file.ini')->contents());
+        $this->assertSame('generated', $env->package()->file('file.ini')->contents());
+    }
+
     private function assertMetaDataFile(Doubles\FakeRuntimeEnv $env, array $data): void
     {
         $metaDataFile = $env->package()->file('.github/package.properties')->contents();
