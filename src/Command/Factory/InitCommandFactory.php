@@ -11,9 +11,11 @@
 
 namespace Shudd3r\PackageFiles\Command\Factory;
 
+use Shudd3r\PackageFiles\Command\BackupFiles;
 use Shudd3r\PackageFiles\Command\CommandSequence;
 use Shudd3r\PackageFiles\Command\Factory;
 use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory\ReflectedDirectory;
 use Shudd3r\PackageFiles\Command\TokenProcessor;
 use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Processor;
@@ -24,8 +26,13 @@ class InitCommandFactory extends Factory
 {
     public function command(): Command
     {
-        $reader = new Reader\TokensReader($this->env->output(), ...$this->tokenReaders());
-        return new CommandSequence(new TokenProcessor($reader, $this->processor()));
+        $packageFiles = new ReflectedDirectory($this->env->package(), $this->env->skeleton());
+        $backupFiles  = new BackupFiles($packageFiles, $this->env->backup());
+
+        $reader        = new Reader\TokensReader($this->env->output(), ...$this->tokenReaders());
+        $processTokens = new TokenProcessor($reader, $this->processor());
+
+        return new CommandSequence($backupFiles, $processTokens);
     }
 
     protected function tokenReaders(): array
