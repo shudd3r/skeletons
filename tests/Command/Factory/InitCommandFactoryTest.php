@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Command\Factory\InitCommandFactory as Factory;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Tests\Doubles;
+use Exception;
 
 
 class InitCommandFactoryTest extends TestCase
@@ -144,16 +145,28 @@ class InitCommandFactoryTest extends TestCase
     public function testOverwrittenPackageFilesAreCopiedIntoBackupDirectory()
     {
         $env = new Doubles\FakeRuntimeEnv();
-        $factory = new Factory($env, []);
-
         $env->package()->addFile('file.ini', 'original');
         $env->skeleton()->addFile('file.ini', 'generated');
+        $factory = new Factory($env, []);
 
         $this->assertFalse($env->backup()->file('file.ini')->exists());
         $factory->command()->execute();
         $this->assertTrue($env->backup()->file('file.ini')->exists());
         $this->assertSame('original', $env->backup()->file('file.ini')->contents());
         $this->assertSame('generated', $env->package()->file('file.ini')->contents());
+    }
+
+    public function testOverwritingBackupFile_ThrowsException()
+    {
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->package()->addFile('src/file.tst', 'original');
+        $env->skeleton()->addFile('src/file.tst', 'generated');
+        $env->backup()->addFile('src/file.tst', 'backup');
+        $factory = new Factory($env, []);
+
+        $this->expectException(Exception::class);
+        $factory->command()->execute();
+        $this->assertSame('backup', $env->backup()->file('src/file.txt')->contents());
     }
 
     private function assertMetaDataFile(Doubles\FakeRuntimeEnv $env, array $data): void

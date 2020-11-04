@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Command;
 
+use Exception;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
@@ -32,7 +33,11 @@ class BackupFiles implements Command
         $packageFiles = array_filter($this->package->files(), fn(File $file) => $file->exists());
 
         foreach ($packageFiles as $packageFile) {
-            $this->backup->file($packageFile->name())->write($packageFile->contents());
+            $backupFile = $this->backup->file($packageFile->name());
+            if ($backupFile->exists()) {
+                throw new Exception('Unsafe initialization - Backup file overwrite');
+            }
+            $backupFile->write($packageFile->contents());
         }
     }
 }
