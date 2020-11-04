@@ -11,10 +11,10 @@
 
 namespace Shudd3r\PackageFiles\Command;
 
-use Exception;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
+use Exception;
 
 
 class BackupFiles implements Command
@@ -32,12 +32,22 @@ class BackupFiles implements Command
     {
         $packageFiles = array_filter($this->package->files(), fn(File $file) => $file->exists());
 
+        if ($this->overwritesBackupFile($packageFiles)) {
+            throw new Exception('Unsafe initialization: Backup file overwrite');
+        }
+
         foreach ($packageFiles as $packageFile) {
             $backupFile = $this->backup->file($packageFile->name());
-            if ($backupFile->exists()) {
-                throw new Exception('Unsafe initialization - Backup file overwrite');
-            }
             $backupFile->write($packageFile->contents());
         }
+    }
+
+    public function overwritesBackupFile(array $packageFiles): bool
+    {
+        foreach ($packageFiles as $packageFile) {
+            $backupFile = $this->backup->file($packageFile->name());
+            if ($backupFile->exists()) { return true; }
+        }
+        return false;
     }
 }

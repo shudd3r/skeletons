@@ -145,13 +145,14 @@ class InitCommandFactoryTest extends TestCase
     public function testOverwrittenPackageFilesAreCopiedIntoBackupDirectory()
     {
         $env = new Doubles\FakeRuntimeEnv();
-        $env->package()->addFile('file.ini', 'original');
         $env->skeleton()->addFile('file.ini', 'generated');
+        $env->package()->addFile('file.ini', 'original');
         $factory = new Factory($env, []);
 
-        $this->assertFalse($env->backup()->file('file.ini')->exists());
+        $this->assertSame([], $env->backup()->files());
+
         $factory->command()->execute();
-        $this->assertTrue($env->backup()->file('file.ini')->exists());
+        $this->assertSame([$env->backup()->file('file.ini')], $env->backup()->files());
         $this->assertSame('original', $env->backup()->file('file.ini')->contents());
         $this->assertSame('generated', $env->package()->file('file.ini')->contents());
     }
@@ -159,14 +160,44 @@ class InitCommandFactoryTest extends TestCase
     public function testOverwritingBackupFile_ThrowsException()
     {
         $env = new Doubles\FakeRuntimeEnv();
-        $env->package()->addFile('src/file.tst', 'original');
-        $env->skeleton()->addFile('src/file.tst', 'generated');
-        $env->backup()->addFile('src/file.tst', 'backup');
+        $env->skeleton()->addFile('file.ini');
+        $env->package()->addFile('file.ini');
+        $env->backup()->addFile('file.ini');
         $factory = new Factory($env, []);
 
         $this->expectException(Exception::class);
         $factory->command()->execute();
-        $this->assertSame('backup', $env->backup()->file('src/file.txt')->contents());
+    }
+
+    public function testOverwritingBackupFile_AbortsExecutionWithoutSideEffects()
+    {
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->skeleton()->addFile('a.file', 'generated');
+        $env->skeleton()->addFile('b.file', 'generated');
+        $env->skeleton()->addFile('c.file', 'generated');
+        $env->skeleton()->addFile('d.file', 'generated');
+        $env->package()->addFile('b.file', 'original');
+        $env->package()->addFile('c.file', 'original');
+        $env->package()->addFile('d.file', 'original');
+        $env->backup()->addFile('c.file', 'backup');
+
+        $factory = new Factory($env, []);
+
+        try {
+            $factory->command()->execute();
+        } catch (Exception $e) {
+            $this->assertFalse($env->backup()->file('a.file')->exists());
+            $this->assertFalse($env->backup()->file('b.file')->exists());
+            $this->assertSame('backup', $env->backup()->file('c.file')->contents());
+            $this->assertFalse($env->backup()->file('d.file')->exists());
+
+            $this->assertFalse($env->package()->file('a.file')->exists());
+            $this->assertSame('original', $env->package()->file('b.file')->contents());
+            $this->assertSame('original', $env->package()->file('c.file')->contents());
+            $this->assertSame('original', $env->package()->file('d.file')->contents());
+
+            $this->assertFalse($env->package()->file('composer.json')->exists());
+        }
     }
 
     private function assertMetaDataFile(Doubles\FakeRuntimeEnv $env, array $data): void
