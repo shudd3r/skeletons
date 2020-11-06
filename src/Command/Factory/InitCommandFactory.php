@@ -58,13 +58,11 @@ class InitCommandFactory extends Factory
 
     protected function processor(): Processor
     {
-        $packageFiles = $this->env->package();
-
-        $composerFile     = $packageFiles->file('composer.json');
+        $composerFile     = $this->env->package()->file('composer.json');
         $template         = new Template\ComposerJsonTemplate($composerFile);
         $generateComposer = new Processor\GenerateFile($template, $composerFile);
 
-        $generatorFactory = new Processor\Factory\FileGeneratorFactory($packageFiles);
+        $generatorFactory = new Processor\Factory\FileGeneratorFactory($this->env->package());
         $generatePackage  = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
 
         return new Processor\ProcessorSequence($generateComposer, $generatePackage);

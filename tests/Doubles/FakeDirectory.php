@@ -11,9 +11,9 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Exception;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
+use Exception;
 
 
 class FakeDirectory implements Directory

@@ -17,7 +17,7 @@ use Exception;
 
 class MainNamespace implements Token
 {
-    public const SRC = '{namespace.src}';
+    public const SRC     = '{namespace.src}';
     public const SRC_ESC = '{namespace.src.esc}';
 
     private string $namespace;

@@ -13,36 +13,35 @@ namespace Shudd3r\PackageFiles\Tests\Token\Reader\Source;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token\Reader\Source\InteractiveInput;
-use Shudd3r\PackageFiles\Tests\Doubles\MockedTerminal;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeSource;
+use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class InteractiveInputTest extends TestCase
 {
     public function testValue_ReturnsInputString()
     {
-        $source = new InteractiveInput('Some property', new MockedTerminal(['some value', '']));
+        $source = new InteractiveInput('Some property', new Doubles\MockedTerminal(['some value', '']));
         $this->assertSame('some value', $source->value());
         $this->assertSame('', $source->value());
     }
 
     public function testGivenFallbackSource_ValueForEmptyInput_ReturnsFallbackValue()
     {
-        $fallback = new FakeSource('fallback value');
-        $source   = new InteractiveInput('Some property', new MockedTerminal(['some value', '']), $fallback);
+        $fallback = new Doubles\FakeSource('fallback value');
+        $source   = new InteractiveInput('Some property', new Doubles\MockedTerminal(['some value', '']), $fallback);
         $this->assertSame('some value', $source->value());
         $this->assertSame('fallback value', $source->value());
     }
 
     public function testPromptIsSentToInputMethod()
     {
-        $input  = new MockedTerminal();
+        $input  = new Doubles\MockedTerminal();
         $prompt = 'Input prompt';
 
         (new InteractiveInput($prompt, $input))->value();
         $this->assertSame($prompt . ':', $input->messagesSent[0]);
 
-        (new InteractiveInput($prompt, $input, new FakeSource('default value')))->value();
+        (new InteractiveInput($prompt, $input, new Doubles\FakeSource('default value')))->value();
         $this->assertSame($prompt . ' [default: default value]:', $input->messagesSent[1]);
     }
 }

@@ -20,8 +20,8 @@ class GenerateFileTest extends TestCase
 {
     public function testRenderedStringIsWrittenToFile()
     {
-        $template   = new Doubles\FakeTemplate($rendered = 'rendered string');
-        $fileMock   = new Doubles\MockedFile();
+        $template  = new Doubles\FakeTemplate($rendered = 'rendered string');
+        $fileMock  = new Doubles\MockedFile();
         $processor = new GenerateFile($template, $fileMock);
 
         $processor->process($token = new Doubles\FakeToken());

@@ -18,7 +18,7 @@ use Shudd3r\PackageFiles\Processor;
 
 class TokenProcessor implements Command
 {
-    private Reader     $reader;
+    private Reader    $reader;
     private Processor $processor;
 
     public function __construct(Reader $reader, Processor $processor)

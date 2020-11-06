@@ -14,14 +14,14 @@ namespace Shudd3r\PackageFiles\Tests\Template;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Template\ComposerJsonTemplate;
 use Shudd3r\PackageFiles\Token;
-use Shudd3r\PackageFiles\Tests\Doubles\MockedFile;
+use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class ComposerJsonTemplateTest extends TestCase
 {
     public function testMissingComposerFileIsCreatedWithPropertiesValues()
     {
-        $template       = new ComposerJsonTemplate(new MockedFile(null));
+        $template       = new ComposerJsonTemplate(new Doubles\MockedFile(null));
         $renderedString = $template->render($this->tokens());
         $this->assertSame($this->composerJsonForDefaultValues(), $renderedString);
     }
@@ -79,7 +79,7 @@ class ComposerJsonTemplateTest extends TestCase
 
     private function template(string $contents)
     {
-        return new ComposerJsonTemplate(new MockedFile($contents));
+        return new ComposerJsonTemplate(new Doubles\MockedFile($contents));
     }
 
     private function tokens(): Token
