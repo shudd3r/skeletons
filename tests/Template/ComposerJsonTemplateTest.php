@@ -87,7 +87,7 @@ class ComposerJsonTemplateTest extends TestCase
         return new Token\CompositeToken(
             new Token\Package('package/name'),
             new Token\Description('Description text'),
-            new Token\MainNamespace('Main\\Namespace')
+            new Token\ValueToken('{namespace.src.esc}', 'Main\\\\Namespace')
         );
     }
 
