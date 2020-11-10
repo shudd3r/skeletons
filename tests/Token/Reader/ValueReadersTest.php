@@ -83,8 +83,7 @@ class ValueReadersTest extends TestCase
     {
         return [
             [Token\Reader\PackageReader::class, 'package/name', Token\Package::class],
-            [Token\Reader\RepositoryReader::class, 'repo/name', Token\Repository::class],
-            [Token\Reader\DescriptionReader::class, 'Package description', Token\Description::class]
+            [Token\Reader\RepositoryReader::class, 'repo/name', Token\Repository::class]
         ];
     }
 }
