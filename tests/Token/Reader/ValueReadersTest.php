@@ -82,8 +82,7 @@ class ValueReadersTest extends TestCase
     public function subtypes(): array
     {
         return [
-            [Token\Reader\PackageReader::class, 'package/name', Token\Package::class],
-            [Token\Reader\RepositoryReader::class, 'repo/name', Token\Repository::class]
+            [Token\Reader\PackageReader::class, 'package/name', Token\Package::class]
         ];
     }
 }
