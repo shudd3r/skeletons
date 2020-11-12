@@ -34,7 +34,7 @@ class ComposerJsonTemplate implements Template
         $autoloadDev = $this->normalizedAutoload($composer['autoload-dev'] ?? [], $namespace . 'Tests\\', 'tests/');
 
         $newComposer = array_filter([
-            'name'              => Token\Package::NAME,
+            'name'              => '{package.name}',
             'description'       => '{description.text}',
             'type'              => 'library',
             'license'           => 'MIT',
