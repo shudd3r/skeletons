@@ -12,12 +12,17 @@
 namespace Shudd3r\PackageFiles\Token\Reader;
 
 use Shudd3r\PackageFiles\Token;
+use Exception;
 
 
 class RepositoryReader extends ValueReader
 {
     protected function createToken(string $value): Token
     {
-        return new Token\Repository($value);
+        if (!preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value)) {
+            throw new Exception("Invalid github repository name `{$value}`");
+        }
+
+        return new Token\ValueToken('{repository.name}', $value);
     }
 }

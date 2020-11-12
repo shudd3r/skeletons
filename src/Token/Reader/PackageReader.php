@@ -12,12 +12,26 @@
 namespace Shudd3r\PackageFiles\Token\Reader;
 
 use Shudd3r\PackageFiles\Token;
+use Exception;
 
 
 class PackageReader extends ValueReader
 {
     protected function createToken(string $value): Token
     {
-        return new Token\Package($value);
+        if (!preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value)) {
+            throw new Exception("Invalid packagist package name `{$value}`");
+        }
+
+        return new Token\CompositeToken(
+            new Token\ValueToken('{package.name}', $value),
+            new Token\ValueToken('{package.title}', $this->titleName($value))
+        );
+    }
+
+    private function titleName(string $value): string
+    {
+        [$vendor, $package] = explode('/', $value);
+        return ucfirst($vendor) . '/' . ucfirst($package);
     }
 }

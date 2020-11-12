@@ -9,37 +9,32 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Token;
+namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Token\Repository;
+use Shudd3r\PackageFiles\Token;
+use Shudd3r\PackageFiles\Tests\Doubles;
 use Exception;
 
 
-class RepositoryTest extends TestCase
+class RepositoryReaderTest extends TestCase
 {
-    public function testTokenReplacesInternalPlaceholder()
-    {
-        $token    = new Repository('foo/bar');
-        $template = 'Template with ' . Repository::NAME;
-
-        $this->assertSame('Template with foo/bar', $token->replacePlaceholders($template));
-    }
-
     /**
-     * @dataProvider exampleRepositories
+     * @dataProvider valueExamples
      *
      * @param string $invalid
      * @param string $valid
      */
-    public function testInvalidNamespace_ThrowsException(string $invalid, string $valid)
+    public function testInvalidReaderValue_ThrowsException(string $invalid, string $valid)
     {
-        new Repository($valid);
+        $reader = $this->reader($valid);
+        $this->assertInstanceOf(Token::class, $reader->token());
+        $reader = $this->reader($invalid);
         $this->expectException(Exception::class);
-        new Repository($invalid);
+        $reader->token();
     }
 
-    public function exampleRepositories()
+    public function valueExamples()
     {
         $name = function (int $length) { return str_pad('x', $length, 'x'); };
 
@@ -56,5 +51,10 @@ class RepositoryTest extends TestCase
             [$longAccount, $shortAccount],
             [$longRepo, $shortRepo]
         ];
+    }
+
+    protected function reader(string $value): Token\Reader
+    {
+        return new Token\Reader\RepositoryReader(new Doubles\FakeSource($value));
     }
 }

@@ -12,26 +12,21 @@
 namespace Shudd3r\PackageFiles\Token;
 
 use Shudd3r\PackageFiles\Token;
-use Exception;
 
 
-class Description implements Token
+class ValueToken implements Token
 {
-    public const TEXT  = '{description.text}';
+    private string $placeholder;
+    private string $value;
 
-    private string $description;
-
-    public function __construct(string $description)
+    public function __construct(string $placeholder, string $value)
     {
-        if (!$description) {
-            throw new Exception("Empty package description");
-        }
-
-        $this->description = $description;
+        $this->placeholder = $placeholder;
+        $this->value       = $value;
     }
 
     public function replacePlaceholders(string $template): string
     {
-        return str_replace(self::TEXT, $this->description, $template);
+        return str_replace($this->placeholder, $this->value, $template);
     }
 }

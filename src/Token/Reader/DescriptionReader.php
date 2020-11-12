@@ -12,12 +12,17 @@
 namespace Shudd3r\PackageFiles\Token\Reader;
 
 use Shudd3r\PackageFiles\Token;
+use Exception;
 
 
 class DescriptionReader extends ValueReader
 {
     protected function createToken(string $value): Token
     {
-        return new Token\Description($value);
+        if (!$value) {
+            throw new Exception("Empty package description");
+        }
+
+        return new Token\ValueToken('{description.text}', $value);
     }
 }
