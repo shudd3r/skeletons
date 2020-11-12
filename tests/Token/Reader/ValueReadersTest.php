@@ -65,24 +65,4 @@ class ValueReadersTest extends TestCase
         $reader->token();
         $this->assertSame(1, $source->reads);
     }
-
-    /**
-     * @dataProvider subtypes
-     *
-     * @param string $readerClass
-     * @param string $sourceValue
-     * @param string $tokenClass
-     */
-    public function testSubtypes(string $readerClass, string $sourceValue, string $tokenClass)
-    {
-        $reader = new $readerClass(new Doubles\FakeSource($sourceValue));
-        $this->assertInstanceOf($tokenClass, $reader->token());
-    }
-
-    public function subtypes(): array
-    {
-        return [
-            [Token\Reader\PackageReader::class, 'package/name', Token\Package::class]
-        ];
-    }
 }
