@@ -13,12 +13,29 @@ namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Token\Reader\ValueReader;
 use Shudd3r\PackageFiles\Token;
+use Exception;
 
 
 class FakeValueReader extends ValueReader
 {
+    public MockedTerminal $output;
+    public FakeSource     $source;
+
+    private bool $valid;
+
+    public function __construct(?string $value)
+    {
+        $this->output = new MockedTerminal();
+        $this->source = new FakeSource($value ?? '');
+        $this->valid  = isset($value);
+        parent::__construct($this->source, $this->output);
+    }
+
     protected function createToken(string $value): Token
     {
+        if (!$this->valid) {
+            throw new Exception('exception message');
+        }
         return new FakeToken($value);
     }
 }

@@ -13,21 +13,30 @@ namespace Shudd3r\PackageFiles\Token\Reader;
 
 use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Token;
+use Shudd3r\PackageFiles\Application\Output;
+use Exception;
 
 
 abstract class ValueReader implements Reader, Source
 {
     private Source  $source;
+    private Output  $output;
     private ?string $value = null;
 
-    public function __construct(Source $source)
+    public function __construct(Source $source, Output $output)
     {
         $this->source = $source;
+        $this->output = $output;
     }
 
-    public function token(): Token
+    public function token(): ?Token
     {
-        return $this->createToken($this->value());
+        try {
+            return $this->createToken($this->value());
+        } catch (Exception $e) {
+            $this->output->send($e->getMessage(), 1);
+            return null;
+        }
     }
 
     public function value(): string

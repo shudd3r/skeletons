@@ -29,6 +29,7 @@ class TokenProcessor implements Command
 
     public function execute(): void
     {
-        $this->processor->process($this->reader->token());
+        if (!$token = $this->reader->token()) { return; }
+        $this->processor->process($token);
     }
 }

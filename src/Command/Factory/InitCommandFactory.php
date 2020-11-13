@@ -37,21 +37,22 @@ class InitCommandFactory extends Factory
 
     protected function tokenReaders(): array
     {
+        $output   = $this->env->output();
         $files    = $this->env->package();
         $composer = new Reader\Data\ComposerJsonData($files->file('composer.json'));
 
         $source  = $this->option('package') ?? new Reader\Source\DefaultPackage($composer, $files);
-        $package = new Reader\PackageReader($this->interactive('Packagist package name', $source));
+        $package = new Reader\PackageReader($this->interactive('Packagist package name', $source), $output);
 
         $source = $this->option('repo') ?? new Reader\Source\DefaultRepository($files->file('.git/config'), $package);
-        $repo   = new Reader\RepositoryReader($this->interactive('Github repository name', $source));
+        $repo   = new Reader\RepositoryReader($this->interactive('Github repository name', $source), $output);
 
         $callback = fn() => $composer->value('description') ?? $package->value() . ' package';
         $source   = $this->option('desc') ?? new Reader\Source\CallbackSource($callback);
-        $desc     = new Reader\DescriptionReader($this->interactive('Package description', $source));
+        $desc     = new Reader\DescriptionReader($this->interactive('Package description', $source), $output);
 
         $source    = $this->option('ns') ?? new Reader\Source\DefaultNamespace($composer, $package);
-        $namespace = new Reader\NamespaceReader($this->interactive('Source files namespace', $source));
+        $namespace = new Reader\NamespaceReader($this->interactive('Source files namespace', $source), $output);
 
         return [$package, $repo, $desc, $namespace];
     }

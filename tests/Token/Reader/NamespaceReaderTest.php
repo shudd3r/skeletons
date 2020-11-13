@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
-use Exception;
 
 
 class NamespaceReaderTest extends TestCase
@@ -25,13 +24,10 @@ class NamespaceReaderTest extends TestCase
      * @param string $invalid
      * @param string $valid
      */
-    public function testInvalidReaderValue_ThrowsException(string $invalid, string $valid)
+    public function testInvalidReaderValue_ReturnsNull(string $invalid, string $valid)
     {
-        $reader = $this->reader($valid);
-        $this->assertInstanceOf(Token::class, $reader->token());
-        $reader = $this->reader($invalid);
-        $this->expectException(Exception::class);
-        $reader->token();
+        $this->assertInstanceOf(Token::class, $this->reader($valid)->token());
+        $this->assertNull($this->reader($invalid)->token());
     }
 
     public function valueExamples()
@@ -45,6 +41,6 @@ class NamespaceReaderTest extends TestCase
 
     protected function reader(string $value): Token\Reader
     {
-        return new Token\Reader\NamespaceReader(new Doubles\FakeSource($value));
+        return new Token\Reader\NamespaceReader(new Doubles\FakeSource($value), new Doubles\MockedTerminal());
     }
 }

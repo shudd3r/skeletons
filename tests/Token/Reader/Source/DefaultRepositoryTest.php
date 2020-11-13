@@ -53,7 +53,7 @@ class DefaultRepositoryTest extends TestCase
     {
         $config   = $config ? ['origin' => 'https://github.com/config/repo.git'] : [];
         $config   = new Doubles\MockedFile($this->config($config));
-        $fallback = new PackageReader(new Doubles\FakeSource('package/name'));
+        $fallback = new PackageReader(new Doubles\FakeSource('package/name'), new Doubles\MockedTerminal());
 
         return new DefaultRepository($config, $fallback);
     }
@@ -61,7 +61,7 @@ class DefaultRepositoryTest extends TestCase
     private function configReader(array $config = []): DefaultRepository
     {
         $config   = new Doubles\MockedFile($this->config($config));
-        $fallback = new PackageReader(new Doubles\FakeSource('package/name'));
+        $fallback = new PackageReader(new Doubles\FakeSource('package/name'), new Doubles\MockedTerminal());
 
         return new DefaultRepository($config, $fallback);
     }

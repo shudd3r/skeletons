@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Application\Output;
 use Shudd3r\PackageFiles\Token;
-use Exception;
 
 
 class TokensReader implements Reader
@@ -28,30 +27,23 @@ class TokensReader implements Reader
         $this->readers = $readers;
     }
 
-    public function token(): Token
+    public function token(): ?Token
     {
         $tokens     = [];
         $unresolved = false;
         foreach ($this->readers as $reader) {
-            $token = $this->createToken($reader);
-            if (!$token) { $unresolved = true; }
+            if (!$token = $reader->token()) {
+                $unresolved = true;
+                continue;
+            }
             $tokens[] = $token;
         }
 
         if ($unresolved) {
-            throw new Exception('Cannot process unresolved tokens');
+            $this->output->send('Cannot process unresolved tokens', 1);
+            return null;
         }
 
         return new Token\CompositeToken(...$tokens);
-    }
-
-    private function createToken(Reader $reader): ?Token
-    {
-        try {
-            return $reader->token();
-        } catch (Exception $e) {
-            $this->output->send($e->getMessage(), 1);
-            return null;
-        }
     }
 }

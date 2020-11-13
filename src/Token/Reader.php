@@ -16,5 +16,5 @@ use Shudd3r\PackageFiles\Token;
 
 interface Reader
 {
-    public function token(): Token;
+    public function token(): ?Token;
 }
