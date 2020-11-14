@@ -47,9 +47,8 @@ class InitCommandFactory extends Factory
         $source = $this->option('repo') ?? new Reader\Source\DefaultRepository($files->file('.git/config'), $package);
         $repo   = new Reader\RepositoryReader($this->interactive('Github repository name', $source), $output);
 
-        $callback = fn() => $composer->value('description') ?? $package->value() . ' package';
-        $source   = $this->option('desc') ?? new Reader\Source\CallbackSource($callback);
-        $desc     = new Reader\DescriptionReader($this->interactive('Package description', $source), $output);
+        $source = $this->option('desc') ?? new Reader\Source\PackageDescription($composer, $package);
+        $desc   = new Reader\DescriptionReader($this->interactive('Package description', $source), $output);
 
         $source    = $this->option('ns') ?? new Reader\Source\DefaultNamespace($composer, $package);
         $namespace = new Reader\NamespaceReader($this->interactive('Source files namespace', $source), $output);
