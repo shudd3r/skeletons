@@ -19,7 +19,8 @@ use Exception;
 
 abstract class ValueReader implements Reader, Source
 {
-    private Source  $source;
+    protected Source $source;
+
     private Output  $output;
     private ?string $value = null;
 
@@ -32,7 +33,7 @@ abstract class ValueReader implements Reader, Source
     public function token(): ?Token
     {
         try {
-            return $this->createToken($this->value());
+            return $this->create($this->value());
         } catch (Exception $e) {
             $this->output->send($e->getMessage(), 1);
             return null;
@@ -44,5 +45,5 @@ abstract class ValueReader implements Reader, Source
         return $this->value ??= $this->source->value();
     }
 
-    abstract protected function createToken(string $value): Token;
+    abstract public function create(string $value): Token;
 }

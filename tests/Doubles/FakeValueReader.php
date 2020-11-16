@@ -19,23 +19,22 @@ use Exception;
 class FakeValueReader extends ValueReader
 {
     public MockedTerminal $output;
-    public FakeSource     $source;
-
-    private bool $valid;
+    public FakeSource     $fakeSource;
 
     public function __construct(?string $value)
     {
-        $this->output = new MockedTerminal();
-        $this->source = new FakeSource($value ?? '');
-        $this->valid  = isset($value);
-        parent::__construct($this->source, $this->output);
+        $this->output     = new MockedTerminal();
+        $this->fakeSource = new FakeSource($value);
+
+        parent::__construct($this->fakeSource, $this->output);
     }
 
-    protected function createToken(string $value): Token
+    public function create(string $value): Token
     {
-        if (!$this->valid) {
+        $token = $this->source->create($value);
+        if (!$token) {
             throw new Exception('exception message');
         }
-        return new FakeToken($value);
+        return $token;
     }
 }

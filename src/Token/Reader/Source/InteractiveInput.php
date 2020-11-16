@@ -11,30 +11,36 @@
 
 namespace Shudd3r\PackageFiles\Token\Reader\Source;
 
-use Shudd3r\PackageFiles\Application\Input;
 use Shudd3r\PackageFiles\Token\Reader\Source;
+use Shudd3r\PackageFiles\Application\Input;
+use Shudd3r\PackageFiles\Token;
 
 
 class InteractiveInput implements Source
 {
-    private string  $prompt;
-    private Input   $input;
-    private ?Source $default;
+    private string $prompt;
+    private Input  $input;
+    private Source $source;
 
-    public function __construct(string $prompt, Input $input, Source $default = null)
+    public function __construct(string $prompt, Input $input, Source $source)
     {
-        $this->prompt  = $prompt;
-        $this->input   = $input;
-        $this->default = $default;
+        $this->prompt = $prompt;
+        $this->input  = $input;
+        $this->source = $source;
+    }
+
+    public function create(string $value): ?Token
+    {
+        return $this->source->create($value);
     }
 
     public function value(): string
     {
-        if (!$this->default) {
+        $default = $this->source->value();
+        if (!$default) {
             return $this->input->value($this->prompt . ':');
         }
 
-        $default = $this->default->value();
         return $this->input->value($this->prompt . ' [default: ' . $default . ']:') ?: $default;
     }
 }

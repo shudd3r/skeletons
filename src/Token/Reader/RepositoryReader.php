@@ -17,12 +17,13 @@ use Exception;
 
 class RepositoryReader extends ValueReader
 {
-    protected function createToken(string $value): Token
+    public function create(string $value): Token
     {
-        if (!preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value)) {
+        $token = $this->source->create($value);
+        if (!$token) {
             throw new Exception("Invalid github repository name `{$value}`");
         }
 
-        return new Token\ValueToken('{repository.name}', $value);
+        return $token;
     }
 }

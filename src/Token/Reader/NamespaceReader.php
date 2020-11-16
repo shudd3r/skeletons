@@ -17,17 +17,13 @@ use Exception;
 
 class NamespaceReader extends ValueReader
 {
-    protected function createToken(string $value): Token
+    public function create(string $value): Token
     {
-        foreach (explode('\\', $value) as $label) {
-            if (!preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label)) {
-                throw new Exception("Invalid label `{$label}` in `{$value}` namespace");
-            }
+        $token = $this->source->create($value);
+        if (!$token) {
+            throw new Exception("Invalid namespace `{$value}`");
         }
 
-        return new Token\CompositeToken(
-            new Token\ValueToken('{namespace.src}', $value),
-            new Token\ValueToken('{namespace.src.esc}', str_replace('\\', '\\\\', $value))
-        );
+        return $token;
     }
 }

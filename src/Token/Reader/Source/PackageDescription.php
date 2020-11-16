@@ -11,8 +11,9 @@
 
 namespace Shudd3r\PackageFiles\Token\Reader\Source;
 
-use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Token\Reader\Source;
+use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
+use Shudd3r\PackageFiles\Token;
 
 
 class PackageDescription implements Source
@@ -24,6 +25,11 @@ class PackageDescription implements Source
     {
         $this->composer = $composer;
         $this->package  = $package;
+    }
+
+    public function create(string $value): ?Token
+    {
+        return $value ? new Token\ValueToken('{description.text}', $value) : null;
     }
 
     public function value(): string

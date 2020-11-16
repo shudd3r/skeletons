@@ -11,8 +11,11 @@
 
 namespace Shudd3r\PackageFiles\Token\Reader;
 
+use Shudd3r\PackageFiles\Token;
+
 
 interface Source
 {
+    public function create(string $value): ?Token;
     public function value(): string;
 }

@@ -12,13 +12,29 @@
 namespace Shudd3r\PackageFiles\Tests\Token\Reader\Source;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
-use Shudd3r\PackageFiles\Token\Reader\Source\PackageDescription;
+use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class PackageDescriptionTest extends TestCase
 {
+    /**
+     * @dataProvider valueExamples
+     *
+     * @param string $invalid
+     * @param string $valid
+     */
+    public function testInvalidReaderValue_ReturnsNull(string $invalid, string $valid)
+    {
+        $this->assertInstanceOf(Token::class, $this->reader()->create($valid));
+        $this->assertNull($this->reader()->create($invalid));
+    }
+
+    public function valueExamples()
+    {
+        return [['', 'package description']];
+    }
+
     public function testValue_ReturnsComposerDescription()
     {
         $this->assertSame('composer package description', $this->reader()->value());
@@ -29,10 +45,10 @@ class PackageDescriptionTest extends TestCase
         $this->assertSame('package/name package', $this->reader(false)->value());
     }
 
-    private function reader(bool $composerData = true)
+    private function reader(bool $composerData = true): Token\Reader\Source\PackageDescription
     {
         $contents = json_encode($composerData ? ['description' => 'composer package description'] : []);
-        $composer = new ComposerJsonData(new Doubles\MockedFile($contents));
-        return new PackageDescription($composer, new Doubles\FakeSource('package/name'));
+        $composer = new Token\Reader\Data\ComposerJsonData(new Doubles\MockedFile($contents));
+        return new Token\Reader\Source\PackageDescription($composer, new Doubles\FakeSource('package/name'));
     }
 }

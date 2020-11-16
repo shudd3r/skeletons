@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Token\Reader\Source;
 use Shudd3r\PackageFiles\Token\Reader\Source;
 use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Token;
 
 
 class DefaultPackage implements Source
@@ -27,6 +28,17 @@ class DefaultPackage implements Source
         $this->project  = $project;
     }
 
+    public function create(string $value): ?Token
+    {
+        $validPackageName = preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
+        if (!$validPackageName) { return null; }
+
+        return new Token\CompositeToken(
+            new Token\ValueToken('{package.name}', $value),
+            new Token\ValueToken('{package.title}', $this->titleName($value))
+        );
+    }
+
     public function value(): string
     {
         return $this->composer->value('name') ?? $this->directoryFallback();
@@ -36,5 +48,11 @@ class DefaultPackage implements Source
     {
         $path = $this->project->path();
         return $path ? basename(dirname($path)) . '/' . basename($path) : '';
+    }
+
+    private function titleName(string $value): string
+    {
+        [$vendor, $package] = explode('/', $value);
+        return ucfirst($vendor) . '/' . ucfirst($package);
     }
 }

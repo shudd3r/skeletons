@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Token\Reader\Source;
 use Shudd3r\PackageFiles\Token\Reader\Source;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Token\Reader\PackageReader;
+use Shudd3r\PackageFiles\Token;
 
 
 class DefaultRepository implements Source
@@ -25,6 +26,12 @@ class DefaultRepository implements Source
     {
         $this->gitConfig = $gitConfig;
         $this->package   = $package;
+    }
+
+    public function create(string $value): ?Token
+    {
+        $validRepositoryName = preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
+        return $validRepositoryName ? new Token\ValueToken('{repository.name}', $value) : null;
     }
 
     public function value(): string

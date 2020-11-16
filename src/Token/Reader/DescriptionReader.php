@@ -17,12 +17,13 @@ use Exception;
 
 class DescriptionReader extends ValueReader
 {
-    protected function createToken(string $value): Token
+    public function create(string $value): Token
     {
-        if (!$value) {
+        $token = $this->source->create($value);
+        if (!$token) {
             throw new Exception("Empty package description");
         }
 
-        return new Token\ValueToken('{description.text}', $value);
+        return $token;
     }
 }

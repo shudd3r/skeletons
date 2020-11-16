@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Token\Reader\Source;
 use Shudd3r\PackageFiles\Token\Reader\Source;
 use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Token\Reader\PackageReader;
+use Shudd3r\PackageFiles\Token;
 
 
 class DefaultNamespace implements Source
@@ -25,6 +26,19 @@ class DefaultNamespace implements Source
     {
         $this->composer = $composer;
         $this->package  = $package;
+    }
+
+    public function create(string $value): ?Token
+    {
+        foreach (explode('\\', $value) as $label) {
+            $validLabel = preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label);
+            if (!$validLabel) { return null; }
+        }
+
+        return new Token\CompositeToken(
+            new Token\ValueToken('{namespace.src}', $value),
+            new Token\ValueToken('{namespace.src.esc}', str_replace('\\', '\\\\', $value))
+        );
     }
 
     public function value(): string

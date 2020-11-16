@@ -50,21 +50,21 @@ class ValueReaderTest extends TestCase
     {
         $reader = new Doubles\FakeValueReader('some value');
 
-        $this->assertSame(0, $reader->source->reads);
+        $this->assertSame(0, $reader->fakeSource->reads);
         $reader->value();
-        $this->assertSame(1,$reader->source->reads);
+        $this->assertSame(1,$reader->fakeSource->reads);
         $reader->value();
-        $this->assertSame(1, $reader->source->reads);
+        $this->assertSame(1, $reader->fakeSource->reads);
     }
 
     public function testSourceValueIsCached_Token_ReadsSourceOnce()
     {
         $reader = new Doubles\FakeValueReader('some value');
 
-        $this->assertSame(0, $reader->source->reads);
+        $this->assertSame(0, $reader->fakeSource->reads);
         $reader->token();
-        $this->assertSame(1, $reader->source->reads);
+        $this->assertSame(1, $reader->fakeSource->reads);
         $reader->token();
-        $this->assertSame(1, $reader->source->reads);
+        $this->assertSame(1, $reader->fakeSource->reads);
     }
 }

@@ -41,16 +41,16 @@ class InitCommandFactory extends Factory
         $files    = $this->env->package();
         $composer = new Reader\Data\ComposerJsonData($files->file('composer.json'));
 
-        $source  = $this->option('package') ?? new Reader\Source\DefaultPackage($composer, $files);
+        $source  = $this->option('package', new Reader\Source\DefaultPackage($composer, $files));
         $package = new Reader\PackageReader($this->interactive('Packagist package name', $source), $output);
 
-        $source = $this->option('repo') ?? new Reader\Source\DefaultRepository($files->file('.git/config'), $package);
+        $source = $this->option('repo', new Reader\Source\DefaultRepository($files->file('.git/config'), $package));
         $repo   = new Reader\RepositoryReader($this->interactive('Github repository name', $source), $output);
 
-        $source = $this->option('desc') ?? new Reader\Source\PackageDescription($composer, $package);
+        $source = $this->option('desc', new Reader\Source\PackageDescription($composer, $package));
         $desc   = new Reader\DescriptionReader($this->interactive('Package description', $source), $output);
 
-        $source    = $this->option('ns') ?? new Reader\Source\DefaultNamespace($composer, $package);
+        $source    = $this->option('ns', new Reader\Source\DefaultNamespace($composer, $package));
         $namespace = new Reader\NamespaceReader($this->interactive('Source files namespace', $source), $output);
 
         return [$package, $repo, $desc, $namespace];
@@ -68,9 +68,11 @@ class InitCommandFactory extends Factory
         return new Processor\ProcessorSequence($generateComposer, $generatePackage);
     }
 
-    private function option(string $name): ?Reader\Source
+    private function option(string $name, Reader\Source $source): ?Reader\Source
     {
-        return isset($this->options[$name]) ? new Reader\Source\PredefinedString($this->options[$name]) : null;
+        return isset($this->options[$name])
+            ? new Reader\Source\PredefinedString($this->options[$name], $source)
+            : $source;
     }
 
     private function interactive(string $prompt, Reader\Source $source): Reader\Source
