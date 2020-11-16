@@ -13,19 +13,18 @@ namespace Shudd3r\PackageFiles\Token\Reader\Source;
 
 use Shudd3r\PackageFiles\Token\Reader\Source;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
-use Shudd3r\PackageFiles\Token\Reader\PackageReader;
 use Shudd3r\PackageFiles\Token;
 
 
 class DefaultRepository implements Source
 {
-    private File          $gitConfig;
-    private PackageReader $package;
+    private File   $gitConfig;
+    private Source $fallback;
 
-    public function __construct(File $gitConfig, PackageReader $package)
+    public function __construct(File $gitConfig, Source $fallback)
     {
         $this->gitConfig = $gitConfig;
-        $this->package   = $package;
+        $this->fallback  = $fallback;
     }
 
     public function create(string $value): ?Token
@@ -36,7 +35,7 @@ class DefaultRepository implements Source
 
     public function value(): string
     {
-        return $this->valueFromGitConfig() ?? $this->package->value();
+        return $this->valueFromGitConfig() ?? $this->fallback->value();
     }
 
     private function valueFromGitConfig(): ?string

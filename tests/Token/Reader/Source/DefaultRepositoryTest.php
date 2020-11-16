@@ -54,12 +54,12 @@ class DefaultRepositoryTest extends TestCase
         $this->assertSame('config/repo', $this->reader()->value());
     }
 
-    public function testForMissingConfig_Value_ReturnsPackageName()
+    public function testForMissingConfig_Value_ReturnsFallbackValue()
     {
         $this->assertSame('package/name', $this->reader(false)->value());
     }
 
-    public function testForMissingRemoteInGitConfig_Value_ReturnsPackageName()
+    public function testForMissingRemoteInGitConfig_Value_ReturnsFallbackValue()
     {
         $this->assertSame('package/name', $this->configReader()->value());
     }
@@ -83,17 +83,13 @@ class DefaultRepositoryTest extends TestCase
     {
         $config   = $config ? ['origin' => 'https://github.com/config/repo.git'] : [];
         $config   = new Doubles\MockedFile($this->config($config));
-        $fallback = new Token\Reader\PackageReader(new Doubles\FakeSource('package/name'), new Doubles\MockedTerminal());
-
-        return new Token\Reader\Source\DefaultRepository($config, $fallback);
+        return new Token\Reader\Source\DefaultRepository($config, new Doubles\FakeSource('package/name'));
     }
 
     private function configReader(array $config = []): Token\Reader\Source\DefaultRepository
     {
         $config   = new Doubles\MockedFile($this->config($config));
-        $fallback = new Token\Reader\PackageReader(new Doubles\FakeSource('package/name'), new Doubles\MockedTerminal());
-
-        return new Token\Reader\Source\DefaultRepository($config, $fallback);
+        return new Token\Reader\Source\DefaultRepository($config, new Doubles\FakeSource('package/name'));
     }
 
     private function config(array $remotes = []): string
