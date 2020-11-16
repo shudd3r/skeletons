@@ -13,19 +13,18 @@ namespace Shudd3r\PackageFiles\Token\Reader\Source;
 
 use Shudd3r\PackageFiles\Token\Reader\Source;
 use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
-use Shudd3r\PackageFiles\Token\Reader\PackageReader;
 use Shudd3r\PackageFiles\Token;
 
 
 class DefaultNamespace implements Source
 {
     private ComposerJsonData $composer;
-    private PackageReader    $package;
+    private Source           $fallback;
 
-    public function __construct(ComposerJsonData $composer, PackageReader $package)
+    public function __construct(ComposerJsonData $composer, Source $fallback)
     {
         $this->composer = $composer;
-        $this->package  = $package;
+        $this->fallback = $fallback;
     }
 
     public function create(string $value): ?Token
@@ -43,7 +42,7 @@ class DefaultNamespace implements Source
 
     public function value(): string
     {
-        return $this->namespaceFromComposer() ?? $this->namespaceFromPackageName();
+        return $this->namespaceFromComposer() ?? $this->namespaceFromFallbackSource();
     }
 
     private function namespaceFromComposer(): ?string
@@ -54,9 +53,9 @@ class DefaultNamespace implements Source
         return $namespace ? rtrim($namespace, '\\') : null;
     }
 
-    private function namespaceFromPackageName(): string
+    private function namespaceFromFallbackSource(): string
     {
-        [$vendor, $package] = explode('/', $this->package->value());
+        [$vendor, $package] = explode('/', $this->fallback->value());
         return $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
     }
 

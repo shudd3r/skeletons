@@ -53,8 +53,7 @@ class DefaultNamespaceTest extends TestCase
     {
         $contents = json_encode($composerData ? ['autoload' => ['psr-4' => ['Composer\\Namespace' => 'src/']]] : []);
         $composer = new Token\Reader\Data\ComposerJsonData(new Doubles\MockedFile($contents));
-        $fallback = new Token\Reader\PackageReader(new Doubles\FakeSource('package/name'), new Doubles\MockedTerminal());
 
-        return new Token\Reader\Source\DefaultNamespace($composer, $fallback);
+        return new Token\Reader\Source\DefaultNamespace($composer, new Doubles\FakeSource('package/name'));
     }
 }
