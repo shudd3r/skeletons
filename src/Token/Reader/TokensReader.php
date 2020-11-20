@@ -19,20 +19,20 @@ use Shudd3r\PackageFiles\Token;
 class TokensReader implements Reader
 {
     private Output $output;
-    private array  $readers;
+    private array  $sources;
 
-    public function __construct(Output $output, Reader ...$readers)
+    public function __construct(Output $output, Source ...$sources)
     {
         $this->output  = $output;
-        $this->readers = $readers;
+        $this->sources = $sources;
     }
 
     public function token(): ?Token
     {
         $tokens     = [];
         $unresolved = false;
-        foreach ($this->readers as $reader) {
-            if (!$token = $reader->token()) {
+        foreach ($this->sources as $source) {
+            if (!$token = $source->create($source->value())) {
                 $unresolved = true;
                 continue;
             }

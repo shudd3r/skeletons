@@ -20,7 +20,7 @@ class TokensReaderTest extends TestCase
 {
     public function testTokensAreBuiltWithProvidedCallbacks()
     {
-        $callbacks = [new Doubles\FakeReader('foo', '{a}'), new Doubles\FakeReader('bar', '{b}')];
+        $callbacks = [new Doubles\FakeSource('foo', '{a}'), new Doubles\FakeSource('bar', '{b}')];
         $reader    = new Token\Reader\TokensReader(new Doubles\MockedTerminal(), ...$callbacks);
 
         $expected = new Token\CompositeToken(
@@ -33,9 +33,9 @@ class TokensReaderTest extends TestCase
     public function testInvalidTokens()
     {
         $factories = [
-            new Doubles\FakeReader('foo'),
-            new Doubles\FakeReader(null),
-            new Doubles\FakeReader('bar')
+            new Doubles\FakeSource('foo'),
+            new Doubles\FakeSource(null),
+            new Doubles\FakeSource('bar')
         ];
 
         $reader = new Token\Reader\TokensReader($output = new Doubles\MockedTerminal(), ...$factories);

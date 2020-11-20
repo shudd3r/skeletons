@@ -37,21 +37,21 @@ class InitCommandFactory extends Factory
 
     protected function tokenReaders(): array
     {
-        $output   = $this->env->output();
         $files    = $this->env->package();
         $composer = new Reader\Data\ComposerJsonData($files->file('composer.json'));
 
-        $source  = $this->option('package', new Reader\Source\DefaultPackage($composer, $files));
-        $package = new Reader\PackageReader($this->interactive('Packagist package name', $source), $output);
+        $package = $this->option('package', new Reader\Source\DefaultPackage($composer, $files));
+        $package = $this->errorHandler('Package name', $this->interactive('Packagist package name', $package));
+        $package = $this->cached($package);
 
-        $source = $this->option('repo', new Reader\Source\DefaultRepository($files->file('.git/config'), $package));
-        $repo   = new Reader\RepositoryReader($this->interactive('Github repository name', $source), $output);
+        $repo = $this->option('repo', new Reader\Source\DefaultRepository($files->file('.git/config'), $package));
+        $repo = $this->errorHandler('Repository name', $this->interactive('Github repository name', $repo));
 
-        $source = $this->option('desc', new Reader\Source\PackageDescription($composer, $package));
-        $desc   = new Reader\DescriptionReader($this->interactive('Package description', $source), $output);
+        $desc = $this->option('desc', new Reader\Source\PackageDescription($composer, $package));
+        $desc = $this->errorHandler('Package description', $this->interactive('Package description', $desc));
 
-        $source    = $this->option('ns', new Reader\Source\DefaultNamespace($composer, $package));
-        $namespace = new Reader\NamespaceReader($this->interactive('Source files namespace', $source), $output);
+        $namespace = $this->option('ns', new Reader\Source\DefaultNamespace($composer, $package));
+        $namespace = $this->errorHandler('Namespace', $this->interactive('Source files namespace', $namespace));
 
         return [$package, $repo, $desc, $namespace];
     }
@@ -80,5 +80,15 @@ class InitCommandFactory extends Factory
         return isset($this->options['i']) || isset($this->options['interactive'])
             ? new Reader\Source\InteractiveInput($prompt, $this->env->input(), $source)
             : $source;
+    }
+
+    private function errorHandler(string $tokenName, Reader\Source $source): Reader\Source
+    {
+        return new Reader\Source\ErrorMessageOutput($source, $this->env->output(), $tokenName);
+    }
+
+    private function cached(Reader\Source $source): Reader\Source
+    {
+        return new Reader\Source\CachedValue($source);
     }
 }
