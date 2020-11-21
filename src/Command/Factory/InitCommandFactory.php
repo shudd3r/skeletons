@@ -71,24 +71,24 @@ class InitCommandFactory extends Factory
     private function option(string $name, Reader\Source $source): ?Reader\Source
     {
         return isset($this->options[$name])
-            ? new Reader\Source\PredefinedString($this->options[$name], $source)
+            ? new Reader\Source\Decorator\PredefinedString($this->options[$name], $source)
             : $source;
     }
 
     private function interactive(string $prompt, Reader\Source $source): Reader\Source
     {
         return isset($this->options['i']) || isset($this->options['interactive'])
-            ? new Reader\Source\InteractiveInput($prompt, $this->env->input(), $source)
+            ? new Reader\Source\Decorator\InteractiveInput($prompt, $this->env->input(), $source)
             : $source;
     }
 
     private function errorHandler(string $tokenName, Reader\Source $source): Reader\Source
     {
-        return new Reader\Source\ErrorMessageOutput($source, $this->env->output(), $tokenName);
+        return new Reader\Source\Decorator\ErrorMessageOutput($source, $this->env->output(), $tokenName);
     }
 
     private function cached(Reader\Source $source): Reader\Source
     {
-        return new Reader\Source\CachedValue($source);
+        return new Reader\Source\Decorator\CachedValue($source);
     }
 }

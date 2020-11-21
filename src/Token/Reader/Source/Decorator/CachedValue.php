@@ -9,20 +9,19 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Token\Reader\Source;
+namespace Shudd3r\PackageFiles\Token\Reader\Source\Decorator;
 
 use Shudd3r\PackageFiles\Token\Reader\Source;
 use Shudd3r\PackageFiles\Token;
 
 
-class PredefinedString implements Source
+class CachedValue implements Source
 {
-    private string $value;
     private Source $source;
+    private ?string $value = null;
 
-    public function __construct(string $value, Source $source)
+    public function __construct(Source $source)
     {
-        $this->value  = $value;
         $this->source = $source;
     }
 
@@ -33,6 +32,6 @@ class PredefinedString implements Source
 
     public function value(): string
     {
-        return $this->value;
+        return $this->value ??= $this->source->value();
     }
 }
