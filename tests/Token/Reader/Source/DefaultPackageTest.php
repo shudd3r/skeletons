@@ -54,6 +54,6 @@ class DefaultPackageTest extends TestCase
         $composer  = new Doubles\MockedFile($contents);
         $directory = new Doubles\FakeDirectory('/foo/bar/directory/package');
 
-        return new Token\Reader\Source\DefaultPackage(new Token\Reader\Data\ComposerJsonData($composer), $directory);
+        return new Token\Reader\Source\DefaultPackage(new Token\Reader\Source\Data\ComposerJsonData($composer), $directory);
     }
 }

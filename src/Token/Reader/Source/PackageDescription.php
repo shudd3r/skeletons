@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Token\Reader\Source;
 
 use Shudd3r\PackageFiles\Token\Reader\Source;
-use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
+use Shudd3r\PackageFiles\Token\Reader\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Token;
 
 
