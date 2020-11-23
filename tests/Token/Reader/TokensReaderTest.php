@@ -14,36 +14,34 @@ namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
-use Exception;
 
 
 class TokensReaderTest extends TestCase
 {
     public function testTokensAreBuiltWithProvidedCallbacks()
     {
-        $callbacks = [new Doubles\FakeReader('foo'), new Doubles\FakeReader('bar')];
+        $callbacks = [new Doubles\FakeSource('foo', '{a}'), new Doubles\FakeSource('bar', '{b}')];
         $reader    = new Token\Reader\TokensReader(new Doubles\MockedTerminal(), ...$callbacks);
 
-        $expected = new Token\CompositeToken(new Doubles\FakeToken('foo'), new Doubles\FakeToken('bar'));
+        $expected = new Token\CompositeToken(
+            Doubles\FakeToken::withPlaceholder('{a}', 'foo'),
+            Doubles\FakeToken::withPlaceholder('{b}', 'bar')
+        );
         $this->assertEquals($expected, $reader->token());
     }
 
     public function testInvalidTokens()
     {
-        $errorMessages = ['Invalid Foo token', 'Invalid Bar token'];
-
         $factories = [
-            new Doubles\FakeReader('foo', $errorMessages[0]),
-            new Doubles\FakeReader('bar', $errorMessages[1]),
-            new Doubles\FakeReader('baz')
+            new Doubles\FakeSource('foo'),
+            new Doubles\FakeSource(null),
+            new Doubles\FakeSource('bar')
         ];
 
         $reader = new Token\Reader\TokensReader($output = new Doubles\MockedTerminal(), ...$factories);
 
-        $this->expectException(Exception::class);
-        $reader->token();
-
-        $this->assertSame($errorMessages, $output->messagesSent);
+        $this->assertNull($reader->token());
+        $this->assertSame(['Cannot process unresolved tokens'], $output->messagesSent);
         $this->assertNotEquals(0, $output->errorCode);
     }
 }

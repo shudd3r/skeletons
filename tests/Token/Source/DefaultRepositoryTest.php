@@ -9,27 +9,57 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Token\Reader\Source;
+namespace Shudd3r\PackageFiles\Tests\Token\Source;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Token\Reader\Source\DefaultRepository;
-use Shudd3r\PackageFiles\Token\Reader\PackageReader;
+use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class DefaultRepositoryTest extends TestCase
 {
+    /**
+ * @dataProvider valueExamples
+ *
+ * @param string $invalid
+ * @param string $valid
+ */
+    public function testInvalidReaderValue_ReturnsNull(string $invalid, string $valid)
+    {
+        $this->assertInstanceOf(Token::class, $this->reader(false)->create($valid));
+        $this->assertNull($this->reader(false)->create($invalid));
+    }
+
+    public function valueExamples()
+    {
+        $name = function (int $length) { return str_pad('x', $length, 'x'); };
+
+        $longAccount  = $name(40) . '/name';
+        $shortAccount = $name(39) . '/name';
+        $longRepo     = 'user/' . $name(101);
+        $shortRepo    = 'user/' . $name(100);
+
+        return [
+            ['repo/na(me)', 'repo/na-me'],
+            ['-repo/name', 'r-epo/name'],
+            ['repo_/name', 'repo/name'],
+            ['re--po/name', 're-po/name'],
+            [$longAccount, $shortAccount],
+            [$longRepo, $shortRepo]
+        ];
+    }
+
     public function testValue_ReturnsGitConfigRemotePath()
     {
         $this->assertSame('config/repo', $this->reader()->value());
     }
 
-    public function testForMissingConfig_Value_ReturnsPackageName()
+    public function testForMissingConfig_Value_ReturnsFallbackValue()
     {
         $this->assertSame('package/name', $this->reader(false)->value());
     }
 
-    public function testForMissingRemoteInGitConfig_Value_ReturnsPackageName()
+    public function testForMissingRemoteInGitConfig_Value_ReturnsFallbackValue()
     {
         $this->assertSame('package/name', $this->configReader()->value());
     }
@@ -49,21 +79,17 @@ class DefaultRepositoryTest extends TestCase
         $this->assertSame('master/ssh-repo', $reader->value());
     }
 
-    private function reader(bool $config = true): DefaultRepository
+    private function reader(bool $config = true): Token\Source\DefaultRepository
     {
         $config   = $config ? ['origin' => 'https://github.com/config/repo.git'] : [];
         $config   = new Doubles\MockedFile($this->config($config));
-        $fallback = new PackageReader(new Doubles\FakeSource('package/name'));
-
-        return new DefaultRepository($config, $fallback);
+        return new Token\Source\DefaultRepository($config, new Doubles\FakeSource('package/name'));
     }
 
-    private function configReader(array $config = []): DefaultRepository
+    private function configReader(array $config = []): Token\Source\DefaultRepository
     {
         $config   = new Doubles\MockedFile($this->config($config));
-        $fallback = new PackageReader(new Doubles\FakeSource('package/name'));
-
-        return new DefaultRepository($config, $fallback);
+        return new Token\Source\DefaultRepository($config, new Doubles\FakeSource('package/name'));
     }
 
     private function config(array $remotes = []): string

@@ -9,15 +9,15 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Token\Reader;
+namespace Shudd3r\PackageFiles\Token\Source\Decorator;
 
-use Shudd3r\PackageFiles\Token\Reader;
+use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Token;
 
 
-abstract class ValueReader implements Reader, Source
+class CachedValue implements Source
 {
-    private Source  $source;
+    private Source $source;
     private ?string $value = null;
 
     public function __construct(Source $source)
@@ -25,15 +25,13 @@ abstract class ValueReader implements Reader, Source
         $this->source = $source;
     }
 
-    public function token(): Token
+    public function create(string $value): ?Token
     {
-        return $this->createToken($this->value());
+        return $this->source->create($value);
     }
 
     public function value(): string
     {
         return $this->value ??= $this->source->value();
     }
-
-    abstract protected function createToken(string $value): Token;
 }

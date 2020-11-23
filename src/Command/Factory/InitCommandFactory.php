@@ -11,13 +11,14 @@
 
 namespace Shudd3r\PackageFiles\Command\Factory;
 
-use Shudd3r\PackageFiles\Command\BackupFiles;
-use Shudd3r\PackageFiles\Command\CommandSequence;
 use Shudd3r\PackageFiles\Command\Factory;
+use Shudd3r\PackageFiles\Command\CommandSequence;
+use Shudd3r\PackageFiles\Command\TokenProcessor;
+use Shudd3r\PackageFiles\Command\BackupFiles;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory\ReflectedDirectory;
-use Shudd3r\PackageFiles\Command\TokenProcessor;
-use Shudd3r\PackageFiles\Token\Reader;
+use Shudd3r\PackageFiles\Token\Reader\TokensReader;
+use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Template;
 
@@ -29,7 +30,7 @@ class InitCommandFactory extends Factory
         $packageFiles = new ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupFiles  = new BackupFiles($packageFiles, $this->env->backup());
 
-        $reader        = new Reader\TokensReader($this->env->output(), ...$this->tokenReaders());
+        $reader        = new TokensReader($this->env->output(), ...$this->tokenReaders());
         $processTokens = new TokenProcessor($reader, $this->processor());
 
         return new CommandSequence($backupFiles, $processTokens);
@@ -38,20 +39,20 @@ class InitCommandFactory extends Factory
     protected function tokenReaders(): array
     {
         $files    = $this->env->package();
-        $composer = new Reader\Data\ComposerJsonData($files->file('composer.json'));
+        $composer = new Source\Data\ComposerJsonData($files->file('composer.json'));
 
-        $source  = $this->option('package') ?? new Reader\Source\DefaultPackage($composer, $files);
-        $package = new Reader\PackageReader($this->interactive('Packagist package name', $source));
+        $package = $this->option('package', new Source\DefaultPackage($composer, $files));
+        $package = $this->errorHandler('Package name', $this->interactive('Packagist package name', $package));
+        $package = $this->cached($package);
 
-        $source = $this->option('repo') ?? new Reader\Source\DefaultRepository($files->file('.git/config'), $package);
-        $repo   = new Reader\RepositoryReader($this->interactive('Github repository name', $source));
+        $repo = $this->option('repo', new Source\DefaultRepository($files->file('.git/config'), $package));
+        $repo = $this->errorHandler('Repository name', $this->interactive('Github repository name', $repo));
 
-        $callback = fn() => $composer->value('description') ?? $package->value() . ' package';
-        $source   = $this->option('desc') ?? new Reader\Source\CallbackSource($callback);
-        $desc     = new Reader\DescriptionReader($this->interactive('Package description', $source));
+        $desc = $this->option('desc', new Source\PackageDescription($composer, $package));
+        $desc = $this->errorHandler('Package description', $this->interactive('Package description', $desc));
 
-        $source    = $this->option('ns') ?? new Reader\Source\DefaultNamespace($composer, $package);
-        $namespace = new Reader\NamespaceReader($this->interactive('Source files namespace', $source));
+        $namespace = $this->option('ns', new Source\DefaultNamespace($composer, $package));
+        $namespace = $this->errorHandler('Namespace', $this->interactive('Source files namespace', $namespace));
 
         return [$package, $repo, $desc, $namespace];
     }
@@ -68,15 +69,27 @@ class InitCommandFactory extends Factory
         return new Processor\ProcessorSequence($generateComposer, $generatePackage);
     }
 
-    private function option(string $name): ?Reader\Source
+    private function option(string $name, Source $source): ?Source
     {
-        return isset($this->options[$name]) ? new Reader\Source\PredefinedString($this->options[$name]) : null;
+        return isset($this->options[$name])
+            ? new Source\Decorator\PredefinedString($this->options[$name], $source)
+            : $source;
     }
 
-    private function interactive(string $prompt, Reader\Source $source): Reader\Source
+    private function interactive(string $prompt, Source $source): Source
     {
         return isset($this->options['i']) || isset($this->options['interactive'])
-            ? new Reader\Source\InteractiveInput($prompt, $this->env->input(), $source)
+            ? new Source\Decorator\InteractiveInput($prompt, $this->env->input(), $source)
             : $source;
+    }
+
+    private function errorHandler(string $tokenName, Source $source): Source
+    {
+        return new Source\Decorator\ErrorMessageOutput($source, $this->env->output(), $tokenName);
+    }
+
+    private function cached(Source $source): Source
+    {
+        return new Source\Decorator\CachedValue($source);
     }
 }

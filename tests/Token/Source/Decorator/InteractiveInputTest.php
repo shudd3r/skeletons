@@ -9,18 +9,25 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Token\Reader\Source;
+namespace Shudd3r\PackageFiles\Tests\Token\Source\Decorator;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Token\Reader\Source\InteractiveInput;
+use Shudd3r\PackageFiles\Token\Source\Decorator\InteractiveInput;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class InteractiveInputTest extends TestCase
 {
+    public function testCreate_IsDelegatedToDefaultSource()
+    {
+        $default = new Doubles\FakeSource('');
+        $source  = new InteractiveInput('Some property', new Doubles\MockedTerminal(['some value', '']), $default);
+        $this->assertSame($source->create('test'), $default->created);
+    }
+
     public function testValue_ReturnsInputString()
     {
-        $source = new InteractiveInput('Some property', new Doubles\MockedTerminal(['some value', '']));
+        $source = new InteractiveInput('Some property', new Doubles\MockedTerminal(['some value', '']), new Doubles\FakeSource(''));
         $this->assertSame('some value', $source->value());
         $this->assertSame('', $source->value());
     }
@@ -38,7 +45,7 @@ class InteractiveInputTest extends TestCase
         $input  = new Doubles\MockedTerminal();
         $prompt = 'Input prompt';
 
-        (new InteractiveInput($prompt, $input))->value();
+        (new InteractiveInput($prompt, $input, new Doubles\FakeSource('')))->value();
         $this->assertSame($prompt . ':', $input->messagesSent[0]);
 
         (new InteractiveInput($prompt, $input, new Doubles\FakeSource('default value')))->value();

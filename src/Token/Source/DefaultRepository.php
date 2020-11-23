@@ -9,27 +9,33 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Token\Reader\Source;
+namespace Shudd3r\PackageFiles\Token\Source;
 
-use Shudd3r\PackageFiles\Token\Reader\Source;
+use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
-use Shudd3r\PackageFiles\Token\Reader\PackageReader;
+use Shudd3r\PackageFiles\Token;
 
 
 class DefaultRepository implements Source
 {
-    private File          $gitConfig;
-    private PackageReader $package;
+    private File   $gitConfig;
+    private Source $fallback;
 
-    public function __construct(File $gitConfig, PackageReader $package)
+    public function __construct(File $gitConfig, Source $fallback)
     {
         $this->gitConfig = $gitConfig;
-        $this->package   = $package;
+        $this->fallback  = $fallback;
+    }
+
+    public function create(string $value): ?Token
+    {
+        $validRepositoryName = preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
+        return $validRepositoryName ? new Token\ValueToken('{repository.name}', $value) : null;
     }
 
     public function value(): string
     {
-        return $this->valueFromGitConfig() ?? $this->package->value();
+        return $this->valueFromGitConfig() ?? $this->fallback->value();
     }
 
     private function valueFromGitConfig(): ?string

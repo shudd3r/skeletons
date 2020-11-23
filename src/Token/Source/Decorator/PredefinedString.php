@@ -9,18 +9,26 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Token\Reader\Source;
+namespace Shudd3r\PackageFiles\Token\Source\Decorator;
 
-use Shudd3r\PackageFiles\Token\Reader\Source;
+use Shudd3r\PackageFiles\Token\Source;
+use Shudd3r\PackageFiles\Token;
 
 
 class PredefinedString implements Source
 {
     private string $value;
+    private Source $source;
 
-    public function __construct(string $value)
+    public function __construct(string $value, Source $source)
     {
-        $this->value = $value;
+        $this->value  = $value;
+        $this->source = $source;
+    }
+
+    public function create(string $value): ?Token
+    {
+        return $this->source->create($value);
     }
 
     public function value(): string

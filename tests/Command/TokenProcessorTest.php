@@ -37,9 +37,9 @@ class TokenProcessorTest extends TestCase
 
     public function testUnresolvedPropertiesStopExecution()
     {
-        $command = new TokenProcessor(new Doubles\FakeReader('value', 'exception'), new Doubles\MockedProcessor());
+        $command = new TokenProcessor(new Doubles\FakeReader(null), $processor = new Doubles\MockedProcessor());
 
-        $this->expectException(Exception::class);
         $command->execute();
+        $this->assertNull($processor->passedToken);
     }
 }

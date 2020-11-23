@@ -11,23 +11,32 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Token\Reader\Source;
+use Shudd3r\PackageFiles\Token;
+use Shudd3r\PackageFiles\Token\Source;
 
 
 class FakeSource implements Source
 {
-    public int $reads = 0;
+    public int    $reads   = 0;
+    public ?Token $created = null;
 
-    private string $value;
+    private ?string $value;
+    private string  $placeholder;
 
-    public function __construct(string $value)
+    public function __construct(?string $value, string $placeholder = '{fake.token}')
     {
-        $this->value = $value;
+        $this->value       = $value;
+        $this->placeholder = $placeholder;
+    }
+
+    public function create(string $value): ?Token
+    {
+        return $this->created = isset($this->value) ? FakeToken::withPlaceholder($this->placeholder, $value) : null;
     }
 
     public function value(): string
     {
         $this->reads++;
-        return $this->value;
+        return $this->value ?? '';
     }
 }
