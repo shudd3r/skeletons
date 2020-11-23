@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Token\Reader\Source;
+namespace Shudd3r\PackageFiles\Tests\Token\Source;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token;
@@ -45,10 +45,10 @@ class PackageDescriptionTest extends TestCase
         $this->assertSame('package/name package', $this->reader(false)->value());
     }
 
-    private function reader(bool $composerData = true): Token\Reader\Source\PackageDescription
+    private function reader(bool $composerData = true): Token\Source\PackageDescription
     {
         $contents = json_encode($composerData ? ['description' => 'composer package description'] : []);
-        $composer = new Token\Reader\Source\Data\ComposerJsonData(new Doubles\MockedFile($contents));
-        return new Token\Reader\Source\PackageDescription($composer, new Doubles\FakeSource('package/name'));
+        $composer = new Token\Source\Data\ComposerJsonData(new Doubles\MockedFile($contents));
+        return new Token\Source\PackageDescription($composer, new Doubles\FakeSource('package/name'));
     }
 }

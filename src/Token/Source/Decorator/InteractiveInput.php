@@ -9,9 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Token\Reader\Source\Decorator;
+namespace Shudd3r\PackageFiles\Token\Source\Decorator;
 
-use Shudd3r\PackageFiles\Token\Reader\Source;
+use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Application\Input;
 use Shudd3r\PackageFiles\Token;
 

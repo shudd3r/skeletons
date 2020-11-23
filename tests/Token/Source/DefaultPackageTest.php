@@ -9,14 +9,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Token\Reader\Source;
+namespace Shudd3r\PackageFiles\Tests\Token\Source;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class DefaultNamespaceTest extends TestCase
+class DefaultPackageTest extends TestCase
 {
     /**
      * @dataProvider valueExamples
@@ -33,27 +33,27 @@ class DefaultNamespaceTest extends TestCase
     public function valueExamples()
     {
         return [
-            ['Foo/Bar', 'Foo\Bar'],
-            ['_Foo\1Bar\Baz', '_Foo\_1Bar\Baz'],
-            ['Package:000\na_Me', 'Package000\na_Me']
+            ['-Packa-ge1/na.me', 'Packa-ge1/na.me'],
+            ['1Package000_/na_Me', '1Package000/na_Me']
         ];
     }
 
-    public function testValue_ReturnsComposerNamespace()
+    public function testValue_ReturnsComposeName()
     {
-        $this->assertSame('Composer\\Namespace', $this->reader()->value());
+        $this->assertSame('composer/package', $this->reader()->value());
     }
 
     public function testMissingComposerNamespace_Value_ReturnsNamespaceFromPackageReader()
     {
-        $this->assertSame('Package\\Name', $this->reader(false)->value());
+        $this->assertSame('directory/package', $this->reader(false)->value());
     }
 
-    private function reader(bool $composerData = true): Token\Reader\Source\DefaultNamespace
+    private function reader(bool $composer = true): Token\Source\DefaultPackage
     {
-        $contents = json_encode($composerData ? ['autoload' => ['psr-4' => ['Composer\\Namespace' => 'src/']]] : []);
-        $composer = new Token\Reader\Source\Data\ComposerJsonData(new Doubles\MockedFile($contents));
+        $contents  = json_encode($composer ? ['name' => 'composer/package'] : []);
+        $composer  = new Doubles\MockedFile($contents);
+        $directory = new Doubles\FakeDirectory('/foo/bar/directory/package');
 
-        return new Token\Reader\Source\DefaultNamespace($composer, new Doubles\FakeSource('package/name'));
+        return new Token\Source\DefaultPackage(new Token\Source\Data\ComposerJsonData($composer), $directory);
     }
 }

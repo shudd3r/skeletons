@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Token\Reader;
 
 use Shudd3r\PackageFiles\Token\Reader;
+use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Application\Output;
 use Shudd3r\PackageFiles\Token;
 

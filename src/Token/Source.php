@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Token\Reader;
+namespace Shudd3r\PackageFiles\Token;
 
 use Shudd3r\PackageFiles\Token;
 

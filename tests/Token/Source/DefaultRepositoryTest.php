@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Token\Reader\Source;
+namespace Shudd3r\PackageFiles\Tests\Token\Source;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token;
@@ -79,17 +79,17 @@ class DefaultRepositoryTest extends TestCase
         $this->assertSame('master/ssh-repo', $reader->value());
     }
 
-    private function reader(bool $config = true): Token\Reader\Source\DefaultRepository
+    private function reader(bool $config = true): Token\Source\DefaultRepository
     {
         $config   = $config ? ['origin' => 'https://github.com/config/repo.git'] : [];
         $config   = new Doubles\MockedFile($this->config($config));
-        return new Token\Reader\Source\DefaultRepository($config, new Doubles\FakeSource('package/name'));
+        return new Token\Source\DefaultRepository($config, new Doubles\FakeSource('package/name'));
     }
 
-    private function configReader(array $config = []): Token\Reader\Source\DefaultRepository
+    private function configReader(array $config = []): Token\Source\DefaultRepository
     {
         $config   = new Doubles\MockedFile($this->config($config));
-        return new Token\Reader\Source\DefaultRepository($config, new Doubles\FakeSource('package/name'));
+        return new Token\Source\DefaultRepository($config, new Doubles\FakeSource('package/name'));
     }
 
     private function config(array $remotes = []): string
