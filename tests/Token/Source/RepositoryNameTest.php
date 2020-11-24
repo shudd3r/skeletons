@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class DefaultRepositoryTest extends TestCase
+class RepositoryNameTest extends TestCase
 {
     /**
  * @dataProvider valueExamples
@@ -79,17 +79,17 @@ class DefaultRepositoryTest extends TestCase
         $this->assertSame('master/ssh-repo', $reader->value());
     }
 
-    private function reader(bool $config = true): Token\Source\DefaultRepository
+    private function reader(bool $config = true): Token\Source\RepositoryName
     {
         $config   = $config ? ['origin' => 'https://github.com/config/repo.git'] : [];
         $config   = new Doubles\MockedFile($this->config($config));
-        return new Token\Source\DefaultRepository($config, new Doubles\FakeSource('package/name'));
+        return new Token\Source\RepositoryName($config, new Doubles\FakeSource('package/name'));
     }
 
-    private function configReader(array $config = []): Token\Source\DefaultRepository
+    private function configReader(array $config = []): Token\Source\RepositoryName
     {
         $config   = new Doubles\MockedFile($this->config($config));
-        return new Token\Source\DefaultRepository($config, new Doubles\FakeSource('package/name'));
+        return new Token\Source\RepositoryName($config, new Doubles\FakeSource('package/name'));
     }
 
     private function config(array $remotes = []): string

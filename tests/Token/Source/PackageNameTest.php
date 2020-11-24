@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class DefaultPackageTest extends TestCase
+class PackageNameTest extends TestCase
 {
     /**
      * @dataProvider valueExamples
@@ -48,12 +48,12 @@ class DefaultPackageTest extends TestCase
         $this->assertSame('directory/package', $this->reader(false)->value());
     }
 
-    private function reader(bool $composer = true): Token\Source\DefaultPackage
+    private function reader(bool $composer = true): Token\Source\PackageName
     {
         $contents  = json_encode($composer ? ['name' => 'composer/package'] : []);
         $composer  = new Doubles\MockedFile($contents);
         $directory = new Doubles\FakeDirectory('/foo/bar/directory/package');
 
-        return new Token\Source\DefaultPackage(new Token\Source\Data\ComposerJsonData($composer), $directory);
+        return new Token\Source\PackageName(new Token\Source\Data\ComposerJsonData($composer), $directory);
     }
 }

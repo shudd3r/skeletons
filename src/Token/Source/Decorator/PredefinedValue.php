@@ -15,7 +15,7 @@ use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Token;
 
 
-class PredefinedString implements Source
+class PredefinedValue implements Source
 {
     private string $value;
     private Source $source;

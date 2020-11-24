@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Token;
 
 
-class DefaultPackage implements Source
+class PackageName implements Source
 {
     private ComposerJsonData $composer;
     private Directory        $project;

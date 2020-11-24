@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Token;
 
 
-class DefaultNamespace implements Source
+class CodeNamespace implements Source
 {
     private ComposerJsonData $composer;
     private Source           $fallback;

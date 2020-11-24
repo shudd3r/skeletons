@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Token;
 
 
-class DefaultRepository implements Source
+class RepositoryName implements Source
 {
     private File   $gitConfig;
     private Source $fallback;

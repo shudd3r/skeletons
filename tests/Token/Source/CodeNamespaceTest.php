@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class DefaultNamespaceTest extends TestCase
+class CodeNamespaceTest extends TestCase
 {
     /**
      * @dataProvider valueExamples
@@ -49,11 +49,11 @@ class DefaultNamespaceTest extends TestCase
         $this->assertSame('Package\\Name', $this->reader(false)->value());
     }
 
-    private function reader(bool $composerData = true): Token\Source\DefaultNamespace
+    private function reader(bool $composerData = true): Token\Source\CodeNamespace
     {
         $contents = json_encode($composerData ? ['autoload' => ['psr-4' => ['Composer\\Namespace' => 'src/']]] : []);
         $composer = new Token\Source\Data\ComposerJsonData(new Doubles\MockedFile($contents));
 
-        return new Token\Source\DefaultNamespace($composer, new Doubles\FakeSource('package/name'));
+        return new Token\Source\CodeNamespace($composer, new Doubles\FakeSource('package/name'));
     }
 }
