@@ -18,37 +18,39 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class InteractiveInputTest extends TestCase
 {
-    public function testCreate_IsDelegatedToDefaultSource()
+    public function testCreate_IsDelegatedToWrappedSource()
     {
-        $default = new Doubles\FakeSource('');
-        $source  = new InteractiveInput('Some property', new Doubles\MockedTerminal(['some value', '']), $default);
-        $this->assertSame($source->create('test'), $default->created);
+        $wrapped = new Doubles\FakeSource('');
+        $source  = new InteractiveInput('Prompt', new Doubles\MockedTerminal(['foo']), $wrapped);
+        $this->assertSame($source->create('test'), $wrapped->created);
     }
 
     public function testValue_ReturnsInputString()
     {
-        $source = new InteractiveInput('Some property', new Doubles\MockedTerminal(['some value', '']), new Doubles\FakeSource(''));
-        $this->assertSame('some value', $source->value());
-        $this->assertSame('', $source->value());
+        $source = new InteractiveInput('Prompt', new Doubles\MockedTerminal(['input']), new Doubles\FakeSource('foo'));
+        $this->assertSame('input', $source->value());
     }
 
-    public function testGivenFallbackSource_ValueForEmptyInput_ReturnsFallbackValue()
+    public function testForEmptyInput_Value_ReturnsWrappedValue()
     {
-        $fallback = new Doubles\FakeSource('fallback value');
-        $source   = new InteractiveInput('Some property', new Doubles\MockedTerminal(['some value', '']), $fallback);
-        $this->assertSame('some value', $source->value());
-        $this->assertSame('fallback value', $source->value());
+        $wrapped = new Doubles\FakeSource('bar');
+        $source  = new InteractiveInput('Prompt', new Doubles\MockedTerminal(['foo', '']), $wrapped);
+        $this->assertSame('foo', $source->value());
+        $this->assertSame('bar', $source->value());
     }
 
     public function testPromptIsSentToInputMethod()
     {
         $input  = new Doubles\MockedTerminal();
         $prompt = 'Input prompt';
+        $source = new InteractiveInput($prompt, $input, new Doubles\FakeSource(''));
 
-        (new InteractiveInput($prompt, $input, new Doubles\FakeSource('')))->value();
+        $source->value();
         $this->assertSame($prompt . ':', $input->messagesSent[0]);
 
-        (new InteractiveInput($prompt, $input, new Doubles\FakeSource('default value')))->value();
-        $this->assertSame($prompt . ' [default: default value]:', $input->messagesSent[1]);
+        $source = new InteractiveInput($prompt, $input, new Doubles\FakeSource('foo'));
+
+        $source->value();
+        $this->assertSame($prompt . ' [default: foo]:', $input->messagesSent[1]);
     }
 }

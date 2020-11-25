@@ -18,7 +18,7 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class ErrorMessageOutputTest extends TestCase
 {
-    public function testMissingTokenFromSource_SendsErrorMessageToOutput()
+    public function testNullReturnedFromSource_SendsErrorMessageToOutput()
     {
         $output = new Doubles\MockedTerminal();
         $source = new ErrorMessageOutput(new Doubles\FakeSource(null), $output, 'MyToken');

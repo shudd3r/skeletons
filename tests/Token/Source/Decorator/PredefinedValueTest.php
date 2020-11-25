@@ -18,11 +18,11 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class PredefinedValueTest extends TestCase
 {
-    public function testCreate_IsDelegatedToDefaultSource()
+    public function testCreate_IsDelegatedToWrappedSource()
     {
-        $default = new Doubles\FakeSource('');
-        $source  = new PredefinedValue('some string', $default);
-        $this->assertSame($source->create('test'), $default->created);
+        $wrapped = new Doubles\FakeSource('');
+        $source  = new PredefinedValue('some string', $wrapped);
+        $this->assertSame($source->create('test'), $wrapped->created);
     }
 
     public function testValue_ReturnsConstructorProperty()
