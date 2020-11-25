@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Command;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Command\TokenProcessor;
 use Shudd3r\PackageFiles\Tests\Doubles;
-use Exception;
 
 
 class TokenProcessorTest extends TestCase
@@ -27,9 +26,9 @@ class TokenProcessorTest extends TestCase
 
     public function testPropertiesArePassedToProcessor()
     {
-        $reader     = new Doubles\FakeReader();
+        $reader    = new Doubles\FakeReader();
         $processor = new Doubles\MockedProcessor();
-        $command    = new TokenProcessor($reader, $processor);
+        $command   = new TokenProcessor($reader, $processor);
 
         $command->execute();
         $this->assertEquals($reader->token(), $processor->passedToken);
