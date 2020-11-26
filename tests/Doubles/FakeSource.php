@@ -21,17 +21,15 @@ class FakeSource implements Source
     public ?Token $created = null;
 
     private ?string $value;
-    private string  $placeholder;
 
-    public function __construct(?string $value, string $placeholder = '{fake.token}')
+    public function __construct(?string $value = 'foo')
     {
-        $this->value       = $value;
-        $this->placeholder = $placeholder;
+        $this->value = $value;
     }
 
     public function create(string $value): ?Token
     {
-        return $this->created = isset($this->value) ? FakeToken::withPlaceholder($this->placeholder, $value) : null;
+        return $this->created = isset($this->value) ? new FakeToken($value) : null;
     }
 
     public function value(): string

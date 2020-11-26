@@ -12,34 +12,19 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Token;
-use Exception;
 
 
 class FakeToken implements Token
 {
-    public string $placeholder = '{fake.token}';
-
     private string $value;
 
-    public function __construct(string $value = 'foo/bar', string $exception = '')
+    public function __construct(string $value = 'foo')
     {
-        if ($exception) {
-            throw new Exception($exception);
-        }
-
         $this->value = $value;
-    }
-
-    public static function withPlaceholder(string $placeholder, string $value): self
-    {
-        $token = new self($value);
-        $token->placeholder = $placeholder;
-
-        return $token;
     }
 
     public function replacePlaceholders(string $template): string
     {
-        return str_replace($this->placeholder, $this->value, $template);
+        return $template;
     }
 }

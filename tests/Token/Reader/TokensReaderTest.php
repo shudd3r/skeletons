@@ -18,27 +18,20 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class TokensReaderTest extends TestCase
 {
-    public function testTokensAreBuiltWithProvidedCallbacks()
+    public function testTokensAreBuiltWithProvidedSources()
     {
-        $callbacks = [new Doubles\FakeSource('foo', '{a}'), new Doubles\FakeSource('bar', '{b}')];
-        $reader    = new Token\Reader\TokensReader(new Doubles\MockedTerminal(), ...$callbacks);
+        $sources = [new Doubles\FakeSource('foo'), new Doubles\FakeSource('bar')];
+        $reader  = new Token\Reader\TokensReader(new Doubles\MockedTerminal(), ...$sources);
 
-        $expected = new Token\CompositeToken(
-            Doubles\FakeToken::withPlaceholder('{a}', 'foo'),
-            Doubles\FakeToken::withPlaceholder('{b}', 'bar')
-        );
+        $expected = new Token\CompositeToken(new Doubles\FakeToken('foo'), new Doubles\FakeToken('bar'));
         $this->assertEquals($expected, $reader->token());
     }
 
     public function testInvalidTokens()
     {
-        $factories = [
-            new Doubles\FakeSource('foo'),
-            new Doubles\FakeSource(null),
-            new Doubles\FakeSource('bar')
-        ];
-
-        $reader = new Token\Reader\TokensReader($output = new Doubles\MockedTerminal(), ...$factories);
+        $sources = [new Doubles\FakeSource('foo'), new Doubles\FakeSource(null), new Doubles\FakeSource('bar')];
+        $output  = new Doubles\MockedTerminal();
+        $reader  = new Token\Reader\TokensReader($output, ...$sources);
 
         $this->assertNull($reader->token());
         $this->assertSame(['Cannot process unresolved tokens'], $output->messagesSent);
