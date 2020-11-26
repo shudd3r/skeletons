@@ -13,27 +13,21 @@ namespace Shudd3r\PackageFiles\Tests\Token;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token;
-use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class CompositeTokenTest extends TestCase
 {
     public function testTokenReplacesAllInternalPlaceholders()
     {
-        $replace = [
-            'FOO' => '{foo.token}',
-            'BAR' => '{bar.token}',
-            'BAZ' => '{baz.token}'
+        $tokens = [
+            new Token\ValueToken('{foo.token}', 'foo'),
+            new Token\ValueToken('{bar.token}', 'bar'),
+            new Token\ValueToken('{baz.token}', 'baz')
         ];
 
-        $tokens = [];
-        foreach ($replace as $value => $placeholder) {
-            $tokens[] = Doubles\FakeToken::withPlaceholder($placeholder, $value);
-        }
-
         $token = new Token\CompositeToken(...$tokens);
-        $template = "Template with {$replace['FOO']}-{$replace['BAR']}-{$replace['BAZ']}";
+        $template = "Template with {foo.token}-{bar.token}-{baz.token}";
 
-        $this->assertSame('Template with FOO-BAR-BAZ', $token->replacePlaceholders($template));
+        $this->assertSame('Template with foo-bar-baz', $token->replacePlaceholders($template));
     }
 }
