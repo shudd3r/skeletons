@@ -31,7 +31,7 @@ class TokenProcessorTest extends TestCase
         $command   = new TokenProcessor($reader, $processor);
 
         $command->execute();
-        $this->assertEquals($reader->token(), $processor->passedToken);
+        $this->assertSame($reader->token(), $processor->passedToken);
     }
 
     public function testUnresolvedPropertiesStopExecution()
