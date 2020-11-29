@@ -23,7 +23,7 @@ class ErrorMessageOutputTest extends TestCase
         $output = new Doubles\MockedTerminal();
         $source = new ErrorMessageOutput(new Doubles\FakeSource(null), $output, 'MyToken');
 
-        $this->assertNull($source->create('foo'));
+        $this->assertNull($source->token('foo'));
         $this->assertSame(['Invalid MyToken value: `foo`'], $output->messagesSent);
     }
 

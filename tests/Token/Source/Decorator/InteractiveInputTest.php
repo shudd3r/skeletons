@@ -22,7 +22,7 @@ class InteractiveInputTest extends TestCase
     {
         $wrapped = new Doubles\FakeSource('');
         $source  = new InteractiveInput('Prompt', new Doubles\MockedTerminal(['foo']), $wrapped);
-        $this->assertSame($source->create('test'), $wrapped->created);
+        $this->assertSame($source->token('test'), $wrapped->created);
     }
 
     public function testValue_ReturnsInputString()

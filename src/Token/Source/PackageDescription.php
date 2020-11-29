@@ -27,7 +27,7 @@ class PackageDescription implements Source
         $this->package  = $package;
     }
 
-    public function create(string $value): ?Token
+    public function token(string $value): ?Token
     {
         return $value ? new Token\ValueToken('{description.text}', $value) : null;
     }

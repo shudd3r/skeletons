@@ -25,9 +25,9 @@ class CachedValue implements Source
         $this->source = $source;
     }
 
-    public function create(string $value): ?Token
+    public function token(string $value): ?Token
     {
-        return $this->source->create($value);
+        return $this->source->token($value);
     }
 
     public function value(): string

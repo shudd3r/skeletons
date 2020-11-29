@@ -26,8 +26,8 @@ class RepositoryNameTest extends TestCase
  */
     public function testInvalidReaderValue_ReturnsNull(string $invalid, string $valid)
     {
-        $this->assertInstanceOf(Token::class, $this->reader(false)->create($valid));
-        $this->assertNull($this->reader(false)->create($invalid));
+        $this->assertInstanceOf(Token::class, $this->reader(false)->token($valid));
+        $this->assertNull($this->reader(false)->token($invalid));
     }
 
     public function valueExamples()

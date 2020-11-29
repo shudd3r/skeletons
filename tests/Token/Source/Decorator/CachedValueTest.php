@@ -21,7 +21,7 @@ class CachedValueTest extends TestCase
     public function testCreate_IsDelegatedToWrappedSource()
     {
         $cached = new CachedValue($wrapped = new Doubles\FakeSource('value'));
-        $this->assertSame($cached->create('test'), $wrapped->created);
+        $this->assertSame($cached->token('test'), $wrapped->created);
     }
 
     public function testValueReadFromWrappedSourceIsCached()

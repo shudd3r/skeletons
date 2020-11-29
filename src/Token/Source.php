@@ -16,6 +16,6 @@ use Shudd3r\PackageFiles\Token;
 
 interface Source
 {
-    public function create(string $value): ?Token;
+    public function token(string $value): ?Token;
     public function value(): string;
 }

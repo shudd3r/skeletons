@@ -26,8 +26,8 @@ class PackageNameTest extends TestCase
      */
     public function testInvalidReaderValue_ReturnsNull(string $invalid, string $valid)
     {
-        $this->assertInstanceOf(Token::class, $this->reader()->create($valid));
-        $this->assertNull($this->reader()->create($invalid));
+        $this->assertInstanceOf(Token::class, $this->reader()->token($valid));
+        $this->assertNull($this->reader()->token($invalid));
     }
 
     public function valueExamples()

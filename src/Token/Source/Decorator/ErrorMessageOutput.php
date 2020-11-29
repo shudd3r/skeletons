@@ -28,9 +28,9 @@ class ErrorMessageOutput implements Source
         $this->output    = $output;
         $this->tokenName = $tokenName;
     }
-    public function create(string $value): ?Token
+    public function token(string $value): ?Token
     {
-        $token = $this->source->create($value);
+        $token = $this->source->token($value);
         if ($token) { return $token; }
 
         $this->output->send("Invalid {$this->tokenName} value: `{$value}`");

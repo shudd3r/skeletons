@@ -33,7 +33,7 @@ class TokensReader implements Reader
         $tokens     = [];
         $unresolved = false;
         foreach ($this->sources as $source) {
-            if (!$token = $source->create($source->value())) {
+            if (!$token = $source->token($source->value())) {
                 $unresolved = true;
                 continue;
             }

@@ -27,7 +27,7 @@ class FakeSource implements Source
         $this->value = $value;
     }
 
-    public function create(string $value): ?Token
+    public function token(string $value): ?Token
     {
         return $this->created = isset($this->value) ? new FakeToken($value) : null;
     }

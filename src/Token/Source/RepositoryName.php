@@ -27,7 +27,7 @@ class RepositoryName implements Source
         $this->fallback  = $fallback;
     }
 
-    public function create(string $value): ?Token
+    public function token(string $value): ?Token
     {
         $validRepositoryName = preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
         return $validRepositoryName ? new Token\ValueToken('{repository.name}', $value) : null;

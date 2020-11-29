@@ -27,7 +27,7 @@ class CodeNamespace implements Source
         $this->fallback = $fallback;
     }
 
-    public function create(string $value): ?Token
+    public function token(string $value): ?Token
     {
         foreach (explode('\\', $value) as $label) {
             $validLabel = preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label);
