@@ -12,22 +12,22 @@
 namespace Shudd3r\PackageFiles\Tests\Token\Source\Decorator;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Token\Source\Decorator\PredefinedString;
+use Shudd3r\PackageFiles\Token\Source\Decorator\PredefinedValue;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class PredefinedStringTest extends TestCase
+class PredefinedValueTest extends TestCase
 {
-    public function testCreate_IsDelegatedToDefaultSource()
+    public function testCreate_IsDelegatedToWrappedSource()
     {
-        $default = new Doubles\FakeSource('');
-        $source  = new PredefinedString('some string', $default);
-        $this->assertSame($source->create('test'), $default->created);
+        $wrapped = new Doubles\FakeSource('');
+        $source  = new PredefinedValue('some string', $wrapped);
+        $this->assertSame($source->token('test'), $wrapped->created);
     }
 
     public function testValue_ReturnsConstructorProperty()
     {
-        $source = new PredefinedString('some string', new Doubles\FakeSource(''));
+        $source = new PredefinedValue('some string', new Doubles\FakeSource(''));
         $this->assertSame('some string', $source->value());
     }
 }

@@ -41,17 +41,17 @@ class InitCommandFactory extends Factory
         $files    = $this->env->package();
         $composer = new Source\Data\ComposerJsonData($files->file('composer.json'));
 
-        $package = $this->option('package', new Source\DefaultPackage($composer, $files));
+        $package = $this->option('package', new Source\PackageName($composer, $files));
         $package = $this->errorHandler('Package name', $this->interactive('Packagist package name', $package));
         $package = $this->cached($package);
 
-        $repo = $this->option('repo', new Source\DefaultRepository($files->file('.git/config'), $package));
+        $repo = $this->option('repo', new Source\RepositoryName($files->file('.git/config'), $package));
         $repo = $this->errorHandler('Repository name', $this->interactive('Github repository name', $repo));
 
         $desc = $this->option('desc', new Source\PackageDescription($composer, $package));
         $desc = $this->errorHandler('Package description', $this->interactive('Package description', $desc));
 
-        $namespace = $this->option('ns', new Source\DefaultNamespace($composer, $package));
+        $namespace = $this->option('ns', new Source\CodeNamespace($composer, $package));
         $namespace = $this->errorHandler('Namespace', $this->interactive('Source files namespace', $namespace));
 
         return [$package, $repo, $desc, $namespace];
@@ -72,7 +72,7 @@ class InitCommandFactory extends Factory
     private function option(string $name, Source $source): ?Source
     {
         return isset($this->options[$name])
-            ? new Source\Decorator\PredefinedString($this->options[$name], $source)
+            ? new Source\Decorator\PredefinedValue($this->options[$name], $source)
             : $source;
     }
 

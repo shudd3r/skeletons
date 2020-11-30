@@ -19,18 +19,12 @@ class MockedProcessor implements Processor
 {
     public ?Token $passedToken = null;
 
-    private $procedure;
-
-    public function __construct(?callable $procedure = null)
+    public function __construct()
     {
-        $this->procedure = $procedure;
     }
 
     public function process(Token $token): void
     {
         $this->passedToken = $token;
-
-        if (!isset($this->procedure)) { return; }
-        ($this->procedure)();
     }
 }

@@ -15,7 +15,7 @@ use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Token;
 
 
-class PredefinedString implements Source
+class PredefinedValue implements Source
 {
     private string $value;
     private Source $source;
@@ -26,9 +26,9 @@ class PredefinedString implements Source
         $this->source = $source;
     }
 
-    public function create(string $value): ?Token
+    public function token(string $value): ?Token
     {
-        return $this->source->create($value);
+        return $this->source->token($value);
     }
 
     public function value(): string

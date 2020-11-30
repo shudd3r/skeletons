@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Token;
 
 
-class DefaultPackage implements Source
+class PackageName implements Source
 {
     private ComposerJsonData $composer;
     private Directory        $project;
@@ -28,7 +28,7 @@ class DefaultPackage implements Source
         $this->project  = $project;
     }
 
-    public function create(string $value): ?Token
+    public function token(string $value): ?Token
     {
         $validPackageName = preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
         if (!$validPackageName) { return null; }

@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Template;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Template\FileTemplate;
+use Shudd3r\PackageFiles\Token\ValueToken;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use InvalidArgumentException;
 
@@ -26,7 +27,7 @@ class FileTemplateTest extends TestCase
             TPL;
 
         $template = new FileTemplate(new Doubles\MockedFile($contents));
-        $token    = Doubles\FakeToken::withPlaceholder('{package.name}', 'package/name');
+        $token    = new ValueToken('{package.name}', 'package/name');
 
         $render = $template->render($token);
 

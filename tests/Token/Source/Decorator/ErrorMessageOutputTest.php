@@ -18,12 +18,12 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class ErrorMessageOutputTest extends TestCase
 {
-    public function testMissingTokenFromSource_SendsErrorMessageToOutput()
+    public function testNullReturnedFromSource_SendsErrorMessageToOutput()
     {
         $output = new Doubles\MockedTerminal();
         $source = new ErrorMessageOutput(new Doubles\FakeSource(null), $output, 'MyToken');
 
-        $this->assertNull($source->create('foo'));
+        $this->assertNull($source->token('foo'));
         $this->assertSame(['Invalid MyToken value: `foo`'], $output->messagesSent);
     }
 

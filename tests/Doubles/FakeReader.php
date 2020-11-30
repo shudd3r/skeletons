@@ -17,17 +17,15 @@ use Shudd3r\PackageFiles\Token;
 
 class FakeReader implements Reader
 {
-    private ?string $value;
-    private string  $placeholder;
+    private ?Token $token;
 
-    public function __construct(?string $value = 'foo/bar', string $placeholder = '{fake.placeholder}')
+    public function __construct(?string $value = 'foo')
     {
-        $this->value       = $value;
-        $this->placeholder = $placeholder;
+        $this->token = isset($value) ? new FakeToken($value) : null;
     }
 
     public function token(): ?Token
     {
-        return isset($this->value) ? FakeToken::withPlaceholder($this->placeholder, $this->value) : null;
+        return $this->token;
     }
 }

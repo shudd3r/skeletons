@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Token;
 
 
-class DefaultNamespace implements Source
+class CodeNamespace implements Source
 {
     private ComposerJsonData $composer;
     private Source           $fallback;
@@ -27,7 +27,7 @@ class DefaultNamespace implements Source
         $this->fallback = $fallback;
     }
 
-    public function create(string $value): ?Token
+    public function token(string $value): ?Token
     {
         foreach (explode('\\', $value) as $label) {
             $validLabel = preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label);
