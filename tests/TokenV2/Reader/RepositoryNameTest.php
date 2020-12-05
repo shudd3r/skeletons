@@ -12,8 +12,8 @@
 namespace Shudd3r\PackageFiles\Tests\TokenV2\Reader;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\TokenV2\Reader;
 use Shudd3r\PackageFiles\Token;
+use Shudd3r\PackageFiles\TokenV2\Reader;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -52,29 +52,10 @@ class RepositoryNameTest extends TestCase
         $this->assertSame('master/ssh-repo', $reader->value());
     }
 
-    public function testReaderWithSourceWithoutValue_ValueMethod_ReturnsParsedValue()
+    public function testReader_TokenMethod_ReturnsCorrectToken()
     {
-        $reader = $this->reader(null);
-        $this->assertSame($reader->parsedValue(), $reader->value());
-    }
-
-    public function testReaderWithSourceProvidedValue_ValueMethod_ReturnsSourceValue()
-    {
-        $reader = $this->reader('repo/name');
-        $this->assertNotEquals($reader->parsedValue(), $reader->value());
-        $this->assertSame('repo/name', $reader->value());
-    }
-
-    public function testReaderWithSourceWithoutValue_TokenMethod_ReturnsTokenUsingParsedValue()
-    {
-        $reader = $this->reader(null);
-        $this->assertToken('config/repo', $reader);
-    }
-
-    public function testReaderWithSourceProvidedValue_TokenMethod_ReturnsTokenUsingSourceValue()
-    {
-        $reader = $this->reader('source/repoName');
-        $this->assertToken('source/repoName', $reader);
+        $expected = new Token\ValueToken('{repository.name}', 'source/repo');
+        $this->assertEquals($expected, $this->reader('source/repo')->token());
     }
 
     /**
@@ -91,7 +72,7 @@ class RepositoryNameTest extends TestCase
 
         $reader = $this->reader($valid);
         $this->assertSame($valid, $reader->value());
-        $this->assertToken($valid, $reader);
+        $this->assertInstanceOf(Token::class, $reader->token());
     }
 
     public function valueExamples()
@@ -111,12 +92,6 @@ class RepositoryNameTest extends TestCase
             [$longAccount, $shortAccount],
             [$longRepo, $shortRepo]
         ];
-    }
-
-    private function assertToken(string $value, Reader $reader): void
-    {
-        $expected = new Token\ValueToken('{repository.name}', $value);
-        $this->assertEquals($expected, $reader->token());
     }
 
     private function reader(?string $source, bool $config = true): Reader\RepositoryName

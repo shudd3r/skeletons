@@ -12,9 +12,8 @@
 namespace Shudd3r\PackageFiles\Tests\TokenV2\Reader;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\TokenV2\Reader;
-use Shudd3r\PackageFiles\TokenV2\Parser;
 use Shudd3r\PackageFiles\Token;
+use Shudd3r\PackageFiles\TokenV2\Reader;
 use Shudd3r\PackageFiles\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
@@ -23,58 +22,29 @@ class PackageNameTest extends TestCase
 {
     public function testInstantiation()
     {
-        $reader = $this->reader('some/name', 'composer/name');
-        $this->assertInstanceOf(Reader::class, $reader);
-        $this->assertInstanceOf(Parser::class, $reader);
+        $reader = $this->reader('some/name');
+        $this->assertInstanceOf(Reader\ValueToken::class, $reader);
     }
 
     public function testReaderWithEmptyComposerName_ParsedValueMethod_ResolvesNameFromDirectoryStructure()
     {
-        $reader = $this->reader(null, null, 'foo/directory');
-        $this->assertSame('foo/directory', $reader->parsedValue());
+        $reader = $this->reader(null, false);
+        $this->assertSame('root/path', $reader->parsedValue());
     }
 
     public function testReaderWithComposerName_ParsedValueMethod_ResolvesNameFromComposer()
     {
-        $reader = $this->reader(null, 'composer/package', 'foo/directory');
+        $reader = $this->reader(null);
         $this->assertSame('composer/package', $reader->parsedValue());
     }
 
-    public function testReaderWithSourceWithoutValue_ValueMethod_ReturnsParsedValue()
+    public function testReader_TokenMethod_ReturnsCorrectToken()
     {
-        $reader = $this->reader(null, 'composer/package');
-        $this->assertSame($reader->parsedValue(), $reader->value());
-    }
-
-    public function testReaderWithSourceProvidedValue_ValueMethod_ReturnsSourceValue()
-    {
-        $reader = $this->reader('source/package', 'composer/package');
-        $this->assertNotEquals($reader->parsedValue(), $reader->value());
-        $this->assertSame('source/package', $reader->value());
-    }
-
-    public function testReaderWithSourceWithoutValue_TokenMethod_ReturnsTokenUsingParsedValue()
-    {
-        $reader = $this->reader(null, 'composer/package');
-        $this->assertToken('composer/package', $reader);
-    }
-
-    public function testReaderWithSourceProvidedValue_TokenMethod_ReturnsTokenUsingSourceValue()
-    {
-        $reader = $this->reader('source/package-name', 'composer/package');
-        $this->assertToken('source/package-name', $reader);
-    }
-
-    public function testReaderCachesValue()
-    {
-        $source = new Doubles\FakeSourceV2();
-        $reader = new Reader\PackageName($this->composer(), new Doubles\FakeDirectory(), $source);
-
-        $this->assertSame(0, $source->reads);
-        $reader->value();
-        $this->assertSame(1, $source->reads);
-        $reader->value();
-        $this->assertSame(1, $source->reads);
+        $expected = new Token\CompositeToken(
+            new Token\ValueToken('{package.name}', 'source/package'),
+            new Token\ValueToken('{package.title}', 'Source/Package')
+        );
+        $this->assertEquals($expected, $this->reader('source/package')->token());
     }
 
     /**
@@ -85,13 +55,13 @@ class PackageNameTest extends TestCase
      */
     public function testReaderValueValidation(string $invalid, string $valid)
     {
-        $reader = $this->reader($invalid, 'composer/package');
+        $reader = $this->reader($invalid);
         $this->assertSame($invalid, $reader->value());
         $this->assertNull($reader->token());
 
-        $reader = $this->reader($valid, 'composer/package');
+        $reader = $this->reader($valid);
         $this->assertSame($valid, $reader->value());
-        $this->assertToken($valid, $reader);
+        $this->assertInstanceOf(Token::class, $reader->token());
     }
 
     public function valueExamples()
@@ -102,26 +72,11 @@ class PackageNameTest extends TestCase
         ];
     }
 
-    private function assertToken(string $value, Reader $reader): void
-    {
-        $expected = new Token\CompositeToken(
-            new Token\ValueToken('{package.name}', $value),
-            new Token\ValueToken('{package.title}', $this->titleName($value))
-        );
-        $this->assertEquals($expected, $reader->token());
-    }
-
-    private function titleName(string $value): string
-    {
-        [$vendor, $package] = explode('/', $value);
-        return ucfirst($vendor) . '/' . ucfirst($package);
-    }
-
-    private function reader(?string $source, ?string $composer, ?string $directory = 'foo/bar'): Reader\PackageName
+    private function reader(?string $source, bool $composer = true): Reader\PackageName
     {
         return new Reader\PackageName(
-            $this->composer($composer ?? ''),
-            new Doubles\FakeDirectory($directory),
+            $this->composer($composer ? 'composer/package' : ''),
+            new Doubles\FakeDirectory('root/path'),
             new Doubles\FakeSourceV2($source)
         );
     }
