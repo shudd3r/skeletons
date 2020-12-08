@@ -29,6 +29,6 @@ class FakeSourceV2 implements Source
     public function value(Parser $parser): string
     {
         $this->reads++;
-        return $this->value ?: $parser->parsedValue();
+        return $this->value ?? $parser->parsedValue();
     }
 }
