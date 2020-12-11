@@ -22,9 +22,9 @@ abstract class ValueToken implements Reader, Parser
     private Source $source;
     private string $cachedValue;
 
-    public function __construct(Source $source)
+    public function __construct(?Source $source)
     {
-        $this->source = $source;
+        $this->source = $source ?? new Source\ParsedFiles();
     }
 
     public function token(): ?Token

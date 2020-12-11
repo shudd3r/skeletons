@@ -21,7 +21,7 @@ class RepositoryName extends ValueToken
     private File        $gitConfig;
     private PackageName $packageName;
 
-    public function __construct(File $gitConfig, PackageName $packageName, Source $source)
+    public function __construct(File $gitConfig, PackageName $packageName, Source $source = null)
     {
         $this->gitConfig   = $gitConfig;
         $this->packageName = $packageName;

@@ -78,6 +78,9 @@ class SrcNamespaceTest extends TestCase
         $contents = json_encode($composer ? ['autoload' => ['psr-4' => ['Composer\\Namespace\\' => 'src/']]] : []);
         $composer = new ComposerJsonData(new Doubles\MockedFile($contents));
         $package  = new Doubles\FakePackageName();
-        return new Reader\SrcNamespace($composer, $package, new Doubles\FakeSourceV2($source));
+
+        return isset($source)
+            ? new Reader\SrcNamespace($composer, $package, new Doubles\FakeSourceV2($source))
+            : new Reader\SrcNamespace($composer, $package);
     }
 }

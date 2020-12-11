@@ -74,11 +74,12 @@ class PackageNameTest extends TestCase
 
     private function reader(?string $source, bool $composer = true): Reader\PackageName
     {
-        return new Reader\PackageName(
-            $this->composer($composer ? 'composer/package' : ''),
-            new Doubles\FakeDirectory('root/path'),
-            new Doubles\FakeSourceV2($source)
-        );
+        $composer  = $this->composer($composer ? 'composer/package' : '');
+        $directory = new Doubles\FakeDirectory('root/path');
+
+        return isset($source)
+            ? new Reader\PackageName($composer, $directory, new Doubles\FakeSourceV2($source))
+            : new Reader\PackageName($composer, $directory);
     }
 
     private function composer(string $packageName = ''): ComposerJsonData

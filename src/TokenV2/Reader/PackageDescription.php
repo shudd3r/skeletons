@@ -21,7 +21,7 @@ class PackageDescription extends ValueToken
     private ComposerJsonData $composer;
     private PackageName      $packageName;
 
-    public function __construct(ComposerJsonData $composer, PackageName $packageName, Source $source)
+    public function __construct(ComposerJsonData $composer, PackageName $packageName, Source $source = null)
     {
         $this->composer    = $composer;
         $this->packageName = $packageName;

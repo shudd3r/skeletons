@@ -71,6 +71,9 @@ class PackageDescriptionTest extends TestCase
         $contents = json_encode($composer ? ['description' => 'composer package description'] : []);
         $composer = new ComposerJsonData(new Doubles\MockedFile($contents));
         $package  = new Doubles\FakePackageName();
-        return new Reader\PackageDescription($composer, $package, new Doubles\FakeSourceV2($source));
+
+        return isset($source)
+            ? new Reader\PackageDescription($composer, $package, new Doubles\FakeSourceV2($source))
+            : new Reader\PackageDescription($composer, $package);
     }
 }

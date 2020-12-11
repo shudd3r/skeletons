@@ -99,18 +99,18 @@ class RepositoryNameTest extends TestCase
         $config  = $config ? ['origin' => 'https://github.com/config/repo.git'] : [];
         $config  = new Doubles\MockedFile($this->config($config));
         $package = new Doubles\FakePackageName('package/name');
-        $source  = new Doubles\FakeSourceV2($source);
 
-        return new Reader\RepositoryName($config, $package, $source);
+        return isset($source)
+            ? new Reader\RepositoryName($config, $package, new Doubles\FakeSourceV2($source))
+            : new Reader\RepositoryName($config, $package);
     }
 
     private function configReader(array $config = []): Reader\RepositoryName
     {
         $config  = new Doubles\MockedFile($this->config($config));
         $package = new Doubles\FakePackageName('package/name');
-        $source  = new Doubles\FakeSourceV2(null);
 
-        return new Reader\RepositoryName($config, $package, $source);
+        return new Reader\RepositoryName($config, $package);
     }
 
     private function config(array $remotes = []): string

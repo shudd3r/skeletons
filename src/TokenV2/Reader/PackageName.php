@@ -22,7 +22,7 @@ class PackageName extends ValueToken
     private ComposerJsonData $composer;
     private Directory        $project;
 
-    public function __construct(ComposerJsonData $composer, Directory $project, Source $source)
+    public function __construct(ComposerJsonData $composer, Directory $project, Source $source = null)
     {
         $this->composer = $composer;
         $this->project  = $project;
