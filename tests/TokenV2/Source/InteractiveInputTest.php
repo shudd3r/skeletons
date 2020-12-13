@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\TokenV2\Source;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\TokenV2\Source\InteractiveInput;
+use Shudd3r\PackageFiles\TokenV2\Source;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -22,18 +22,18 @@ class InteractiveInputTest extends TestCase
     {
         $source = $this->source($terminal, 'default');
         $terminal->inputStrings = [''];
-        $this->assertSame('default', $source->value(new Doubles\FakeParser()));
+        $this->assertSourceValue('default', $source);
 
         $source = $this->source($terminal, '');
         $terminal->inputStrings = [''];
-        $this->assertSame('', $source->value(new Doubles\FakeParser()));
+        $this->assertSourceValue('', $source);
     }
 
     public function testNotEmptyInputReturnsInputString()
     {
         $source = $this->source($terminal, 'default');
         $terminal->inputStrings = ['input string'];
-        $this->assertSame('input string', $source->value(new Doubles\FakeParser()));
+        $this->assertSourceValue('input string', $source);
     }
 
     public function testRepeatedInput()
@@ -41,9 +41,9 @@ class InteractiveInputTest extends TestCase
         $source = $this->source($terminal, 'baz (default)');
         $terminal->inputStrings = ['foo', 'bar'];
 
-        $this->assertSame('foo', $source->value(new Doubles\FakeParser()));
-        $this->assertSame('bar', $source->value(new Doubles\FakeParser()));
-        $this->assertSame('baz (default)', $source->value(new Doubles\FakeParser()));
+        $this->assertSourceValue('foo', $source);
+        $this->assertSourceValue('bar', $source);
+        $this->assertSourceValue('baz (default)', $source);
         $this->assertCount(3, $terminal->messagesSent);
     }
 
@@ -59,9 +59,14 @@ class InteractiveInputTest extends TestCase
         $this->assertSame(['Input value [default: `default value`]:'], $terminal->messagesSent);
     }
 
-    private function source(?Doubles\MockedTerminal &$terminal, string $default = 'default'): InteractiveInput
+    private function assertSourceValue(string $value, Source $source): void
+    {
+        $this->assertSame($value, $source->value(new Doubles\FakeParser()));
+    }
+
+    private function source(?Doubles\MockedTerminal &$terminal, string $default = 'default'): Source\InteractiveInput
     {
         $terminal = new Doubles\MockedTerminal();
-        return new InteractiveInput('Input value', $terminal, new Doubles\FakeSourceV2($default));
+        return new Source\InteractiveInput('Input value', $terminal, new Doubles\FakeSourceV2($default));
     }
 }
