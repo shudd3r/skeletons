@@ -22,18 +22,18 @@ class InteractiveInputTest extends TestCase
     {
         $source = $this->source($terminal, 'default');
         $terminal->inputStrings = [''];
-        $this->assertSame('default', $source->value(new Doubles\MockedValueToken()));
+        $this->assertSame('default', $source->value(new Doubles\FakeParser()));
 
         $source = $this->source($terminal, '');
         $terminal->inputStrings = [''];
-        $this->assertSame('', $source->value(new Doubles\MockedValueToken()));
+        $this->assertSame('', $source->value(new Doubles\FakeParser()));
     }
 
     public function testNotEmptyInputReturnsInputString()
     {
         $source = $this->source($terminal, 'default');
         $terminal->inputStrings = ['input string'];
-        $this->assertSame('input string', $source->value(new Doubles\MockedValueToken()));
+        $this->assertSame('input string', $source->value(new Doubles\FakeParser()));
     }
 
     public function testRepeatedInput()
@@ -41,9 +41,9 @@ class InteractiveInputTest extends TestCase
         $source = $this->source($terminal, 'baz (default)');
         $terminal->inputStrings = ['foo', 'bar'];
 
-        $this->assertSame('foo', $source->value(new Doubles\MockedValueToken()));
-        $this->assertSame('bar', $source->value(new Doubles\MockedValueToken()));
-        $this->assertSame('baz (default)', $source->value(new Doubles\MockedValueToken()));
+        $this->assertSame('foo', $source->value(new Doubles\FakeParser()));
+        $this->assertSame('bar', $source->value(new Doubles\FakeParser()));
+        $this->assertSame('baz (default)', $source->value(new Doubles\FakeParser()));
         $this->assertCount(3, $terminal->messagesSent);
     }
 
@@ -51,11 +51,11 @@ class InteractiveInputTest extends TestCase
     {
         $source = $this->source($terminal, '');
         $this->assertSame([], $terminal->messagesSent);
-        $source->value(new Doubles\MockedValueToken());
+        $source->value(new Doubles\FakeParser());
         $this->assertSame(['Input value:'], $terminal->messagesSent);
 
         $source = $this->source($terminal, 'default value');
-        $source->value(new Doubles\MockedValueToken());
+        $source->value(new Doubles\FakeParser());
         $this->assertSame(['Input value [default: `default value`]:'], $terminal->messagesSent);
     }
 

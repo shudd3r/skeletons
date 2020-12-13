@@ -21,7 +21,6 @@ class PredefinedValueTest extends TestCase
     public function testSource_ValueMethod_ReturnsConstructorParamValue()
     {
         $source = new PredefinedValue('constructor value');
-        $parser = new Doubles\MockedValueToken();
-        $this->assertSame('constructor value', $source->value($parser));
+        $this->assertSame('constructor value', $source->value(new Doubles\FakeParser()));
     }
 }
