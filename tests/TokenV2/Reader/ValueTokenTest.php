@@ -26,6 +26,17 @@ class ValueTokenTest extends TestCase
         $this->assertInstanceOf(Parser::class, $reader);
     }
 
+    public function testReader_WithSourceMethod_CreatesNewInstanceWithChangedSource()
+    {
+        $baseReader = $this->reader('base value');
+        $this->assertSame('base value', $baseReader->value());
+
+        $newReader = $baseReader->withSource(new Doubles\FakeSourceV2('new value'));
+
+        $this->assertNotEquals($baseReader, $newReader);
+        $this->assertSame('new value', $newReader->value());
+    }
+
     public function testReaderWithSourceWithoutValue_ValueMethod_ReturnsParsedValue()
     {
         $reader = $this->reader(null);

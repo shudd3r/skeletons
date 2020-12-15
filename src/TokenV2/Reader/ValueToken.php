@@ -27,6 +27,14 @@ abstract class ValueToken implements Reader, Parser
         $this->source = $source ?? new Source\ParsedFiles();
     }
 
+    public function withSource(Source $source): self
+    {
+        $clone = clone $this;
+        $clone->source = $source;
+        unset($clone->cachedValue);
+        return $clone;
+    }
+
     public function token(): ?Token
     {
         $value = $this->value();
