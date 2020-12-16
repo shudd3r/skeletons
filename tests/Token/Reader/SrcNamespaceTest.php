@@ -80,7 +80,7 @@ class SrcNamespaceTest extends TestCase
         $package  = new Doubles\FakePackageName();
 
         return isset($source)
-            ? new Reader\SrcNamespace($composer, $package, new Doubles\FakeSourceV2($source))
+            ? new Reader\SrcNamespace($composer, $package, new Doubles\FakeSource($source))
             : new Reader\SrcNamespace($composer, $package);
     }
 }

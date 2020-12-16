@@ -21,7 +21,7 @@ class FakePackageName extends PackageName
     {
         $composer  = new ComposerJsonData(new MockedFile());
         $directory = new FakeDirectory();
-        $source    = new FakeSourceV2($value);
+        $source    = new FakeSource($value);
 
         parent::__construct($composer, $directory, $source);
     }

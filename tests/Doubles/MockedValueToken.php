@@ -17,13 +17,13 @@ use Shudd3r\PackageFiles\Token;
 
 class MockedValueToken extends ValueToken
 {
-    public ?FakeSourceV2 $source;
+    public ?FakeSource $source;
 
     private bool $valid;
 
     public function __construct(?string $sourceValue = 'foo', bool $valid = true)
     {
-        $this->source = isset($sourceValue) ? new FakeSourceV2($sourceValue) : null;
+        $this->source = isset($sourceValue) ? new FakeSource($sourceValue) : null;
         $this->valid  = $valid;
         parent::__construct($this->source);
     }

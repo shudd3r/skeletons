@@ -73,7 +73,7 @@ class PackageDescriptionTest extends TestCase
         $package  = new Doubles\FakePackageName();
 
         return isset($source)
-            ? new Reader\PackageDescription($composer, $package, new Doubles\FakeSourceV2($source))
+            ? new Reader\PackageDescription($composer, $package, new Doubles\FakeSource($source))
             : new Reader\PackageDescription($composer, $package);
     }
 }

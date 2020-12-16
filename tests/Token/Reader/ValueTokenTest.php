@@ -31,7 +31,7 @@ class ValueTokenTest extends TestCase
         $baseReader = $this->reader('base value');
         $this->assertSame('base value', $baseReader->value());
 
-        $newReader = $baseReader->withSource(new Doubles\FakeSourceV2('new value'));
+        $newReader = $baseReader->withSource(new Doubles\FakeSource('new value'));
 
         $this->assertNotEquals($baseReader, $newReader);
         $this->assertSame('new value', $newReader->value());

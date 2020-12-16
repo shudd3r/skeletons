@@ -67,6 +67,6 @@ class InteractiveInputTest extends TestCase
     private function source(?Doubles\MockedTerminal &$terminal, string $default = 'default'): Source\InteractiveInput
     {
         $terminal = new Doubles\MockedTerminal();
-        return new Source\InteractiveInput('Input value', $terminal, new Doubles\FakeSourceV2($default));
+        return new Source\InteractiveInput('Input value', $terminal, new Doubles\FakeSource($default));
     }
 }

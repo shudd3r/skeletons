@@ -101,7 +101,7 @@ class RepositoryNameTest extends TestCase
         $package = new Doubles\FakePackageName('package/name');
 
         return isset($source)
-            ? new Reader\RepositoryName($config, $package, new Doubles\FakeSourceV2($source))
+            ? new Reader\RepositoryName($config, $package, new Doubles\FakeSource($source))
             : new Reader\RepositoryName($config, $package);
     }
 

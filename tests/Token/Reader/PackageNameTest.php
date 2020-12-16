@@ -78,7 +78,7 @@ class PackageNameTest extends TestCase
         $directory = new Doubles\FakeDirectory('root/path');
 
         return isset($source)
-            ? new Reader\PackageName($composer, $directory, new Doubles\FakeSourceV2($source))
+            ? new Reader\PackageName($composer, $directory, new Doubles\FakeSource($source))
             : new Reader\PackageName($composer, $directory);
     }
 
