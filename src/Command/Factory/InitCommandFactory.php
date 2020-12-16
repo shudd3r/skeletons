@@ -17,8 +17,8 @@ use Shudd3r\PackageFiles\Command\TokenProcessor;
 use Shudd3r\PackageFiles\Command\BackupFiles;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory\ReflectedDirectory;
-use Shudd3r\PackageFiles\Token\Reader\TokensReader;
 use Shudd3r\PackageFiles\Token\Source;
+use Shudd3r\PackageFiles\TokenV2 as v2;
 use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Template;
 
@@ -30,7 +30,7 @@ class InitCommandFactory extends Factory
         $packageFiles = new ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupFiles  = new BackupFiles($packageFiles, $this->env->backup());
 
-        $reader        = new TokensReader($this->env->output(), ...$this->tokenReaders());
+        $reader        = new v2\Reader\CompositeTokenReader(...$this->tokenReaders());
         $processTokens = new TokenProcessor($reader, $this->processor());
 
         return new CommandSequence($backupFiles, $processTokens);
@@ -41,18 +41,17 @@ class InitCommandFactory extends Factory
         $files    = $this->env->package();
         $composer = new Source\Data\ComposerJsonData($files->file('composer.json'));
 
-        $package = $this->option('package', new Source\PackageName($composer, $files));
-        $package = $this->errorHandler('Package name', $this->interactive('Packagist package name', $package));
-        $package = $this->cached($package);
+        $source  = $this->interactive('Packagist package name', $this->option('package'));
+        $package = new v2\Reader\PackageName($composer, $files, $source);
 
-        $repo = $this->option('repo', new Source\RepositoryName($files->file('.git/config'), $package));
-        $repo = $this->errorHandler('Repository name', $this->interactive('Github repository name', $repo));
+        $source = $this->interactive('Github repository name', $this->option('repo'));
+        $repo   = new v2\Reader\RepositoryName($files->file('.git/config'), $package, $source);
 
-        $desc = $this->option('desc', new Source\PackageDescription($composer, $package));
-        $desc = $this->errorHandler('Package description', $this->interactive('Package description', $desc));
+        $source = $this->interactive('Github repository name', $this->option('desc'));
+        $desc   = new v2\Reader\PackageDescription($composer, $package, $source);
 
-        $namespace = $this->option('ns', new Source\CodeNamespace($composer, $package));
-        $namespace = $this->errorHandler('Namespace', $this->interactive('Source files namespace', $namespace));
+        $source    = $this->interactive('Source files namespace', $this->option('ns'));
+        $namespace = new v2\Reader\SrcNamespace($composer, $package, $source);
 
         return [$package, $repo, $desc, $namespace];
     }
@@ -69,27 +68,17 @@ class InitCommandFactory extends Factory
         return new Processor\ProcessorSequence($generateComposer, $generatePackage);
     }
 
-    private function option(string $name, Source $source): ?Source
+    private function option(string $name): v2\Source
     {
         return isset($this->options[$name])
-            ? new Source\Decorator\PredefinedValue($this->options[$name], $source)
-            : $source;
+            ? new v2\Source\PredefinedValue($this->options[$name])
+            : new v2\Source\ParsedFiles();
     }
 
-    private function interactive(string $prompt, Source $source): Source
+    private function interactive(string $prompt, v2\Source $source): v2\Source
     {
         return isset($this->options['i']) || isset($this->options['interactive'])
-            ? new Source\Decorator\InteractiveInput($prompt, $this->env->input(), $source)
+            ? new v2\Source\InteractiveInput($prompt, $this->env->input(), $source)
             : $source;
-    }
-
-    private function errorHandler(string $tokenName, Source $source): Source
-    {
-        return new Source\Decorator\ErrorMessageOutput($source, $this->env->output(), $tokenName);
-    }
-
-    private function cached(Source $source): Source
-    {
-        return new Source\Decorator\CachedValue($source);
     }
 }

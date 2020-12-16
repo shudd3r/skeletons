@@ -20,13 +20,13 @@ class TokenProcessorTest extends TestCase
 {
     public function testInstantiation()
     {
-        $command = new TokenProcessor(new Doubles\FakeReader(), new Doubles\MockedProcessor());
+        $command = new TokenProcessor(new Doubles\FakeReaderV2(), new Doubles\MockedProcessor());
         $this->assertInstanceOf(TokenProcessor::class, $command);
     }
 
     public function testPropertiesArePassedToProcessor()
     {
-        $reader    = new Doubles\FakeReader();
+        $reader    = new Doubles\FakeReaderV2();
         $processor = new Doubles\MockedProcessor();
         $command   = new TokenProcessor($reader, $processor);
 
@@ -36,7 +36,7 @@ class TokenProcessorTest extends TestCase
 
     public function testUnresolvedPropertiesStopExecution()
     {
-        $command = new TokenProcessor(new Doubles\FakeReader(null), $processor = new Doubles\MockedProcessor());
+        $command = new TokenProcessor(new Doubles\FakeReaderV2(null), $processor = new Doubles\MockedProcessor());
 
         $command->execute();
         $this->assertNull($processor->passedToken);
