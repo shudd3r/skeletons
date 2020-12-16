@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\TokenV2;
+namespace Shudd3r\PackageFiles\Token;
 
 
 interface Parser

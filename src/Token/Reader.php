@@ -9,10 +9,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\TokenV2;
+namespace Shudd3r\PackageFiles\Token;
+
+use Shudd3r\PackageFiles\Token;
 
 
-interface Source
+interface Reader
 {
-    public function value(Parser $parser): string;
+    public function token(): ?Token;
+
+    public function value(): string;
 }

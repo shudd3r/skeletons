@@ -9,9 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\TokenV2\Reader;
+namespace Shudd3r\PackageFiles\Token\Reader;
 
-use Shudd3r\PackageFiles\TokenV2\Reader;
+use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Token;
 
 

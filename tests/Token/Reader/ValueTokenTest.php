@@ -9,11 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\TokenV2\Reader;
+namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\TokenV2\Reader;
-use Shudd3r\PackageFiles\TokenV2\Parser;
+use Shudd3r\PackageFiles\Token\Reader;
+use Shudd3r\PackageFiles\Token\Parser;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 

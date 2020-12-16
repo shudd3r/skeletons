@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\TokenV2\Reader\PackageName;
+use Shudd3r\PackageFiles\Token\Reader\PackageName;
 use Shudd3r\PackageFiles\Token\Source\Data\ComposerJsonData;
 
 

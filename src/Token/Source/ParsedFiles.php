@@ -9,23 +9,16 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\TokenV2\Source;
+namespace Shudd3r\PackageFiles\Token\Source;
 
-use Shudd3r\PackageFiles\TokenV2\Source;
-use Shudd3r\PackageFiles\TokenV2\Parser;
+use Shudd3r\PackageFiles\Token\Source;
+use Shudd3r\PackageFiles\Token\Parser;
 
 
-class PredefinedValue implements Source
+class ParsedFiles implements Source
 {
-    private string $value;
-
-    public function __construct(string $value)
-    {
-        $this->value = $value;
-    }
-
     public function value(Parser $parser): string
     {
-        return $this->value;
+        return $parser->parsedValue();
     }
 }

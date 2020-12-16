@@ -9,11 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\TokenV2\Reader;
+namespace Shudd3r\PackageFiles\Token\Reader;
 
 use Shudd3r\PackageFiles\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
-use Shudd3r\PackageFiles\TokenV2\Source;
+use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Token;
 
 

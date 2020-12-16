@@ -9,11 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\TokenV2\Source;
+namespace Shudd3r\PackageFiles\Token\Source;
 
-use Shudd3r\PackageFiles\TokenV2\Source;
+use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Application\Input;
-use Shudd3r\PackageFiles\TokenV2\Parser;
+use Shudd3r\PackageFiles\Token\Parser;
 
 
 class InteractiveInput implements Source

@@ -9,13 +9,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\TokenV2\Reader;
+namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeReaderV2;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeToken;
 use Shudd3r\PackageFiles\Token\CompositeToken;
-use Shudd3r\PackageFiles\TokenV2\Reader\CompositeTokenReader;
+use Shudd3r\PackageFiles\Token\Reader\CompositeTokenReader;
 
 
 class CompositeTokenReaderTest extends TestCase

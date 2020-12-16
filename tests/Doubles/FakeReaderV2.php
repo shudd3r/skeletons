@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\TokenV2\Reader;
+use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Token;
 
 

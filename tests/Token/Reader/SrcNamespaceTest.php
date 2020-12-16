@@ -9,39 +9,42 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\TokenV2\Reader;
+namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token;
-use Shudd3r\PackageFiles\TokenV2\Reader;
+use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class PackageDescriptionTest extends TestCase
+class SrcNamespaceTest extends TestCase
 {
     public function testInstantiation()
     {
-        $reader = $this->reader('This is my package...');
+        $reader = $this->reader('Some\\Namespace');
         $this->assertInstanceOf(Reader\ValueToken::class, $reader);
     }
 
-    public function testReaderWithEmptyComposerDescription_ParsedValueMethod_ResolvesDescriptionFromPackageName()
+    public function testReaderWithEmptyComposerNamespace_ParsedValueMethod_ResolvesNamespaceFromPackageName()
     {
         $reader = $this->reader('anything', false);
-        $this->assertSame('package/name package', $reader->parsedValue());
+        $this->assertSame('Package\\Name', $reader->parsedValue());
     }
 
-    public function testReaderWithComposerDescription_ParsedValueMethod_ResolvesDescriptionFromComposerFile()
+    public function testReaderWithComposerNamespace_ParsedValueMethod_ResolvesNamespaceFromComposerFile()
     {
         $reader = $this->reader(null);
-        $this->assertSame('composer package description', $reader->parsedValue());
+        $this->assertSame('Composer\\Namespace', $reader->parsedValue());
     }
 
     public function testReader_TokenMethod_ReturnsCorrectToken()
     {
-        $expected = new Token\ValueToken('{description.text}', 'This is my package...');
-        $this->assertEquals($expected, $this->reader('This is my package...')->token());
+        $expected = new Token\CompositeToken(
+            new Token\ValueToken('{namespace.src}', 'Some\\Namespace'),
+            new Token\ValueToken('{namespace.src.esc}', 'Some\\\\Namespace')
+        );
+        $this->assertEquals($expected, $this->reader('Some\\Namespace')->token());
     }
 
     /**
@@ -63,17 +66,21 @@ class PackageDescriptionTest extends TestCase
 
     public function valueExamples()
     {
-        return [['', 'package description']];
+        return [
+            ['Foo/Bar', 'Foo\Bar'],
+            ['_Foo\1Bar\Baz', '_Foo\_1Bar\Baz'],
+            ['Package:000\na_Me', 'Package000\na_Me']
+        ];
     }
 
-    private function reader(?string $source, bool $composer = true): Reader\PackageDescription
+    private function reader(?string $source, bool $composer = true): Reader\SrcNamespace
     {
-        $contents = json_encode($composer ? ['description' => 'composer package description'] : []);
+        $contents = json_encode($composer ? ['autoload' => ['psr-4' => ['Composer\\Namespace\\' => 'src/']]] : []);
         $composer = new ComposerJsonData(new Doubles\MockedFile($contents));
         $package  = new Doubles\FakePackageName();
 
         return isset($source)
-            ? new Reader\PackageDescription($composer, $package, new Doubles\FakeSourceV2($source))
-            : new Reader\PackageDescription($composer, $package);
+            ? new Reader\SrcNamespace($composer, $package, new Doubles\FakeSourceV2($source))
+            : new Reader\SrcNamespace($composer, $package);
     }
 }

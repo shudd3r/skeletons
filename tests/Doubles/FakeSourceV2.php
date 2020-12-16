@@ -11,8 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\TokenV2\Source;
-use Shudd3r\PackageFiles\TokenV2\Parser;
+use Shudd3r\PackageFiles\Token\Source;
+use Shudd3r\PackageFiles\Token\Parser;
 
 
 class FakeSourceV2 implements Source

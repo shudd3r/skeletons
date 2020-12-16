@@ -18,7 +18,7 @@ use Shudd3r\PackageFiles\Command\BackupFiles;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory\ReflectedDirectory;
 use Shudd3r\PackageFiles\Token\Source;
-use Shudd3r\PackageFiles\TokenV2 as v2;
+use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Template;
 
@@ -30,7 +30,7 @@ class InitCommandFactory extends Factory
         $packageFiles = new ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupFiles  = new BackupFiles($packageFiles, $this->env->backup());
 
-        $reader        = new v2\Reader\CompositeTokenReader(...$this->tokenReaders());
+        $reader        = new Reader\CompositeTokenReader(...$this->tokenReaders());
         $processTokens = new TokenProcessor($reader, $this->processor());
 
         return new CommandSequence($backupFiles, $processTokens);
@@ -42,16 +42,16 @@ class InitCommandFactory extends Factory
         $composer = new Source\Data\ComposerJsonData($files->file('composer.json'));
 
         $source  = $this->interactive('Packagist package name', $this->option('package'));
-        $package = new v2\Reader\PackageName($composer, $files, $source);
+        $package = new Reader\PackageName($composer, $files, $source);
 
         $source = $this->interactive('Github repository name', $this->option('repo'));
-        $repo   = new v2\Reader\RepositoryName($files->file('.git/config'), $package, $source);
+        $repo   = new Reader\RepositoryName($files->file('.git/config'), $package, $source);
 
         $source = $this->interactive('Github repository name', $this->option('desc'));
-        $desc   = new v2\Reader\PackageDescription($composer, $package, $source);
+        $desc   = new Reader\PackageDescription($composer, $package, $source);
 
         $source    = $this->interactive('Source files namespace', $this->option('ns'));
-        $namespace = new v2\Reader\SrcNamespace($composer, $package, $source);
+        $namespace = new Reader\SrcNamespace($composer, $package, $source);
 
         return [$package, $repo, $desc, $namespace];
     }
@@ -68,17 +68,17 @@ class InitCommandFactory extends Factory
         return new Processor\ProcessorSequence($generateComposer, $generatePackage);
     }
 
-    private function option(string $name): v2\Source
+    private function option(string $name): Source
     {
         return isset($this->options[$name])
-            ? new v2\Source\PredefinedValue($this->options[$name])
-            : new v2\Source\ParsedFiles();
+            ? new Source\PredefinedValue($this->options[$name])
+            : new Source\ParsedFiles();
     }
 
-    private function interactive(string $prompt, v2\Source $source): v2\Source
+    private function interactive(string $prompt, Source $source): Source
     {
         return isset($this->options['i']) || isset($this->options['interactive'])
-            ? new v2\Source\InteractiveInput($prompt, $this->env->input(), $source)
+            ? new Source\InteractiveInput($prompt, $this->env->input(), $source)
             : $source;
     }
 }
