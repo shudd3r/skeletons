@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Token\Reader;
-use Shudd3r\PackageFiles\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -82,10 +81,10 @@ class PackageNameTest extends TestCase
             : new Reader\PackageName($composer, $directory);
     }
 
-    private function composer(string $packageName = ''): ComposerJsonData
+    private function composer(string $packageName = ''): Reader\Data\ComposerJsonData
     {
         $contents = json_encode($packageName ? ['name' => $packageName] : []);
         $composer = new Doubles\MockedFile($contents);
-        return new ComposerJsonData($composer);
+        return new Reader\Data\ComposerJsonData($composer);
     }
 }

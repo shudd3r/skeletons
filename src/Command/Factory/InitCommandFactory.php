@@ -39,7 +39,7 @@ class InitCommandFactory extends Factory
     protected function tokenReaders(): array
     {
         $files    = $this->env->package();
-        $composer = new Source\Data\ComposerJsonData($files->file('composer.json'));
+        $composer = new Reader\Data\ComposerJsonData($files->file('composer.json'));
 
         $source  = $this->interactive('Packagist package name', $this->option('package'));
         $package = new Reader\PackageName($composer, $files, $source);

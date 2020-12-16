@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Token\Reader;
-use Shudd3r\PackageFiles\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -76,7 +75,7 @@ class SrcNamespaceTest extends TestCase
     private function reader(?string $source, bool $composer = true): Reader\SrcNamespace
     {
         $contents = json_encode($composer ? ['autoload' => ['psr-4' => ['Composer\\Namespace\\' => 'src/']]] : []);
-        $composer = new ComposerJsonData(new Doubles\MockedFile($contents));
+        $composer = new Reader\Data\ComposerJsonData(new Doubles\MockedFile($contents));
         $package  = new Doubles\FakePackageName();
 
         return isset($source)

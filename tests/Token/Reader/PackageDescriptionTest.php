@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Token;
 use Shudd3r\PackageFiles\Token\Reader;
-use Shudd3r\PackageFiles\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -69,7 +68,7 @@ class PackageDescriptionTest extends TestCase
     private function reader(?string $source, bool $composer = true): Reader\PackageDescription
     {
         $contents = json_encode($composer ? ['description' => 'composer package description'] : []);
-        $composer = new ComposerJsonData(new Doubles\MockedFile($contents));
+        $composer = new Reader\Data\ComposerJsonData(new Doubles\MockedFile($contents));
         $package  = new Doubles\FakePackageName();
 
         return isset($source)
