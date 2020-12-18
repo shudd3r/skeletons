@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Token\Source;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Token\Source;
+use Shudd3r\PackageFiles\Token\Source\InteractiveInput;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -59,14 +59,14 @@ class InteractiveInputTest extends TestCase
         $this->assertSame(['Input value [default: `default value`]:'], $terminal->messagesSent);
     }
 
-    private function assertSourceValue(string $value, Source $source): void
+    private function assertSourceValue(string $value, InteractiveInput $source): void
     {
         $this->assertSame($value, $source->value(new Doubles\FakeParser()));
     }
 
-    private function source(?Doubles\MockedTerminal &$terminal, string $default = 'default'): Source\InteractiveInput
+    private function source(?Doubles\MockedTerminal &$terminal, string $default = 'default'): InteractiveInput
     {
         $terminal = new Doubles\MockedTerminal();
-        return new Source\InteractiveInput('Input value', $terminal, new Doubles\FakeSource($default));
+        return new InteractiveInput('Input value', $terminal, new Doubles\FakeSource($default));
     }
 }

@@ -12,10 +12,10 @@
 namespace Shudd3r\PackageFiles\Tests\Token\Reader;
 
 use PHPUnit\Framework\TestCase;
+use Shudd3r\PackageFiles\Token\Reader\CompositeTokenReader;
+use Shudd3r\PackageFiles\Token\CompositeToken;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeReader;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeToken;
-use Shudd3r\PackageFiles\Token\CompositeToken;
-use Shudd3r\PackageFiles\Token\Reader\CompositeTokenReader;
 
 
 class CompositeTokenReaderTest extends TestCase
