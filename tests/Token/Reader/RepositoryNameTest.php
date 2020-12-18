@@ -22,7 +22,7 @@ class RepositoryNameTest extends TestCase
     public function testInstantiation()
     {
         $reader = $this->reader('repo/name');
-        $this->assertInstanceOf(Reader\ValueToken::class, $reader);
+        $this->assertInstanceOf(Reader\ValueReader::class, $reader);
     }
 
     public function testReaderWithEmptyConfigName_ParsedValueMethod_ResolvesNameFromPackageName()

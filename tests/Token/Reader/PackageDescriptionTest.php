@@ -22,7 +22,7 @@ class PackageDescriptionTest extends TestCase
     public function testInstantiation()
     {
         $reader = $this->reader('This is my package...');
-        $this->assertInstanceOf(Reader\ValueToken::class, $reader);
+        $this->assertInstanceOf(Reader\ValueReader::class, $reader);
     }
 
     public function testReaderWithEmptyComposerDescription_ParsedValueMethod_ResolvesDescriptionFromPackageName()

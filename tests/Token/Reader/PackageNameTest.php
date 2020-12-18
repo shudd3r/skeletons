@@ -22,7 +22,7 @@ class PackageNameTest extends TestCase
     public function testInstantiation()
     {
         $reader = $this->reader('some/name');
-        $this->assertInstanceOf(Reader\ValueToken::class, $reader);
+        $this->assertInstanceOf(Reader\ValueReader::class, $reader);
     }
 
     public function testReaderWithEmptyComposerName_ParsedValueMethod_ResolvesNameFromDirectoryStructure()

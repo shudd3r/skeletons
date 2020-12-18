@@ -11,11 +11,11 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Token\Reader\ValueToken;
+use Shudd3r\PackageFiles\Token\Reader\ValueReader;
 use Shudd3r\PackageFiles\Token;
 
 
-class MockedValueToken extends ValueToken
+class MockedValueReader extends ValueReader
 {
     public ?FakeSource $source;
 

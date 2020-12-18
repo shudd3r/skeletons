@@ -73,7 +73,7 @@ class ValueTokenTest extends TestCase
 
     public function testTokenValueIsCached()
     {
-        $reader = new Doubles\MockedValueToken();
+        $reader = new Doubles\MockedValueReader();
 
         $this->assertSame(0, $reader->source->reads);
         $reader->value();
@@ -82,8 +82,8 @@ class ValueTokenTest extends TestCase
         $this->assertSame(1, $reader->source->reads);
     }
 
-    private function reader(?string $sourceValue = 'foo', bool $valid = true): Reader\ValueToken
+    private function reader(?string $sourceValue = 'foo', bool $valid = true): Reader\ValueReader
     {
-        return new Doubles\MockedValueToken($sourceValue, $valid);
+        return new Doubles\MockedValueReader($sourceValue, $valid);
     }
 }

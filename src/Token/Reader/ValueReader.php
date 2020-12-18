@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Token;
 
 
-abstract class ValueToken implements Reader, Parser
+abstract class ValueReader implements Reader, Parser
 {
     private Source $source;
     private string $cachedValue;

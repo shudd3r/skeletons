@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Token;
 
 
-class RepositoryName extends ValueToken
+class RepositoryName extends ValueReader
 {
     private File        $gitConfig;
     private PackageName $packageName;

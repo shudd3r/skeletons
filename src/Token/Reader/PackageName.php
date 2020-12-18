@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Token;
 
 
-class PackageName extends ValueToken
+class PackageName extends ValueReader
 {
     private ComposerJsonData $composer;
     private Directory        $project;

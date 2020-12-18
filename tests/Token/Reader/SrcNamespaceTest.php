@@ -22,7 +22,7 @@ class SrcNamespaceTest extends TestCase
     public function testInstantiation()
     {
         $reader = $this->reader('Some\\Namespace');
-        $this->assertInstanceOf(Reader\ValueToken::class, $reader);
+        $this->assertInstanceOf(Reader\ValueReader::class, $reader);
     }
 
     public function testReaderWithEmptyComposerNamespace_ParsedValueMethod_ResolvesNamespaceFromPackageName()
