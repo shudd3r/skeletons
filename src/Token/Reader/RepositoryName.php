@@ -9,36 +9,41 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Token\Source;
+namespace Shudd3r\PackageFiles\Token\Reader;
 
-use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Application\FileSystem\File;
+use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Token;
 
 
-class RepositoryName implements Source
+class RepositoryName extends ValueReader
 {
-    private File   $gitConfig;
-    private Source $fallback;
+    private File        $gitConfig;
+    private PackageName $packageName;
 
-    public function __construct(File $gitConfig, Source $fallback)
+    public function __construct(File $gitConfig, PackageName $packageName, Source $source = null)
     {
-        $this->gitConfig = $gitConfig;
-        $this->fallback  = $fallback;
+        $this->gitConfig   = $gitConfig;
+        $this->packageName = $packageName;
+        parent::__construct($source);
     }
 
-    public function token(string $value): ?Token
+    public function isValid(string $value): bool
     {
-        $validRepositoryName = preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
-        return $validRepositoryName ? new Token\ValueToken('{repository.name}', $value) : null;
+        return (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
     }
 
-    public function value(): string
+    public function parsedValue(): string
     {
-        return $this->valueFromGitConfig() ?? $this->fallback->value();
+        return $this->repositoryFromGitConfig() ?? $this->packageName->value();
     }
 
-    private function valueFromGitConfig(): ?string
+    protected function newTokenInstance(string $repositoryName): Token
+    {
+        return new Token\ValueToken('{repository.name}', $repositoryName);
+    }
+
+    private function repositoryFromGitConfig(): ?string
     {
         if (!$this->gitConfig->exists()) { return null; }
 

@@ -9,40 +9,46 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Token\Source;
+namespace Shudd3r\PackageFiles\Token\Reader;
 
+use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Token\Source;
-use Shudd3r\PackageFiles\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Token;
 
 
-class CodeNamespace implements Source
+class SrcNamespace extends ValueReader
 {
     private ComposerJsonData $composer;
-    private Source           $fallback;
+    private PackageName      $packageName;
 
-    public function __construct(ComposerJsonData $composer, Source $fallback)
+    public function __construct(ComposerJsonData $composer, PackageName $packageName, Source $source = null)
     {
-        $this->composer = $composer;
-        $this->fallback = $fallback;
+        $this->composer    = $composer;
+        $this->packageName = $packageName;
+        parent::__construct($source);
     }
 
-    public function token(string $value): ?Token
+    public function isValid(string $value): bool
     {
         foreach (explode('\\', $value) as $label) {
-            $validLabel = preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label);
-            if (!$validLabel) { return null; }
+            $isValidLabel = (bool) preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label);
+            if (!$isValidLabel) { return false; }
         }
 
+        return true;
+    }
+
+    public function parsedValue(): string
+    {
+        return $this->namespaceFromComposer() ?? $this->namespaceFromPackageName();
+    }
+
+    protected function newTokenInstance(string $value): Token
+    {
         return new Token\CompositeToken(
             new Token\ValueToken('{namespace.src}', $value),
             new Token\ValueToken('{namespace.src.esc}', str_replace('\\', '\\\\', $value))
         );
-    }
-
-    public function value(): string
-    {
-        return $this->namespaceFromComposer() ?? $this->namespaceFromFallbackSource();
     }
 
     private function namespaceFromComposer(): ?string
@@ -53,9 +59,9 @@ class CodeNamespace implements Source
         return $namespace ? rtrim($namespace, '\\') : null;
     }
 
-    private function namespaceFromFallbackSource(): string
+    private function namespaceFromPackageName(): string
     {
-        [$vendor, $package] = explode('/', $this->fallback->value());
+        [$vendor, $package] = explode('/', $this->packageName->value());
         return $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
     }
 

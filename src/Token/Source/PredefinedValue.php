@@ -9,29 +9,22 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Token\Source\Decorator;
+namespace Shudd3r\PackageFiles\Token\Source;
 
 use Shudd3r\PackageFiles\Token\Source;
-use Shudd3r\PackageFiles\Token;
+use Shudd3r\PackageFiles\Token\Parser;
 
 
 class PredefinedValue implements Source
 {
     private string $value;
-    private Source $source;
 
-    public function __construct(string $value, Source $source)
+    public function __construct(string $value)
     {
-        $this->value  = $value;
-        $this->source = $source;
+        $this->value = $value;
     }
 
-    public function token(string $value): ?Token
-    {
-        return $this->source->token($value);
-    }
-
-    public function value(): string
+    public function value(Parser $parser): string
     {
         return $this->value;
     }

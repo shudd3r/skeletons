@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -17,4 +17,6 @@ use Shudd3r\PackageFiles\Token;
 interface Reader
 {
     public function token(): ?Token;
+
+    public function value(): string;
 }

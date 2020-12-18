@@ -16,7 +16,6 @@ use Shudd3r\PackageFiles\Token;
 
 class CompositeToken implements Token
 {
-    /** @var Token[] */
     private array $tokens;
 
     public function __construct(Token ...$tokens)

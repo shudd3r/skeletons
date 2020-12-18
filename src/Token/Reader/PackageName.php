@@ -9,39 +9,42 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Token\Source;
+namespace Shudd3r\PackageFiles\Token\Reader;
 
-use Shudd3r\PackageFiles\Token\Source;
-use Shudd3r\PackageFiles\Token\Source\Data\ComposerJsonData;
+use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Token;
 
 
-class PackageName implements Source
+class PackageName extends ValueReader
 {
     private ComposerJsonData $composer;
     private Directory        $project;
 
-    public function __construct(ComposerJsonData $composer, Directory $project)
+    public function __construct(ComposerJsonData $composer, Directory $project, Source $source = null)
     {
         $this->composer = $composer;
         $this->project  = $project;
+        parent::__construct($source);
     }
 
-    public function token(string $value): ?Token
+    public function isValid(string $value): bool
     {
-        $validPackageName = preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
-        if (!$validPackageName) { return null; }
-
-        return new Token\CompositeToken(
-            new Token\ValueToken('{package.name}', $value),
-            new Token\ValueToken('{package.title}', $this->titleName($value))
-        );
+        return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
     }
 
-    public function value(): string
+    public function parsedValue(): string
     {
         return $this->composer->value('name') ?? $this->directoryFallback();
+    }
+
+    protected function newTokenInstance(string $packageName): Token
+    {
+        return new Token\CompositeToken(
+            new Token\ValueToken('{package.name}', $packageName),
+            new Token\ValueToken('{package.title}', $this->titleName($packageName))
+        );
     }
 
     private function directoryFallback(): string

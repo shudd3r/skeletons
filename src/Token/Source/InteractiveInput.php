@@ -9,11 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Token\Source\Decorator;
+namespace Shudd3r\PackageFiles\Token\Source;
 
 use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Application\Input;
-use Shudd3r\PackageFiles\Token;
+use Shudd3r\PackageFiles\Token\Parser;
 
 
 class InteractiveInput implements Source
@@ -29,18 +29,11 @@ class InteractiveInput implements Source
         $this->source = $source;
     }
 
-    public function token(string $value): ?Token
+    public function value(Parser $parser): string
     {
-        return $this->source->token($value);
-    }
+        $defaultValue  = $this->source->value($parser);
+        $promptPostfix = $defaultValue ? ' [default: `' . $defaultValue . '`]:' : ':';
 
-    public function value(): string
-    {
-        $default = $this->source->value();
-        if (!$default) {
-            return $this->input->value($this->prompt . ':');
-        }
-
-        return $this->input->value($this->prompt . ' [default: ' . $default . ']:') ?: $default;
+        return $this->input->value($this->prompt . $promptPostfix) ?: $defaultValue;
     }
 }
