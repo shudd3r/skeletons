@@ -20,6 +20,8 @@ use Exception;
 
 class InitCommandFactoryTest extends TestCase
 {
+    private const SKELETON_FILE = 'dir/generate.ini';
+
     public function testFactoryCreatesCommand()
     {
         $factory = new Factory($this->env(), []);
@@ -41,11 +43,11 @@ class InitCommandFactoryTest extends TestCase
 
         $factory->command()->execute();
 
-        $this->assertMetaDataFile($env, [
-            'original_repository' => 'username/repositoryOrigin',
-            'package_name'        => 'fooBar/baz',
-            'package_desc'        => 'My library package',
-            'source_namespace'    => 'FooBarNamespace\\Baz'
+        $this->assertGeneratedFile($env, [
+            'repository.name'  => 'username/repositoryOrigin',
+            'package.name'     => 'fooBar/baz',
+            'description.text' => 'My library package',
+            'namespace.src'    => 'FooBarNamespace\\Baz'
         ]);
     }
 
@@ -57,11 +59,11 @@ class InitCommandFactoryTest extends TestCase
 
         $factory->command()->execute();
 
-        $this->assertMetaDataFile($env, [
-            'original_repository' => 'foo/bar',
-            'package_name'        => 'foo/bar',
-            'package_desc'        => 'foo/bar package',
-            'source_namespace'    => 'Foo\\Bar'
+        $this->assertGeneratedFile($env, [
+            'repository.name'  => 'foo/bar',
+            'package.name'     => 'foo/bar',
+            'description.text' => 'foo/bar package',
+            'namespace.src'    => 'Foo\\Bar'
         ]);
     }
 
@@ -74,11 +76,11 @@ class InitCommandFactoryTest extends TestCase
 
         $factory->command()->execute();
 
-        $this->assertMetaDataFile($env, [
-            'original_repository' => 'fooBar/baz',
-            'package_name'        => 'fooBar/baz',
-            'package_desc'        => 'fooBar/baz package',
-            'source_namespace'    => 'FooBar\\Baz'
+        $this->assertGeneratedFile($env, [
+            'repository.name'  => 'fooBar/baz',
+            'package.name'     => 'fooBar/baz',
+            'description.text' => 'fooBar/baz package',
+            'namespace.src'    => 'FooBar\\Baz'
         ]);
     }
 
@@ -88,11 +90,11 @@ class InitCommandFactoryTest extends TestCase
 
         $factory = new Factory($env, []);
         $factory->command()->execute();
-        $this->assertMetaDataFile($env, [
-            'original_repository' => 'package/directory',
-            'package_name'        => 'package/directory',
-            'package_desc'        => 'package/directory package',
-            'source_namespace'    => 'Package\Directory'
+        $this->assertGeneratedFile($env, [
+            'repository.name'  => 'package/directory',
+            'package.name'     => 'package/directory',
+            'description.text' => 'package/directory package',
+            'namespace.src'    => 'Package\Directory'
         ]);
 
         $options = [
@@ -105,11 +107,11 @@ class InitCommandFactoryTest extends TestCase
 
         $factory = new Factory($env, $options);
         $factory->command()->execute();
-        $this->assertMetaDataFile($env, [
-            'original_repository' => 'cli/repo',
-            'package_name'        => 'cli/package',
-            'package_desc'        => 'cli desc',
-            'source_namespace'    => 'Cli\NamespaceX'
+        $this->assertGeneratedFile($env, [
+            'repository.name'  => 'cli/repo',
+            'package.name'     => 'cli/package',
+            'description.text' => 'cli desc',
+            'namespace.src'    => 'Cli\NamespaceX'
         ]);
     }
 
@@ -134,11 +136,11 @@ class InitCommandFactoryTest extends TestCase
         $factory = new Factory($env, $options);
         $factory->command()->execute();
 
-        $this->assertMetaDataFile($env, [
-            'original_repository' => 'user/repo',
-            'package_name'        => 'package/name',
-            'package_desc'        => 'package input description',
-            'source_namespace'    => 'My\Namespace'
+        $this->assertGeneratedFile($env, [
+            'repository.name'  => 'user/repo',
+            'package.name'     => 'package/name',
+            'description.text' => 'package input description',
+            'namespace.src'    => 'My\Namespace'
         ]);
     }
 
@@ -200,10 +202,10 @@ class InitCommandFactoryTest extends TestCase
         }
     }
 
-    private function assertMetaDataFile(Doubles\FakeRuntimeEnv $env, array $data): void
+    private function assertGeneratedFile(Doubles\FakeRuntimeEnv $env, array $data): void
     {
-        $metaDataFile = $env->package()->file('.github/package.properties')->contents();
-        $this->assertSame($data, parse_ini_string($metaDataFile));
+        $generatedFile = $env->package()->file(self::SKELETON_FILE)->contents();
+        $this->assertSame($this->template($data), $generatedFile);
     }
 
     private function env(): Doubles\FakeRuntimeEnv
@@ -213,15 +215,22 @@ class InitCommandFactoryTest extends TestCase
         $env->package()->path  = '/path/to/package/directory';
         $env->skeleton()->path = '/path/to/skeleton/files';
 
-        $metaFileContents = <<<'TPL'
-            original_repository={repository.name}
-            package_name={package.name}
-            package_desc={description.text}
-            source_namespace={namespace.src}
-            TPL;
-
-        $env->skeleton()->addFile('.github/package.properties', $metaFileContents);
+        $env->skeleton()->addFile(self::SKELETON_FILE, $this->template());
 
         return $env;
+    }
+
+    private function template(array $replacements = []): string
+    {
+        $skeleton = <<<'TPL'
+            This is a template for {repository.name} in a {package.name} package, which
+            is "{description.text}" with `src` directory files in `{namespace.src}` namespace.
+            TPL;
+
+        foreach ($replacements as $name => $replacement) {
+            $skeleton = str_replace('{' . $name . '}', $replacement, $skeleton);
+        }
+
+        return $skeleton;
     }
 }
