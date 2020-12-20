@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Tests\Command\Factory;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Command\Factory\InitCommandFactory as Factory;
 use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use Exception;
 
@@ -21,6 +22,7 @@ use Exception;
 class InitCommandFactoryTest extends TestCase
 {
     private const SKELETON_FILE = 'dir/generate.ini';
+    private const METADATA_FILE = '.github/skeleton.json';
 
     public function testFactoryCreatesCommand()
     {
@@ -43,7 +45,7 @@ class InitCommandFactoryTest extends TestCase
 
         $factory->command()->execute();
 
-        $this->assertGeneratedFile($env, [
+        $this->assertGeneratedFiles($env, [
             'repository.name'  => 'username/repositoryOrigin',
             'package.name'     => 'fooBar/baz',
             'description.text' => 'My library package',
@@ -59,7 +61,7 @@ class InitCommandFactoryTest extends TestCase
 
         $factory->command()->execute();
 
-        $this->assertGeneratedFile($env, [
+        $this->assertGeneratedFiles($env, [
             'repository.name'  => 'foo/bar',
             'package.name'     => 'foo/bar',
             'description.text' => 'foo/bar package',
@@ -76,7 +78,7 @@ class InitCommandFactoryTest extends TestCase
 
         $factory->command()->execute();
 
-        $this->assertGeneratedFile($env, [
+        $this->assertGeneratedFiles($env, [
             'repository.name'  => 'fooBar/baz',
             'package.name'     => 'fooBar/baz',
             'description.text' => 'fooBar/baz package',
@@ -90,7 +92,7 @@ class InitCommandFactoryTest extends TestCase
 
         $factory = new Factory($env, []);
         $factory->command()->execute();
-        $this->assertGeneratedFile($env, [
+        $this->assertGeneratedFiles($env, [
             'repository.name'  => 'package/directory',
             'package.name'     => 'package/directory',
             'description.text' => 'package/directory package',
@@ -107,7 +109,7 @@ class InitCommandFactoryTest extends TestCase
 
         $factory = new Factory($env, $options);
         $factory->command()->execute();
-        $this->assertGeneratedFile($env, [
+        $this->assertGeneratedFiles($env, [
             'repository.name'  => 'cli/repo',
             'package.name'     => 'cli/package',
             'description.text' => 'cli desc',
@@ -136,7 +138,7 @@ class InitCommandFactoryTest extends TestCase
         $factory = new Factory($env, $options);
         $factory->command()->execute();
 
-        $this->assertGeneratedFile($env, [
+        $this->assertGeneratedFiles($env, [
             'repository.name'  => 'user/repo',
             'package.name'     => 'package/name',
             'description.text' => 'package input description',
@@ -202,10 +204,21 @@ class InitCommandFactoryTest extends TestCase
         }
     }
 
-    private function assertGeneratedFile(Doubles\FakeRuntimeEnv $env, array $data): void
+    private function assertGeneratedFiles(Doubles\FakeRuntimeEnv $env, array $data): void
     {
         $generatedFile = $env->package()->file(self::SKELETON_FILE)->contents();
         $this->assertSame($this->template($data), $generatedFile);
+
+        $metaDataFile = $env->package()->file(self::METADATA_FILE)->contents();
+
+        $expectedMetaData = [
+            Reader\PackageName::class        => $data['package.name'],
+            Reader\RepositoryName::class     => $data['repository.name'],
+            Reader\PackageDescription::class => $data['description.text'],
+            Reader\SrcNamespace::class       => $data['namespace.src']
+        ];
+
+        $this->assertSame(json_encode($expectedMetaData, JSON_PRETTY_PRINT), $metaDataFile);
     }
 
     private function env(): Doubles\FakeRuntimeEnv

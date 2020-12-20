@@ -13,8 +13,9 @@ namespace Shudd3r\PackageFiles\Command\Factory;
 
 use Shudd3r\PackageFiles\Command\Factory;
 use Shudd3r\PackageFiles\Command\CommandSequence;
-use Shudd3r\PackageFiles\Command\TokenProcessor;
 use Shudd3r\PackageFiles\Command\BackupFiles;
+use Shudd3r\PackageFiles\Command\TokenProcessor;
+use Shudd3r\PackageFiles\Command\WriteMetaData;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory\ReflectedDirectory;
 use Shudd3r\PackageFiles\Token\Source;
@@ -27,13 +28,16 @@ class InitCommandFactory extends Factory
 {
     public function command(): Command
     {
-        $packageFiles = new ReflectedDirectory($this->env->package(), $this->env->skeleton());
-        $backupFiles  = new BackupFiles($packageFiles, $this->env->backup());
+        $packageFiles     = $this->env->package();
+        $intersectedFiles = new ReflectedDirectory($this->env->package(), $this->env->skeleton());
+        $backupFiles      = new BackupFiles($intersectedFiles, $this->env->backup());
 
         $reader        = new Reader\CompositeTokenReader(...$this->tokenReaders());
         $processTokens = new TokenProcessor($reader, $this->processor());
 
-        return new CommandSequence($backupFiles, $processTokens);
+        $writeMetaData = new WriteMetaData($reader, $packageFiles->file('.github/skeleton.json'));
+
+        return new CommandSequence($backupFiles, $processTokens, $writeMetaData);
     }
 
     protected function tokenReaders(): array
