@@ -22,7 +22,6 @@ use Exception;
 class InitCommandFactoryTest extends TestCase
 {
     private const SKELETON_FILE = 'dir/generate.ini';
-    private const METADATA_FILE = '.github/skeleton.json';
 
     public function testFactoryCreatesCommand()
     {
@@ -209,8 +208,6 @@ class InitCommandFactoryTest extends TestCase
         $generatedFile = $env->package()->file(self::SKELETON_FILE)->contents();
         $this->assertSame($this->template($data), $generatedFile);
 
-        $metaDataFile = $env->package()->file(self::METADATA_FILE)->contents();
-
         $expectedMetaData = [
             Reader\PackageName::class        => $data['package.name'],
             Reader\RepositoryName::class     => $data['repository.name'],
@@ -218,7 +215,7 @@ class InitCommandFactoryTest extends TestCase
             Reader\SrcNamespace::class       => $data['namespace.src']
         ];
 
-        $this->assertSame(json_encode($expectedMetaData, JSON_PRETTY_PRINT), $metaDataFile);
+        $this->assertSame(json_encode($expectedMetaData, JSON_PRETTY_PRINT), $env->metaDataFile()->contents());
     }
 
     private function env(): Doubles\FakeRuntimeEnv

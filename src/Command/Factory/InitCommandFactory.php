@@ -28,16 +28,15 @@ class InitCommandFactory extends Factory
 {
     public function command(): Command
     {
-        $packageFiles     = $this->env->package();
-        $intersectedFiles = new ReflectedDirectory($this->env->package(), $this->env->skeleton());
-        $backupFiles      = new BackupFiles($intersectedFiles, $this->env->backup());
+        $intersectedFiles  = new ReflectedDirectory($this->env->package(), $this->env->skeleton());
+        $createBackupFiles = new BackupFiles($intersectedFiles, $this->env->backup());
 
         $reader        = new Reader\CompositeTokenReader(...$this->tokenReaders());
         $processTokens = new TokenProcessor($reader, $this->processor());
 
-        $writeMetaData = new WriteMetaData($reader, $packageFiles->file('.github/skeleton.json'));
+        $writeMetaData = new WriteMetaData($reader, $this->env->metaDataFile());
 
-        return new CommandSequence($backupFiles, $processTokens, $writeMetaData);
+        return new CommandSequence($createBackupFiles, $processTokens, $writeMetaData);
     }
 
     protected function tokenReaders(): array
