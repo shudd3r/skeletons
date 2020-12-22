@@ -20,12 +20,14 @@ class FakeRuntimeEnv extends RuntimeEnv
     private FakeDirectory  $pkg;
     private FakeDirectory  $tpl;
     private FakeDirectory  $bkp;
+    private MockedFile     $met;
 
     public function __construct() {
         $this->cli = new MockedTerminal();
         $this->pkg = new FakeDirectory();
         $this->tpl = new FakeDirectory();
         $this->bkp = new FakeDirectory();
+        $this->met = new MockedFile(null);
 
         parent::__construct($this->cli, $this->cli, $this->pkg, $this->tpl);
     }
@@ -53,5 +55,10 @@ class FakeRuntimeEnv extends RuntimeEnv
     public function backup(): FakeDirectory
     {
         return $this->bkp;
+    }
+
+    public function metaDataFile(): MockedFile
+    {
+        return $this->met;
     }
 }

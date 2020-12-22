@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles;
 use Shudd3r\PackageFiles\Application\Input;
 use Shudd3r\PackageFiles\Application\Output;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\FileSystem\File;
 use Shudd3r\PackageFiles\Exception;
 
 
@@ -24,19 +25,22 @@ class RuntimeEnv
     private Directory $package;
     private Directory $skeleton;
     private Directory $backup;
+    private File      $metaData;
 
     public function __construct(
         Input $input,
         Output $output,
         Directory $package,
         Directory $skeleton,
-        Directory $backup = null
+        ?Directory $backup = null,
+        ?File $metaDataFile = null
     ) {
         $this->input    = $input;
         $this->output   = $output;
         $this->package  = $this->validDirectory($package);
         $this->skeleton = $this->validDirectory($skeleton);
         $this->backup   = $backup ?? $this->package->subdirectory('.skeleton-backup');
+        $this->metaData = $metaDataFile ?? $this->package->file('.github/skeleton.json');
     }
 
     public function input(): Input
@@ -62,6 +66,11 @@ class RuntimeEnv
     public function backup(): Directory
     {
         return $this->backup;
+    }
+
+    public function metaDataFile(): File
+    {
+        return $this->metaData;
     }
 
     private function validDirectory(Directory $directory): Directory

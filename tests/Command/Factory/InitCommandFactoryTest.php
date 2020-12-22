@@ -14,12 +14,15 @@ namespace Shudd3r\PackageFiles\Tests\Command\Factory;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Command\Factory\InitCommandFactory as Factory;
 use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use Exception;
 
 
 class InitCommandFactoryTest extends TestCase
 {
+    private const SKELETON_FILE = 'dir/generate.ini';
+
     public function testFactoryCreatesCommand()
     {
         $factory = new Factory($this->env(), []);
@@ -41,11 +44,11 @@ class InitCommandFactoryTest extends TestCase
 
         $factory->command()->execute();
 
-        $this->assertMetaDataFile($env, [
-            'original_repository' => 'username/repositoryOrigin',
-            'package_name'        => 'fooBar/baz',
-            'package_desc'        => 'My library package',
-            'source_namespace'    => 'FooBarNamespace\\Baz'
+        $this->assertGeneratedFiles($env, [
+            'repository.name'  => 'username/repositoryOrigin',
+            'package.name'     => 'fooBar/baz',
+            'description.text' => 'My library package',
+            'namespace.src'    => 'FooBarNamespace\\Baz'
         ]);
     }
 
@@ -57,11 +60,11 @@ class InitCommandFactoryTest extends TestCase
 
         $factory->command()->execute();
 
-        $this->assertMetaDataFile($env, [
-            'original_repository' => 'foo/bar',
-            'package_name'        => 'foo/bar',
-            'package_desc'        => 'foo/bar package',
-            'source_namespace'    => 'Foo\\Bar'
+        $this->assertGeneratedFiles($env, [
+            'repository.name'  => 'foo/bar',
+            'package.name'     => 'foo/bar',
+            'description.text' => 'foo/bar package',
+            'namespace.src'    => 'Foo\\Bar'
         ]);
     }
 
@@ -74,25 +77,24 @@ class InitCommandFactoryTest extends TestCase
 
         $factory->command()->execute();
 
-        $this->assertMetaDataFile($env, [
-            'original_repository' => 'fooBar/baz',
-            'package_name'        => 'fooBar/baz',
-            'package_desc'        => 'fooBar/baz package',
-            'source_namespace'    => 'FooBar\\Baz'
+        $this->assertGeneratedFiles($env, [
+            'repository.name'  => 'fooBar/baz',
+            'package.name'     => 'fooBar/baz',
+            'description.text' => 'fooBar/baz package',
+            'namespace.src'    => 'FooBar\\Baz'
         ]);
     }
 
     public function testCommandLineDefinedPropertiesHavePriorityOverResolved()
     {
-        $env = $this->env();
-
+        $env     = $this->env();
         $factory = new Factory($env, []);
         $factory->command()->execute();
-        $this->assertMetaDataFile($env, [
-            'original_repository' => 'package/directory',
-            'package_name'        => 'package/directory',
-            'package_desc'        => 'package/directory package',
-            'source_namespace'    => 'Package\Directory'
+        $this->assertGeneratedFiles($env, [
+            'repository.name'  => 'package/directory',
+            'package.name'     => 'package/directory',
+            'description.text' => 'package/directory package',
+            'namespace.src'    => 'Package\Directory'
         ]);
 
         $options = [
@@ -103,13 +105,14 @@ class InitCommandFactoryTest extends TestCase
             'ns'      => 'Cli\NamespaceX'
         ];
 
+        $env     = $this->env();
         $factory = new Factory($env, $options);
         $factory->command()->execute();
-        $this->assertMetaDataFile($env, [
-            'original_repository' => 'cli/repo',
-            'package_name'        => 'cli/package',
-            'package_desc'        => 'cli desc',
-            'source_namespace'    => 'Cli\NamespaceX'
+        $this->assertGeneratedFiles($env, [
+            'repository.name'  => 'cli/repo',
+            'package.name'     => 'cli/package',
+            'description.text' => 'cli desc',
+            'namespace.src'    => 'Cli\NamespaceX'
         ]);
     }
 
@@ -134,11 +137,11 @@ class InitCommandFactoryTest extends TestCase
         $factory = new Factory($env, $options);
         $factory->command()->execute();
 
-        $this->assertMetaDataFile($env, [
-            'original_repository' => 'user/repo',
-            'package_name'        => 'package/name',
-            'package_desc'        => 'package input description',
-            'source_namespace'    => 'My\Namespace'
+        $this->assertGeneratedFiles($env, [
+            'repository.name'  => 'user/repo',
+            'package.name'     => 'package/name',
+            'description.text' => 'package input description',
+            'namespace.src'    => 'My\Namespace'
         ]);
     }
 
@@ -157,6 +160,17 @@ class InitCommandFactoryTest extends TestCase
         $this->assertSame('generated', $env->package()->file('file.ini')->contents());
     }
 
+    public function testExistingMetaDataFile_ThrowsException()
+    {
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->metaDataFile()->contents = '';
+        $factory = new Factory($env, []);
+        $command = $factory->command();
+
+        $this->expectException(Exception::class);
+        $command->execute();
+    }
+
     public function testOverwritingBackupFile_ThrowsException()
     {
         $env = new Doubles\FakeRuntimeEnv();
@@ -164,9 +178,10 @@ class InitCommandFactoryTest extends TestCase
         $env->package()->addFile('file.ini');
         $env->backup()->addFile('file.ini');
         $factory = new Factory($env, []);
+        $command = $factory->command();
 
         $this->expectException(Exception::class);
-        $factory->command()->execute();
+        $command->execute();
     }
 
     public function testOverwritingBackupFile_AbortsExecutionWithoutSideEffects()
@@ -200,10 +215,19 @@ class InitCommandFactoryTest extends TestCase
         }
     }
 
-    private function assertMetaDataFile(Doubles\FakeRuntimeEnv $env, array $data): void
+    private function assertGeneratedFiles(Doubles\FakeRuntimeEnv $env, array $data): void
     {
-        $metaDataFile = $env->package()->file('.github/package.properties')->contents();
-        $this->assertSame($data, parse_ini_string($metaDataFile));
+        $generatedFile = $env->package()->file(self::SKELETON_FILE)->contents();
+        $this->assertSame($this->template($data), $generatedFile);
+
+        $expectedMetaData = [
+            Reader\PackageName::class        => $data['package.name'],
+            Reader\RepositoryName::class     => $data['repository.name'],
+            Reader\PackageDescription::class => $data['description.text'],
+            Reader\SrcNamespace::class       => $data['namespace.src']
+        ];
+
+        $this->assertSame(json_encode($expectedMetaData, JSON_PRETTY_PRINT), $env->metaDataFile()->contents());
     }
 
     private function env(): Doubles\FakeRuntimeEnv
@@ -213,15 +237,22 @@ class InitCommandFactoryTest extends TestCase
         $env->package()->path  = '/path/to/package/directory';
         $env->skeleton()->path = '/path/to/skeleton/files';
 
-        $metaFileContents = <<<'TPL'
-            original_repository={repository.name}
-            package_name={package.name}
-            package_desc={description.text}
-            source_namespace={namespace.src}
-            TPL;
-
-        $env->skeleton()->addFile('.github/package.properties', $metaFileContents);
+        $env->skeleton()->addFile(self::SKELETON_FILE, $this->template());
 
         return $env;
+    }
+
+    private function template(array $replacements = []): string
+    {
+        $skeleton = <<<'TPL'
+            This is a template for {repository.name} in a {package.name} package, which
+            is "{description.text}" with `src` directory files in `{namespace.src}` namespace.
+            TPL;
+
+        foreach ($replacements as $name => $replacement) {
+            $skeleton = str_replace('{' . $name . '}', $replacement, $skeleton);
+        }
+
+        return $skeleton;
     }
 }
