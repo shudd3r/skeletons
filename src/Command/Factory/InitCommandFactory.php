@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Command\Factory;
 
+use Shudd3r\PackageFiles\Command\CheckMetaDataFile;
 use Shudd3r\PackageFiles\Command\Factory;
 use Shudd3r\PackageFiles\Command\CommandSequence;
 use Shudd3r\PackageFiles\Command\BackupFiles;
@@ -28,6 +29,8 @@ class InitCommandFactory extends Factory
 {
     public function command(): Command
     {
+        $checkMetaDataFile = new CheckMetaDataFile($this->env->metaDataFile(), false);
+
         $intersectedFiles  = new ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $createBackupFiles = new BackupFiles($intersectedFiles, $this->env->backup());
 
@@ -36,7 +39,12 @@ class InitCommandFactory extends Factory
 
         $writeMetaData = new WriteMetaData($reader, $this->env->metaDataFile());
 
-        return new CommandSequence($createBackupFiles, $processTokens, $writeMetaData);
+        return new CommandSequence(
+            $checkMetaDataFile,
+            $createBackupFiles,
+            $processTokens,
+            $writeMetaData
+        );
     }
 
     protected function tokenReaders(): array

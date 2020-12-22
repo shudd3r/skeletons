@@ -87,8 +87,7 @@ class InitCommandFactoryTest extends TestCase
 
     public function testCommandLineDefinedPropertiesHavePriorityOverResolved()
     {
-        $env = $this->env();
-
+        $env     = $this->env();
         $factory = new Factory($env, []);
         $factory->command()->execute();
         $this->assertGeneratedFiles($env, [
@@ -106,6 +105,7 @@ class InitCommandFactoryTest extends TestCase
             'ns'      => 'Cli\NamespaceX'
         ];
 
+        $env     = $this->env();
         $factory = new Factory($env, $options);
         $factory->command()->execute();
         $this->assertGeneratedFiles($env, [
@@ -160,6 +160,17 @@ class InitCommandFactoryTest extends TestCase
         $this->assertSame('generated', $env->package()->file('file.ini')->contents());
     }
 
+    public function testExistingMetaDataFile_ThrowsException()
+    {
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->metaDataFile()->contents = '';
+        $factory = new Factory($env, []);
+        $command = $factory->command();
+
+        $this->expectException(Exception::class);
+        $command->execute();
+    }
+
     public function testOverwritingBackupFile_ThrowsException()
     {
         $env = new Doubles\FakeRuntimeEnv();
@@ -167,9 +178,10 @@ class InitCommandFactoryTest extends TestCase
         $env->package()->addFile('file.ini');
         $env->backup()->addFile('file.ini');
         $factory = new Factory($env, []);
+        $command = $factory->command();
 
         $this->expectException(Exception::class);
-        $factory->command()->execute();
+        $command->execute();
     }
 
     public function testOverwritingBackupFile_AbortsExecutionWithoutSideEffects()
