@@ -11,12 +11,13 @@
 
 namespace Shudd3r\PackageFiles\Command\Factory;
 
-use Shudd3r\PackageFiles\Command\CheckMetaDataFile;
 use Shudd3r\PackageFiles\Command\Factory;
 use Shudd3r\PackageFiles\Command\CommandSequence;
 use Shudd3r\PackageFiles\Command\BackupFiles;
+use Shudd3r\PackageFiles\Command\ProtectedCommand;
 use Shudd3r\PackageFiles\Command\TokenProcessor;
 use Shudd3r\PackageFiles\Command\WriteMetaData;
+use Shudd3r\PackageFiles\Command\Precondition;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\FileSystem\Directory\ReflectedDirectory;
 use Shudd3r\PackageFiles\Token\Source;
@@ -29,21 +30,20 @@ class InitCommandFactory extends Factory
 {
     public function command(): Command
     {
-        $checkMetaDataFile = new CheckMetaDataFile($this->env->metaDataFile(), false);
+        $tokenReader     = new Reader\CompositeTokenReader(...$this->tokenReaders());
+        $generatedFiles  = new ReflectedDirectory($this->env->package(), $this->env->skeleton());
+        $backupDirectory = $this->env->backup();
 
-        $intersectedFiles  = new ReflectedDirectory($this->env->package(), $this->env->skeleton());
-        $createBackupFiles = new BackupFiles($intersectedFiles, $this->env->backup());
+        $backupFiles   = new BackupFiles($generatedFiles, $backupDirectory);
+        $processTokens = new TokenProcessor($tokenReader, $this->processor());
+        $writeMetaData = new WriteMetaData($tokenReader, $this->env->metaDataFile());
 
-        $reader        = new Reader\CompositeTokenReader(...$this->tokenReaders());
-        $processTokens = new TokenProcessor($reader, $this->processor());
+        $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);
+        $noBackupOverwrite = new Precondition\CheckFilesOverwrite($generatedFiles, $backupDirectory);
 
-        $writeMetaData = new WriteMetaData($reader, $this->env->metaDataFile());
-
-        return new CommandSequence(
-            $checkMetaDataFile,
-            $createBackupFiles,
-            $processTokens,
-            $writeMetaData
+        return new ProtectedCommand(
+            new CommandSequence($backupFiles, $processTokens, $writeMetaData),
+            new Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite)
         );
     }
 
