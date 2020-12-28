@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Command;
 
-use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Environment\Command;
 
 
 class ProtectedCommand implements Command

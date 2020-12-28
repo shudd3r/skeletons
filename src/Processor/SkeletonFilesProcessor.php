@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Processor;
 
 use Shudd3r\PackageFiles\Processor;
-use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Token;
 
 

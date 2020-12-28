@@ -10,7 +10,7 @@
  * with this source code in the file LICENSE.
  */
 
-use Shudd3r\PackageFiles\Application;
+use Shudd3r\PackageFiles\Environment;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\FactoryRouting;
 use Shudd3r\PackageFiles\Command\Factory;
@@ -31,9 +31,9 @@ if (!file_exists($rootDirectory . '/composer.json')) {
 
 require_once $rootDirectory . '/vendor/autoload.php';
 
-$terminal      = new Application\Terminal(STDIN, STDOUT, STDERR);
-$skeletonFiles = new Application\FileSystem\Directory\LocalDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
-$packageFiles  = new Application\FileSystem\Directory\LocalDirectory($rootDirectory);
+$terminal      = new Environment\Terminal(STDIN, STDOUT, STDERR);
+$skeletonFiles = new Environment\FileSystem\Directory\LocalDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
+$packageFiles  = new Environment\FileSystem\Directory\LocalDirectory($rootDirectory);
 $environment   = new RuntimeEnv($terminal, $terminal, $packageFiles, $skeletonFiles);
 
 $routing = new FactoryRouting($environment, [
@@ -43,6 +43,6 @@ $routing = new FactoryRouting($environment, [
 $options = getopt('i', ['package:', 'repo:', 'desc:', 'interactive'], $commandIdx);
 $command = $argv[$commandIdx] ?? 'init';
 
-$app = new Application\CommandLineApp($terminal, $routing);
+$app = new Environment\CommandLineApp($terminal, $routing);
 $exitCode = $app->run($command, $options);
 exit($exitCode);

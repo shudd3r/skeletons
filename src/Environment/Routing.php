@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application;
+namespace Shudd3r\PackageFiles\Environment;
 
 
-interface Command
+interface Routing
 {
-    public function execute(): void;
+    public function command(string $command, array $options): Command;
 }

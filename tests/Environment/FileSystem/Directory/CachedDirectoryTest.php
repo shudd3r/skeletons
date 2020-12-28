@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\Directory;
+namespace Shudd3r\PackageFiles\Tests\Environment\FileSystem\Directory;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\FileSystem\Directory\CachedDirectory;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory\CachedDirectory;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeDirectory;
 
 

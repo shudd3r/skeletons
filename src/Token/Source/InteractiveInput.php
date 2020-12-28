@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Token\Source;
 
 use Shudd3r\PackageFiles\Token\Source;
-use Shudd3r\PackageFiles\Application\Input;
+use Shudd3r\PackageFiles\Environment\Input;
 use Shudd3r\PackageFiles\Token\Parser;
 
 

@@ -11,9 +11,9 @@
 
 namespace Shudd3r\PackageFiles\Command;
 
-use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\Application\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\FileSystem\File;
+use Shudd3r\PackageFiles\Environment\Command;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 
 class BackupFiles implements Command

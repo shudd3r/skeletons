@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Command\Factory;
-use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Environment\Command;
 
 
 class FakeCommandFactory extends Factory

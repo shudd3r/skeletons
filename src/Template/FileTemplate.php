@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Template;
 
 use Shudd3r\PackageFiles\Template;
-use Shudd3r\PackageFiles\Application\FileSystem\File;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Token;
 use InvalidArgumentException;
 

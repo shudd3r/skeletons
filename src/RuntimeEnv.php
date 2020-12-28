@@ -11,10 +11,10 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Application\Input;
-use Shudd3r\PackageFiles\Application\Output;
-use Shudd3r\PackageFiles\Application\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\FileSystem\File;
+use Shudd3r\PackageFiles\Environment\Input;
+use Shudd3r\PackageFiles\Environment\Output;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Exception;
 
 

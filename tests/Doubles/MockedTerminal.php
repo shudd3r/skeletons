@@ -11,8 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\Output;
-use Shudd3r\PackageFiles\Application\Input;
+use Shudd3r\PackageFiles\Environment\Output;
+use Shudd3r\PackageFiles\Environment\Input;
 
 
 class MockedTerminal implements Input, Output

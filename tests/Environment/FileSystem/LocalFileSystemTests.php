@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\FileSystem;
+namespace Shudd3r\PackageFiles\Tests\Environment\FileSystem;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\FileSystem;
+use Shudd3r\PackageFiles\Environment\FileSystem;
 
 
 class LocalFileSystemTests extends TestCase

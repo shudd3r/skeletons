@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application;
+namespace Shudd3r\PackageFiles\Tests\Environment;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application as App;
+use Shudd3r\PackageFiles\Environment as App;
 
 
 class TerminalTest extends TestCase

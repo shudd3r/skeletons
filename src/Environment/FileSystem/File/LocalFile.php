@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\FileSystem\File;
+namespace Shudd3r\PackageFiles\Environment\FileSystem\File;
 
-use Shudd3r\PackageFiles\Application\FileSystem\File;
-use Shudd3r\PackageFiles\Application\FileSystem\Directory;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
 class LocalFile implements File

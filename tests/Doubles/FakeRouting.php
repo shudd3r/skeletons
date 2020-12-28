@@ -11,8 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\Routing;
-use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Environment\Routing;
+use Shudd3r\PackageFiles\Environment\Command;
 use RuntimeException;
 
 

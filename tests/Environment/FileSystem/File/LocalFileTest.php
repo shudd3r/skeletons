@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\FileSystem\File;
+namespace Shudd3r\PackageFiles\Tests\Environment\FileSystem\File;
 
-use Shudd3r\PackageFiles\Tests\Application\FileSystem\LocalFileSystemTests;
-use Shudd3r\PackageFiles\Application\FileSystem;
+use Shudd3r\PackageFiles\Tests\Environment\FileSystem\LocalFileSystemTests;
+use Shudd3r\PackageFiles\Environment\FileSystem;
 
 
 class LocalFileTest extends LocalFileSystemTests

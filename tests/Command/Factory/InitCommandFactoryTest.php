@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Command\Factory;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Command\Factory\InitCommandFactory as Factory;
-use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Environment\Command;
 use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use Exception;
