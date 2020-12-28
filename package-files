@@ -13,7 +13,7 @@
 use Shudd3r\PackageFiles\Environment;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\FactoryRouting;
-use Shudd3r\PackageFiles\Application\Command\Factory;
+use Shudd3r\PackageFiles\InitCommandFactory;
 
 
 // This script is assumed to be one of composer dependencies of the package
@@ -37,7 +37,7 @@ $packageFiles  = new Environment\FileSystem\Directory\LocalDirectory($rootDirect
 $environment   = new RuntimeEnv($terminal, $terminal, $packageFiles, $skeletonFiles);
 
 $routing = new FactoryRouting($environment, [
-    'init' => Factory\InitCommandFactory::class
+    'init' => InitCommandFactory::class
 ]);
 
 $options = getopt('i', ['package:', 'repo:', 'desc:', 'interactive'], $commandIdx);
