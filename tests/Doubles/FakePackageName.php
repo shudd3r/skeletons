@@ -11,8 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Token\Reader\PackageName;
-use Shudd3r\PackageFiles\Token\Reader\Data\ComposerJsonData;
+use Shudd3r\PackageFiles\Application\Token\Reader\PackageName;
+use Shudd3r\PackageFiles\Application\Token\Reader\Data\ComposerJsonData;
 
 
 class FakePackageName extends PackageName

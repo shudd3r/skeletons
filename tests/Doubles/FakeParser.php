@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Token\Parser;
+use Shudd3r\PackageFiles\Application\Token\Parser;
 
 
 class FakeParser implements Parser

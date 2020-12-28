@@ -11,8 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\FileSystem\File;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Exception;
 
 

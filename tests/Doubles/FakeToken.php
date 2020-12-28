@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Token;
+use Shudd3r\PackageFiles\Application\Token;
 
 
 class FakeToken implements Token
