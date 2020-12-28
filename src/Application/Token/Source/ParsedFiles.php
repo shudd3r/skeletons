@@ -9,26 +9,16 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Doubles;
+namespace Shudd3r\PackageFiles\Application\Token\Source;
 
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\Parser;
 
 
-class FakeSource implements Source
+class ParsedFiles implements Source
 {
-    public int $reads = 0;
-
-    private ?string $value;
-
-    public function __construct(?string $value = 'foo')
-    {
-        $this->value = $value;
-    }
-
     public function value(Parser $parser): string
     {
-        $this->reads++;
-        return $this->value ?? $parser->parsedValue();
+        return $parser->parsedValue();
     }
 }

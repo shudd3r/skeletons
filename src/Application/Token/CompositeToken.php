@@ -9,22 +9,26 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Doubles;
+namespace Shudd3r\PackageFiles\Application\Token;
 
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class FakeToken implements Token
+class CompositeToken implements Token
 {
-    private string $value;
+    private array $tokens;
 
-    public function __construct(string $value = 'foo')
+    public function __construct(Token ...$tokens)
     {
-        $this->value = $value;
+        $this->tokens = $tokens;
     }
 
     public function replacePlaceholders(string $template): string
     {
+        foreach ($this->tokens as $token) {
+            $template = $token->replacePlaceholders($template);
+        }
+
         return $template;
     }
 }

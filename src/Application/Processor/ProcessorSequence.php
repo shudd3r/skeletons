@@ -9,22 +9,26 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Doubles;
+namespace Shudd3r\PackageFiles\Application\Processor;
 
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class MockedProcessor implements Processor
+class ProcessorSequence implements Processor
 {
-    public ?Token $passedToken = null;
+    /** @var Processor[] */
+    private array $processors;
 
-    public function __construct()
+    public function __construct(Processor ...$processors)
     {
+        $this->processors = $processors;
     }
 
     public function process(Token $token): void
     {
-        $this->passedToken = $token;
+        foreach ($this->processors as $processor) {
+            $processor->process($token);
+        }
     }
 }

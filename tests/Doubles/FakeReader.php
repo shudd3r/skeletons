@@ -11,8 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Token\Reader;
-use Shudd3r\PackageFiles\Token;
+use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token;
 
 
 class FakeReader implements Reader
