@@ -11,39 +11,33 @@
 
 namespace Shudd3r\PackageFiles\Command\Factory;
 
-use Shudd3r\PackageFiles\Command\Factory;
-use Shudd3r\PackageFiles\Command\CommandSequence;
-use Shudd3r\PackageFiles\Command\BackupFiles;
-use Shudd3r\PackageFiles\Command\ProtectedCommand;
-use Shudd3r\PackageFiles\Command\TokenProcessor;
-use Shudd3r\PackageFiles\Command\WriteMetaData;
-use Shudd3r\PackageFiles\Command\Precondition;
-use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\Application\FileSystem\Directory\ReflectedDirectory;
+use Shudd3r\PackageFiles\Command;
+use Shudd3r\PackageFiles\Application\Command as CommandInterface;
+use Shudd3r\PackageFiles\Application\FileSystem\Directory;
 use Shudd3r\PackageFiles\Token\Source;
 use Shudd3r\PackageFiles\Token\Reader;
 use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Template;
 
 
-class InitCommandFactory extends Factory
+class InitCommandFactory extends Command\Factory
 {
-    public function command(): Command
+    public function command(): CommandInterface
     {
         $tokenReader     = new Reader\CompositeTokenReader(...$this->tokenReaders());
-        $generatedFiles  = new ReflectedDirectory($this->env->package(), $this->env->skeleton());
+        $generatedFiles  = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupDirectory = $this->env->backup();
 
-        $backupFiles   = new BackupFiles($generatedFiles, $backupDirectory);
-        $processTokens = new TokenProcessor($tokenReader, $this->processor());
-        $writeMetaData = new WriteMetaData($tokenReader, $this->env->metaDataFile());
+        $backupFiles   = new Command\BackupFiles($generatedFiles, $backupDirectory);
+        $processTokens = new Command\TokenProcessor($tokenReader, $this->processor());
+        $writeMetaData = new Command\WriteMetaData($tokenReader, $this->env->metaDataFile());
 
-        $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);
-        $noBackupOverwrite = new Precondition\CheckFilesOverwrite($generatedFiles, $backupDirectory);
+        $noMetaDataFile    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), false);
+        $noBackupOverwrite = new Command\Precondition\CheckFilesOverwrite($generatedFiles, $backupDirectory);
 
-        return new ProtectedCommand(
-            new CommandSequence($backupFiles, $processTokens, $writeMetaData),
-            new Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite)
+        return new Command\ProtectedCommand(
+            new Command\CommandSequence($backupFiles, $processTokens, $writeMetaData),
+            new Command\Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite)
         );
     }
 
