@@ -12,25 +12,25 @@
 namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\InitCommandFactory as Factory;
+use Shudd3r\PackageFiles\Initialize;
 use Shudd3r\PackageFiles\Environment\Command;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 
 
-class InitCommandFactoryTest extends TestCase
+class InitializeTest extends TestCase
 {
     private const SKELETON_FILE = 'dir/generate.ini';
 
     public function testFactoryCreatesCommand()
     {
-        $factory = new Factory($this->env(), []);
+        $factory = new Initialize($this->env(), []);
         $this->assertInstanceOf(Command::class, $factory->command());
     }
 
     public function testPropertiesAreReadFromProjectFiles()
     {
         $env     = $this->env();
-        $factory = new Factory($env, ['i' => false]);
+        $factory = new Initialize($env, ['i' => false]);
         $composer = [
             'name'        => 'fooBar/baz',
             'description' => 'My library package',
@@ -53,7 +53,7 @@ class InitCommandFactoryTest extends TestCase
     public function testUnresolvedPropertiesAreReadFromDirectoryNames()
     {
         $env     = $this->env();
-        $factory = new Factory($env, ['i' => false]);
+        $factory = new Initialize($env, ['i' => false]);
         $env->package()->path = '/path/foo/bar';
 
         $factory->command()->execute();
@@ -69,7 +69,7 @@ class InitCommandFactoryTest extends TestCase
     public function testEstablishedPackageNameWillDetermineOtherProperties()
     {
         $env      = $this->env();
-        $factory  = new Factory($env, ['i' => false]);
+        $factory  = new Initialize($env, ['i' => false]);
         $composer = json_encode(['name' => 'fooBar/baz']);
         $env->package()->addFile('composer.json', $composer);
 
@@ -86,7 +86,7 @@ class InitCommandFactoryTest extends TestCase
     public function testCommandLineDefinedPropertiesHavePriorityOverResolved()
     {
         $env     = $this->env();
-        $factory = new Factory($env, []);
+        $factory = new Initialize($env, []);
         $factory->command()->execute();
         $this->assertGeneratedFiles($env, [
             'repository.name'  => 'package/directory',
@@ -104,7 +104,7 @@ class InitCommandFactoryTest extends TestCase
         ];
 
         $env     = $this->env();
-        $factory = new Factory($env, $options);
+        $factory = new Initialize($env, $options);
         $factory->command()->execute();
         $this->assertGeneratedFiles($env, [
             'repository.name'  => 'cli/repo',
@@ -132,7 +132,7 @@ class InitCommandFactoryTest extends TestCase
             'ns'      => 'Cli\NamespaceX'
         ];
 
-        $factory = new Factory($env, $options);
+        $factory = new Initialize($env, $options);
         $factory->command()->execute();
 
         $this->assertGeneratedFiles($env, [
@@ -148,7 +148,7 @@ class InitCommandFactoryTest extends TestCase
         $env = new Doubles\FakeRuntimeEnv();
         $env->skeleton()->addFile('file.ini', 'generated');
         $env->package()->addFile('file.ini', 'original');
-        $factory = new Factory($env, []);
+        $factory = new Initialize($env, []);
 
         $this->assertSame([], $env->backup()->files());
 
@@ -163,7 +163,7 @@ class InitCommandFactoryTest extends TestCase
         $env = new Doubles\FakeRuntimeEnv();
         $env->metaDataFile()->write('foo');
         $env->skeleton()->addFile('file.ini');
-        $factory = new Factory($env, []);
+        $factory = new Initialize($env, []);
         $command = $factory->command();
 
         $command->execute();
@@ -177,7 +177,7 @@ class InitCommandFactoryTest extends TestCase
         $env->skeleton()->addFile('file.ini', 'skeleton');
         $env->package()->addFile('file.ini', 'original');
         $env->backup()->addFile('file.ini', 'backup');
-        $factory = new Factory($env, []);
+        $factory = new Initialize($env, []);
         $command = $factory->command();
 
         $command->execute();

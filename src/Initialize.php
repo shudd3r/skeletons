@@ -20,7 +20,7 @@ use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Template;
 
 
-class InitCommandFactory extends Command\Factory
+class Initialize extends Command\Factory
 {
     public function command(): CommandInterface
     {
