@@ -29,11 +29,15 @@ class BackupFiles implements Command
 
     public function execute(): void
     {
-        $packageFiles = array_filter($this->package->files(), fn(File $file) => $file->exists());
-
-        foreach ($packageFiles as $packageFile) {
-            $backupFile = $this->backup->file($packageFile->name());
-            $backupFile->write($packageFile->contents());
+        foreach ($this->package->files() as $packageFile) {
+            if (!$packageFile->exists()) { continue; }
+            $this->copyToBackupDirectory($packageFile);
         }
+    }
+
+    private function copyToBackupDirectory(File $packageFile): void
+    {
+        $backupFile = $this->backup->file($packageFile->name());
+        $backupFile->write($packageFile->contents());
     }
 }
