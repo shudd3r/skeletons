@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Application\Token;
 
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Application\Token;
 
 
 class OriginalContents
@@ -25,16 +26,14 @@ class OriginalContents
         $this->packageFile = $packageFile;
     }
 
-    public function clips(string $mask): array
+    public function token(string $mask): Token
     {
         $hasPlaceholder = strpos($mask, self::PLACEHOLDER) !== false;
-        if (!$hasPlaceholder) { return []; }
+        if (!$hasPlaceholder) { return $this->newTokenInstance(); }
 
         $fixedParts = explode(self::PLACEHOLDER, $mask);
         $contents   = $this->packageFile->contents();
-        if (!$contents) {
-            return array_fill(0, count($fixedParts) - 1, '');
-        }
+        if (!$contents) { return $this->newTokenInstance(); }
 
         $contents = $this->trimmedContents($contents, array_shift($fixedParts), array_pop($fixedParts));
 
@@ -45,7 +44,7 @@ class OriginalContents
         }
         $clips[] = $contents;
 
-        return $clips;
+        return $this->newTokenInstance($clips);
     }
 
     private function trimmedContents(string $contents, string $prefix, string $postfix): string
@@ -57,5 +56,14 @@ class OriginalContents
             $contents = substr($contents, 0, -strlen($postfix));
         }
         return $contents;
+    }
+
+    private function newTokenInstance(array $values = null): Token
+    {
+        if (!$values) { return new ValueToken(self::PLACEHOLDER, ''); }
+
+        return count($values) === 1
+            ? new ValueToken(self::PLACEHOLDER, $values[0])
+            : new ValueListToken(self::PLACEHOLDER, ...$values);
     }
 }

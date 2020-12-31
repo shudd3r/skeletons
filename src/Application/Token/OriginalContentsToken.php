@@ -25,14 +25,7 @@ class OriginalContentsToken implements Token
 
     public function replacePlaceholders(string $template): string
     {
-        $clips = $this->originalContents->clips($template);
-
-        $templateParts = explode(OriginalContents::PLACEHOLDER, $template);
-        $generated     = array_shift($templateParts);
-        foreach ($templateParts as $templatePart) {
-            $generated .= array_shift($clips) . $templatePart;
-        }
-
-        return $generated;
+        $contentsToken = $this->originalContents->token($template);
+        return $contentsToken->replacePlaceholders($template);
     }
 }

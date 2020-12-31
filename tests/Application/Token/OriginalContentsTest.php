@@ -26,7 +26,7 @@ class OriginalContentsTest extends TestCase
      */
     public function testUseCases(string $original, string $mask, array $expected)
     {
-        $this->assertSame($expected, $this->contents($original)->clips($mask));
+        $this->assertEquals($this->token($expected), $this->contents($original)->token($mask));
     }
 
     public function useCases(): array
@@ -34,19 +34,29 @@ class OriginalContentsTest extends TestCase
         $orig = Token\OriginalContents::PLACEHOLDER;
         return [
             'no placeholder'       => ['original contents', 'template string', []],
-            'no original contents' => ['', "template -{$orig}- string", ['']],
+            'no original contents' => ['', "template -{$orig}- string", []],
             'only placeholder'     => ['This is original content', "{$orig}", ['This is original content']],
             'surrounded by text'   => ['Foo -Bar- Baz', "Foo -{$orig}- Baz", ['Bar']],
             'two placeholders'     => ['Foo -Bar- Baz', "Foo -{$orig}- {$orig}", ['Bar','Baz']],
             'three placeholders'   => ['Foo -Bar- Baz', "{$orig} -{$orig}- {$orig}", ['Foo', 'Bar', 'Baz']],
             'repeated content'     => ['FooBarFooBarFoo', "{$orig}Bar{$orig}BarFoo", ['Foo', 'Foo']],
             'extremely repeated'   => ['xxxxx', "x{$orig}x{$orig}x", ['', 'xx']],
-            'mask mismatch'        => ['-----', "x{$orig}x{$orig}x", ['---', '']],
+            'mask mismatch'        => ['-----', "x{$orig}x{$orig}x", ['---', '']]
         ];
     }
 
     private function contents(string $originalContents = null): Token\OriginalContents
     {
         return new Token\OriginalContents(new Doubles\MockedFile($originalContents));
+    }
+
+    private function token(array $values): Token
+    {
+        $placeholder = Token\OriginalContents::PLACEHOLDER;
+        if (!$values) { return new Token\ValueToken($placeholder, ''); }
+
+        return count($values) === 1
+            ? new Token\ValueToken($placeholder, $values[0])
+            : new Token\ValueListToken($placeholder, ...$values);
     }
 }
