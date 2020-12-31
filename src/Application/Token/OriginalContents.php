@@ -11,11 +11,11 @@
 
 namespace Shudd3r\PackageFiles\Application\Token;
 
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 
-class OriginalContents
+class OriginalContents implements Token
 {
     public const PLACEHOLDER = '{original.content}';
 
@@ -24,6 +24,12 @@ class OriginalContents
     public function __construct(File $packageFile)
     {
         $this->packageFile = $packageFile;
+    }
+
+    public function replacePlaceholders(string $template): string
+    {
+        $token = $this->token($template);
+        return $token->replacePlaceholders($template);
     }
 
     public function token(string $mask): Token
