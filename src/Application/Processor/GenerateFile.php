@@ -28,9 +28,10 @@ class GenerateFile implements Processor
         $this->file     = $file;
     }
 
-    public function process(Token $token): void
+    public function process(Token $token): bool
     {
         $contents = $this->template->render($token);
         $this->file->write($contents);
+        return true;
     }
 }

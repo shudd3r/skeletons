@@ -31,21 +31,23 @@ class CompareFile implements Processor
         $this->output   = $output;
     }
 
-    public function process(Token $token): void
+    public function process(Token $token): bool
     {
         $success = $this->template->render($token) === $this->file->contents();
-        $success ? $this->successMessage() : $this->errorMessage();
+        return $success ? $this->successMessage() : $this->errorMessage();
     }
 
-    private function successMessage(): void
+    private function successMessage(): bool
     {
         $message = 'Checking file `%s` - OK';
         $this->output->send(sprintf($message, $this->file->name()));
+        return true;
     }
 
-    private function errorMessage(): void
+    private function errorMessage(): bool
     {
         $message = 'Checking file `%s` - FAILED';
         $this->output->send(sprintf($message, $this->file->name()), 1);
+        return false;
     }
 }

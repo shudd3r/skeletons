@@ -27,10 +27,13 @@ class SkeletonFilesProcessor implements Processor
         $this->skeleton = $skeleton;
     }
 
-    public function process(Token $token): void
+    public function process(Token $token): bool
     {
+        $status = true;
         foreach ($this->skeleton->files() as $file) {
-            $this->factory->processor($file)->process($token);
+            $status = $this->factory->processor($file)->process($token) && $status;
         }
+
+        return $status;
     }
 }

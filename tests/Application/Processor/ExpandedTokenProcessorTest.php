@@ -26,7 +26,7 @@ class ExpandedTokenProcessorTest extends TestCase
         $processor    = new ExpandedTokenProcessor($newToken, $subProcessor);
 
         $token = new Doubles\FakeToken('foo');
-        $processor->process($token);
+        $this->assertTrue($processor->process($token));
         $this->assertEquals(new CompositeToken($token, $newToken), $subProcessor->passedToken);
     }
 }

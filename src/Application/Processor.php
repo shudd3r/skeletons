@@ -14,5 +14,5 @@ namespace Shudd3r\PackageFiles\Application;
 
 interface Processor
 {
-    public function process(Token $token): void;
+    public function process(Token $token): bool;
 }

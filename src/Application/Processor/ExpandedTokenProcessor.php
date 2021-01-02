@@ -26,9 +26,9 @@ class ExpandedTokenProcessor implements Processor
         $this->processor = $processor;
     }
 
-    public function process(Token $token): void
+    public function process(Token $token): bool
     {
         $token = new Token\CompositeToken($token, $this->token);
-        $this->processor->process($token);
+        return $this->processor->process($token);
     }
 }

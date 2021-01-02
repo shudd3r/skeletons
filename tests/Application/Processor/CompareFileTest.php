@@ -27,8 +27,8 @@ class CompareFileTest extends TestCase
         $processor = new CompareFile($template, $file, $output);
 
         $token = new Doubles\FakeToken();
-        $processor->process($token);
 
+        $this->assertTrue($processor->process($token));
         $this->assertSame($token, $template->receivedToken);
         $this->assertCount(1, $output->messagesSent);
         $this->assertSame(0, $output->exitCode());
@@ -42,8 +42,8 @@ class CompareFileTest extends TestCase
         $processor = new CompareFile($template, $file, $output);
 
         $token = new Doubles\FakeToken();
-        $processor->process($token);
 
+        $this->assertFalse($processor->process($token));
         $this->assertSame($token, $template->receivedToken);
         $this->assertCount(1, $output->messagesSent);
         $this->assertSame(1, $output->exitCode());

@@ -29,10 +29,28 @@ class ProcessorSequenceTest extends TestCase
         ];
 
         $sequence = new Processor\ProcessorSequence(...$processors);
+        $token    = new Doubles\FakeToken();
+
         $this->assertProcessorCalled(null, ...$processors);
 
-        $sequence->process($tokens = new Doubles\FakeToken());
-        $this->assertProcessorCalled($tokens, ...$processors);
+        $this->assertTrue($sequence->process($token));
+        $this->assertProcessorCalled($token, ...$processors);
+    }
+
+    public function testFailedSubProcess_ReturnsFailStatus()
+    {
+        $processors = [
+            new Doubles\MockedProcessor(),
+            new Doubles\MockedProcessor(),
+            new Doubles\MockedProcessor(false),
+            new Doubles\MockedProcessor()
+        ];
+
+        $sequence = new Processor\ProcessorSequence(...$processors);
+        $token    = new Doubles\FakeToken();
+
+        $this->assertFalse($sequence->process($token));
+        $this->assertProcessorCalled($token, ...$processors);
     }
 
     private function assertProcessorCalled(?Token $token, Doubles\MockedProcessor ...$processors): void

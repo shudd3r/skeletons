@@ -25,10 +25,13 @@ class ProcessorSequence implements Processor
         $this->processors = $processors;
     }
 
-    public function process(Token $token): void
+    public function process(Token $token): bool
     {
+        $status = true;
         foreach ($this->processors as $processor) {
-            $processor->process($token);
+            $status = $processor->process($token) && $status;
         }
+
+        return $status;
     }
 }
