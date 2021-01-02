@@ -124,9 +124,18 @@ class ValidateTest extends TestCase
 
     private function template(array $replacements = []): string
     {
-        $skeleton = <<<'TPL'
-            This is a template for {repository.name} in a {package.name} package, which
+        $orig = $replacements ? [
+            ' (and this is some original content not present in template file)',
+            '--- this was extracted from package file ---'
+        ] : [
+            '{original.content}', '{original.content}'
+        ];
+
+        $skeleton = <<<TPL
+            This is a template for {repository.name} in a {package.name} package{$orig[0]}, which
             is "{description.text}" with `src` directory files in `{namespace.src}` namespace.
+            
+            {$orig[1]}
             TPL;
 
         foreach ($replacements as $name => $replacement) {

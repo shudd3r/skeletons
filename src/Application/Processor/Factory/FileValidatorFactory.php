@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Application\Processor\Factory;
 
 use Shudd3r\PackageFiles\Application\Processor;
+use Shudd3r\PackageFiles\Application\Token\OriginalContents;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Template;
@@ -34,6 +35,7 @@ class FileValidatorFactory implements Processor\Factory
         $template    = new Template\FileTemplate($skeletonFile);
         $packageFile = $this->package->file($skeletonFile->name());
 
-        return new Processor\CompareFile($template, $packageFile, $this->output);
+        $compareFiles = new Processor\CompareFile($template, $packageFile, $this->output);
+        return new Processor\ExpandedTokenProcessor(new OriginalContents($packageFile), $compareFiles);
     }
 }
