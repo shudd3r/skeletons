@@ -18,25 +18,25 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class TokenProcessorTest extends TestCase
 {
-    public function testInstantiation()
-    {
-        $command = new TokenProcessor(new Doubles\FakeReader(), new Doubles\MockedProcessor());
-        $this->assertInstanceOf(TokenProcessor::class, $command);
-    }
-
-    public function testPropertiesArePassedToProcessor()
+    public function testTokensArePassedToProcessor()
     {
         $reader    = new Doubles\FakeReader();
         $processor = new Doubles\MockedProcessor();
-        $command   = new TokenProcessor($reader, $processor);
+        $terminal  = new Doubles\MockedTerminal();
+        $command   = new TokenProcessor($reader, $processor, $terminal);
+
+        $this->assertInstanceOf(TokenProcessor::class, $command);
 
         $command->execute();
         $this->assertSame($reader->token(), $processor->passedToken);
     }
 
-    public function testUnresolvedPropertiesStopExecution()
+    public function testUnresolvedTokensStopExecution()
     {
-        $command = new TokenProcessor(new Doubles\FakeReader(null), $processor = new Doubles\MockedProcessor());
+        $reader    = new Doubles\FakeReader(null);
+        $processor = new Doubles\MockedProcessor();
+        $terminal  = new Doubles\MockedTerminal();
+        $command   = new TokenProcessor($reader, $processor, $terminal);
 
         $command->execute();
         $this->assertNull($processor->passedToken);

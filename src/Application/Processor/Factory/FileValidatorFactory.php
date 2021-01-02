@@ -16,18 +16,15 @@ use Shudd3r\PackageFiles\Application\Token\OriginalContents;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Template;
-use Shudd3r\PackageFiles\Environment\Output;
 
 
 class FileValidatorFactory implements Processor\Factory
 {
     private Directory $package;
-    private Output    $output;
 
-    public function __construct(Directory $package, Output $output)
+    public function __construct(Directory $package)
     {
         $this->package = $package;
-        $this->output  = $output;
     }
 
     public function processor(File $skeletonFile): Processor
@@ -35,7 +32,7 @@ class FileValidatorFactory implements Processor\Factory
         $template    = new Template\FileTemplate($skeletonFile);
         $packageFile = $this->package->file($skeletonFile->name());
 
-        $compareFiles = new Processor\CompareFile($template, $packageFile, $this->output);
+        $compareFiles = new Processor\CompareFile($template, $packageFile);
         return new Processor\ExpandedTokenProcessor(new OriginalContents($packageFile), $compareFiles);
     }
 }

@@ -29,7 +29,7 @@ class Initialize extends Command\Factory
         $backupDirectory = $this->env->backup();
 
         $backupFiles   = new Command\BackupFiles($generatedFiles, $backupDirectory);
-        $processTokens = new Command\TokenProcessor($tokenReader, $this->processor());
+        $processTokens = new Command\TokenProcessor($tokenReader, $this->processor(), $this->env->output());
         $writeMetaData = new Command\WriteMetaData($tokenReader, $this->env->metaDataFile());
 
         $noMetaDataFile    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), false);

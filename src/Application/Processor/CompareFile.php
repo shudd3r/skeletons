@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Environment\Output;
 use Shudd3r\PackageFiles\Application\Token;
 
 
@@ -22,32 +21,15 @@ class CompareFile implements Processor
 {
     private Template $template;
     private File     $file;
-    private Output   $output;
 
-    public function __construct(Template $template, File $file, Output $output)
+    public function __construct(Template $template, File $file)
     {
         $this->template = $template;
         $this->file     = $file;
-        $this->output   = $output;
     }
 
     public function process(Token $token): bool
     {
-        $success = $this->template->render($token) === $this->file->contents();
-        return $success ? $this->successMessage() : $this->errorMessage();
-    }
-
-    private function successMessage(): bool
-    {
-        $message = 'Checking file `%s` - OK';
-        $this->output->send(sprintf($message, $this->file->name()));
-        return true;
-    }
-
-    private function errorMessage(): bool
-    {
-        $message = 'Checking file `%s` - FAILED';
-        $this->output->send(sprintf($message, $this->file->name()), 1);
-        return false;
+        return $this->template->render($token) === $this->file->contents();
     }
 }

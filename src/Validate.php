@@ -25,7 +25,7 @@ class Validate extends Command\Factory
     {
         $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $tokenReader    = new Reader\CompositeTokenReader(...$this->tokenReaders());
-        $processTokens  = new Command\TokenProcessor($tokenReader, $this->processor());
+        $processTokens  = new Command\TokenProcessor($tokenReader, $this->processor(), $this->env->output());
 
         return new Command\ProtectedCommand($processTokens, $metaDataExists);
     }
@@ -49,9 +49,9 @@ class Validate extends Command\Factory
     {
         $composerFile    = $this->env->package()->file('composer.json');
         $template        = new Template\ComposerJsonTemplate($composerFile);
-        $compareComposer = new Processor\CompareFile($template, $composerFile, $this->env->output());
+        $compareComposer = new Processor\CompareFile($template, $composerFile);
 
-        $generatorFactory = new Processor\Factory\FileValidatorFactory($this->env->package(), $this->env->output());
+        $generatorFactory = new Processor\Factory\FileValidatorFactory($this->env->package());
         $comparePackage   = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
 
         return new Processor\ProcessorSequence($compareComposer, $comparePackage);

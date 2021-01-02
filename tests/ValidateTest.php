@@ -69,7 +69,6 @@ class ValidateTest extends TestCase
         $env->package()->addFile('composer.json', $this->composer($tokens));
 
         $factory->command()->execute();
-        $this->assertCount(2, $env->output()->messagesSent);
         $this->assertSame(0, $env->output()->exitCode());
     }
 
@@ -90,7 +89,6 @@ class ValidateTest extends TestCase
         $env->package()->addFile('composer.json', $this->composer($tokens));
 
         $factory->command()->execute();
-        $this->assertCount(2, $env->output()->messagesSent);
         $this->assertSame(1, $env->output()->exitCode());
     }
 

@@ -23,29 +23,23 @@ class CompareFileTest extends TestCase
         $contents  = 'expected contents';
         $template  = new Doubles\FakeTemplate($contents);
         $file      = new Doubles\MockedFile($contents);
-        $output    = new Doubles\MockedTerminal();
-        $processor = new CompareFile($template, $file, $output);
+        $processor = new CompareFile($template, $file);
 
         $token = new Doubles\FakeToken();
 
         $this->assertTrue($processor->process($token));
         $this->assertSame($token, $template->receivedToken);
-        $this->assertCount(1, $output->messagesSent);
-        $this->assertSame(0, $output->exitCode());
     }
 
     public function testFailedComparison_RendersErrorMessage()
     {
         $template  = new Doubles\FakeTemplate('generated contents');
         $file      = new Doubles\MockedFile('expected contents');
-        $output    = new Doubles\MockedTerminal();
-        $processor = new CompareFile($template, $file, $output);
+        $processor = new CompareFile($template, $file);
 
         $token = new Doubles\FakeToken();
 
         $this->assertFalse($processor->process($token));
         $this->assertSame($token, $template->receivedToken);
-        $this->assertCount(1, $output->messagesSent);
-        $this->assertSame(1, $output->exitCode());
     }
 }
