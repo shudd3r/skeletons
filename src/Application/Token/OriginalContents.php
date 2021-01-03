@@ -19,10 +19,10 @@ class OriginalContents implements Token
 {
     public const PLACEHOLDER = '{original.content}';
 
-    private File             $packageFile;
-    private ?FilesTokenCache $cache;
+    private File        $packageFile;
+    private ?TokenCache $cache;
 
-    public function __construct(File $packageFile, FilesTokenCache $cache = null)
+    public function __construct(File $packageFile, TokenCache $cache = null)
     {
         $this->packageFile = $packageFile;
         $this->cache       = $cache;
@@ -80,7 +80,7 @@ class OriginalContents implements Token
     private function cached(Token $token): Token
     {
         if ($this->cache) {
-            $this->cache->add($this->packageFile, $token);
+            $this->cache->add($this->packageFile->name(), $token);
         }
         return $token;
     }

@@ -11,11 +11,10 @@
 
 namespace Shudd3r\PackageFiles\Application\Token;
 
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class FilesTokenCache
+class TokenCache
 {
     private array $tokens;
 
@@ -24,13 +23,13 @@ class FilesTokenCache
         $this->tokens = $tokens;
     }
 
-    public function add(File $file, Token $token): void
+    public function add(string $name, Token $token): void
     {
-        $this->tokens[$file->name()] = $token;
+        $this->tokens[$name] = $token;
     }
 
-    public function token(File $file): Token
+    public function token(string $name): Token
     {
-        return $this->tokens[$file->name()];
+        return $this->tokens[$name];
     }
 }
