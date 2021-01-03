@@ -19,11 +19,13 @@ class OriginalContents implements Token
 {
     public const PLACEHOLDER = '{original.content}';
 
-    private File $packageFile;
+    private File             $packageFile;
+    private ?FilesTokenCache $cache;
 
-    public function __construct(File $packageFile)
+    public function __construct(File $packageFile, FilesTokenCache $cache = null)
     {
         $this->packageFile = $packageFile;
+        $this->cache       = $cache;
     }
 
     public function replacePlaceholders(string $template): string
@@ -66,10 +68,20 @@ class OriginalContents implements Token
 
     private function newTokenInstance(array $values = null): Token
     {
-        if (!$values) { return new ValueToken(self::PLACEHOLDER, ''); }
+        if (!$values) {
+            return $this->cached(new ValueToken(self::PLACEHOLDER, ''));
+        }
 
         return count($values) === 1
-            ? new ValueToken(self::PLACEHOLDER, $values[0])
-            : new ValueListToken(self::PLACEHOLDER, ...$values);
+            ? $this->cached(new ValueToken(self::PLACEHOLDER, $values[0]))
+            : $this->cached(new ValueListToken(self::PLACEHOLDER, ...$values));
+    }
+
+    private function cached(Token $token): Token
+    {
+        if ($this->cache) {
+            $this->cache->add($this->packageFile, $token);
+        }
+        return $token;
     }
 }
