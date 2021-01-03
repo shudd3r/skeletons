@@ -22,7 +22,7 @@ class OriginalContents implements Token
     private File        $packageFile;
     private ?TokenCache $cache;
 
-    public function __construct(File $packageFile, TokenCache $cache = null)
+    public function __construct(File $packageFile, ?TokenCache $cache = null)
     {
         $this->packageFile = $packageFile;
         $this->cache       = $cache;
