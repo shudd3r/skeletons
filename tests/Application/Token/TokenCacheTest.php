@@ -23,10 +23,16 @@ class TokenCacheTest extends TestCase
         $predefinedToken = new Doubles\FakeToken();
         $addedToken      = new Doubles\FakeToken();
 
-        $tokens = new TokenCache(['some/file.ext' => $predefinedToken]);
+        $tokens = new TokenCache(['name' => $predefinedToken]);
         $tokens->add('foo/bar.php', $addedToken);
 
-        $this->assertSame($predefinedToken, $tokens->token('some/file.ext'));
+        $this->assertSame($predefinedToken, $tokens->token('name'));
         $this->assertSame($addedToken, $tokens->token('foo/bar.php'));
+    }
+
+    public function testMissingToken_ReturnsNull()
+    {
+        $tokens = new TokenCache();
+        $this->assertNull($tokens->token('someName'));
     }
 }

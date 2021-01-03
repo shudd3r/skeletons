@@ -28,8 +28,8 @@ class TokenCache
         $this->tokens[$name] = $token;
     }
 
-    public function token(string $name): Token
+    public function token(string $name): ?Token
     {
-        return $this->tokens[$name];
+        return $this->tokens[$name] ?? null;
     }
 }
