@@ -16,6 +16,7 @@ use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
+use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Template;
 
 
@@ -28,6 +29,12 @@ class Validate extends Command\Factory
         $processTokens  = new Command\TokenProcessor($tokenReader, $this->processor(), $this->env->output());
 
         return new Command\ProtectedCommand($processTokens, $metaDataExists);
+    }
+
+    public function synchronizedSkeleton(TokenCache $cache = null): Command\Precondition
+    {
+        $tokenReader = new Reader\CompositeTokenReader(...$this->tokenReaders());
+        return new Command\Precondition\SkeletonSynchronization($tokenReader, $this->processor($cache));
     }
 
     protected function tokenReaders(): array
@@ -45,13 +52,13 @@ class Validate extends Command\Factory
         ];
     }
 
-    protected function processor(): Processor
+    protected function processor(TokenCache $cache = null): Processor
     {
         $composerFile    = $this->env->package()->file('composer.json');
         $template        = new Template\ComposerJsonTemplate($composerFile);
         $compareComposer = new Processor\CompareFile($template, $composerFile);
 
-        $generatorFactory = new Processor\Factory\FileValidatorFactory($this->env->package());
+        $generatorFactory = new Processor\Factory\FileValidatorFactory($this->env->package(), $cache);
         $comparePackage   = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
 
         return new Processor\ProcessorSequence($compareComposer, $comparePackage);

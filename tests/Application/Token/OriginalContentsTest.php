@@ -26,7 +26,12 @@ class OriginalContentsTest extends TestCase
      */
     public function testUseCases(string $original, string $mask, ?string $expected)
     {
-        $this->assertSame($expected ?? $original, $this->token($original)->replacePlaceholders($mask));
+        $token = $this->token($original);
+        $this->assertSame($expected ?? $original, $token->replacePlaceholders($mask));
+
+        $cache = new Token\TokenCache();
+        $this->assertSame($expected ?? $original, $this->token($original, $cache)->replacePlaceholders($mask));
+        $this->assertSame($expected ?? $original, $cache->token('cached/file.txt')->replacePlaceholders($mask));
     }
 
     public function useCases(): array
@@ -45,8 +50,13 @@ class OriginalContentsTest extends TestCase
         ];
     }
 
-    private function token(string $originalContents = null): Token\OriginalContents
+    private function token(string $originalContents = null, Token\TokenCache $cache = null): Token\OriginalContents
     {
-        return new Token\OriginalContents(new Doubles\MockedFile($originalContents));
+        $file = new Doubles\MockedFile($originalContents);
+        $file->name = 'cached/file.txt';
+
+        return $cache
+            ? new Token\OriginalContents($file, $cache)
+            : new Token\OriginalContents($file);
     }
 }

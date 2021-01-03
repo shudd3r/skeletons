@@ -13,7 +13,8 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Validate;
-use Shudd3r\PackageFiles\Application\Command\Factory;
+use Shudd3r\PackageFiles\Environment\Command;
+use Shudd3r\PackageFiles\Application\Command\Precondition;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeRuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 
@@ -22,9 +23,14 @@ class ValidateTest extends TestCase
 {
     private const SKELETON_FILE = 'dir/generate.ini';
 
-    public function testInstantiation()
+    public function testFactoryCreatesCommand()
     {
-        $this->assertInstanceOf(Factory::class, $this->factory());
+        $this->assertInstanceOf(Command::class, $this->factory()->command());
+    }
+
+    public function testCreatingPrecondition()
+    {
+        $this->assertInstanceOf(Precondition::class, $this->factory()->synchronizedSkeleton());
     }
 
     public function testMissingMetaDataFile_StopsExecution()
@@ -53,7 +59,7 @@ class ValidateTest extends TestCase
         $this->assertSame([], $env->output()->messagesSent);
     }
 
-    public function testMatchingFiles_RenderSuccessMessage()
+    public function testMatchingFiles_OutputsNoErrorCode()
     {
         $env     = $this->env();
         $factory = $this->factory($env);
@@ -70,9 +76,11 @@ class ValidateTest extends TestCase
 
         $factory->command()->execute();
         $this->assertSame(0, $env->output()->exitCode());
+
+        $this->assertTrue($factory->synchronizedSkeleton()->isFulfilled());
     }
 
-    public function testNotMatchingFiles_RenderFailMessage()
+    public function testNotMatchingFiles_OutputsErrorCode()
     {
         $env     = $this->env();
         $factory = $this->factory($env);
@@ -90,6 +98,8 @@ class ValidateTest extends TestCase
 
         $factory->command()->execute();
         $this->assertSame(1, $env->output()->exitCode());
+
+        $this->assertFalse($factory->synchronizedSkeleton()->isFulfilled());
     }
 
     private function factory(FakeRuntimeEnv &$env = null): Validate
