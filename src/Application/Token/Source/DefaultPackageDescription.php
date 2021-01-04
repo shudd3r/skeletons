@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\Reader\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Application\Token\Reader\PackageName;
-use Shudd3r\PackageFiles\Application\Token\Parser;
+use Shudd3r\PackageFiles\Application\Token\Validator;
 
 
 class DefaultPackageDescription implements Source
@@ -28,7 +28,7 @@ class DefaultPackageDescription implements Source
         $this->packageName = $packageName;
     }
 
-    public function value(Parser $parser): string
+    public function value(Validator $validator): string
     {
         return $this->composer->value('description') ?? $this->packageName->value() . ' package';
     }

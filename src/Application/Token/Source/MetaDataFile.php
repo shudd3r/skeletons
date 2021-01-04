@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Token\Source;
 
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Application\Token\Parser;
+use Shudd3r\PackageFiles\Application\Token\Validator;
 use RuntimeException;
 
 
@@ -29,12 +29,12 @@ class MetaDataFile implements Source
         $this->fallback = $fallback;
     }
 
-    public function value(Parser $parser): string
+    public function value(Validator $validator): string
     {
         isset($this->metaData) or $this->metaData = $this->fileMetaData();
 
-        $parserClass = get_class($parser);
-        return $this->metaData[$parserClass] ?? $this->fallback->value($parser);
+        $parserClass = get_class($validator);
+        return $this->metaData[$parserClass] ?? $this->fallback->value($validator);
     }
 
     private function fileMetaData()

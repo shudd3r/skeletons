@@ -21,6 +21,6 @@ class ParsedFilesTest extends TestCase
     public function testSource_ValueMethod_ReturnsParserValue()
     {
         $source = new ParsedFiles();
-        $this->assertSame('parsed value', $source->value(new Doubles\FakeParser('parsed value')));
+        $this->assertSame('parsed value', $source->value(new Doubles\FakeValidator('parsed value')));
     }
 }

@@ -11,10 +11,10 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\Token\Parser;
+use Shudd3r\PackageFiles\Application\Token\Validator;
 
 
-class FakeParser implements Parser
+class FakeValidator implements Validator
 {
     private string $value;
     private bool   $isValid;

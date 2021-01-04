@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Application\Token\Parser;
+use Shudd3r\PackageFiles\Application\Token\Validator;
 
 
 class FakeSource implements Source
@@ -26,9 +26,9 @@ class FakeSource implements Source
         $this->value = $value;
     }
 
-    public function value(Parser $parser): string
+    public function value(Validator $validator): string
     {
         $this->reads++;
-        return $this->value ?? $parser->parsedValue();
+        return $this->value ?? '';
     }
 }

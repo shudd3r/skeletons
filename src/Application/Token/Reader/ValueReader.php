@@ -12,12 +12,12 @@
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Parser;
+use Shudd3r\PackageFiles\Application\Token\Validator;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-abstract class ValueReader implements Reader, Parser
+abstract class ValueReader implements Reader, Validator
 {
     private Source $source;
     private string $cachedValue;

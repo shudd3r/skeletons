@@ -12,13 +12,13 @@
 namespace Shudd3r\PackageFiles\Application\Token\Source;
 
 use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Application\Token\Parser;
+use Shudd3r\PackageFiles\Application\Token\Validator;
 
 
 class ParsedFiles implements Source
 {
-    public function value(Parser $parser): string
+    public function value(Validator $validator): string
     {
-        return $parser->parsedValue();
+        return $validator->parsedValue();
     }
 }

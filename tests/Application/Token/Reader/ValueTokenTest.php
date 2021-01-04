@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\Token\Reader;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Parser;
+use Shudd3r\PackageFiles\Application\Token\Validator;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -23,7 +23,7 @@ class ValueTokenTest extends TestCase
     {
         $reader = $this->reader();
         $this->assertInstanceOf(Reader::class, $reader);
-        $this->assertInstanceOf(Parser::class, $reader);
+        $this->assertInstanceOf(Validator::class, $reader);
     }
 
     public function testReader_WithSourceMethod_CreatesNewInstanceWithChangedSource()
