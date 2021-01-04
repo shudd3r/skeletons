@@ -15,159 +15,68 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Validate;
 use Shudd3r\PackageFiles\Environment\Command;
 use Shudd3r\PackageFiles\Application\Command\Precondition;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeRuntimeEnv;
-use Shudd3r\PackageFiles\Application\Token\Reader;
 
 
 class ValidateTest extends TestCase
 {
-    private const SKELETON_FILE = 'dir/generate.ini';
-
     public function testFactoryCreatesCommand()
     {
-        $this->assertInstanceOf(Command::class, $this->factory()->command());
+        $factory = new Validate(new Doubles\FakeRuntimeEnv(), []);
+        $this->assertInstanceOf(Command::class, $factory->command());
     }
 
-    public function testCreatingPrecondition()
+    public function testFactoryCanCreatePrecondition()
     {
-        $this->assertInstanceOf(Precondition::class, $this->factory()->synchronizedSkeleton());
+        $factory = new Validate(new Doubles\FakeRuntimeEnv(), []);
+        $this->assertInstanceOf(Precondition::class, $factory->synchronizedSkeleton());
     }
 
     public function testMissingMetaDataFile_StopsExecution()
     {
-        $env     = $this->env();
-        $factory = $this->factory($env);
+        $setup = new EnvSetup();
 
+        $factory = new Validate($setup->env, []);
         $factory->command()->execute();
-        $this->assertSame([], $env->output()->messagesSent);
+
+        $this->assertSame([], $setup->env->output()->messagesSent);
     }
 
     public function testInvalidMetaData_StopsExecution()
     {
-        $env     = $this->env();
-        $factory = $this->factory($env);
+        $setup = new EnvSetup();
+        $setup->addMetaData(['namespace.src' => 'Not/A/Namespace']);
 
-        $tokens = [
-            'repository.name'  => 'user/repo',
-            'package.name'     => 'package/name',
-            'description.text' => 'package input description',
-            'namespace.src'    => 'Not/A/Namespace'
-        ];
-        $this->createMetaData($env, $tokens);
-
+        $factory = new Validate($setup->env, []);
         $factory->command()->execute();
-        $this->assertSame([], $env->output()->messagesSent);
+
+        $this->assertSame([], $setup->env->output()->messagesSent);
     }
 
     public function testMatchingFiles_OutputsNoErrorCode()
     {
-        $env     = $this->env();
-        $factory = $this->factory($env);
+        $setup = new EnvSetup();
+        $setup->addMetaData();
+        $setup->addComposer();
+        $setup->addGeneratedFile();
 
-        $tokens = [
-            'repository.name'  => 'user/repo',
-            'package.name'     => 'package/name',
-            'description.text' => 'package input description',
-            'namespace.src'    => 'My\Namespace'
-        ];
-        $this->createMetaData($env, $tokens);
-        $env->package()->addFile(self::SKELETON_FILE, $this->template($tokens));
-        $env->package()->addFile('composer.json', $this->composer($tokens));
-
+        $factory = new Validate($setup->env, []);
         $factory->command()->execute();
-        $this->assertSame(0, $env->output()->exitCode());
 
+        $this->assertSame(0, $setup->env->output()->exitCode());
         $this->assertTrue($factory->synchronizedSkeleton()->isFulfilled());
     }
 
     public function testNotMatchingFiles_OutputsErrorCode()
     {
-        $env     = $this->env();
-        $factory = $this->factory($env);
+        $setup = new EnvSetup();
+        $setup->addMetaData(['repository.name' => 'another/repo']);
+        $setup->addComposer();
+        $setup->addGeneratedFile();
 
-        $tokens = [
-            'repository.name'  => 'user/repo',
-            'package.name'     => 'package/name',
-            'description.text' => 'package input description',
-            'namespace.src'    => 'My\Namespace'
-        ];
-
-        $this->createMetaData($env, ['repository.name' => 'another/repo'] + $tokens);
-        $env->package()->addFile(self::SKELETON_FILE, $this->template($tokens));
-        $env->package()->addFile('composer.json', $this->composer($tokens));
-
+        $factory = new Validate($setup->env, []);
         $factory->command()->execute();
-        $this->assertSame(1, $env->output()->exitCode());
 
+        $this->assertSame(1, $setup->env->output()->exitCode());
         $this->assertFalse($factory->synchronizedSkeleton()->isFulfilled());
-    }
-
-    private function factory(FakeRuntimeEnv &$env = null): Validate
-    {
-        return new Validate($env ??= $this->env(), []);
-    }
-
-    private function env(): Doubles\FakeRuntimeEnv
-    {
-        $env = new Doubles\FakeRuntimeEnv();
-
-        $env->package()->path  = '/path/to/package/directory';
-        $env->skeleton()->path = '/path/to/skeleton/files';
-
-        $env->skeleton()->addFile(self::SKELETON_FILE, $this->template());
-        return $env;
-    }
-
-    private function createMetaData(FakeRuntimeEnv $env, array $data = [])
-    {
-        $metaData = [
-            Reader\PackageName::class        => $data['package.name'] ?? 'meta/package',
-            Reader\RepositoryName::class     => $data['repository.name'] ?? 'meta/repo',
-            Reader\PackageDescription::class => $data['description.text'] ?? 'This is meta package description',
-            Reader\SrcNamespace::class       => $data['namespace.src'] ?? 'Meta\SrcNamespace'
-        ];
-
-        $env->metaDataFile()->write(json_encode($metaData, JSON_PRETTY_PRINT));
-    }
-
-    private function template(array $replacements = []): string
-    {
-        $orig = $replacements ? [
-            ' (and this is some original content not present in template file)',
-            '--- this was extracted from package file ---'
-        ] : [
-            '{original.content}', '{original.content}'
-        ];
-
-        $skeleton = <<<TPL
-            This is a template for {repository.name} in a {package.name} package{$orig[0]}, which
-            is "{description.text}" with `src` directory files in `{namespace.src}` namespace.
-            
-            {$orig[1]}
-            TPL;
-
-        foreach ($replacements as $name => $replacement) {
-            $skeleton = str_replace('{' . $name . '}', $replacement, $skeleton);
-        }
-
-        return $skeleton;
-    }
-
-    private function composer(array $data = []): string
-    {
-        $ns = str_replace('//', '////', $data['namespace.src'] ?? 'Default\Namespace') . '\\';
-
-        $composer = [
-            'name'              => $data['package.name'] ?? 'default/name',
-            'description'       => $data['description.text'] ?? 'default description',
-            'type'              => 'library',
-            'license'           => 'MIT',
-            'authors'           => [['name' => 'Shudd3r', 'email' => 'q3.shudder@gmail.com']],
-            'autoload'          => ['psr-4' => [$ns => 'src/']],
-            'autoload-dev'      => ['psr-4' => [$ns . 'Tests\\' => 'tests/']],
-            'minimum-stability' => 'stable'
-        ];
-
-        return json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
     }
 }
