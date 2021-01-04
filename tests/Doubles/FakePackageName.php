@@ -12,17 +12,12 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Application\Token\Reader\PackageName;
-use Shudd3r\PackageFiles\Application\Token\Reader\Data\ComposerJsonData;
 
 
 class FakePackageName extends PackageName
 {
     public function __construct(string $value = 'package/name')
     {
-        $composer  = new ComposerJsonData(new MockedFile());
-        $directory = new FakeDirectory();
-        $source    = new FakeSource($value);
-
-        parent::__construct($composer, $directory, $source);
+        parent::__construct(new FakeSource($value));
     }
 }

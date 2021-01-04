@@ -16,22 +16,15 @@ use Shudd3r\PackageFiles\Application\Token\Validator;
 
 class FakeValidator implements Validator
 {
-    private string $value;
-    private bool   $isValid;
+    private bool $isValid;
 
-    public function __construct(string $value = 'foo', bool $validationResult = true)
+    public function __construct(bool $validationResult = true)
     {
-        $this->value   = $value;
         $this->isValid = $validationResult;
     }
 
     public function isValid(string $value): bool
     {
         return $this->isValid;
-    }
-
-    public function parsedValue(): string
-    {
-        return $this->value;
     }
 }

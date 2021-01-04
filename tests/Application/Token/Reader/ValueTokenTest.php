@@ -37,10 +37,10 @@ class ValueTokenTest extends TestCase
         $this->assertSame('new value', $newReader->value());
     }
 
-    public function testReaderWithSourceWithoutValue_ValueMethod_ReturnsParsedValue()
+    public function testReaderWithoutSource_ValueMethod_ReturnsEmptyString()
     {
         $reader = $this->reader(null);
-        $this->assertSame($reader->parsedValue(), $reader->value());
+        $this->assertSame('', $reader->value());
     }
 
     public function testReaderWithSourceProvidedValue_ValueMethod_ReturnsSourceValue()
@@ -50,9 +50,9 @@ class ValueTokenTest extends TestCase
         $this->assertSame('source value', $reader->value());
     }
 
-    public function testReaderWithSourceWithoutValue_TokenMethod_ReturnsTokenUsingParsedValue()
+    public function testReaderWithoutSource_TokenMethod_ReturnsTokenUsingEmptyString()
     {
-        $this->assertEquals(new Doubles\FakeToken('parsed value'), $this->reader(null)->token());
+        $this->assertEquals(new Doubles\FakeToken(''), $this->reader(null)->token());
     }
 
     public function testReaderWithSourceProvidedValue_TokenMethod_ReturnsTokenUsingSourceValue()
@@ -67,7 +67,7 @@ class ValueTokenTest extends TestCase
         $this->assertNull($reader->token());
 
         $reader = $this->reader(null, false);
-        $this->assertSame('parsed value', $reader->value());
+        $this->assertSame('', $reader->value());
         $this->assertNull($reader->token());
     }
 

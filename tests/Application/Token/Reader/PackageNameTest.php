@@ -25,18 +25,6 @@ class PackageNameTest extends TestCase
         $this->assertInstanceOf(Reader\ValueReader::class, $reader);
     }
 
-    public function testReaderWithEmptyComposerName_ParsedValueMethod_ResolvesNameFromDirectoryStructure()
-    {
-        $reader = $this->reader(null, false);
-        $this->assertSame('root/path', $reader->parsedValue());
-    }
-
-    public function testReaderWithComposerName_ParsedValueMethod_ResolvesNameFromComposer()
-    {
-        $reader = $this->reader(null);
-        $this->assertSame('composer/package', $reader->parsedValue());
-    }
-
     public function testReader_TokenMethod_ReturnsCorrectToken()
     {
         $expected = new Token\CompositeToken(
@@ -71,20 +59,9 @@ class PackageNameTest extends TestCase
         ];
     }
 
-    private function reader(?string $source, bool $composer = true): Reader\PackageName
+    private function reader(?string $source): Reader\PackageName
     {
-        $composer  = $this->composer($composer ? 'composer/package' : '');
-        $directory = new Doubles\FakeDirectory('root/path');
-
-        return isset($source)
-            ? new Reader\PackageName($composer, $directory, new Doubles\FakeSource($source))
-            : new Reader\PackageName($composer, $directory);
-    }
-
-    private function composer(string $packageName = ''): Reader\Data\ComposerJsonData
-    {
-        $contents = json_encode($packageName ? ['name' => $packageName] : []);
-        $composer = new Doubles\MockedFile($contents);
-        return new Reader\Data\ComposerJsonData($composer);
+        $source = isset($source) ? new Doubles\FakeSource($source) : null;
+        return new Reader\PackageName($source);
     }
 }

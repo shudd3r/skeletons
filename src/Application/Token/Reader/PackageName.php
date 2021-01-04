@@ -11,32 +11,14 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
-use Shudd3r\PackageFiles\Application\Token\Reader\Data\ComposerJsonData;
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token;
 
 
 class PackageName extends ValueReader
 {
-    private ComposerJsonData $composer;
-    private Directory        $project;
-
-    public function __construct(ComposerJsonData $composer, Directory $project, Source $source = null)
-    {
-        $this->composer = $composer;
-        $this->project  = $project;
-        parent::__construct($source);
-    }
-
     public function isValid(string $value): bool
     {
         return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
-    }
-
-    public function parsedValue(): string
-    {
-        return $this->composer->value('name') ?? $this->directoryFallback();
     }
 
     protected function newTokenInstance(string $packageName): Token
@@ -45,12 +27,6 @@ class PackageName extends ValueReader
             new Token\ValueToken('{package.name}', $packageName),
             new Token\ValueToken('{package.title}', $this->titleName($packageName))
         );
-    }
-
-    private function directoryFallback(): string
-    {
-        $path = $this->project->path();
-        return $path ? basename(dirname($path)) . '/' . basename($path) : '';
     }
 
     private function titleName(string $value): string

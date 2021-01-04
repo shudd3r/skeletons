@@ -25,18 +25,6 @@ class PackageDescriptionTest extends TestCase
         $this->assertInstanceOf(Reader\ValueReader::class, $reader);
     }
 
-    public function testReaderWithEmptyComposerDescription_ParsedValueMethod_ResolvesDescriptionFromPackageName()
-    {
-        $reader = $this->reader('anything', false);
-        $this->assertSame('package/name package', $reader->parsedValue());
-    }
-
-    public function testReaderWithComposerDescription_ParsedValueMethod_ResolvesDescriptionFromComposerFile()
-    {
-        $reader = $this->reader(null);
-        $this->assertSame('composer package description', $reader->parsedValue());
-    }
-
     public function testReader_TokenMethod_ReturnsCorrectToken()
     {
         $expected = new Token\ValueToken('{description.text}', 'This is my package...');
@@ -65,14 +53,9 @@ class PackageDescriptionTest extends TestCase
         return [['', 'package description']];
     }
 
-    private function reader(?string $source, bool $composer = true): Reader\PackageDescription
+    private function reader(?string $source): Reader\PackageDescription
     {
-        $contents = json_encode($composer ? ['description' => 'composer package description'] : []);
-        $composer = new Reader\Data\ComposerJsonData(new Doubles\MockedFile($contents));
-        $package  = new Doubles\FakePackageName();
-
-        return isset($source)
-            ? new Reader\PackageDescription($composer, $package, new Doubles\FakeSource($source))
-            : new Reader\PackageDescription($composer, $package);
+        $source = isset($source) ? new Doubles\FakeSource($source) : null;
+        return new Reader\PackageDescription($source);
     }
 }

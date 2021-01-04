@@ -42,21 +42,19 @@ class Update extends Command\Factory
 
     protected function tokenReaders(): array
     {
-        $files    = $this->env->package();
-        $composer = new Reader\Data\ComposerJsonData($files->file('composer.json'));
-        $default  = new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
+        $default = new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
 
         $source  = $this->interactive('Packagist package name', $this->option('package', $default));
-        $package = new Reader\PackageName($composer, $files, $source);
+        $package = new Reader\PackageName($source);
 
         $source = $this->interactive('Github repository name', $this->option('repo', $default));
-        $repo   = new Reader\RepositoryName($files->file('.git/config'), $package, $source);
+        $repo   = new Reader\RepositoryName($source);
 
         $source = $this->interactive('Github repository name', $this->option('desc', $default));
-        $desc   = new Reader\PackageDescription($composer, $package, $source);
+        $desc   = new Reader\PackageDescription($source);
 
         $source    = $this->interactive('Source files namespace', $this->option('ns', $default));
-        $namespace = new Reader\SrcNamespace($composer, $package, $source);
+        $namespace = new Reader\SrcNamespace($source);
 
         return [$package, $repo, $desc, $namespace];
     }

@@ -22,9 +22,9 @@ abstract class ValueReader implements Reader, Validator
     private Source $source;
     private string $cachedValue;
 
-    public function __construct(?Source $source)
+    public function __construct(?Source $source = null)
     {
-        $this->source = $source ?? new Source\ParsedFiles();
+        $this->source = $source ?? new Source\PredefinedValue('');
     }
 
     public function withSource(Source $source): self
@@ -47,8 +47,6 @@ abstract class ValueReader implements Reader, Validator
     }
 
     abstract public function isValid(string $value): bool;
-
-    abstract public function parsedValue(): string;
 
     abstract protected function newTokenInstance(string $value): Token;
 }

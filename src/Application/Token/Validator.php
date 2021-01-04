@@ -15,6 +15,4 @@ namespace Shudd3r\PackageFiles\Application\Token;
 interface Validator
 {
     public function isValid(string $value): bool;
-
-    public function parsedValue(): string;
 }
