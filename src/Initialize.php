@@ -44,7 +44,7 @@ class Initialize extends Command\Factory
     protected function tokenReaders(): array
     {
         $files    = $this->env->package();
-        $composer = new Reader\Data\ComposerJsonData($files->file('composer.json'));
+        $composer = new Source\Data\ComposerJsonData($files->file('composer.json'));
 
         $source  = new Source\DefaultPackageName($composer, $files);
         $source  = $this->interactive('Packagist package name', $this->option('package', $source));

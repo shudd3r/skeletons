@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Token\Reader\Data;
+namespace Shudd3r\PackageFiles\Application\Token\Source\Data;
 
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use RuntimeException;

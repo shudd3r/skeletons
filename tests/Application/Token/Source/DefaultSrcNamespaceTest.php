@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\Token\Source;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token\Source\DefaultSrcNamespace;
-use Shudd3r\PackageFiles\Application\Token\Reader\Data\ComposerJsonData;
+use Shudd3r\PackageFiles\Application\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 class DefaultSrcNamespaceTest extends TestCase
