@@ -44,19 +44,23 @@ class Initialize extends Command\Factory
     protected function tokenReaders(): array
     {
         $files    = $this->env->package();
-        $composer = new Reader\Data\ComposerJsonData($files->file('composer.json'));
+        $composer = new Source\Data\ComposerJsonData($files->file('composer.json'));
 
-        $source  = $this->interactive('Packagist package name', $this->option('package'));
-        $package = new Reader\PackageName($composer, $files, $source);
+        $source  = new Source\DefaultPackageName($composer, $files);
+        $source  = $this->interactive('Packagist package name', $this->option('package', $source));
+        $package = new Reader\PackageName($source);
 
-        $source = $this->interactive('Github repository name', $this->option('repo'));
-        $repo   = new Reader\RepositoryName($files->file('.git/config'), $package, $source);
+        $source = new Source\DefaultRepositoryName($files->file('.git/config'), $package);
+        $source = $this->interactive('Github repository name', $this->option('repo', $source));
+        $repo   = new Reader\RepositoryName($source);
 
-        $source = $this->interactive('Github repository name', $this->option('desc'));
-        $desc   = new Reader\PackageDescription($composer, $package, $source);
+        $source = new Source\DefaultPackageDescription($composer, $package);
+        $source = $this->interactive('Github repository name', $this->option('desc', $source));
+        $desc   = new Reader\PackageDescription($source);
 
-        $source    = $this->interactive('Source files namespace', $this->option('ns'));
-        $namespace = new Reader\SrcNamespace($composer, $package, $source);
+        $source    = new Source\DefaultSrcNamespace($composer, $package);
+        $source    = $this->interactive('Source files namespace', $this->option('ns', $source));
+        $namespace = new Reader\SrcNamespace($source);
 
         return [$package, $repo, $desc, $namespace];
     }
@@ -73,11 +77,11 @@ class Initialize extends Command\Factory
         return new Processor\ProcessorSequence($generateComposer, $generatePackage);
     }
 
-    private function option(string $name): Source
+    private function option(string $name, Source $default): Source
     {
         return isset($this->options[$name])
             ? new Source\PredefinedValue($this->options[$name])
-            : new Source\ParsedFiles();
+            : $default;
     }
 
     private function interactive(string $prompt, Source $source): Source

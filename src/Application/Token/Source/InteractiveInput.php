@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Token\Source;
 
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Environment\Input;
-use Shudd3r\PackageFiles\Application\Token\Parser;
+use Shudd3r\PackageFiles\Application\Token\Validator;
 
 
 class InteractiveInput implements Source
@@ -29,9 +29,9 @@ class InteractiveInput implements Source
         $this->source = $source;
     }
 
-    public function value(Parser $parser): string
+    public function value(Validator $validator): string
     {
-        $defaultValue  = $this->source->value($parser);
+        $defaultValue  = $this->source->value($validator);
         $promptPostfix = $defaultValue ? ' [default: `' . $defaultValue . '`]:' : ':';
 
         return $this->input->value($this->prompt . $promptPostfix) ?: $defaultValue;

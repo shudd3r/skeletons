@@ -11,31 +11,14 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
-use Shudd3r\PackageFiles\Application\Token\Reader\Data\ComposerJsonData;
-use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token;
 
 
 class PackageDescription extends ValueReader
 {
-    private ComposerJsonData $composer;
-    private PackageName      $packageName;
-
-    public function __construct(ComposerJsonData $composer, PackageName $packageName, Source $source = null)
-    {
-        $this->composer    = $composer;
-        $this->packageName = $packageName;
-        parent::__construct($source);
-    }
-
     public function isValid(string $value): bool
     {
         return !empty($value);
-    }
-
-    public function parsedValue(): string
-    {
-        return $this->composer->value('description') ?? $this->packageName->value() . ' package';
     }
 
     protected function newTokenInstance(string $value): Token

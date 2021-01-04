@@ -39,16 +39,13 @@ class Validate extends Command\Factory
 
     protected function tokenReaders(): array
     {
-        $files    = $this->env->package();
-        $composer = new Reader\Data\ComposerJsonData($files->file('composer.json'));
-        $metaFile = $this->env->metaDataFile();
-        $source   = new Source\MetaDataFile($metaFile, new Source\PredefinedValue(''));
+        $source = new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
 
         return [
-            $package = new Reader\PackageName($composer, $files, $source),
-            new Reader\RepositoryName($files->file('.git/config'), $package, $source),
-            new Reader\PackageDescription($composer, $package, $source),
-            new Reader\SrcNamespace($composer, $package, $source)
+            $package = new Reader\PackageName($source),
+            new Reader\RepositoryName($source),
+            new Reader\PackageDescription($source),
+            new Reader\SrcNamespace($source)
         ];
     }
 

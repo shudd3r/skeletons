@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Application\Token\Source;
 
 use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Application\Token\Parser;
+use Shudd3r\PackageFiles\Application\Token\Validator;
 
 
 class PredefinedValue implements Source
@@ -24,7 +24,7 @@ class PredefinedValue implements Source
         $this->value = $value;
     }
 
-    public function value(Parser $parser): string
+    public function value(Validator $validator): string
     {
         return $this->value;
     }

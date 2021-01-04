@@ -23,30 +23,30 @@ class MetaDataFileTest extends TestCase
     {
         $source = $this->source(null);
         $this->expectException(RuntimeException::class);
-        $source->value(new Doubles\FakeParser());
+        $source->value(new Doubles\FakeValidator());
     }
 
     public function testWithExistingMetaDataValue_ValueMethod_ReturnsMetaData()
     {
-        $source = $this->source([Doubles\FakeParser::class => 'meta data']);
-        $this->assertSame('meta data', $source->value(new Doubles\FakeParser()));
+        $source = $this->source([Doubles\FakeValidator::class => 'meta data']);
+        $this->assertSame('meta data', $source->value(new Doubles\FakeValidator()));
     }
 
     public function testValueMethod_ReturnsValueAssociatedWithGivenParser()
     {
         $source = $this->source([
-            Doubles\FakeParser::class        => 'first value',
+            Doubles\FakeValidator::class     => 'first value',
             Doubles\MockedValueReader::class => 'second value'
         ]);
 
-        $this->assertSame('first value', $source->value(new Doubles\FakeParser()));
+        $this->assertSame('first value', $source->value(new Doubles\FakeValidator()));
         $this->assertSame('second value', $source->value(new Doubles\MockedValueReader()));
     }
 
     public function testWithoutMetaDataValue_ValueMethod_ReturnsFromFallbackSource()
     {
         $source = $this->source([Doubles\MockedValueReader::class => 'bar']);
-        $this->assertSame('fallback', $source->value(new Doubles\FakeParser()));
+        $this->assertSame('fallback', $source->value(new Doubles\FakeValidator()));
     }
 
     private function source(?array $data): MetaDataFile

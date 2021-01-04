@@ -25,18 +25,6 @@ class SrcNamespaceTest extends TestCase
         $this->assertInstanceOf(Reader\ValueReader::class, $reader);
     }
 
-    public function testReaderWithEmptyComposerNamespace_ParsedValueMethod_ResolvesNamespaceFromPackageName()
-    {
-        $reader = $this->reader('anything', false);
-        $this->assertSame('Package\\Name', $reader->parsedValue());
-    }
-
-    public function testReaderWithComposerNamespace_ParsedValueMethod_ResolvesNamespaceFromComposerFile()
-    {
-        $reader = $this->reader(null);
-        $this->assertSame('Composer\\Namespace', $reader->parsedValue());
-    }
-
     public function testReader_TokenMethod_ReturnsCorrectToken()
     {
         $expected = new Token\CompositeToken(
@@ -72,14 +60,9 @@ class SrcNamespaceTest extends TestCase
         ];
     }
 
-    private function reader(?string $source, bool $composer = true): Reader\SrcNamespace
+    private function reader(?string $source): Reader\SrcNamespace
     {
-        $contents = json_encode($composer ? ['autoload' => ['psr-4' => ['Composer\\Namespace\\' => 'src/']]] : []);
-        $composer = new Reader\Data\ComposerJsonData(new Doubles\MockedFile($contents));
-        $package  = new Doubles\FakePackageName();
-
-        return isset($source)
-            ? new Reader\SrcNamespace($composer, $package, new Doubles\FakeSource($source))
-            : new Reader\SrcNamespace($composer, $package);
+        $source = isset($source) ? new Doubles\FakeSource($source) : null;
+        return new Reader\SrcNamespace($source);
     }
 }

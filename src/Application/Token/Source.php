@@ -14,5 +14,5 @@ namespace Shudd3r\PackageFiles\Application\Token;
 
 interface Source
 {
-    public function value(Parser $parser): string;
+    public function value(Validator $validator): string;
 }
