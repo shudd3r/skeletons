@@ -19,20 +19,20 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class ComposerJsonTemplateTest extends TestCase
 {
-    public function testMissingComposerFileIsCreatedWithPropertiesValues()
+    public function testMissingComposerFile_IsCreatedWithDefaultValues()
     {
         $template       = new ComposerJsonTemplate(new Doubles\MockedFile(null));
         $renderedString = $template->render($this->tokens());
         $this->assertSame($this->composerJsonForDefaultValues(), $renderedString);
     }
 
-    public function testEmptyComposerFileIsFilledWithPropertiesValues()
+    public function testEmptyComposerFile_IsFilledWithDefaultTokenValues()
     {
         $renderedString = $this->template('{}')->render($this->tokens());
         $this->assertEquals($this->composerJsonForDefaultValues(), $renderedString);
     }
 
-    public function testFieldsAreReturnedInCorrectOrder()
+    public function testFields_AreReturnedInCorrectOrder()
     {
         $template = [
             'require'           => [],
@@ -58,7 +58,7 @@ class ComposerJsonTemplateTest extends TestCase
         $this->assertEquals($expectedKeys, $composerArrayKeys);
     }
 
-    public function testSrcAutoloadIsUpdated()
+    public function testSrcAutoload_IsUpdated()
     {
         $autoload = json_encode([
             'autoload'     => ['foo' => ['bar'], 'psr-4' => ['Foo\\Namespace\\' => 'src/']],

@@ -20,7 +20,7 @@ use InvalidArgumentException;
 
 class FileTemplateTest extends TestCase
 {
-    public function testFileTokensAreReplacedByProperties()
+    public function testPlaceholders_AreReplacedByTokenValues()
     {
         $contents = <<<'TPL'
             This file is part of {package.name} package.

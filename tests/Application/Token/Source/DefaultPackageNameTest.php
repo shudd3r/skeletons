@@ -33,8 +33,8 @@ class DefaultPackageNameTest extends TestCase
     {
         $contents = json_encode($composer ? ['name' => 'composer/package'] : []);
         $composer = new ComposerJsonData(new Doubles\MockedFile($contents));
-        $project  = new Doubles\FakeDirectory('root/path');
+        $package  = new Doubles\FakeDirectory('root/path');
 
-        return new DefaultPackageName($composer, $project);
+        return new DefaultPackageName($composer, $package);
     }
 }

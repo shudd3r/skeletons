@@ -27,7 +27,7 @@ class InitializeTest extends TestCase
         $this->assertInstanceOf(Command::class, $factory->command());
     }
 
-    public function testPropertiesAreReadFromProjectFiles()
+    public function testDefaultTokenValues_AreReadFromPackageFiles()
     {
         $env     = $this->env();
         $factory = new Initialize($env, ['i' => false]);
@@ -50,7 +50,7 @@ class InitializeTest extends TestCase
         ]);
     }
 
-    public function testUnresolvedPropertiesAreReadFromDirectoryNames()
+    public function testUnresolvedPackageNameValue_IsReadFromDirectoryStructure()
     {
         $env     = $this->env();
         $factory = new Initialize($env, ['i' => false]);
@@ -66,7 +66,7 @@ class InitializeTest extends TestCase
         ]);
     }
 
-    public function testEstablishedPackageNameWillDetermineOtherProperties()
+    public function testPackageNameReaderValue_UsedAsFallbackForDefaultValues()
     {
         $env      = $this->env();
         $factory  = new Initialize($env, ['i' => false]);
@@ -83,7 +83,7 @@ class InitializeTest extends TestCase
         ]);
     }
 
-    public function testCommandLineDefinedPropertiesHavePriorityOverResolved()
+    public function testCommandLineValues_OverwriteDefault()
     {
         $env     = $this->env();
         $factory = new Initialize($env, []);
@@ -114,7 +114,7 @@ class InitializeTest extends TestCase
         ]);
     }
 
-    public function testInteractiveInputStringsWillOverwriteAllProperties()
+    public function testInteractiveInputValues_OverwriteOtherSources()
     {
         $env = $this->env();
 
@@ -143,7 +143,7 @@ class InitializeTest extends TestCase
         ]);
     }
 
-    public function testOverwrittenPackageFilesAreCopiedIntoBackupDirectory()
+    public function testOverwrittenPackageFiles_AreCopiedIntoBackupDirectory()
     {
         $env = new Doubles\FakeRuntimeEnv();
         $env->skeleton()->addFile('file.ini', 'generated');

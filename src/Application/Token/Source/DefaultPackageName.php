@@ -20,12 +20,12 @@ use Shudd3r\PackageFiles\Application\Token\Validator;
 class DefaultPackageName implements Source
 {
     private ComposerJsonData $composer;
-    private Directory        $project;
+    private Directory        $package;
 
-    public function __construct(ComposerJsonData $composer, Directory $project)
+    public function __construct(ComposerJsonData $composer, Directory $package)
     {
         $this->composer = $composer;
-        $this->project  = $project;
+        $this->package  = $package;
     }
 
     public function value(Validator $validator): string
@@ -35,7 +35,7 @@ class DefaultPackageName implements Source
 
     private function directoryFallback(): string
     {
-        $path = $this->project->path();
+        $path = $this->package->path();
         return $path ? basename(dirname($path)) . '/' . basename($path) : '';
     }
 }
