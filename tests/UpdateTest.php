@@ -26,11 +26,11 @@ class UpdateTest extends TestCase
 
     public function testValuesProvidedAsCommandLineOptions_UpdatePackage()
     {
-        $setup   = new EnvSetup();
-        $oldData = $setup->data();
-        $setup->addMetaData($oldData);
-        $setup->addPackageFile($setup::SKELETON_FILE, $setup->render($oldData));
-        $setup->addComposer($oldData);
+        $setup = new EnvSetup();
+        $data  = $setup->data();
+        $setup->addMetaData();
+        $setup->addGeneratedFile();
+        $setup->addComposer();
 
         $factory = new Update($setup->env, ['ns' => 'New\\Namespace', 'repo' => 'new/repo']);
         $factory->command()->execute();
@@ -40,16 +40,16 @@ class UpdateTest extends TestCase
             'namespace.src'   => 'New\\Namespace'
         ]);
 
-        $this->assertPackageFiles($setup, $newData);
+        $this->assertPackageFiles($setup, $newData, $data);
     }
 
     public function testValuesProvidedAsInteractiveInput_UpdatePackage()
     {
-        $setup   = new EnvSetup();
-        $oldData = $setup->data();
-        $setup->addMetaData($oldData);
-        $setup->addPackageFile($setup::SKELETON_FILE, $setup->render($oldData));
-        $setup->addComposer($oldData);
+        $setup = new EnvSetup();
+        $data  = $setup->data();
+        $setup->addMetaData();
+        $setup->addGeneratedFile();
+        $setup->addComposer();
         $setup->env->input()->inputStrings = ['new/package', '', '!!! This is new description !!!', ''];
 
         $factory = new Update($setup->env, ['repo' => 'new/repo', 'i' => true]);
@@ -61,38 +61,39 @@ class UpdateTest extends TestCase
             'description.text' => '!!! This is new description !!!'
         ]);
 
-        $this->assertPackageFiles($setup, $newData);
+        $this->assertPackageFiles($setup, $newData, $data);
     }
 
     public function testMissingMetaDataFile_PreventsExecution()
     {
         $setup = new EnvSetup();
-        $oldData = $setup->data();
-        $setup->addPackageFile($setup::SKELETON_FILE, $setup->render($oldData));
-        $setup->addComposer($oldData);
+        $data  = $setup->data();
+        $setup->addGeneratedFile();
+        $setup->addComposer();
 
         $factory = new Update($setup->env, ['repo' => 'new/repo']);
         $factory->command()->execute();
 
-        $this->assertPackageFiles($setup, $oldData);
+        $this->assertPackageFiles($setup, $data);
     }
 
     public function testNotSynchronizedMetaData_PreventsExecution()
     {
-        $setup   = new EnvSetup();
-        $oldData = $setup->data();
-        $setup->addMetaData(['repository.name' => 'other/repo'] + $oldData);
-        $setup->addPackageFile($setup::SKELETON_FILE, $setup->render($oldData));
-        $setup->addComposer($oldData);
+        $setup = new EnvSetup();
+        $data  = $setup->data();
+        $setup->addMetaData(['repository.name' => 'other/repo']);
+        $setup->addGeneratedFile();
+        $setup->addComposer();
 
         $factory = new Update($setup->env, ['repo' => 'new/repo']);
         $factory->command()->execute();
 
-        $this->assertPackageFiles($setup, $oldData);
+        $this->assertPackageFiles($setup, $data);
     }
 
-    private function assertPackageFiles(EnvSetup $setup, array $data)
+    private function assertPackageFiles(EnvSetup $setup, array $data, array $oldData = null)
     {
+        if ($oldData) { $this->assertNotEquals($oldData, $data); }
         $this->assertSame($setup->render($data), $setup->env->package()->file($setup::SKELETON_FILE)->contents());
         $this->assertSame($setup->composer($data), $setup->env->package()->file('composer.json')->contents());
     }

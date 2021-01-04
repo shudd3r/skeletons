@@ -26,8 +26,9 @@ class InitializeTest extends TestCase
 
     public function testDefaultTokenValues_AreReadFromPackageFiles()
     {
-        $setup = new EnvSetup();
-        $setup->addPackageFile('.git/config', '[remote "origin"] url = https://github.com/username/repoOrigin.git');
+        $setup     = new EnvSetup();
+        $gitConfig = '[remote "origin"] url = https://github.com/username/repoOrigin.git';
+        $setup->env->package()->addFile('.git/config', $gitConfig);
         $setup->addComposer([
             'package.name'     => 'fooBar/baz',
             'description.text' => 'My library package',
@@ -133,8 +134,8 @@ class InitializeTest extends TestCase
     public function testOverwrittenPackageFiles_AreCopiedIntoBackupDirectory()
     {
         $setup = new EnvSetup();
-        $setup->addSkeletonFile('file.ini', 'generated');
-        $setup->addPackageFile('file.ini', 'original');
+        $setup->env->skeleton()->addFile('file.ini', 'generated');
+        $setup->env->package()->addFile('file.ini', 'original');
 
         $this->assertSame([], $setup->env->backup()->files());
 
@@ -149,9 +150,9 @@ class InitializeTest extends TestCase
     public function testExistingMetaDataFile_AbortsExecutionWithoutSideEffects()
     {
         $setup = new EnvSetup();
+        $setup->env->skeleton()->addFile('file.ini', 'contents');
         $setup->addMetaData();
         $metaData = $setup->env->metaDataFile()->contents();
-        $setup->addSkeletonFile('file.ini', 'contents');
 
         $factory = new Initialize($setup->env, []);
         $factory->command()->execute();
@@ -163,8 +164,8 @@ class InitializeTest extends TestCase
     public function testOverwritingBackupFile_AbortsExecutionWithoutSideEffects()
     {
         $setup = new EnvSetup();
-        $setup->addSkeletonFile('file.ini', 'skeleton');
-        $setup->addPackageFile('file.ini', 'original');
+        $setup->env->skeleton()->addFile('file.ini', 'skeleton');
+        $setup->env->package()->addFile('file.ini', 'original');
         $setup->env->backup()->addFile('file.ini', 'backup');
 
         $factory = new Initialize($setup->env, []);
@@ -179,7 +180,7 @@ class InitializeTest extends TestCase
     private function assertGeneratedFiles(EnvSetup $setup, array $data): void
     {
         $generatedFile = $setup->env->package()->file($setup::SKELETON_FILE)->contents();
-        $this->assertSame($setup->render($data, null, ['{original.content}', '{original.content}']), $generatedFile);
+        $this->assertSame($setup->render($data, false), $generatedFile);
 
         $expectedMetaData = json_encode($setup->metaData($data), JSON_PRETTY_PRINT);
         $this->assertSame($expectedMetaData, $setup->env->metaDataFile()->contents());

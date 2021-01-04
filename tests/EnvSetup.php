@@ -36,34 +36,24 @@ class EnvSetup
         $this->env->metaDataFile()->write(json_encode($metaData, JSON_PRETTY_PRINT));
     }
 
-    public function addTemplate(string $filename, string $template = null): void
-    {
-        $this->env->skeleton()->addFile($filename, $template ?? $this->defaultTemplate());
-    }
-
     public function addComposer(array $data = []): void
     {
         $this->env->package()->addFile('composer.json', $this->composer($data));
     }
 
-    public function addPackageFile(string $filename, string $contents = ''): void
+    public function addGeneratedFile(array $override = []): void
     {
-        $this->env->package()->addFile($filename, $contents);
+        $data = $this->data($override);
+        $this->env->package()->addFile(self::SKELETON_FILE, $this->render($data));
     }
 
-    public function addSkeletonFile(string $filename, string $contents = ''): void
-    {
-        $this->env->skeleton()->addFile($filename, $contents);
-    }
-
-    public function render(array $replacements = [], string $template = null, ?array $orig = null): string
+    public function render(array $replacements = [], bool $orig = true, string $template = null): string
     {
         $template ??= $this->defaultTemplate();
 
-        $template = $this->replaceOriginalContent($template, $orig ?? [
-            ' (and this is some original content not present in template file)',
-            '--- this was extracted from package file ---'
-        ]);
+        if ($orig) {
+            $template = $this->replaceOriginalContent($template);
+        }
 
         foreach ($replacements as $name => $replacement) {
             $template = str_replace('{' . $name . '}', $replacement, $template);
@@ -137,9 +127,12 @@ class EnvSetup
         return $override + $data;
     }
 
-    private function replaceOriginalContent(string $template, array $contents = []): string
+    private function replaceOriginalContent(string $template): string
     {
-        if (!$contents) { return str_replace('{original.content}', '', $template); }
+        $contents = [
+            ' (and this is some original content not present in template file)',
+            '--- this was extracted from package file ---'
+        ];
 
         $parts = explode('{original.content}', $template);
 

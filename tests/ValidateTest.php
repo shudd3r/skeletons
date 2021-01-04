@@ -57,7 +57,7 @@ class ValidateTest extends TestCase
         $setup = new EnvSetup();
         $setup->addMetaData();
         $setup->addComposer();
-        $setup->addPackageFile($setup::SKELETON_FILE, $setup->render($setup->data()));
+        $setup->addGeneratedFile();
 
         $factory = new Validate($setup->env, []);
         $factory->command()->execute();
@@ -71,7 +71,7 @@ class ValidateTest extends TestCase
         $setup = new EnvSetup();
         $setup->addMetaData(['repository.name' => 'another/repo']);
         $setup->addComposer();
-        $setup->addPackageFile($setup::SKELETON_FILE, $setup->render($setup->data()));
+        $setup->addGeneratedFile();
 
         $factory = new Validate($setup->env, []);
         $factory->command()->execute();
