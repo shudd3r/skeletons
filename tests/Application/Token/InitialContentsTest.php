@@ -97,6 +97,11 @@ class InitialContentsTest extends TestCase
             and the next one. Here it ends >>>
             TPL;
 
+        $utf          = ['ᚻᛖ ᛒᚢᛞᛖ ᚩᚾ', '⠍⠊⠣⠞ ⠙⠁⠧⠑ ⠃⠑', '😁Hello!😥', 'Οὐχὶ ταὐτὰ παρίστατ', 'αίგაიቢያዩት ይስቅა', '🌞'];
+        $utfTemplate    = $utf[0] . $template($utf[1]) . $utf[2] . $template($utf[3]) . $utf[4] . $template($utf[5]);
+        $utfRender      = implode('', $utf);
+        $utfPlaceholder = $utf[0] . $orig . $utf[2] . $orig . $utf[4] . $orig;
+
         return [
             'single' => [
                 'foo bar ' . $template('baz') . ' bar foo',
@@ -117,7 +122,8 @@ class InitialContentsTest extends TestCase
                 str_replace('{placeholder?}', $template($multiline), $multiline),
                 str_replace('{placeholder?}', $multiline, $multiline),
                 str_replace('{placeholder?}', $orig, $multiline)
-            ]
+            ],
+            'unicode' => [$utfTemplate, $utfRender, $utfPlaceholder]
         ];
     }
 

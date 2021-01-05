@@ -37,6 +37,11 @@ class OriginalContentsTest extends TestCase
     public function useCases(): array
     {
         $orig = Token\OriginalContents::PLACEHOLDER;
+
+        $utf         = ['ᚻᛖ ᛒᚢᛞᛖ ᚩᚾ', '⠍⠊⠣⠞ ⠙⠁⠧⠑ ⠃⠑', '😁Hello there!😥', 'Οὐχὶ ταὐτὰ παρίστατ', 'αίგაიቢያዩት ይስቅა', '🌞'];
+        $utfContents = implode('', $utf);
+        $utfTemplate = $utf[0] . $orig . $utf[2] . $orig . $utf[4] . $orig;
+
         return [
             'no placeholder'       => ['original contents', 'template string', 'template string'],
             'no original contents' => ['', "template -{$orig}- string", 'template -- string'],
@@ -47,6 +52,7 @@ class OriginalContentsTest extends TestCase
             'repeated content'     => ['FooBarFooBarFoo', "{$orig}Bar{$orig}BarFoo", null],
             'extremely repeated'   => ['xxxxx', "x{$orig}x{$orig}x", null],
             'mask mismatch'        => ['---ab---', "123{$orig}=string={$orig}123", '123ab=string=123'],
+            'unicode chars'        => [$utfContents, $utfTemplate, null]
         ];
     }
 
