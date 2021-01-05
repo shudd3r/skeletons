@@ -24,17 +24,22 @@ class Validate extends Command\Factory
 {
     public function command(): CommandInterface
     {
-        $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $tokenReader    = new Reader\CompositeTokenReader(...$this->tokenReaders());
-        $processTokens  = new Command\TokenProcessor($tokenReader, $this->processor(), $this->env->output());
+        $metaDataExists   = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
+        $tokenReader      = new Reader\CompositeTokenReader(...$this->tokenReaders());
+        $validatorFactory = new Processor\Factory\FileValidators($this->env->package());
+        $tokenProcessor   = $this->processor($validatorFactory);
+        $processTokens    = new Command\TokenProcessor($tokenReader, $tokenProcessor, $this->env->output());
 
         return new Command\ProtectedCommand($processTokens, $metaDataExists);
     }
 
-    public function synchronizedSkeleton(TokenCache $cache = null): Command\Precondition
+    public function synchronizedSkeleton(TokenCache $cache): Command\Precondition
     {
-        $tokenReader = new Reader\CompositeTokenReader(...$this->tokenReaders());
-        return new Command\Precondition\SkeletonSynchronization($tokenReader, $this->processor($cache));
+        $tokenReader      = new Reader\CompositeTokenReader(...$this->tokenReaders());
+        $validatorFactory = new Processor\Factory\CachingFileValidators($this->env->package(), $cache);
+        $tokenProcessor   = $this->processor($validatorFactory);
+
+        return new Command\Precondition\SkeletonSynchronization($tokenReader, $tokenProcessor);
     }
 
     protected function tokenReaders(): array
@@ -49,14 +54,13 @@ class Validate extends Command\Factory
         ];
     }
 
-    protected function processor(TokenCache $cache = null): Processor
+    protected function processor(Processor\Factory $factory): Processor
     {
         $composerFile    = $this->env->package()->file('composer.json');
         $template        = new Template\ComposerJsonTemplate($composerFile);
         $compareComposer = new Processor\CompareFile($template, $composerFile);
 
-        $validatorFactory = new Processor\Factory\FileValidators($this->env->package(), $cache);
-        $comparePackage   = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $validatorFactory);
+        $comparePackage  = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $factory);
 
         return new Processor\ProcessorSequence($compareComposer, $comparePackage);
     }
