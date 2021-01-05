@@ -28,8 +28,8 @@ class SrcNamespaceTest extends TestCase
     public function testReader_TokenMethod_ReturnsCorrectToken()
     {
         $expected = new Token\CompositeToken(
-            new Token\ValueToken('{namespace.src}', 'Some\\Namespace'),
-            new Token\ValueToken('{namespace.src.esc}', 'Some\\\\Namespace')
+            new Token\ValueToken(Reader\SrcNamespace::PLACEHOLDER, 'Some\\Namespace'),
+            new Token\ValueToken(Reader\SrcNamespace::PLACEHOLDER_ESC, 'Some\\\\Namespace')
         );
         $this->assertEquals($expected, $this->reader('Some\\Namespace')->token());
     }

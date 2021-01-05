@@ -16,6 +16,8 @@ use Shudd3r\PackageFiles\Application\Token;
 
 class PackageDescription extends ValueReader
 {
+    public const PLACEHOLDER = '{description.text}';
+
     public function isValid(string $value): bool
     {
         return !empty($value);
@@ -23,6 +25,6 @@ class PackageDescription extends ValueReader
 
     protected function newTokenInstance(string $value): Token
     {
-        return new Token\ValueToken('{description.text}', $value);
+        return new Token\ValueToken(self::PLACEHOLDER, $value);
     }
 }

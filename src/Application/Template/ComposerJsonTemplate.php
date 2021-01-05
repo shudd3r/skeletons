@@ -29,13 +29,13 @@ class ComposerJsonTemplate implements Template
     {
         $composer = json_decode($this->composerFile->contents(), true) ?? [];
 
-        $namespace   = '{namespace.src.esc}\\';
+        $namespace   = Token\Reader\SrcNamespace::PLACEHOLDER_ESC . '\\';
         $autoload    = $this->normalizedAutoload($composer['autoload'] ?? [], $namespace, 'src/');
         $autoloadDev = $this->normalizedAutoload($composer['autoload-dev'] ?? [], $namespace . 'Tests\\', 'tests/');
 
         $newComposer = array_filter([
-            'name'              => '{package.name}',
-            'description'       => '{description.text}',
+            'name'              => Token\Reader\PackageName::PLACEHOLDER,
+            'description'       => Token\Reader\PackageDescription::PLACEHOLDER,
             'type'              => 'library',
             'license'           => 'MIT',
             'authors'           => $composer['authors'] ?? [['name' => 'Shudd3r', 'email' => 'q3.shudder@gmail.com']],

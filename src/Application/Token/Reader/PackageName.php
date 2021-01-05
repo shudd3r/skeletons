@@ -16,6 +16,9 @@ use Shudd3r\PackageFiles\Application\Token;
 
 class PackageName extends ValueReader
 {
+    public const PLACEHOLDER       = '{package.name}';
+    public const PLACEHOLDER_TITLE = '{package.title}';
+
     public function isValid(string $value): bool
     {
         return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
@@ -24,8 +27,8 @@ class PackageName extends ValueReader
     protected function newTokenInstance(string $packageName): Token
     {
         return new Token\CompositeToken(
-            new Token\ValueToken('{package.name}', $packageName),
-            new Token\ValueToken('{package.title}', $this->titleName($packageName))
+            new Token\ValueToken(self::PLACEHOLDER, $packageName),
+            new Token\ValueToken(self::PLACEHOLDER_TITLE, $this->titleName($packageName))
         );
     }
 

@@ -23,11 +23,11 @@ class FileTemplateTest extends TestCase
     public function testPlaceholders_AreReplacedByTokenValues()
     {
         $contents = <<<'TPL'
-            This file is part of {package.name} package.
+            This file is part of {placeholder.name} package.
             TPL;
 
         $template = new FileTemplate(new Doubles\MockedFile($contents));
-        $token    = new ValueToken('{package.name}', 'package/name');
+        $token    = new ValueToken('{placeholder.name}', 'package/name');
 
         $render = $template->render($token);
 

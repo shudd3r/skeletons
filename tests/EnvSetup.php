@@ -64,18 +64,22 @@ class EnvSetup
 
     public function defaultTemplate(bool $render = false, bool $orig = true): string
     {
-        $marker    = '...Your own contents here...';
+        $descToken = Reader\PackageDescription::PLACEHOLDER;
+        $repoToken = Reader\RepositoryName::PLACEHOLDER;
+        $packToken = Reader\PackageName::PLACEHOLDER;
+        $nameToken = Reader\SrcNamespace::PLACEHOLDER;
         $origToken = OriginalContents::PLACEHOLDER;
 
-        $init = $render
+        $marker    = '...Your own contents here...';
+        $initToken = $render
             ? ($orig ? $origToken : $marker)
             : InitialContents::CONTENT_START . $marker . InitialContents::CONTENT_END;
 
         return <<<TPL
-            This is a template for {repository.name} in a {package.name} package{$origToken}, which
-            is "{description.text}" with `src` directory files in `{namespace.src}` namespace.
+            This is a template for {$repoToken} in a {$packToken} package{$origToken}, which
+            is "{$descToken}" with `src` directory files in `{$nameToken}` namespace.
             
-            {$init}
+            {$initToken}
             
             THE END.
             TPL;

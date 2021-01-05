@@ -27,7 +27,7 @@ class PackageDescriptionTest extends TestCase
 
     public function testReader_TokenMethod_ReturnsCorrectToken()
     {
-        $expected = new Token\ValueToken('{description.text}', 'This is my package...');
+        $expected = new Token\ValueToken(Reader\PackageDescription::PLACEHOLDER, 'This is my package...');
         $this->assertEquals($expected, $this->reader('This is my package...')->token());
     }
 
