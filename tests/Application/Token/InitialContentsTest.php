@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\Token;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token\InitialContents;
+use Shudd3r\PackageFiles\Application\Token\OriginalContents;
 
 
 class InitialContentsTest extends TestCase
@@ -28,21 +29,21 @@ class InitialContentsTest extends TestCase
     public function testForTemplateWithMisplacedPlaceholders_ReturnsUnchangedTemplate()
     {
         $token    = new InitialContents();
-        $template = 'example <<<original.content} template {original.content>>> and {some.token} content';
+        $template = $this->template('example <<<end} template {start>>> and {some.token} content');
 
         $this->assertSame($template, $token->replacePlaceholders($template));
     }
 
     public function testInitialVsReplaced()
     {
-        $template = 'example {original.content>>>initial template content<<<original.content} and {some.token}';
+        $template = $this->template('example {start>>>initial template content<<<end} and {some.token}');
 
         $token    = new InitialContents();
         $expected = 'example initial template content and {some.token}';
         $this->assertSame($expected, $token->replacePlaceholders($template));
 
         $token    = new InitialContents(false);
-        $expected = 'example {original.content} and {some.token}';
+        $expected = 'example ' . OriginalContents::PLACEHOLDER . ' and {some.token}';
         $this->assertSame($expected, $token->replacePlaceholders($template));
     }
 
@@ -88,8 +89,8 @@ class InitialContentsTest extends TestCase
 
     public function transformations(): array
     {
-        $orig      = '{original.content}';
-        $wrap      = fn (string $init) => '{original.content>>>' . $init . '<<<original.content}';
+        $orig     = OriginalContents::PLACEHOLDER;
+        $template = fn (string $init) => $this->template('{start>>>' . $init . '<<<end}');
         $multiline = <<<'TPL'
             This is multi line content,
             and this is its second line {placeholder?}
@@ -98,25 +99,31 @@ class InitialContentsTest extends TestCase
 
         return [
             'single' => [
-                'foo bar ' . $wrap('baz') . ' bar foo',
+                'foo bar ' . $template('baz') . ' bar foo',
                 'foo bar baz bar foo',
                 "foo bar $orig bar foo"
             ],
             'double' => [
-                'foo bar ' . $wrap('baz') . ' bar-' . $wrap('foo'),
+                'foo bar ' . $template('baz') . ' bar-' . $template('foo'),
                 'foo bar baz bar-foo',
                 "foo bar $orig bar-$orig"
             ],
             'multiline token' => [
-                'foo bar ' . $wrap($multiline) . ' bar-' . $wrap('foo'),
+                'foo bar ' . $template($multiline) . ' bar-' . $template('foo'),
                 'foo bar ' . $multiline . ' bar-foo',
                 "foo bar $orig bar-$orig"
             ],
             'inception!' => [
-                str_replace('{placeholder?}', $wrap($multiline), $multiline),
+                str_replace('{placeholder?}', $template($multiline), $multiline),
                 str_replace('{placeholder?}', $multiline, $multiline),
                 str_replace('{placeholder?}', $orig, $multiline)
             ]
         ];
+    }
+
+    private function template(string $template)
+    {
+        $realPlaceholders = [InitialContents::CONTENT_START, InitialContents::CONTENT_END];
+        return str_replace(['{start>>>', '<<<end}'], $realPlaceholders, $template);
     }
 }

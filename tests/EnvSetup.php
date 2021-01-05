@@ -65,11 +65,11 @@ class EnvSetup
     public function defaultTemplate(bool $render = false, bool $orig = true): string
     {
         $marker    = '...Your own contents here...';
-        $origToken = '{original.content}';
+        $origToken = OriginalContents::PLACEHOLDER;
 
         $init = $render
             ? ($orig ? $origToken : $marker)
-            : '{original.content>>>' . $marker . '<<<original.content}';
+            : InitialContents::CONTENT_START . $marker . InitialContents::CONTENT_END;
 
         return <<<TPL
             This is a template for {repository.name} in a {package.name} package{$origToken}, which

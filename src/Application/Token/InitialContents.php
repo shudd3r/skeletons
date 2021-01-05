@@ -16,8 +16,8 @@ use Shudd3r\PackageFiles\Application\Token;
 
 class InitialContents implements Token
 {
-    private const CONTENT_START = '{original.content>>>';
-    private const CONTENT_END   = '<<<original.content}';
+    public const CONTENT_START = '{original.content>>>';
+    public const CONTENT_END   = '<<<original.content}';
 
     private bool $initialize;
 
