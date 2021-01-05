@@ -16,6 +16,7 @@ use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Application\Token;
 
 
 class FileGeneratorFactory implements Processor\Factory
@@ -31,19 +32,26 @@ class FileGeneratorFactory implements Processor\Factory
 
     public function processor(File $skeletonFile): Processor
     {
-        $template     = new Template\FileTemplate($skeletonFile);
-        $packageFile  = $this->package->file($skeletonFile->name());
+        $template    = new Template\FileTemplate($skeletonFile);
+        $packageFile = $this->package->file($skeletonFile->name());
         return $this->generateFile($template, $packageFile);
     }
 
     private function generateFile(Template $template, File $packageFile): Processor
     {
         $processor = new Processor\GenerateFile($template, $packageFile);
-        if (!$this->cache) { return $processor; }
+        if (!$this->cache) {
+            $initialContents = new Token\CompositeToken(
+                new Token\ValueToken(Token\OriginalContents::PLACEHOLDER, ''),
+                new Token\InitialContents()
+            );
+            return new Processor\ExpandedTokenProcessor($initialContents, $processor);
+        }
 
         $token = $this->cache->token($packageFile->name());
         if (!$token) { return $processor; }
 
-        return new Processor\ExpandedTokenProcessor($token, $processor);
+        $originalContents = new Token\CompositeToken(new Token\InitialContents(false), $token);
+        return new Processor\ExpandedTokenProcessor($originalContents, $processor);
     }
 }
