@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Validate;
 use Shudd3r\PackageFiles\Environment\Command;
 use Shudd3r\PackageFiles\Application\Command\Precondition;
+use Shudd3r\PackageFiles\Application\Token\TokenCache;
 
 
 class ValidateTest extends TestCase
@@ -28,7 +29,7 @@ class ValidateTest extends TestCase
     public function testFactoryCanCreatePrecondition()
     {
         $factory = new Validate(new Doubles\FakeRuntimeEnv(), []);
-        $this->assertInstanceOf(Precondition::class, $factory->synchronizedSkeleton());
+        $this->assertInstanceOf(Precondition::class, $factory->synchronizedSkeleton(new TokenCache()));
     }
 
     public function testMissingMetaDataFile_StopsExecution()
@@ -63,7 +64,7 @@ class ValidateTest extends TestCase
         $factory->command()->execute();
 
         $this->assertSame(0, $setup->env->output()->exitCode());
-        $this->assertTrue($factory->synchronizedSkeleton()->isFulfilled());
+        $this->assertTrue($factory->synchronizedSkeleton(new TokenCache())->isFulfilled());
     }
 
     public function testNotMatchingFiles_OutputsErrorCode()
@@ -77,6 +78,6 @@ class ValidateTest extends TestCase
         $factory->command()->execute();
 
         $this->assertSame(1, $setup->env->output()->exitCode());
-        $this->assertFalse($factory->synchronizedSkeleton()->isFulfilled());
+        $this->assertFalse($factory->synchronizedSkeleton(new TokenCache())->isFulfilled());
     }
 }
