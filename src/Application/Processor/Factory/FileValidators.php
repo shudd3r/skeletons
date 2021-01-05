@@ -19,7 +19,7 @@ use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class FileValidatorFactory implements Processor\Factory
+class FileValidators implements Processor\Factory
 {
     private Directory   $package;
     private ?TokenCache $cache;

@@ -55,8 +55,8 @@ class Validate extends Command\Factory
         $template        = new Template\ComposerJsonTemplate($composerFile);
         $compareComposer = new Processor\CompareFile($template, $composerFile);
 
-        $generatorFactory = new Processor\Factory\FileValidatorFactory($this->env->package(), $cache);
-        $comparePackage   = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
+        $validatorFactory = new Processor\Factory\FileValidators($this->env->package(), $cache);
+        $comparePackage   = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $validatorFactory);
 
         return new Processor\ProcessorSequence($compareComposer, $comparePackage);
     }
