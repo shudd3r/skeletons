@@ -19,13 +19,11 @@ class OriginalContents implements Token
 {
     public const PLACEHOLDER = '{original.content}';
 
-    private File        $packageFile;
-    private ?TokenCache $cache;
+    protected File $packageFile;
 
-    public function __construct(File $packageFile, ?TokenCache $cache = null)
+    public function __construct(File $packageFile)
     {
         $this->packageFile = $packageFile;
-        $this->cache       = $cache;
     }
 
     public function replacePlaceholders(string $template): string
@@ -55,6 +53,17 @@ class OriginalContents implements Token
         return $this->newTokenInstance($clips);
     }
 
+    protected function newTokenInstance(array $values = null): Token
+    {
+        if (!$values) {
+            return new ValueToken(self::PLACEHOLDER, '');
+        }
+
+        return count($values) === 1
+            ? new ValueToken(self::PLACEHOLDER, $values[0])
+            : new ValueListToken(self::PLACEHOLDER, ...$values);
+    }
+
     private function trimmedContents(string $contents, string $prefix, string $postfix): string
     {
         if ($prefix) {
@@ -64,24 +73,5 @@ class OriginalContents implements Token
             $contents = substr($contents, 0, -strlen($postfix));
         }
         return $contents;
-    }
-
-    private function newTokenInstance(array $values = null): Token
-    {
-        if (!$values) {
-            return $this->cached(new ValueToken(self::PLACEHOLDER, ''));
-        }
-
-        return count($values) === 1
-            ? $this->cached(new ValueToken(self::PLACEHOLDER, $values[0]))
-            : $this->cached(new ValueListToken(self::PLACEHOLDER, ...$values));
-    }
-
-    private function cached(Token $token): Token
-    {
-        if ($this->cache) {
-            $this->cache->add($this->packageFile->name(), $token);
-        }
-        return $token;
     }
 }

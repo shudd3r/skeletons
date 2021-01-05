@@ -62,7 +62,7 @@ class OriginalContentsTest extends TestCase
         $file->name = 'cached/file.txt';
 
         return $cache
-            ? new Token\OriginalContents($file, $cache)
+            ? new Token\CachedOriginalContents($file, $cache)
             : new Token\OriginalContents($file);
     }
 }

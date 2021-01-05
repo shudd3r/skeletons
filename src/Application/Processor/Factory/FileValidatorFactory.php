@@ -35,11 +35,13 @@ class FileValidatorFactory implements Processor\Factory
         $template    = new Template\FileTemplate($skeletonFile);
         $packageFile = $this->package->file($skeletonFile->name());
 
-        $compareFiles     = new Processor\CompareFile($template, $packageFile);
-        $originalContents = new Token\CompositeToken(
-            new Token\InitialContents(false),
-            new Token\OriginalContents($packageFile, $this->cache)
-        );
-        return new Processor\ExpandedTokenProcessor($originalContents, $compareFiles);
+        $originalContents = $this->cache
+            ? new Token\CachedOriginalContents($packageFile, $this->cache)
+            : new Token\OriginalContents($packageFile);
+
+        $contentsToken = new Token\CompositeToken(new Token\InitialContents(false), $originalContents);
+        $compareFiles  = new Processor\CompareFile($template, $packageFile);
+
+        return new Processor\ExpandedTokenProcessor($contentsToken, $compareFiles);
     }
 }
