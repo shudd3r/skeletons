@@ -19,7 +19,7 @@ use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class FileGeneratorFactory implements Processor\Factory
+class FileGenerators implements Processor\Factory
 {
     private Directory   $package;
     private ?TokenCache $cache;
