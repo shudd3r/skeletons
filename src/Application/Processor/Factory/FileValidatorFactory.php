@@ -12,11 +12,11 @@
 namespace Shudd3r\PackageFiles\Application\Processor\Factory;
 
 use Shudd3r\PackageFiles\Application\Processor;
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
-use Shudd3r\PackageFiles\Application\Token\OriginalContents;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Application\Token;
 
 
 class FileValidatorFactory implements Processor\Factory
@@ -36,7 +36,10 @@ class FileValidatorFactory implements Processor\Factory
         $packageFile = $this->package->file($skeletonFile->name());
 
         $compareFiles     = new Processor\CompareFile($template, $packageFile);
-        $originalContents = new OriginalContents($packageFile, $this->cache);
+        $originalContents = new Token\CompositeToken(
+            new Token\InitialContents(false),
+            new Token\OriginalContents($packageFile, $this->cache)
+        );
         return new Processor\ExpandedTokenProcessor($originalContents, $compareFiles);
     }
 }

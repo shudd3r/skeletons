@@ -32,8 +32,8 @@ class FileGeneratorFactory implements Processor\Factory
 
     public function processor(File $skeletonFile): Processor
     {
-        $template     = new Template\FileTemplate($skeletonFile);
-        $packageFile  = $this->package->file($skeletonFile->name());
+        $template    = new Template\FileTemplate($skeletonFile);
+        $packageFile = $this->package->file($skeletonFile->name());
         return $this->generateFile($template, $packageFile);
     }
 
@@ -41,13 +41,17 @@ class FileGeneratorFactory implements Processor\Factory
     {
         $processor = new Processor\GenerateFile($template, $packageFile);
         if (!$this->cache) {
-            $stripOriginalContent = new Token\ValueToken(Token\OriginalContents::PLACEHOLDER, '');
-            return new Processor\ExpandedTokenProcessor($stripOriginalContent, $processor);
+            $initialContents = new Token\CompositeToken(
+                new Token\ValueToken(Token\OriginalContents::PLACEHOLDER, ''),
+                new Token\InitialContents()
+            );
+            return new Processor\ExpandedTokenProcessor($initialContents, $processor);
         }
 
         $token = $this->cache->token($packageFile->name());
         if (!$token) { return $processor; }
 
-        return new Processor\ExpandedTokenProcessor($token, $processor);
+        $originalContents = new Token\CompositeToken(new Token\InitialContents(false), $token);
+        return new Processor\ExpandedTokenProcessor($originalContents, $processor);
     }
 }
