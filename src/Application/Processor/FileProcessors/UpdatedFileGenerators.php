@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Processor\Factory;
+namespace Shudd3r\PackageFiles\Application\Processor\FileProcessors;
 
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
@@ -19,7 +19,7 @@ use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class UpdatedFileGenerators extends FileGenerators
+class UpdatedFileGenerators extends Processor\FileProcessors
 {
     private TokenCache $cache;
 
@@ -29,15 +29,15 @@ class UpdatedFileGenerators extends FileGenerators
         parent::__construct($package);
     }
 
-    protected function fileGenerator(Template $template, File $packageFile): Processor
+    protected function newProcessorInstance(Template $template, File $packageFile): Processor
     {
         $processor = new Processor\GenerateFile($template, $packageFile);
         $token     = $this->cache->token($packageFile->name());
 
-        return $token ? $this->originalContentProcessor($token, $processor) : $processor;
+        return $token ? $this->originalContentsProcessor($token, $processor) : $processor;
     }
 
-    private function originalContentProcessor(Token $token, Processor $processor): Processor
+    private function originalContentsProcessor(Token $token, Processor $processor): Processor
     {
         $originalContents = new Token\CompositeToken(new Token\InitialContents(false), $token);
         return new Processor\ExpandedTokenProcessor($originalContents, $processor);

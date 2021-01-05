@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Processor\Factory;
+namespace Shudd3r\PackageFiles\Application\Processor;
 
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Template;
 
 
-abstract class FileGenerators implements Processor\Factory
+abstract class FileProcessors
 {
     private Directory $package;
 
@@ -30,8 +30,8 @@ abstract class FileGenerators implements Processor\Factory
     {
         $template    = new Template\FileTemplate($skeletonFile);
         $packageFile = $this->package->file($skeletonFile->name());
-        return $this->fileGenerator($template, $packageFile);
+        return $this->newProcessorInstance($template, $packageFile);
     }
 
-    abstract protected function fileGenerator(Template $template, File $packageFile): Processor;
+    abstract protected function newProcessorInstance(Template $template, File $packageFile): Processor;
 }

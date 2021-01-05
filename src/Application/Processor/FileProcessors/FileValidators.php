@@ -9,29 +9,18 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Processor\Factory;
+namespace Shudd3r\PackageFiles\Application\Processor\FileProcessors;
 
 use Shudd3r\PackageFiles\Application\Processor;
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class FileValidators implements Processor\Factory
+class FileValidators extends Processor\FileProcessors
 {
-    private Directory $package;
-
-    public function __construct(Directory $package)
+    protected function newProcessorInstance(Template $template, File $packageFile): Processor
     {
-        $this->package = $package;
-    }
-
-    public function processor(File $skeletonFile): Processor
-    {
-        $template    = new Template\FileTemplate($skeletonFile);
-        $packageFile = $this->package->file($skeletonFile->name());
-
         $compareFiles  = new Processor\CompareFile($template, $packageFile);
         $contentsToken = new Token\CompositeToken(
             new Token\InitialContents(false),

@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Processor\Factory;
+namespace Shudd3r\PackageFiles\Application\Processor\FileProcessors;
 
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
@@ -17,20 +17,18 @@ use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class NewFileGenerators extends FileGenerators
+class NewFileGenerators extends Processor\FileProcessors
 {
-    protected function fileGenerator(Template $template, File $packageFile): Processor
+    protected function newProcessorInstance(Template $template, File $packageFile): Processor
     {
         $processor = new Processor\GenerateFile($template, $packageFile);
-        $token     = $this->initialContentToken();
+        $token     = $this->initialContentsToken();
         return new Processor\ExpandedTokenProcessor($token, $processor);
     }
 
-    private function initialContentToken(): Token
+    private function initialContentsToken(): Token
     {
-        return new Token\CompositeToken(
-            new Token\ValueToken(Token\OriginalContents::PLACEHOLDER, ''),
-            new Token\InitialContents()
-        );
+        $originalContentsToken = new Token\ValueToken(Token\OriginalContents::PLACEHOLDER, '');
+        return new Token\CompositeToken($originalContentsToken, new Token\InitialContents());
     }
 }
