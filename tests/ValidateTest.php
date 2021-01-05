@@ -33,7 +33,7 @@ class ValidateTest extends TestCase
 
     public function testMissingMetaDataFile_StopsExecution()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
 
         $factory = new Validate($setup->env, []);
         $factory->command()->execute();
@@ -43,7 +43,7 @@ class ValidateTest extends TestCase
 
     public function testInvalidMetaData_StopsExecution()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
         $setup->addMetaData(['namespace.src' => 'Not/A/Namespace']);
 
         $factory = new Validate($setup->env, []);
@@ -54,7 +54,7 @@ class ValidateTest extends TestCase
 
     public function testMatchingFiles_OutputsNoErrorCode()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
         $setup->addMetaData();
         $setup->addComposer();
         $setup->addGeneratedFile();
@@ -68,7 +68,7 @@ class ValidateTest extends TestCase
 
     public function testNotMatchingFiles_OutputsErrorCode()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
         $setup->addMetaData(['repository.name' => 'another/repo']);
         $setup->addComposer();
         $setup->addGeneratedFile();

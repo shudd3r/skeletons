@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Application\Token\OriginalContents;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 
 
-class EnvSetup
+class TestEnvSetup
 {
     public const SKELETON_FILE = 'file/generate.txt';
 

@@ -26,7 +26,7 @@ class InitializeTest extends TestCase
 
     public function testDefaultTokenValues_AreReadFromPackageFiles()
     {
-        $setup     = new EnvSetup();
+        $setup     = new TestEnvSetup();
         $gitConfig = '[remote "origin"] url = https://github.com/username/repoOrigin.git';
         $setup->env->package()->addFile('.git/config', $gitConfig);
         $setup->addComposer([
@@ -48,7 +48,7 @@ class InitializeTest extends TestCase
 
     public function testPackageNameValue_IsUsedAsFallbackForDefaultValues()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
         $setup->addComposer([
             'package.name'     => 'fooBar/baz',
             'description.text' => null,
@@ -68,7 +68,7 @@ class InitializeTest extends TestCase
 
     public function testUnresolvedPackageNameValue_IsReadFromDirectoryStructure()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
         $setup->env->package()->path = '/path/foo/bar';
 
         $factory = new Initialize($setup->env, ['i' => false]);
@@ -84,7 +84,7 @@ class InitializeTest extends TestCase
 
     public function testCommandLineValues_OverwriteDefault()
     {
-        $setup   = new EnvSetup();
+        $setup   = new TestEnvSetup();
         $options = [
             'repo'    => 'cli/repo',
             'package' => 'cli/package',
@@ -105,7 +105,7 @@ class InitializeTest extends TestCase
 
     public function testInteractiveInputValues_OverwriteOtherSources()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
         $setup->env->input()->inputStrings = [
             'package/name',
             'user/repo',
@@ -133,7 +133,7 @@ class InitializeTest extends TestCase
 
     public function testOverwrittenPackageFiles_AreCopiedIntoBackupDirectory()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
         $setup->env->skeleton()->addFile('file.ini', 'generated');
         $setup->env->package()->addFile('file.ini', 'original');
 
@@ -149,7 +149,7 @@ class InitializeTest extends TestCase
 
     public function testExistingMetaDataFile_AbortsExecutionWithoutSideEffects()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
         $setup->env->skeleton()->addFile('file.ini', 'contents');
         $setup->addMetaData();
         $metaData = $setup->env->metaDataFile()->contents();
@@ -163,7 +163,7 @@ class InitializeTest extends TestCase
 
     public function testOverwritingBackupFile_AbortsExecutionWithoutSideEffects()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
         $setup->env->skeleton()->addFile('file.ini', 'skeleton');
         $setup->env->package()->addFile('file.ini', 'original');
         $setup->env->backup()->addFile('file.ini', 'backup');
@@ -177,7 +177,7 @@ class InitializeTest extends TestCase
         $this->assertFalse($setup->env->package()->file('composer.json')->exists());
     }
 
-    private function assertGeneratedFiles(EnvSetup $setup, array $data): void
+    private function assertGeneratedFiles(TestEnvSetup $setup, array $data): void
     {
         $generatedFile = $setup->env->package()->file($setup::SKELETON_FILE)->contents();
         $this->assertSame($setup->render($data, false), $generatedFile);

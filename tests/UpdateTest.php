@@ -26,7 +26,7 @@ class UpdateTest extends TestCase
 
     public function testValuesProvidedAsCommandLineOptions_UpdatePackage()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
         $data  = $setup->data();
         $setup->addMetaData();
         $setup->addGeneratedFile();
@@ -45,7 +45,7 @@ class UpdateTest extends TestCase
 
     public function testValuesProvidedAsInteractiveInput_UpdatePackage()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
         $data  = $setup->data();
         $setup->addMetaData();
         $setup->addGeneratedFile();
@@ -66,7 +66,7 @@ class UpdateTest extends TestCase
 
     public function testMissingMetaDataFile_PreventsExecution()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
         $data  = $setup->data();
         $setup->addGeneratedFile();
         $setup->addComposer();
@@ -79,7 +79,7 @@ class UpdateTest extends TestCase
 
     public function testNotSynchronizedMetaData_PreventsExecution()
     {
-        $setup = new EnvSetup();
+        $setup = new TestEnvSetup();
         $data  = $setup->data();
         $setup->addMetaData(['repository.name' => 'other/repo']);
         $setup->addGeneratedFile();
@@ -91,7 +91,7 @@ class UpdateTest extends TestCase
         $this->assertPackageFiles($setup, $data);
     }
 
-    private function assertPackageFiles(EnvSetup $setup, array $data, array $oldData = null)
+    private function assertPackageFiles(TestEnvSetup $setup, array $data, array $oldData = null)
     {
         if ($oldData) { $this->assertNotEquals($oldData, $data); }
         $this->assertSame($setup->render($data), $setup->env->package()->file($setup::SKELETON_FILE)->contents());
