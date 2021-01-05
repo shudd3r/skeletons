@@ -16,6 +16,7 @@ use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Application\Token;
 
 
 class FileGeneratorFactory implements Processor\Factory
@@ -39,7 +40,10 @@ class FileGeneratorFactory implements Processor\Factory
     private function generateFile(Template $template, File $packageFile): Processor
     {
         $processor = new Processor\GenerateFile($template, $packageFile);
-        if (!$this->cache) { return $processor; }
+        if (!$this->cache) {
+            $stripOriginalContent = new Token\ValueToken(Token\OriginalContents::PLACEHOLDER, '');
+            return new Processor\ExpandedTokenProcessor($stripOriginalContent, $processor);
+        }
 
         $token = $this->cache->token($packageFile->name());
         if (!$token) { return $processor; }

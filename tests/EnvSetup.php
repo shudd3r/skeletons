@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests;
 
+use Shudd3r\PackageFiles\Application\Token\OriginalContents;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 
 
@@ -51,9 +52,7 @@ class EnvSetup
     {
         $template ??= $this->defaultTemplate();
 
-        if ($orig) {
-            $template = $this->replaceOriginalContent($template);
-        }
+        $template = $orig ? $this->replaceOriginalContent($template) : $this->removeOriginalContent($template);
 
         foreach ($replacements as $name => $replacement) {
             $template = str_replace('{' . $name . '}', $replacement, $template);
@@ -64,11 +63,12 @@ class EnvSetup
 
     public function defaultTemplate(): string
     {
+        $orig = OriginalContents::PLACEHOLDER;
         return <<<TPL
-            This is a template for {repository.name} in a {package.name} package{original.content}, which
+            This is a template for {repository.name} in a {package.name} package{$orig}, which
             is "{description.text}" with `src` directory files in `{namespace.src}` namespace.
             
-            {original.content}
+            {$orig}
             TPL;
     }
 
@@ -134,7 +134,7 @@ class EnvSetup
             '--- this was extracted from package file ---'
         ];
 
-        $parts = explode('{original.content}', $template);
+        $parts = explode(OriginalContents::PLACEHOLDER, $template);
 
         $template = array_shift($parts);
         foreach ($contents as $replace) {
@@ -142,5 +142,10 @@ class EnvSetup
         }
 
         return $template;
+    }
+
+    private function removeOriginalContent(string $template): string
+    {
+        return str_replace(OriginalContents::PLACEHOLDER, '', $template);
     }
 }
