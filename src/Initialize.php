@@ -71,7 +71,7 @@ class Initialize extends Command\Factory
         $template         = new Template\ComposerJsonTemplate($composerFile);
         $generateComposer = new Processor\GenerateFile($template, $composerFile);
 
-        $generatorFactory = new Processor\Factory\FileGenerators($this->env->package());
+        $generatorFactory = new Processor\Factory\NewFileGenerators($this->env->package());
         $generatePackage  = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
 
         return new Processor\ProcessorSequence($generateComposer, $generatePackage);

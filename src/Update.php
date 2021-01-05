@@ -65,7 +65,7 @@ class Update extends Command\Factory
         $template         = new Template\ComposerJsonTemplate($composerFile);
         $generateComposer = new Processor\GenerateFile($template, $composerFile);
 
-        $generatorFactory = new Processor\Factory\FileGenerators($this->env->package(), $cache);
+        $generatorFactory = new Processor\Factory\UpdatedFileGenerators($this->env->package(), $cache);
         $generatePackage  = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
 
         return new Processor\ProcessorSequence($generateComposer, $generatePackage);

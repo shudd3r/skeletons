@@ -12,46 +12,26 @@
 namespace Shudd3r\PackageFiles\Application\Processor\Factory;
 
 use Shudd3r\PackageFiles\Application\Processor;
-use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Template;
-use Shudd3r\PackageFiles\Application\Token;
 
 
-class FileGenerators implements Processor\Factory
+abstract class FileGenerators implements Processor\Factory
 {
-    private Directory   $package;
-    private ?TokenCache $cache;
+    private Directory $package;
 
-    public function __construct(Directory $package, ?TokenCache $cache = null)
+    public function __construct(Directory $package)
     {
         $this->package = $package;
-        $this->cache   = $cache;
     }
 
     public function processor(File $skeletonFile): Processor
     {
         $template    = new Template\FileTemplate($skeletonFile);
         $packageFile = $this->package->file($skeletonFile->name());
-        return $this->generateFile($template, $packageFile);
+        return $this->fileGenerator($template, $packageFile);
     }
 
-    private function generateFile(Template $template, File $packageFile): Processor
-    {
-        $processor = new Processor\GenerateFile($template, $packageFile);
-        if (!$this->cache) {
-            $initialContents = new Token\CompositeToken(
-                new Token\ValueToken(Token\OriginalContents::PLACEHOLDER, ''),
-                new Token\InitialContents()
-            );
-            return new Processor\ExpandedTokenProcessor($initialContents, $processor);
-        }
-
-        $token = $this->cache->token($packageFile->name());
-        if (!$token) { return $processor; }
-
-        $originalContents = new Token\CompositeToken(new Token\InitialContents(false), $token);
-        return new Processor\ExpandedTokenProcessor($originalContents, $processor);
-    }
+    abstract protected function fileGenerator(Template $template, File $packageFile): Processor;
 }
