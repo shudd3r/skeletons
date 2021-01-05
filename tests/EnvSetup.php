@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests;
 
+use Shudd3r\PackageFiles\Application\Token\InitialContents;
 use Shudd3r\PackageFiles\Application\Token\OriginalContents;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 
@@ -50,7 +51,7 @@ class EnvSetup
 
     public function render(array $replacements = [], bool $orig = true, string $template = null): string
     {
-        $template ??= $this->defaultTemplate();
+        $template ??= $this->defaultTemplate(true, $orig);
 
         $template = $orig ? $this->replaceOriginalContent($template) : $this->removeOriginalContent($template);
 
@@ -61,14 +62,22 @@ class EnvSetup
         return $template;
     }
 
-    public function defaultTemplate(): string
+    public function defaultTemplate(bool $render = false, bool $orig = true): string
     {
-        $orig = OriginalContents::PLACEHOLDER;
+        $marker    = '...Your own contents here...';
+        $origToken = '{original.content}';
+
+        $init = $render
+            ? ($orig ? $origToken : $marker)
+            : '{original.content>>>' . $marker . '<<<original.content}';
+
         return <<<TPL
-            This is a template for {repository.name} in a {package.name} package{$orig}, which
+            This is a template for {repository.name} in a {package.name} package{$origToken}, which
             is "{description.text}" with `src` directory files in `{namespace.src}` namespace.
             
-            {$orig}
+            {$init}
+            
+            THE END.
             TPL;
     }
 
