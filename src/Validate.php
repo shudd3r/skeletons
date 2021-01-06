@@ -25,7 +25,7 @@ class Validate extends Command\Factory
     public function command(): CommandInterface
     {
         $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $tokenReader    = new Reader\CompositeTokenReader(...$this->tokenReaders());
+        $tokenReader    = new Reader\CompositeTokenReader($this->tokenReaders());
         $fileValidators = new Processor\FileProcessors\FileValidators($this->env->package());
         $tokenProcessor = $this->processor($fileValidators);
         $processTokens  = new Command\TokenProcessor($tokenReader, $tokenProcessor, $this->env->output());
@@ -35,7 +35,7 @@ class Validate extends Command\Factory
 
     public function synchronizedSkeleton(TokenCache $cache): Command\Precondition
     {
-        $tokenReader    = new Reader\CompositeTokenReader(...$this->tokenReaders());
+        $tokenReader    = new Reader\CompositeTokenReader($this->tokenReaders());
         $fileValidators = new Processor\FileProcessors\CachingFileValidators($this->env->package(), $cache);
         $tokenProcessor = $this->processor($fileValidators);
 

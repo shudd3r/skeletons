@@ -24,7 +24,7 @@ class Initialize extends Command\Factory
 {
     public function command(): CommandInterface
     {
-        $tokenReader     = new Reader\CompositeTokenReader(...$this->tokenReaders());
+        $tokenReader     = new Reader\CompositeTokenReader($this->tokenReaders());
         $generatedFiles  = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupDirectory = $this->env->backup();
 
