@@ -11,18 +11,11 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
-use Shudd3r\PackageFiles\Application\Token;
-
 
 class PackageDescription extends ValueReader
 {
     public function isValid(string $value): bool
     {
         return !empty($value);
-    }
-
-    protected function newTokenInstance(string $namespace, string $value): Token
-    {
-        return new Token\ValueToken($namespace, $value);
     }
 }
