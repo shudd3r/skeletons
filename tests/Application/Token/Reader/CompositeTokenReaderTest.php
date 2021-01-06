@@ -22,9 +22,17 @@ class CompositeTokenReaderTest extends TestCase
 {
     public function testReader_TokenMethod_ReturnsCompositeToken()
     {
-        $reader   = new CompositeTokenReader([new FakeReader('foo'), new FakeReader('bar')]);
-        $expected = new CompositeToken(new FakeToken('foo'), new FakeToken('bar'));
-        $this->assertEquals($expected, $reader->token());
+        $readers = [
+            'foo-token' => new FakeReader('foo'),
+            'bar-token' => new FakeReader('bar')
+        ];
+
+        $reader   = new CompositeTokenReader($readers);
+        $expected = new CompositeToken(
+            new FakeToken('foo', 'myTokens.foo-token'),
+            new FakeToken('bar', 'myTokens.bar-token')
+        );
+        $this->assertEquals($expected, $reader->token('myTokens'));
     }
 
     public function testReaderWithInvalidComponent_TokenMethod_ReturnsNull()

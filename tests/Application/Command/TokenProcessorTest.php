@@ -28,7 +28,7 @@ class TokenProcessorTest extends TestCase
         $this->assertInstanceOf(TokenProcessor::class, $command);
 
         $command->execute();
-        $this->assertSame($reader->token(), $processor->passedToken);
+        $this->assertEquals($reader->token(), $processor->passedToken);
     }
 
     public function testUnresolvedTokensStopExecution()
