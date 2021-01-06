@@ -78,11 +78,6 @@ class RuntimeEnv
         return $this->metaData;
     }
 
-    public static function placeholder(string $name): string
-    {
-        return '{' . $name . '}';
-    }
-
     private function validDirectory(Directory $directory): Directory
     {
         if (!$directory->exists()) {
