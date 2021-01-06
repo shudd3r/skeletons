@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Application\Token\Reader;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -29,10 +28,10 @@ class SrcNamespaceTest extends TestCase
     public function testReader_TokenMethod_ReturnsCorrectToken()
     {
         $expected = new Token\CompositeToken(
-            new Token\ValueToken(RuntimeEnv::SRC_NAMESPACE, 'Some\\Namespace'),
-            new Token\ValueToken(RuntimeEnv::SRC_NAMESPACE_ESC, 'Some\\\\Namespace')
+            new Token\ValueToken('namespace', 'Some\\Namespace'),
+            new Token\ValueToken('namespace.esc', 'Some\\\\Namespace')
         );
-        $this->assertEquals($expected, $this->reader('Some\\Namespace')->token());
+        $this->assertEquals($expected, $this->reader('Some\\Namespace')->token('namespace'));
     }
 
     /**

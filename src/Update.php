@@ -16,6 +16,7 @@ use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Template;
 
@@ -56,7 +57,12 @@ class Update extends Command\Factory
         $source    = $this->interactive('Source files namespace', $this->option('ns', $default));
         $namespace = new Reader\SrcNamespace($source);
 
-        return [$package, $repo, $desc, $namespace];
+        return [
+            RuntimeEnv::PACKAGE_NAME  => $package,
+            RuntimeEnv::REPO_NAME     => $repo,
+            RuntimeEnv::PACKAGE_DESC  => $desc,
+            RuntimeEnv::SRC_NAMESPACE => $namespace
+        ];
     }
 
     protected function processor(TokenCache $cache): Processor

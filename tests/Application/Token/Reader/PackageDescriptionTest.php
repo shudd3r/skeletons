@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Application\Token\Reader;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -28,8 +27,8 @@ class PackageDescriptionTest extends TestCase
 
     public function testReader_TokenMethod_ReturnsCorrectToken()
     {
-        $expected = new Token\ValueToken(RuntimeEnv::PACKAGE_DESC, 'This is my package...');
-        $this->assertEquals($expected, $this->reader('This is my package...')->token());
+        $expected = new Token\ValueToken('desc', 'This is my package...');
+        $this->assertEquals($expected, $this->reader('This is my package...')->token('desc'));
     }
 
     /**

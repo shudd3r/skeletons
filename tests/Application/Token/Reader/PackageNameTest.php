@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Application\Token\Reader;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -29,10 +28,10 @@ class PackageNameTest extends TestCase
     public function testReader_TokenMethod_ReturnsCorrectToken()
     {
         $expected = new Token\CompositeToken(
-            new Token\ValueToken(RuntimeEnv::PACKAGE_NAME, 'source/package'),
-            new Token\ValueToken(RuntimeEnv::PACKAGE_TITLE, 'Source/Package')
+            new Token\ValueToken('package.name', 'source/package'),
+            new Token\ValueToken('package.name.title', 'Source/Package')
         );
-        $this->assertEquals($expected, $this->reader('source/package')->token());
+        $this->assertEquals($expected, $this->reader('source/package')->token('package.name'));
     }
 
     /**

@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
 class PackageDescription extends ValueReader
@@ -24,6 +23,6 @@ class PackageDescription extends ValueReader
 
     protected function newTokenInstance(string $namespace, string $value): Token
     {
-        return new Token\ValueToken(RuntimeEnv::PACKAGE_DESC, $value);
+        return new Token\ValueToken($namespace, $value);
     }
 }

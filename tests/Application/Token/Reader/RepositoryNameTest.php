@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Application\Token\Reader;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -28,8 +27,8 @@ class RepositoryNameTest extends TestCase
 
     public function testReader_TokenMethod_ReturnsCorrectToken()
     {
-        $expected = new Token\ValueToken(RuntimeEnv::REPO_NAME, 'source/repo');
-        $this->assertEquals($expected, $this->reader('source/repo')->token());
+        $expected = new Token\ValueToken('repo.name', 'source/repo');
+        $this->assertEquals($expected, $this->reader('source/repo')->token('repo.name'));
     }
 
     /**

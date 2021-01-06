@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
 class PackageName extends ValueReader
@@ -25,8 +24,8 @@ class PackageName extends ValueReader
     protected function newTokenInstance(string $namespace, string $packageName): Token
     {
         return new Token\CompositeToken(
-            new Token\ValueToken(RuntimeEnv::PACKAGE_NAME, $packageName),
-            new Token\ValueToken(RuntimeEnv::PACKAGE_TITLE, $this->titleName($packageName))
+            new Token\ValueToken($namespace, $packageName),
+            new Token\ValueToken($namespace . '.title', $this->titleName($packageName))
         );
     }
 
