@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\Template;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Template\ComposerJsonTemplate;
 use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -85,9 +86,9 @@ class ComposerJsonTemplateTest extends TestCase
     private function tokens(): Token
     {
         return new Token\CompositeToken(
-            new Token\ValueToken(Token\Reader\PackageName::PLACEHOLDER, 'package/name'),
-            new Token\ValueToken(Token\Reader\PackageDescription::PLACEHOLDER, 'Description text'),
-            new Token\ValueToken(Token\Reader\SrcNamespace::PLACEHOLDER_ESC, 'Main\\\\Namespace')
+            new Token\ValueToken(RuntimeEnv::PACKAGE_NAME, 'package/name'),
+            new Token\ValueToken(RuntimeEnv::PACKAGE_DESC, 'Description text'),
+            new Token\ValueToken(RuntimeEnv::SRC_NAMESPACE_ESC, 'Main\\\\Namespace')
         );
     }
 

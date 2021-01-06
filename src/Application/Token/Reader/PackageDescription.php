@@ -12,12 +12,11 @@
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
 class PackageDescription extends ValueReader
 {
-    public const PLACEHOLDER = '{description.text}';
-
     public function isValid(string $value): bool
     {
         return !empty($value);
@@ -25,6 +24,6 @@ class PackageDescription extends ValueReader
 
     protected function newTokenInstance(string $namespace, string $value): Token
     {
-        return new Token\ValueToken(self::PLACEHOLDER, $value);
+        return new Token\ValueToken(RuntimeEnv::PACKAGE_DESC, $value);
     }
 }

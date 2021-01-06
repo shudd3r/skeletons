@@ -12,13 +12,11 @@
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
 class SrcNamespace extends ValueReader
 {
-    public const PLACEHOLDER     = '{namespace.src}';
-    public const PLACEHOLDER_ESC = '{namespace.src.esc}';
-
     public function isValid(string $value): bool
     {
         foreach (explode('\\', $value) as $label) {
@@ -32,8 +30,8 @@ class SrcNamespace extends ValueReader
     protected function newTokenInstance(string $namespace, string $value): Token
     {
         return new Token\CompositeToken(
-            new Token\ValueToken(self::PLACEHOLDER, $value),
-            new Token\ValueToken(self::PLACEHOLDER_ESC, str_replace('\\', '\\\\', $value))
+            new Token\ValueToken(RuntimeEnv::SRC_NAMESPACE, $value),
+            new Token\ValueToken(RuntimeEnv::SRC_NAMESPACE_ESC, str_replace('\\', '\\\\', $value))
         );
     }
 }

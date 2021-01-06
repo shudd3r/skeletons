@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Tests;
 use Shudd3r\PackageFiles\Application\Token\InitialContents;
 use Shudd3r\PackageFiles\Application\Token\OriginalContents;
 use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
 class TestEnvSetup
@@ -64,10 +65,10 @@ class TestEnvSetup
 
     public function defaultTemplate(bool $render = false, bool $orig = true): string
     {
-        $descToken = Reader\PackageDescription::PLACEHOLDER;
-        $repoToken = Reader\RepositoryName::PLACEHOLDER;
-        $packToken = Reader\PackageName::PLACEHOLDER;
-        $nameToken = Reader\SrcNamespace::PLACEHOLDER;
+        $descToken = RuntimeEnv::PACKAGE_DESC;
+        $repoToken = RuntimeEnv::REPO_NAME;
+        $packToken = RuntimeEnv::PACKAGE_NAME;
+        $nameToken = RuntimeEnv::SRC_NAMESPACE;
         $origToken = OriginalContents::PLACEHOLDER;
 
         $marker    = '...Your own contents here...';

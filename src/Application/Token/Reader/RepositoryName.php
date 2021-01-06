@@ -12,12 +12,11 @@
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
 class RepositoryName extends ValueReader
 {
-    public const PLACEHOLDER = '{repository.name}';
-
     public function isValid(string $value): bool
     {
         return (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
@@ -25,6 +24,6 @@ class RepositoryName extends ValueReader
 
     protected function newTokenInstance(string $namespace, string $repositoryName): Token
     {
-        return new Token\ValueToken(self::PLACEHOLDER, $repositoryName);
+        return new Token\ValueToken(RuntimeEnv::REPO_NAME, $repositoryName);
     }
 }

@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Template;
 
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token;
 
 
@@ -29,13 +30,13 @@ class ComposerJsonTemplate implements Template
     {
         $composer = json_decode($this->composerFile->contents(), true) ?? [];
 
-        $namespace   = Token\Reader\SrcNamespace::PLACEHOLDER_ESC . '\\';
+        $namespace   = RuntimeEnv::SRC_NAMESPACE_ESC . '\\';
         $autoload    = $this->normalizedAutoload($composer['autoload'] ?? [], $namespace, 'src/');
         $autoloadDev = $this->normalizedAutoload($composer['autoload-dev'] ?? [], $namespace . 'Tests\\', 'tests/');
 
         $newComposer = array_filter([
-            'name'              => Token\Reader\PackageName::PLACEHOLDER,
-            'description'       => Token\Reader\PackageDescription::PLACEHOLDER,
+            'name'              => RuntimeEnv::PACKAGE_NAME,
+            'description'       => RuntimeEnv::PACKAGE_DESC,
             'type'              => 'library',
             'license'           => 'MIT',
             'authors'           => $composer['authors'] ?? [['name' => 'Shudd3r', 'email' => 'q3.shudder@gmail.com']],
