@@ -16,6 +16,7 @@ use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Template;
 
@@ -25,7 +26,7 @@ class Validate extends Command\Factory
     public function command(): CommandInterface
     {
         $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $tokenReader    = new Reader\CompositeTokenReader(...$this->tokenReaders());
+        $tokenReader    = new Reader\CompositeTokenReader($this->tokenReaders());
         $fileValidators = new Processor\FileProcessors\FileValidators($this->env->package());
         $tokenProcessor = $this->processor($fileValidators);
         $processTokens  = new Command\TokenProcessor($tokenReader, $tokenProcessor, $this->env->output());
@@ -35,7 +36,7 @@ class Validate extends Command\Factory
 
     public function synchronizedSkeleton(TokenCache $cache): Command\Precondition
     {
-        $tokenReader    = new Reader\CompositeTokenReader(...$this->tokenReaders());
+        $tokenReader    = new Reader\CompositeTokenReader($this->tokenReaders());
         $fileValidators = new Processor\FileProcessors\CachingFileValidators($this->env->package(), $cache);
         $tokenProcessor = $this->processor($fileValidators);
 
@@ -47,10 +48,10 @@ class Validate extends Command\Factory
         $source = new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
 
         return [
-            $package = new Reader\PackageName($source),
-            new Reader\RepositoryName($source),
-            new Reader\PackageDescription($source),
-            new Reader\SrcNamespace($source)
+            RuntimeEnv::PACKAGE_NAME  => new Reader\PackageName($source),
+            RuntimeEnv::REPO_NAME     => new Reader\RepositoryName($source),
+            RuntimeEnv::PACKAGE_DESC  => new Reader\PackageDescription($source),
+            RuntimeEnv::SRC_NAMESPACE => new Reader\SrcNamespace($source)
         ];
     }
 

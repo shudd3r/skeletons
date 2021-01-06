@@ -35,10 +35,10 @@ abstract class ValueReader implements Reader, Validator
         return $clone;
     }
 
-    public function token(): ?Token
+    public function token(string $namespace = ''): ?Token
     {
         $value = $this->value();
-        return $this->isValid($value) ? $this->newTokenInstance($value) : null;
+        return $this->isValid($value) ? $this->newTokenInstance($namespace, $value) : null;
     }
 
     public function value(): string
@@ -48,5 +48,8 @@ abstract class ValueReader implements Reader, Validator
 
     abstract public function isValid(string $value): bool;
 
-    abstract protected function newTokenInstance(string $value): Token;
+    protected function newTokenInstance(string $namespace, string $value): Token
+    {
+        return new Token\ValueToken($namespace, $value);
+    }
 }

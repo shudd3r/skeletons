@@ -20,6 +20,11 @@ use Shudd3r\PackageFiles\Application\Exception;
 
 class RuntimeEnv
 {
+    public const PACKAGE_NAME      = 'package.name';
+    public const PACKAGE_DESC      = 'description.text';
+    public const SRC_NAMESPACE     = 'namespace.src';
+    public const REPO_NAME         = 'repository.name';
+
     private Input     $input;
     private Output    $output;
     private Directory $package;

@@ -20,9 +20,9 @@ class CompositeTokenTest extends TestCase
     public function testTokenReplacesAllInternalPlaceholders()
     {
         $tokens = [
-            new Token\ValueToken('{foo.token}', 'foo'),
-            new Token\ValueToken('{bar.token}', 'bar'),
-            new Token\ValueToken('{baz.token}', 'baz')
+            new Token\ValueToken('foo.token', 'foo'),
+            new Token\ValueToken('bar.token', 'bar'),
+            new Token\ValueToken('baz.token', 'baz')
         ];
 
         $token = new Token\CompositeToken(...$tokens);

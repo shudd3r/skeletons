@@ -16,9 +16,6 @@ use Shudd3r\PackageFiles\Application\Token;
 
 class SrcNamespace extends ValueReader
 {
-    public const PLACEHOLDER     = '{namespace.src}';
-    public const PLACEHOLDER_ESC = '{namespace.src.esc}';
-
     public function isValid(string $value): bool
     {
         foreach (explode('\\', $value) as $label) {
@@ -29,11 +26,11 @@ class SrcNamespace extends ValueReader
         return true;
     }
 
-    protected function newTokenInstance(string $value): Token
+    protected function newTokenInstance(string $namespace, string $value): Token
     {
         return new Token\CompositeToken(
-            new Token\ValueToken(self::PLACEHOLDER, $value),
-            new Token\ValueToken(self::PLACEHOLDER_ESC, str_replace('\\', '\\\\', $value))
+            new Token\ValueToken($namespace, $value),
+            new Token\ValueToken($namespace . '.esc', str_replace('\\', '\\\\', $value))
         );
     }
 }

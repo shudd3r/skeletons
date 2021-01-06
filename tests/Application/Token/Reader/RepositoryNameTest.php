@@ -27,8 +27,8 @@ class RepositoryNameTest extends TestCase
 
     public function testReader_TokenMethod_ReturnsCorrectToken()
     {
-        $expected = new Token\ValueToken(Reader\RepositoryName::PLACEHOLDER, 'source/repo');
-        $this->assertEquals($expected, $this->reader('source/repo')->token());
+        $expected = new Token\ValueToken('repo.name', 'source/repo');
+        $this->assertEquals($expected, $this->reader('source/repo')->token('repo.name'));
     }
 
     /**

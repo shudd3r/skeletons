@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 class OriginalContents implements Token
 {
-    public const PLACEHOLDER = '{original.content}';
+    public const PLACEHOLDER = 'original.content';
 
     protected File $packageFile;
 
@@ -34,10 +34,12 @@ class OriginalContents implements Token
 
     public function token(string $mask): Token
     {
-        $hasPlaceholder = strpos($mask, self::PLACEHOLDER) !== false;
+        $placeholder = '{' . self::PLACEHOLDER . '}';
+
+        $hasPlaceholder = strpos($mask, $placeholder) !== false;
         if (!$hasPlaceholder) { return $this->newTokenInstance(); }
 
-        $fixedParts = explode(self::PLACEHOLDER, $mask);
+        $fixedParts = explode($placeholder, $mask);
         $contents   = $this->packageFile->contents();
         if (!$contents) { return $this->newTokenInstance(); }
 

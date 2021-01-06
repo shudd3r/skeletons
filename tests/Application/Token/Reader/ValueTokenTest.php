@@ -12,8 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Application\Token\Reader;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Validator;
+use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -22,8 +21,8 @@ class ValueTokenTest extends TestCase
     public function testInstantiation()
     {
         $reader = $this->reader();
-        $this->assertInstanceOf(Reader::class, $reader);
-        $this->assertInstanceOf(Validator::class, $reader);
+        $this->assertInstanceOf(Token\Reader::class, $reader);
+        $this->assertInstanceOf(Token\Validator::class, $reader);
     }
 
     public function testReader_WithSourceMethod_CreatesNewInstanceWithChangedSource()
@@ -51,12 +50,12 @@ class ValueTokenTest extends TestCase
 
     public function testReaderWithoutSource_TokenMethod_ReturnsTokenUsingEmptyString()
     {
-        $this->assertEquals(new Doubles\FakeToken(''), $this->reader(null)->token());
+        $this->assertEquals(new Token\ValueToken('placeholder', ''), $this->reader(null)->token('placeholder'));
     }
 
     public function testReaderWithSourceProvidedValue_TokenMethod_ReturnsTokenUsingSourceValue()
     {
-        $this->assertEquals(new Doubles\FakeToken('source value'), $this->reader('source value')->token());
+        $this->assertEquals(new Token\ValueToken('test', 'source'), $this->reader('source')->token('test'));
     }
 
     public function testInvalidTokenValue()
@@ -81,7 +80,7 @@ class ValueTokenTest extends TestCase
         $this->assertSame(1, $reader->source->reads);
     }
 
-    private function reader(?string $sourceValue = 'foo', bool $valid = true): Reader\ValueReader
+    private function reader(?string $sourceValue = 'foo', bool $valid = true): Token\Reader\ValueReader
     {
         return new Doubles\MockedValueReader($sourceValue, $valid);
     }

@@ -17,10 +17,12 @@ use Shudd3r\PackageFiles\Application\Token;
 class FakeToken implements Token
 {
     private string $value;
+    private string $namespace;
 
-    public function __construct(string $value = 'foo')
+    public function __construct(string $value = 'foo', string $namespace = '')
     {
-        $this->value = $value;
+        $this->value     = $value;
+        $this->namespace = $namespace;
     }
 
     public function replacePlaceholders(string $template): string

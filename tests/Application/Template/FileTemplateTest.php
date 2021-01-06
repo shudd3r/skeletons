@@ -27,7 +27,7 @@ class FileTemplateTest extends TestCase
             TPL;
 
         $template = new FileTemplate(new Doubles\MockedFile($contents));
-        $token    = new ValueToken('{placeholder.name}', 'package/name');
+        $token    = new ValueToken('placeholder.name', 'package/name');
 
         $render = $template->render($token);
 

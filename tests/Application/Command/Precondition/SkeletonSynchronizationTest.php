@@ -23,12 +23,12 @@ class SkeletonSynchronizationTest extends TestCase
         $processor    = new Doubles\MockedProcessor();
         $precondition = new SkeletonSynchronization($reader, $processor);
         $this->assertTrue($precondition->isFulfilled());
-        $this->assertSame($reader->token(), $processor->passedToken);
+        $this->assertEquals($reader->token(), $processor->passedToken);
 
         $reader       = new Doubles\FakeReader();
         $processor    = new Doubles\MockedProcessor(false);
         $precondition = new SkeletonSynchronization($reader, $processor);
         $this->assertFalse($precondition->isFulfilled());
-        $this->assertSame($reader->token(), $processor->passedToken);
+        $this->assertEquals($reader->token(), $processor->passedToken);
     }
 }

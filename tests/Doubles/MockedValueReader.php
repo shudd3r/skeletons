@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Application\Token\Reader\ValueReader;
-use Shudd3r\PackageFiles\Application\Token;
 
 
 class MockedValueReader extends ValueReader
@@ -31,10 +30,5 @@ class MockedValueReader extends ValueReader
     public function isValid(string $value): bool
     {
         return $this->valid;
-    }
-
-    protected function newTokenInstance(string $value): Token
-    {
-        return new FakeToken($value);
     }
 }

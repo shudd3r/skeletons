@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Tests;
 use Shudd3r\PackageFiles\Application\Token\InitialContents;
 use Shudd3r\PackageFiles\Application\Token\OriginalContents;
 use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
 class TestEnvSetup
@@ -64,11 +65,11 @@ class TestEnvSetup
 
     public function defaultTemplate(bool $render = false, bool $orig = true): string
     {
-        $descToken = Reader\PackageDescription::PLACEHOLDER;
-        $repoToken = Reader\RepositoryName::PLACEHOLDER;
-        $packToken = Reader\PackageName::PLACEHOLDER;
-        $nameToken = Reader\SrcNamespace::PLACEHOLDER;
-        $origToken = OriginalContents::PLACEHOLDER;
+        $descToken = $this->placeholder(RuntimeEnv::PACKAGE_DESC);
+        $repoToken = $this->placeholder(RuntimeEnv::REPO_NAME);
+        $packToken = $this->placeholder(RuntimeEnv::PACKAGE_NAME);
+        $nameToken = $this->placeholder(RuntimeEnv::SRC_NAMESPACE);
+        $origToken = $this->placeholder(OriginalContents::PLACEHOLDER);
 
         $marker    = '...Your own contents here...';
         $initToken = $render
@@ -159,6 +160,11 @@ class TestEnvSetup
 
     private function removeOriginalContent(string $template): string
     {
-        return str_replace(OriginalContents::PLACEHOLDER, '', $template);
+        return str_replace($this->placeholder(OriginalContents::PLACEHOLDER), '', $template);
+    }
+
+    private function placeholder(string $name)
+    {
+        return '{' . $name . '}';
     }
 }

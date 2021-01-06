@@ -28,10 +28,10 @@ class PackageNameTest extends TestCase
     public function testReader_TokenMethod_ReturnsCorrectToken()
     {
         $expected = new Token\CompositeToken(
-            new Token\ValueToken(Reader\PackageName::PLACEHOLDER, 'source/package'),
-            new Token\ValueToken(Reader\PackageName::PLACEHOLDER_TITLE, 'Source/Package')
+            new Token\ValueToken('package.name', 'source/package'),
+            new Token\ValueToken('package.name.title', 'Source/Package')
         );
-        $this->assertEquals($expected, $this->reader('source/package')->token());
+        $this->assertEquals($expected, $this->reader('source/package')->token('package.name'));
     }
 
     /**

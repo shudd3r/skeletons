@@ -14,8 +14,9 @@ namespace Shudd3r\PackageFiles;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\Source;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Template;
 
@@ -24,7 +25,7 @@ class Initialize extends Command\Factory
 {
     public function command(): CommandInterface
     {
-        $tokenReader     = new Reader\CompositeTokenReader(...$this->tokenReaders());
+        $tokenReader     = new Reader\CompositeTokenReader($this->tokenReaders());
         $generatedFiles  = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupDirectory = $this->env->backup();
 
@@ -62,7 +63,12 @@ class Initialize extends Command\Factory
         $source    = $this->interactive('Source files namespace', $this->option('ns', $source));
         $namespace = new Reader\SrcNamespace($source);
 
-        return [$package, $repo, $desc, $namespace];
+        return [
+            RuntimeEnv::PACKAGE_NAME  => $package,
+            RuntimeEnv::REPO_NAME     => $repo,
+            RuntimeEnv::PACKAGE_DESC  => $desc,
+            RuntimeEnv::SRC_NAMESPACE => $namespace
+        ];
     }
 
     protected function processor(): Processor

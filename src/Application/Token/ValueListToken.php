@@ -28,7 +28,7 @@ class ValueListToken implements Token
 
     public function replacePlaceholders(string $template): string
     {
-        $templateParts = explode($this->placeholder, $template);
+        $templateParts = explode('{' . $this->placeholder . '}', $template);
         if (count($templateParts) !== count($this->values) + 1) {
             throw new RuntimeException();
         }

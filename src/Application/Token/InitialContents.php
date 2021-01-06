@@ -30,7 +30,7 @@ class InitialContents implements Token
     {
         if (!$this->hasPlaceholder($template)) { return $template; }
 
-        $replace = $this->initialize ? '$1' : OriginalContents::PLACEHOLDER;
+        $replace = $this->initialize ? '$1' : '{' . OriginalContents::PLACEHOLDER . '}';
         return preg_replace($this->pattern(), $replace, $template);
     }
 
