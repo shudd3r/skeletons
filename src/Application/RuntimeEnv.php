@@ -20,12 +20,12 @@ use Shudd3r\PackageFiles\Application\Exception;
 
 class RuntimeEnv
 {
-    public const PACKAGE_NAME      = '{package.name}';
-    public const PACKAGE_TITLE     = '{package.title}';
-    public const PACKAGE_DESC      = '{description.text}';
-    public const SRC_NAMESPACE     = '{namespace.src}';
-    public const SRC_NAMESPACE_ESC = '{namespace.src.esc}';
-    public const REPO_NAME         = '{repository.name}';
+    public const PACKAGE_NAME      = 'package.name';
+    public const PACKAGE_TITLE     = 'package.title';
+    public const PACKAGE_DESC      = 'description.text';
+    public const SRC_NAMESPACE     = 'namespace.src';
+    public const SRC_NAMESPACE_ESC = 'namespace.src.esc';
+    public const REPO_NAME         = 'repository.name';
 
     private Input     $input;
     private Output    $output;
@@ -78,6 +78,11 @@ class RuntimeEnv
     public function metaDataFile(): File
     {
         return $this->metaData;
+    }
+
+    public static function placeholder(string $name): string
+    {
+        return '{' . $name . '}';
     }
 
     private function validDirectory(Directory $directory): Directory

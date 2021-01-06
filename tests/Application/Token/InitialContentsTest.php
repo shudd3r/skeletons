@@ -43,7 +43,7 @@ class InitialContentsTest extends TestCase
         $this->assertSame($expected, $token->replacePlaceholders($template));
 
         $token    = new InitialContents(false);
-        $expected = 'example ' . OriginalContents::PLACEHOLDER . ' and {some.token}';
+        $expected = 'example {' . OriginalContents::PLACEHOLDER . '} and {some.token}';
         $this->assertSame($expected, $token->replacePlaceholders($template));
     }
 
@@ -89,7 +89,7 @@ class InitialContentsTest extends TestCase
 
     public function transformations(): array
     {
-        $orig     = OriginalContents::PLACEHOLDER;
+        $orig     = '{' . OriginalContents::PLACEHOLDER . '}';
         $template = fn (string $init) => $this->template('{start>>>' . $init . '<<<end}');
         $multiline = <<<'TPL'
             This is multi line content,

@@ -65,11 +65,11 @@ class TestEnvSetup
 
     public function defaultTemplate(bool $render = false, bool $orig = true): string
     {
-        $descToken = RuntimeEnv::PACKAGE_DESC;
-        $repoToken = RuntimeEnv::REPO_NAME;
-        $packToken = RuntimeEnv::PACKAGE_NAME;
-        $nameToken = RuntimeEnv::SRC_NAMESPACE;
-        $origToken = OriginalContents::PLACEHOLDER;
+        $descToken = RuntimeEnv::placeholder(RuntimeEnv::PACKAGE_DESC);
+        $repoToken = RuntimeEnv::placeholder(RuntimeEnv::REPO_NAME);
+        $packToken = RuntimeEnv::placeholder(RuntimeEnv::PACKAGE_NAME);
+        $nameToken = RuntimeEnv::placeholder(RuntimeEnv::SRC_NAMESPACE);
+        $origToken = RuntimeEnv::placeholder(OriginalContents::PLACEHOLDER);
 
         $marker    = '...Your own contents here...';
         $initToken = $render
@@ -160,6 +160,6 @@ class TestEnvSetup
 
     private function removeOriginalContent(string $template): string
     {
-        return str_replace(OriginalContents::PLACEHOLDER, '', $template);
+        return str_replace('{' . OriginalContents::PLACEHOLDER . '}', '', $template);
     }
 }

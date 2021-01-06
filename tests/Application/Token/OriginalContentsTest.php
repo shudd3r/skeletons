@@ -36,7 +36,7 @@ class OriginalContentsTest extends TestCase
 
     public function useCases(): array
     {
-        $orig = Token\OriginalContents::PLACEHOLDER;
+        $orig = '{' . Token\OriginalContents::PLACEHOLDER . '}';
 
         $utf         = ['ᚻᛖ ᛒᚢᛞᛖ ᚩᚾ', '⠍⠊⠣⠞ ⠙⠁⠧⠑ ⠃⠑', '😁Hello there!😥', 'Οὐχὶ ταὐτὰ παρίστατ', 'αίგაიቢያዩት ይስቅა', '🌞'];
         $utfContents = implode('', $utf);

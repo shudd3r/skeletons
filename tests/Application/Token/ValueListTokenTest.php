@@ -47,6 +47,6 @@ class ValueListTokenTest extends TestCase
 
     private function token(array $values): ValueListToken
     {
-        return new ValueListToken('{replace}', ...$values);
+        return new ValueListToken('replace', ...$values);
     }
 }
