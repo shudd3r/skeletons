@@ -23,7 +23,7 @@ class RepositoryName extends ValueReader
         return (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
     }
 
-    protected function newTokenInstance(string $repositoryName): Token
+    protected function newTokenInstance(string $namespace, string $repositoryName): Token
     {
         return new Token\ValueToken(self::PLACEHOLDER, $repositoryName);
     }

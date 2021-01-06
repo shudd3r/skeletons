@@ -33,7 +33,7 @@ class MockedValueReader extends ValueReader
         return $this->valid;
     }
 
-    protected function newTokenInstance(string $value): Token
+    protected function newTokenInstance(string $namespace, string $value): Token
     {
         return new FakeToken($value);
     }

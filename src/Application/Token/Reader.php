@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Application\Token;
 
 interface Reader
 {
-    public function token(): ?Token;
+    public function token(string $namespace = ''): ?Token;
 
     public function value(): string;
 }

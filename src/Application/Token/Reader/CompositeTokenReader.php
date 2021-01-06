@@ -24,9 +24,9 @@ class CompositeTokenReader implements Reader
         $this->readers = $readers;
     }
 
-    public function token(): ?Token
+    public function token($namespace = ''): ?Token
     {
-        $create = fn (Reader $reader): ?Token => $reader->token();
+        $create = fn (Reader $reader): ?Token => $reader->token($namespace);
         $tokens = array_map($create, $this->readers);
 
         return array_filter($tokens) === $tokens ? new Token\CompositeToken(...$tokens) : null;

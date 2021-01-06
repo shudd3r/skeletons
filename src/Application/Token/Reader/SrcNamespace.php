@@ -29,7 +29,7 @@ class SrcNamespace extends ValueReader
         return true;
     }
 
-    protected function newTokenInstance(string $value): Token
+    protected function newTokenInstance(string $namespace, string $value): Token
     {
         return new Token\CompositeToken(
             new Token\ValueToken(self::PLACEHOLDER, $value),

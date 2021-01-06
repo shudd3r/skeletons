@@ -23,7 +23,7 @@ class PackageDescription extends ValueReader
         return !empty($value);
     }
 
-    protected function newTokenInstance(string $value): Token
+    protected function newTokenInstance(string $namespace, string $value): Token
     {
         return new Token\ValueToken(self::PLACEHOLDER, $value);
     }

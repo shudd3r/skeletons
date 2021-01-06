@@ -26,7 +26,7 @@ class FakeReader implements Reader
         $this->token = isset($value) ? new FakeToken($value) : null;
     }
 
-    public function token(): ?Token
+    public function token(string $namespace = ''): ?Token
     {
         return $this->token;
     }
