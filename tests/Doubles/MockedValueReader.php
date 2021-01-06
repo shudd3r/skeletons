@@ -33,11 +33,6 @@ class MockedValueReader extends ValueReader
         return $this->valid;
     }
 
-    public function parsedValue(): string
-    {
-        return 'parsed value';
-    }
-
     protected function newTokenInstance(string $value): Token
     {
         return new FakeToken($value);

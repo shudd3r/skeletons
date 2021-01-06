@@ -46,7 +46,6 @@ class ValueTokenTest extends TestCase
     public function testReaderWithSourceProvidedValue_ValueMethod_ReturnsSourceValue()
     {
         $reader = $this->reader('source value');
-        $this->assertNotEquals($reader->parsedValue(), $reader->value());
         $this->assertSame('source value', $reader->value());
     }
 
