@@ -22,6 +22,8 @@ use Shudd3r\PackageFiles\Application\Template;
 
 class Validate extends Command\Factory
 {
+    private Source $source;
+
     public function command(): CommandInterface
     {
         $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
@@ -42,16 +44,9 @@ class Validate extends Command\Factory
         return new Command\Precondition\SkeletonSynchronization($tokenReader, $tokenProcessor);
     }
 
-    protected function tokenReaders(): array
+    protected function source(string $readerName, array $readers): Source
     {
-        $source = new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
-
-        return [
-            self::PACKAGE_NAME  => new Reader\PackageName($source),
-            self::REPO_NAME     => new Reader\RepositoryName($source),
-            self::PACKAGE_DESC  => new Reader\PackageDescription($source),
-            self::SRC_NAMESPACE => new Reader\SrcNamespace($source)
-        ];
+        return $this->source ??= new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
     }
 
     protected function processor(Processor\FileProcessors $fileValidators): Processor

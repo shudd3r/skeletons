@@ -13,6 +13,8 @@ namespace Shudd3r\PackageFiles\Application\Command;
 
 use Shudd3r\PackageFiles\Environment\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\Source;
 
 
 abstract class Factory
@@ -32,4 +34,26 @@ abstract class Factory
     }
 
     abstract public function command(): Command;
+
+    protected function tokenReaders(): array
+    {
+        $readers = [];
+        foreach ($this->readerClasses() as $tokenName => $readerClass) {
+            $readers[$tokenName] = new $readerClass($this->source($tokenName, $readers));
+        }
+
+        return $readers;
+    }
+
+    protected function readerClasses(): array
+    {
+        return [
+            self::PACKAGE_NAME  => Reader\PackageName::class,
+            self::REPO_NAME     => Reader\RepositoryName::class,
+            self::PACKAGE_DESC  => Reader\PackageDescription::class,
+            self::SRC_NAMESPACE => Reader\SrcNamespace::class
+        ];
+    }
+
+    abstract protected function source(string $readerName, array $readers): Source;
 }

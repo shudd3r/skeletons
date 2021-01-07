@@ -22,6 +22,8 @@ use Shudd3r\PackageFiles\Application\Template;
 
 class Update extends Command\Factory
 {
+    private Source $source;
+
     public function command(): CommandInterface
     {
         $validation = new Validate($this->env, $this->options);
@@ -40,28 +42,21 @@ class Update extends Command\Factory
         );
     }
 
-    protected function tokenReaders(): array
+    protected function source(string $readerName, array $readers): Source
     {
-        $default = new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
+        $this->source ??= new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
 
-        $source  = $this->interactive('Packagist package name', $this->option('package', $default));
-        $package = new Reader\PackageName($source);
-
-        $source = $this->interactive('Github repository name', $this->option('repo', $default));
-        $repo   = new Reader\RepositoryName($source);
-
-        $source = $this->interactive('Github repository name', $this->option('desc', $default));
-        $desc   = new Reader\PackageDescription($source);
-
-        $source    = $this->interactive('Source files namespace', $this->option('ns', $default));
-        $namespace = new Reader\SrcNamespace($source);
-
-        return [
-            self::PACKAGE_NAME  => $package,
-            self::REPO_NAME     => $repo,
-            self::PACKAGE_DESC  => $desc,
-            self::SRC_NAMESPACE => $namespace
-        ];
+        switch ($readerName) {
+            default:
+            case Command\Factory::PACKAGE_NAME:
+                return $this->interactive('Packagist package name', $this->option('package', $this->source));
+            case Command\Factory::PACKAGE_DESC:
+                return $this->interactive('Package description', $this->option('desc', $this->source));
+            case Command\Factory::SRC_NAMESPACE:
+                return $this->interactive('Source files namespace', $this->option('ns', $this->source));
+            case Command\Factory::REPO_NAME:
+                return $this->interactive('Github repository name', $this->option('repo', $this->source));
+        }
     }
 
     protected function processor(TokenCache $cache): Processor

@@ -22,6 +22,8 @@ use Shudd3r\PackageFiles\Application\Template;
 
 class Initialize extends Command\Factory
 {
+    private Source\Data\ComposerJsonData $composer;
+
     public function command(): CommandInterface
     {
         $tokenReader     = new Reader\CompositeTokenReader($this->tokenReaders());
@@ -41,33 +43,26 @@ class Initialize extends Command\Factory
         );
     }
 
-    protected function tokenReaders(): array
+    protected function source(string $readerName, array $readers): Source
     {
-        $files    = $this->env->package();
-        $composer = new Source\Data\ComposerJsonData($files->file('composer.json'));
+        $this->composer ??= new Source\Data\ComposerJsonData($this->env->package()->file('composer.json'));
 
-        $source  = new Source\DefaultPackageName($composer, $files);
-        $source  = $this->interactive('Packagist package name', $this->option('package', $source));
-        $package = new Reader\PackageName($source);
-
-        $source = new Source\DefaultRepositoryName($files->file('.git/config'), $package);
-        $source = $this->interactive('Github repository name', $this->option('repo', $source));
-        $repo   = new Reader\RepositoryName($source);
-
-        $source = new Source\DefaultPackageDescription($composer, $package);
-        $source = $this->interactive('Github repository name', $this->option('desc', $source));
-        $desc   = new Reader\PackageDescription($source);
-
-        $source    = new Source\DefaultSrcNamespace($composer, $package);
-        $source    = $this->interactive('Source files namespace', $this->option('ns', $source));
-        $namespace = new Reader\SrcNamespace($source);
-
-        return [
-            self::PACKAGE_NAME  => $package,
-            self::REPO_NAME     => $repo,
-            self::PACKAGE_DESC  => $desc,
-            self::SRC_NAMESPACE => $namespace
-        ];
+        switch ($readerName) {
+            default:
+            case Command\Factory::PACKAGE_NAME:
+                $source = new Source\DefaultPackageName($this->composer, $this->env->package());
+                return $this->interactive('Packagist package name', $this->option('package', $source));
+            case Command\Factory::PACKAGE_DESC:
+                $source = new Source\DefaultPackageDescription($this->composer, $readers[self::PACKAGE_NAME]);
+                return $this->interactive('Package description', $this->option('desc', $source));
+            case Command\Factory::SRC_NAMESPACE:
+                $source = new Source\DefaultSrcNamespace($this->composer, $readers[self::PACKAGE_NAME]);
+                return $this->interactive('Source files namespace', $this->option('ns', $source));
+            case Command\Factory::REPO_NAME:
+                $config = $this->env->package()->file('.git/config');
+                $source = new Source\DefaultRepositoryName($config, $readers[self::PACKAGE_NAME]);
+                return $this->interactive('Github repository name', $this->option('repo', $source));
+        }
     }
 
     protected function processor(): Processor
