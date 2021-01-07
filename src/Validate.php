@@ -16,7 +16,6 @@ use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Template;
 
@@ -48,10 +47,10 @@ class Validate extends Command\Factory
         $source = new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
 
         return [
-            RuntimeEnv::PACKAGE_NAME  => new Reader\PackageName($source),
-            RuntimeEnv::REPO_NAME     => new Reader\RepositoryName($source),
-            RuntimeEnv::PACKAGE_DESC  => new Reader\PackageDescription($source),
-            RuntimeEnv::SRC_NAMESPACE => new Reader\SrcNamespace($source)
+            self::PACKAGE_NAME  => new Reader\PackageName($source),
+            self::REPO_NAME     => new Reader\RepositoryName($source),
+            self::PACKAGE_DESC  => new Reader\PackageDescription($source),
+            self::SRC_NAMESPACE => new Reader\SrcNamespace($source)
         ];
     }
 

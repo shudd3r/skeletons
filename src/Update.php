@@ -16,7 +16,6 @@ use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Template;
 
@@ -58,10 +57,10 @@ class Update extends Command\Factory
         $namespace = new Reader\SrcNamespace($source);
 
         return [
-            RuntimeEnv::PACKAGE_NAME  => $package,
-            RuntimeEnv::REPO_NAME     => $repo,
-            RuntimeEnv::PACKAGE_DESC  => $desc,
-            RuntimeEnv::SRC_NAMESPACE => $namespace
+            self::PACKAGE_NAME  => $package,
+            self::REPO_NAME     => $repo,
+            self::PACKAGE_DESC  => $desc,
+            self::SRC_NAMESPACE => $namespace
         ];
     }
 

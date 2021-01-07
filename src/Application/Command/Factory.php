@@ -17,6 +17,11 @@ use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 abstract class Factory
 {
+    public const PACKAGE_NAME  = 'package.name';
+    public const PACKAGE_DESC  = 'description.text';
+    public const SRC_NAMESPACE = 'namespace.src';
+    public const REPO_NAME     = 'repository.name';
+
     protected RuntimeEnv $env;
     protected array      $options;
 
