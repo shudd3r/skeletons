@@ -11,63 +11,36 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-class PackageDescriptionReaderFactory implements ReaderFactory
+class PackageDescriptionReaderFactory extends ValueReaderFactory
 {
-    private RuntimeEnv         $env;
-    private array              $options;
-    private Reader\PackageName $packageName;
+    protected ?string $inputPrompt = 'Package description';
+    protected ?string $optionName  = 'desc';
 
-    public function __construct(RuntimeEnv $env, array $options, Reader\PackageName $packageName)
+    private PackageNameReaderFactory $packageName;
+
+    public function __construct(RuntimeEnv $env, array $options, PackageNameReaderFactory $packageName)
     {
-        $this->env         = $env;
-        $this->options     = $options;
         $this->packageName = $packageName;
+        parent::__construct($env, $options);
     }
 
-    public function initializationReader(): Reader
+    protected function defaultSource(): Source
     {
+        /** @var Reader\PackageName $packageName */
+        $packageName = $this->packageName->initializationReader();
+
         $composer = new Source\Data\ComposerJsonData($this->env->package()->file('composer.json'));
-        $source   = new Source\DefaultPackageDescription($composer, $this->packageName);
-        return $this->readerInstance($this->userSource($source));
+        $source   = new Source\DefaultPackageDescription($composer, $packageName);
+        return $this->userSource($source);
     }
 
-    public function validationReader(Source $metaDataSource): Reader
-    {
-        return $this->readerInstance($metaDataSource);
-    }
-
-    public function updateReader(Source $metaDataSource): Reader
-    {
-        return $this->readerInstance($this->userSource($metaDataSource));
-    }
-
-    private function readerInstance(Source $source): Reader
+    protected function newReaderInstance(Source $source): Reader
     {
         return new Reader\PackageDescription($source);
-    }
-
-    private function userSource(Source $defaultSource): Source
-    {
-        return $this->interactive('Package description', $this->option('desc', $defaultSource));
-    }
-
-    private function option(string $name, Source $default): Source
-    {
-        return isset($this->options[$name])
-            ? new Source\PredefinedValue($this->options[$name])
-            : $default;
-    }
-
-    private function interactive(string $prompt, Source $source): Source
-    {
-        return isset($this->options['i']) || isset($this->options['interactive'])
-            ? new Source\InteractiveInput($prompt, $this->env->input(), $source)
-            : $source;
     }
 }
