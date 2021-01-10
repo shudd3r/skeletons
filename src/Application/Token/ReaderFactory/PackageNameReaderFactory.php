@@ -35,16 +35,14 @@ class PackageNameReaderFactory implements ReaderFactory
         return $this->readerInstance($this->userSource($source));
     }
 
-    public function validationReader(): Reader
+    public function validationReader(Source $metaDataSource): Reader
     {
-        $source = new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
-        return $this->readerInstance($source);
+        return $this->readerInstance($metaDataSource);
     }
 
-    public function updateReader(): Reader
+    public function updateReader(Source $metaDataSource): Reader
     {
-        $source = new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
-        return $this->readerInstance($this->userSource($source));
+        return $this->readerInstance($this->userSource($metaDataSource));
     }
 
     private function readerInstance(Source $source): Reader

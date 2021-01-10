@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
 use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\Source;
 
 
 class CompositeReaderFactory implements ReaderFactory
@@ -29,14 +30,14 @@ class CompositeReaderFactory implements ReaderFactory
         return $this->readerInstance(fn(ReaderFactory $factory) => $factory->initializationReader());
     }
 
-    public function validationReader(): Reader
+    public function validationReader(Source $metaDataSource): Reader
     {
-        return $this->readerInstance(fn(ReaderFactory $factory) => $factory->validationReader());
+        return $this->readerInstance(fn(ReaderFactory $factory) => $factory->validationReader($metaDataSource));
     }
 
-    public function updateReader(): Reader
+    public function updateReader(Source $metaDataSource): Reader
     {
-        return $this->readerInstance(fn(ReaderFactory $factory) => $factory->updateReader());
+        return $this->readerInstance(fn(ReaderFactory $factory) => $factory->updateReader($metaDataSource));
     }
 
     private function readerInstance(callable $createComponent): Reader

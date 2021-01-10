@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
 use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\Source;
 
 
 class CachedReaderFactory implements ReaderFactory
@@ -33,13 +34,13 @@ class CachedReaderFactory implements ReaderFactory
         return $this->initializeReader ??= $this->factory->initializationReader();
     }
 
-    public function validationReader(): Reader
+    public function validationReader(Source $metaDataSource): Reader
     {
-        return $this->validationReader ??= $this->factory->validationReader();
+        return $this->validationReader ??= $this->factory->validationReader($metaDataSource);
     }
 
-    public function updateReader(): Reader
+    public function updateReader(Source $metaDataSource): Reader
     {
-        return $this->updateReader ??= $this->factory->updateReader();
+        return $this->updateReader ??= $this->factory->updateReader($metaDataSource);
     }
 }
