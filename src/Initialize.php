@@ -14,9 +14,6 @@ namespace Shudd3r\PackageFiles;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Template;
 
@@ -25,7 +22,7 @@ class Initialize extends Command\Factory
 {
     public function command(): CommandInterface
     {
-        $tokenReader     = new Reader\CompositeTokenReader($this->tokenReaders());
+        $tokenReader     = $this->tokenReaders()->initializationReader();
         $generatedFiles  = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupDirectory = $this->env->backup();
 
@@ -42,35 +39,6 @@ class Initialize extends Command\Factory
         );
     }
 
-    protected function tokenReaders(): array
-    {
-        $files    = $this->env->package();
-        $composer = new Source\Data\ComposerJsonData($files->file('composer.json'));
-
-        $source  = new Source\DefaultPackageName($composer, $files);
-        $source  = $this->interactive('Packagist package name', $this->option('package', $source));
-        $package = new Reader\PackageName($source);
-
-        $source = new Source\DefaultRepositoryName($files->file('.git/config'), $package);
-        $source = $this->interactive('Github repository name', $this->option('repo', $source));
-        $repo   = new Reader\RepositoryName($source);
-
-        $source = new Source\DefaultPackageDescription($composer, $package);
-        $source = $this->interactive('Github repository name', $this->option('desc', $source));
-        $desc   = new Reader\PackageDescription($source);
-
-        $source    = new Source\DefaultSrcNamespace($composer, $package);
-        $source    = $this->interactive('Source files namespace', $this->option('ns', $source));
-        $namespace = new Reader\SrcNamespace($source);
-
-        return [
-            RuntimeEnv::PACKAGE_NAME  => $package,
-            RuntimeEnv::REPO_NAME     => $repo,
-            RuntimeEnv::PACKAGE_DESC  => $desc,
-            RuntimeEnv::SRC_NAMESPACE => $namespace
-        ];
-    }
-
     protected function processor(): Processor
     {
         $composerFile     = $this->env->package()->file('composer.json');
@@ -81,19 +49,5 @@ class Initialize extends Command\Factory
         $generatePackage  = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
 
         return new Processor\ProcessorSequence($generateComposer, $generatePackage);
-    }
-
-    private function option(string $name, Source $default): Source
-    {
-        return isset($this->options[$name])
-            ? new Source\PredefinedValue($this->options[$name])
-            : $default;
-    }
-
-    private function interactive(string $prompt, Source $source): Source
-    {
-        return isset($this->options['i']) || isset($this->options['interactive'])
-            ? new Source\InteractiveInput($prompt, $this->env->input(), $source)
-            : $source;
     }
 }

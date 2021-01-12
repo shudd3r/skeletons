@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Application\Command\Factory;
+use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Environment\Command;
 
 
@@ -23,5 +24,10 @@ class FakeCommandFactory extends Factory
     {
         self::$optionsField = $this->options;
         return new FakeCommand();
+    }
+
+    protected function source(string $readerName, array $readers): Source
+    {
+        return new FakeSource();
     }
 }

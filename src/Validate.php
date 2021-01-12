@@ -16,7 +16,6 @@ use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Template;
 
@@ -26,33 +25,19 @@ class Validate extends Command\Factory
     public function command(): CommandInterface
     {
         $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $tokenReader    = new Reader\CompositeTokenReader($this->tokenReaders());
         $fileValidators = new Processor\FileProcessors\FileValidators($this->env->package());
         $tokenProcessor = $this->processor($fileValidators);
-        $processTokens  = new Command\TokenProcessor($tokenReader, $tokenProcessor, $this->env->output());
+        $processTokens  = new Command\TokenProcessor($this->tokenReader(), $tokenProcessor, $this->env->output());
 
         return new Command\ProtectedCommand($processTokens, $metaDataExists);
     }
 
     public function synchronizedSkeleton(TokenCache $cache): Command\Precondition
     {
-        $tokenReader    = new Reader\CompositeTokenReader($this->tokenReaders());
         $fileValidators = new Processor\FileProcessors\CachingFileValidators($this->env->package(), $cache);
         $tokenProcessor = $this->processor($fileValidators);
 
-        return new Command\Precondition\SkeletonSynchronization($tokenReader, $tokenProcessor);
-    }
-
-    protected function tokenReaders(): array
-    {
-        $source = new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
-
-        return [
-            RuntimeEnv::PACKAGE_NAME  => new Reader\PackageName($source),
-            RuntimeEnv::REPO_NAME     => new Reader\RepositoryName($source),
-            RuntimeEnv::PACKAGE_DESC  => new Reader\PackageDescription($source),
-            RuntimeEnv::SRC_NAMESPACE => new Reader\SrcNamespace($source)
-        ];
+        return new Command\Precondition\SkeletonSynchronization($this->tokenReader(), $tokenProcessor);
     }
 
     protected function processor(Processor\FileProcessors $fileValidators): Processor
@@ -64,5 +49,11 @@ class Validate extends Command\Factory
         $comparePackage  = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $fileValidators);
 
         return new Processor\ProcessorSequence($compareComposer, $comparePackage);
+    }
+
+    private function tokenReader(): Reader
+    {
+        $metaDataSource = new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
+        return $this->tokenReaders()->validationReader($metaDataSource);
     }
 }
