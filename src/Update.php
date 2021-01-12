@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
-use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Template;
@@ -22,16 +21,15 @@ use Shudd3r\PackageFiles\Application\Template;
 
 class Update extends Command\Factory
 {
-    private Source $source;
-
     public function command(): CommandInterface
     {
         $validation = new Validate($this->env, $this->options);
         $cache      = new TokenCache();
 
-        $tokenReader   = new Reader\CompositeTokenReader($this->tokenReaders());
-        $processTokens = new Command\TokenProcessor($tokenReader, $this->processor($cache), $this->env->output());
-        $writeMetaData = new Command\WriteMetaData($tokenReader, $this->env->metaDataFile());
+        $metaDataSource = new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
+        $tokenReader    = $this->tokenReaders()->updateReader($metaDataSource);
+        $processTokens  = new Command\TokenProcessor($tokenReader, $this->processor($cache), $this->env->output());
+        $writeMetaData  = new Command\WriteMetaData($tokenReader, $this->env->metaDataFile());
 
         $metaDataExists    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $synchronizedFiles = $validation->synchronizedSkeleton($cache);
@@ -40,23 +38,6 @@ class Update extends Command\Factory
             new Command\CommandSequence($processTokens, $writeMetaData),
             new Command\Precondition\Preconditions($metaDataExists, $synchronizedFiles)
         );
-    }
-
-    protected function source(string $readerName, array $readers): Source
-    {
-        $this->source ??= new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
-
-        switch ($readerName) {
-            default:
-            case Command\Factory::PACKAGE_NAME:
-                return $this->interactive('Packagist package name', $this->option('package', $this->source));
-            case Command\Factory::PACKAGE_DESC:
-                return $this->interactive('Package description', $this->option('desc', $this->source));
-            case Command\Factory::SRC_NAMESPACE:
-                return $this->interactive('Source files namespace', $this->option('ns', $this->source));
-            case Command\Factory::REPO_NAME:
-                return $this->interactive('Github repository name', $this->option('repo', $this->source));
-        }
     }
 
     protected function processor(TokenCache $cache): Processor
@@ -69,19 +50,5 @@ class Update extends Command\Factory
         $generatePackage  = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
 
         return new Processor\ProcessorSequence($generateComposer, $generatePackage);
-    }
-
-    private function option(string $name, Source $default): Source
-    {
-        return isset($this->options[$name])
-            ? new Source\PredefinedValue($this->options[$name])
-            : $default;
-    }
-
-    private function interactive(string $prompt, Source $source): Source
-    {
-        return isset($this->options['i']) || isset($this->options['interactive'])
-            ? new Source\InteractiveInput($prompt, $this->env->input(), $source)
-            : $source;
     }
 }
