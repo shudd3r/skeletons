@@ -29,6 +29,11 @@ class PackageDescriptionReaderFactory extends ValueReaderFactory
         parent::__construct($env, $options);
     }
 
+    public function isValid(string $value): bool
+    {
+        return !empty($value);
+    }
+
     protected function defaultSource(): Source
     {
         /** @var Reader\PackageName $packageName */
