@@ -20,6 +20,11 @@ class PackageNameReaderFactory extends ValueReaderFactory
     protected ?string $inputPrompt = 'Packagist package name';
     protected ?string $optionName  = 'package';
 
+    public function isValid(string $value): bool
+    {
+        return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
+    }
+
     protected function defaultSource(): Source
     {
         $composer = new Source\Data\ComposerJsonData($this->env->package()->file('composer.json'));
@@ -28,6 +33,6 @@ class PackageNameReaderFactory extends ValueReaderFactory
 
     protected function newReaderInstance(Source $source): Reader
     {
-        return new Reader\PackageName($source);
+        return new Reader\PackageName($this, $source);
     }
 }

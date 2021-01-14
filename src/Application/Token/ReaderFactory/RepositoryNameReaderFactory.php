@@ -29,6 +29,11 @@ class RepositoryNameReaderFactory extends ValueReaderFactory
         parent::__construct($env, $options);
     }
 
+    public function isValid(string $value): bool
+    {
+        return (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
+    }
+
     protected function defaultSource(): Source
     {
         /** @var Reader\PackageName $packageName */
@@ -41,6 +46,6 @@ class RepositoryNameReaderFactory extends ValueReaderFactory
 
     protected function newReaderInstance(Source $source): Reader
     {
-        return new Reader\RepositoryName($source);
+        return new Reader\RepositoryName($this, $source);
     }
 }

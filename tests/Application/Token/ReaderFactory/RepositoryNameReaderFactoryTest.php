@@ -9,28 +9,16 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\Token\Reader;
+namespace Shudd3r\PackageFiles\Tests\Application\Token\ReaderFactory;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\ReaderFactory\RepositoryNameReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\ReaderFactory\PackageNameReaderFactory;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class RepositoryNameTest extends TestCase
+class RepositoryNameReaderFactoryTest extends TestCase
 {
-    public function testInstantiation()
-    {
-        $reader = $this->reader('repo/name');
-        $this->assertInstanceOf(Reader\ValueReader::class, $reader);
-    }
-
-    public function testReader_TokenMethod_ReturnsCorrectToken()
-    {
-        $expected = new Token\ValueToken('repo.name', 'source/repo');
-        $this->assertEquals($expected, $this->reader('source/repo')->token('repo.name'));
-    }
-
     /**
      * @dataProvider valueExamples
      *
@@ -39,13 +27,9 @@ class RepositoryNameTest extends TestCase
      */
     public function testReaderValueValidation(string $invalid, string $valid)
     {
-        $reader = $this->reader($invalid);
-        $this->assertSame($invalid, $reader->value());
-        $this->assertNull($reader->token());
-
-        $reader = $this->reader($valid);
-        $this->assertSame($valid, $reader->value());
-        $this->assertInstanceOf(Token::class, $reader->token());
+        $replacement = $this->replacement();
+        $this->assertTrue($replacement->isValid($valid));
+        $this->assertFalse($replacement->isValid($invalid));
     }
 
     public function valueExamples()
@@ -67,9 +51,10 @@ class RepositoryNameTest extends TestCase
         ];
     }
 
-    private function reader(?string $source): Reader\RepositoryName
+    private function replacement(): RepositoryNameReaderFactory
     {
-        $source = isset($source) ? new Doubles\FakeSource($source) : null;
-        return new Reader\RepositoryName($source);
+        $env     = new Doubles\FakeRuntimeEnv();
+        $package = new PackageNameReaderFactory($env, []);
+        return new RepositoryNameReaderFactory($env, [], $package);
     }
 }

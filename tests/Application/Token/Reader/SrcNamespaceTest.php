@@ -34,35 +34,9 @@ class SrcNamespaceTest extends TestCase
         $this->assertEquals($expected, $this->reader('Some\\Namespace')->token('namespace'));
     }
 
-    /**
-     * @dataProvider valueExamples
-     *
-     * @param string $invalid
-     * @param string $valid
-     */
-    public function testReaderValueValidation(string $invalid, string $valid)
-    {
-        $reader = $this->reader($invalid);
-        $this->assertSame($invalid, $reader->value());
-        $this->assertNull($reader->token());
-
-        $reader = $this->reader($valid);
-        $this->assertSame($valid, $reader->value());
-        $this->assertInstanceOf(Token::class, $reader->token());
-    }
-
-    public function valueExamples()
-    {
-        return [
-            ['Foo/Bar', 'Foo\Bar'],
-            ['_Foo\1Bar\Baz', '_Foo\_1Bar\Baz'],
-            ['Package:000\na_Me', 'Package000\na_Me']
-        ];
-    }
-
     private function reader(?string $source): Reader\SrcNamespace
     {
         $source = isset($source) ? new Doubles\FakeSource($source) : null;
-        return new Reader\SrcNamespace($source);
+        return new Reader\SrcNamespace(new Doubles\FakeValidator(), $source);
     }
 }
