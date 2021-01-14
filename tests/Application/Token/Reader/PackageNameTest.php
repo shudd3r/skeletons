@@ -34,34 +34,20 @@ class PackageNameTest extends TestCase
         $this->assertEquals($expected, $this->reader('source/package')->token('package.name'));
     }
 
-    /**
-     * @dataProvider valueExamples
-     *
-     * @param string $invalid
-     * @param string $valid
-     */
-    public function testReaderValueValidation(string $invalid, string $valid)
+    public function testReaderValueValidation()
     {
-        $reader = $this->reader($invalid);
-        $this->assertSame($invalid, $reader->value());
-        $this->assertNull($reader->token());
-
-        $reader = $this->reader($valid);
-        $this->assertSame($valid, $reader->value());
+        $reader = $this->reader('valid/value', true);
+        $this->assertSame('valid/value', $reader->value());
         $this->assertInstanceOf(Token::class, $reader->token());
+
+        $reader = $this->reader('invalid/value', false);
+        $this->assertSame('invalid/value', $reader->value());
+        $this->assertNull($reader->token());
     }
 
-    public function valueExamples()
-    {
-        return [
-            ['-Packa-ge1/na.me', 'Packa-ge1/na.me'],
-            ['1Package000_/na_Me', '1Package000/na_Me']
-        ];
-    }
-
-    private function reader(?string $source): Reader\PackageName
+    private function reader(?string $source, bool $valid = true): Reader\PackageName
     {
         $source = isset($source) ? new Doubles\FakeSource($source) : null;
-        return new Reader\PackageName($source);
+        return new Reader\PackageName(new Doubles\FakeValidator($valid), $source);
     }
 }

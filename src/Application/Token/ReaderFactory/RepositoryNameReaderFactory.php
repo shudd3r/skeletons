@@ -46,6 +46,6 @@ class RepositoryNameReaderFactory extends ValueReaderFactory
 
     protected function newReaderInstance(Source $source): Reader
     {
-        return new Reader\RepositoryName($source);
+        return new Reader\RepositoryName($this, $source);
     }
 }

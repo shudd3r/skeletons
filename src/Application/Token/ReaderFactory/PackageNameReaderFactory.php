@@ -33,6 +33,6 @@ class PackageNameReaderFactory extends ValueReaderFactory
 
     protected function newReaderInstance(Source $source): Reader
     {
-        return new Reader\PackageName($source);
+        return new Reader\PackageName($this, $source);
     }
 }

@@ -51,6 +51,6 @@ class SrcNamespaceReaderFactory extends ValueReaderFactory
 
     protected function newReaderInstance(Source $source): Reader
     {
-        return new Reader\SrcNamespace($source);
+        return new Reader\SrcNamespace($this, $source);
     }
 }

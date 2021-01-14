@@ -31,45 +31,20 @@ class RepositoryNameTest extends TestCase
         $this->assertEquals($expected, $this->reader('source/repo')->token('repo.name'));
     }
 
-    /**
-     * @dataProvider valueExamples
-     *
-     * @param string $invalid
-     * @param string $valid
-     */
-    public function testReaderValueValidation(string $invalid, string $valid)
+    public function testReaderValueValidation()
     {
-        $reader = $this->reader($invalid);
-        $this->assertSame($invalid, $reader->value());
-        $this->assertNull($reader->token());
-
-        $reader = $this->reader($valid);
-        $this->assertSame($valid, $reader->value());
+        $reader = $this->reader('valid/value', true);
+        $this->assertSame('valid/value', $reader->value());
         $this->assertInstanceOf(Token::class, $reader->token());
+
+        $reader = $this->reader('invalid/value', false);
+        $this->assertSame('invalid/value', $reader->value());
+        $this->assertNull($reader->token());
     }
 
-    public function valueExamples()
-    {
-        $name = function (int $length) { return str_pad('x', $length, 'x'); };
-
-        $longAccount  = $name(40) . '/name';
-        $shortAccount = $name(39) . '/name';
-        $longRepo     = 'user/' . $name(101);
-        $shortRepo    = 'user/' . $name(100);
-
-        return [
-            ['repo/na(me)', 'repo/na-me'],
-            ['-repo/name', 'r-epo/name'],
-            ['repo_/name', 'repo/name'],
-            ['re--po/name', 're-po/name'],
-            [$longAccount, $shortAccount],
-            [$longRepo, $shortRepo]
-        ];
-    }
-
-    private function reader(?string $source): Reader\RepositoryName
+    private function reader(?string $source, bool $valid = true): Reader\RepositoryName
     {
         $source = isset($source) ? new Doubles\FakeSource($source) : null;
-        return new Reader\RepositoryName($source);
+        return new Reader\RepositoryName(new Doubles\FakeValidator($valid), $source);
     }
 }

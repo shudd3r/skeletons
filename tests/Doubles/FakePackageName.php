@@ -18,6 +18,6 @@ class FakePackageName extends PackageName
 {
     public function __construct(string $value = 'package/name')
     {
-        parent::__construct(new FakeSource($value));
+        parent::__construct(new FakeValidator(), new FakeSource($value));
     }
 }
