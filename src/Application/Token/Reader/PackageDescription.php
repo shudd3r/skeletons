@@ -14,8 +14,4 @@ namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 class PackageDescription extends ValueReader
 {
-    public function isValid(string $value): bool
-    {
-        return !empty($value);
-    }
 }

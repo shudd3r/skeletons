@@ -16,11 +16,6 @@ use Shudd3r\PackageFiles\Application\Token;
 
 class PackageName extends ValueReader
 {
-    public function isValid(string $value): bool
-    {
-        return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
-    }
-
     protected function newTokenInstance(string $namespace, string $packageName): Token
     {
         return new Token\CompositeToken(

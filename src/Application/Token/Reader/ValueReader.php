@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-abstract class ValueReader implements Reader, Validator
+class ValueReader implements Reader, Validator
 {
     private Validator $validator;
     private Source    $source;
@@ -40,7 +40,7 @@ abstract class ValueReader implements Reader, Validator
     public function token(string $namespace = ''): ?Token
     {
         $value = $this->value();
-        return $this->validator->isValid($value) ? $this->newTokenInstance($namespace, $value) : null;
+        return $this->isValid($value) ? $this->newTokenInstance($namespace, $value) : null;
     }
 
     public function value(): string

@@ -16,16 +16,6 @@ use Shudd3r\PackageFiles\Application\Token;
 
 class SrcNamespace extends ValueReader
 {
-    public function isValid(string $value): bool
-    {
-        foreach (explode('\\', $value) as $label) {
-            $isValidLabel = (bool) preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label);
-            if (!$isValidLabel) { return false; }
-        }
-
-        return true;
-    }
-
     protected function newTokenInstance(string $namespace, string $value): Token
     {
         return new Token\CompositeToken(
