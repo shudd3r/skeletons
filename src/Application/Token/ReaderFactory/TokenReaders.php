@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
 
 
-class CompositeReaderFactory implements ReaderFactory
+class TokenReaders
 {
     private array $readerFactories;
 
