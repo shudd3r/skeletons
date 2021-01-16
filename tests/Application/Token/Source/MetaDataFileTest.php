@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Application\Token\Source;
 
 use PHPUnit\Framework\TestCase;
+use Shudd3r\PackageFiles\Application\Token\Source\Data\SavedPlaceholderValues;
 use Shudd3r\PackageFiles\Application\Token\Source\MetaDataFile;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use RuntimeException;
@@ -52,6 +53,7 @@ class MetaDataFileTest extends TestCase
     private function source(?array $data): MetaDataFile
     {
         $metaFile = new Doubles\MockedFile(isset($data) ? json_encode($data) : null);
-        return new MetaDataFile($metaFile, new Doubles\FakeSource('fallback'));
+        $data = new SavedPlaceholderValues($metaFile);
+        return new MetaDataFile($data, new Doubles\FakeSource('fallback'));
     }
 }

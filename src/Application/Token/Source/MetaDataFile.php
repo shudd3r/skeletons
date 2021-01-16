@@ -12,38 +12,24 @@
 namespace Shudd3r\PackageFiles\Application\Token\Source;
 
 use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Application\Token\Source\Data\SavedPlaceholderValues;
 use Shudd3r\PackageFiles\Application\Token\Validator;
-use RuntimeException;
 
 
 class MetaDataFile implements Source
 {
-    private File   $metaFile;
-    private Source $fallback;
-    private array  $metaData;
+    private SavedPlaceholderValues $metaData;
+    private Source                 $fallback;
 
-    public function __construct(File $metaFile, Source $fallback)
+    public function __construct(SavedPlaceholderValues $metaData, Source $fallback)
     {
-        $this->metaFile = $metaFile;
+        $this->metaData = $metaData;
         $this->fallback = $fallback;
     }
 
     public function value(Validator $validator): string
     {
-        isset($this->metaData) or $this->metaData = $this->fileMetaData();
-
         $parserClass = get_class($validator);
-        return $this->metaData[$parserClass] ?? $this->fallback->value($validator);
-    }
-
-    private function fileMetaData()
-    {
-        $data = json_decode($this->metaFile->contents(), true);
-        if (!$data || !is_array($data)) {
-            throw new RuntimeException();
-        }
-
-        return $data;
+        return $this->metaData->value($parserClass) ?? $this->fallback->value($validator);
     }
 }
