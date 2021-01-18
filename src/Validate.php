@@ -53,8 +53,7 @@ class Validate extends Command\Factory
 
     private function tokenReader(): Reader
     {
-        $metaData       = new Source\Data\SavedPlaceholderValues($this->env->metaDataFile());
-        $metaDataSource = new Source\MetaDataFile($metaData, new Source\PredefinedValue(''));
-        return $this->tokenReaders()->validationReader($metaDataSource);
+        $metaData = new Source\Data\SavedPlaceholderValues($this->env->metaDataFile());
+        return $this->tokenReaders()->validationReader($metaData);
     }
 }

@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
 use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\Source\Data\SavedPlaceholderValues;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
 
@@ -30,14 +31,16 @@ class TokenReaders
         return $this->readerInstance(fn(ReaderFactory $factory) => $factory->initializationReader());
     }
 
-    public function validationReader(Source $metaDataSource): Reader
+    public function validationReader(SavedPlaceholderValues $metaData): Reader
     {
-        return $this->readerInstance(fn(ReaderFactory $factory) => $factory->validationReader($metaDataSource));
+        $source = new Source\MetaDataFile($metaData, new Source\PredefinedValue(''));
+        return $this->readerInstance(fn(ReaderFactory $factory) => $factory->validationReader($source));
     }
 
-    public function updateReader(Source $metaDataSource): Reader
+    public function updateReader(SavedPlaceholderValues $metaData): Reader
     {
-        return $this->readerInstance(fn(ReaderFactory $factory) => $factory->updateReader($metaDataSource));
+        $source = new Source\MetaDataFile($metaData, new Source\PredefinedValue(''));
+        return $this->readerInstance(fn(ReaderFactory $factory) => $factory->updateReader($source));
     }
 
     private function readerInstance(callable $createComponent): Reader
