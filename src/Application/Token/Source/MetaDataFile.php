@@ -18,18 +18,19 @@ use Shudd3r\PackageFiles\Application\Token\Validator;
 
 class MetaDataFile implements Source
 {
+    private string                 $name;
     private SavedPlaceholderValues $metaData;
     private Source                 $fallback;
 
-    public function __construct(SavedPlaceholderValues $metaData, Source $fallback)
+    public function __construct(string $name, SavedPlaceholderValues $metaData, Source $fallback)
     {
+        $this->name     = $name;
         $this->metaData = $metaData;
         $this->fallback = $fallback;
     }
 
     public function value(Validator $validator): string
     {
-        $parserClass = get_class($validator);
-        return $this->metaData->value($parserClass) ?? $this->fallback->value($validator);
+        return $this->metaData->value($this->name) ?? $this->fallback->value($validator);
     }
 }

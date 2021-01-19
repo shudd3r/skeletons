@@ -12,8 +12,8 @@
 namespace Shudd3r\PackageFiles\Tests\Application\Token\Source;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Token\Source\Data\SavedPlaceholderValues;
 use Shudd3r\PackageFiles\Application\Token\Source\MetaDataFile;
+use Shudd3r\PackageFiles\Application\Token\Source\Data\SavedPlaceholderValues;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use RuntimeException;
 
@@ -22,38 +22,37 @@ class MetaDataFileTest extends TestCase
 {
     public function testMissingMetaDataFile_ThrowsException()
     {
-        $source = $this->source(null);
+        $source = $this->source('placeholder.name', null);
         $this->expectException(RuntimeException::class);
         $source->value(new Doubles\FakeValidator());
     }
 
     public function testWithExistingMetaDataValue_ValueMethod_ReturnsMetaData()
     {
-        $source = $this->source([Doubles\FakeValidator::class => 'meta data']);
+        $source = $this->source('foo', ['foo' => 'meta data']);
         $this->assertSame('meta data', $source->value(new Doubles\FakeValidator()));
     }
 
-    public function testValueMethod_ReturnsValueAssociatedWithGivenParser()
+    public function testValueMethod_ReturnsValueAssociatedWithGivenName()
     {
-        $source = $this->source([
-            Doubles\FakeValidator::class     => 'first value',
-            Doubles\MockedValueReader::class => 'second value'
+        $source = $this->source('two', [
+            'one' => 'first value',
+            'two' => 'second value'
         ]);
 
-        $this->assertSame('first value', $source->value(new Doubles\FakeValidator()));
-        $this->assertSame('second value', $source->value(new Doubles\MockedValueReader()));
+        $this->assertSame('second value', $source->value(new Doubles\FakeValidator()));
     }
 
     public function testWithoutMetaDataValue_ValueMethod_ReturnsFromFallbackSource()
     {
-        $source = $this->source([Doubles\MockedValueReader::class => 'bar']);
+        $source = $this->source('another.name', ['placeholder.name' => 'bar']);
         $this->assertSame('fallback', $source->value(new Doubles\FakeValidator()));
     }
 
-    private function source(?array $data): MetaDataFile
+    private function source(string $name, ?array $data): MetaDataFile
     {
         $metaFile = new Doubles\MockedFile(isset($data) ? json_encode($data) : null);
         $data = new SavedPlaceholderValues($metaFile);
-        return new MetaDataFile($data, new Doubles\FakeSource('fallback'));
+        return new MetaDataFile($name, $data, new Doubles\FakeSource('fallback'));
     }
 }

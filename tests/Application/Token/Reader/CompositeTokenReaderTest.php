@@ -43,8 +43,8 @@ class CompositeTokenReaderTest extends TestCase
 
     public function testReader_ValueMethod_ReturnsJsonString()
     {
-        $reader   = new CompositeTokenReader([$componentReader = new FakeReader('foo')]);
-        $expected = json_encode([get_class($componentReader) => 'foo'], JSON_PRETTY_PRINT);
+        $reader   = new CompositeTokenReader(['foo.placeholder' => new FakeReader('foo')]);
+        $expected = json_encode(['foo.placeholder' => 'foo'], JSON_PRETTY_PRINT);
         $this->assertEquals($expected, $reader->value());
     }
 }

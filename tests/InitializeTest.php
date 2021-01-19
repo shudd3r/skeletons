@@ -182,7 +182,7 @@ class InitializeTest extends TestCase
         $generatedFile = $setup->env->package()->file($setup::SKELETON_FILE)->contents();
         $this->assertSame($setup->render($data, false), $generatedFile);
 
-        $expectedMetaData = json_encode($setup->metaData($data), JSON_PRETTY_PRINT);
+        $expectedMetaData = json_encode($setup->data($data), JSON_PRETTY_PRINT);
         $this->assertSame($expectedMetaData, $setup->env->metaDataFile()->contents());
     }
 }

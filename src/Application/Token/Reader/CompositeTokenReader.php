@@ -37,8 +37,8 @@ class CompositeTokenReader implements Reader
     public function value(): string
     {
         $values = [];
-        foreach ($this->readers as $reader) {
-            $values[get_class($reader)] = $reader->value();
+        foreach ($this->readers as $name => $reader) {
+            $values[$name] = $reader->value();
         }
 
         return json_encode($values, JSON_PRETTY_PRINT);

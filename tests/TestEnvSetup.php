@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use Shudd3r\PackageFiles\Application\Token\InitialContents;
 use Shudd3r\PackageFiles\Application\Token\OriginalContents;
-use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Command\Factory;
 
 
@@ -35,8 +34,7 @@ class TestEnvSetup
 
     public function addMetaData(array $data = []): void
     {
-        $metaData = $this->metaData($data);
-        $this->env->metaDataFile()->write(json_encode($metaData, JSON_PRETTY_PRINT));
+        $this->env->metaDataFile()->write(json_encode($this->data($data), JSON_PRETTY_PRINT));
     }
 
     public function addComposer(array $data = []): void
@@ -86,18 +84,6 @@ class TestEnvSetup
             TPL;
     }
 
-    public function metaData(array $override = []): array
-    {
-        $data = $this->data($override);
-
-        return [
-            Reader\PackageName::class        => $data['package.name'],
-            Reader\RepositoryName::class     => $data['repository.name'],
-            Reader\PackageDescription::class => $data['description.text'],
-            Reader\SrcNamespace::class       => $data['namespace.src']
-        ];
-    }
-
     public function composer(array $override = []): string
     {
         $data = $this->data(array_filter($override));
@@ -138,7 +124,7 @@ class TestEnvSetup
             'namespace.src'    => 'Default\\Namespace'
         ];
 
-        return $override + $data;
+        return array_merge($data, $override);
     }
 
     private function replaceOriginalContent(string $template): string

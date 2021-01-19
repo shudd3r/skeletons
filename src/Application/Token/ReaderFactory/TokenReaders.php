@@ -11,10 +11,9 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
-use Shudd3r\PackageFiles\Application\Token\Source\Data\SavedPlaceholderValues;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
+use Shudd3r\PackageFiles\Application\Token\Source\Data\SavedPlaceholderValues;
 
 
 class TokenReaders
@@ -28,26 +27,31 @@ class TokenReaders
 
     public function initializationReader(): Reader
     {
-        return $this->readerInstance(fn(ReaderFactory $factory) => $factory->initializationReader());
+        $readers = [];
+        foreach ($this->readerFactories as $name => $replacement) {
+            $readers[$name] = $replacement->initializationReader();
+        }
+
+        return new Reader\CompositeTokenReader($readers);
     }
 
     public function validationReader(SavedPlaceholderValues $metaData): Reader
     {
-        $source = new Source\MetaDataFile($metaData, new Source\PredefinedValue(''));
-        return $this->readerInstance(fn(ReaderFactory $factory) => $factory->validationReader($source));
+        $readers = [];
+        foreach ($this->readerFactories as $name => $replacement) {
+            $source = new Source\MetaDataFile($name, $metaData, new Source\PredefinedValue(''));
+            $readers[$name] = $replacement->validationReader($source);
+        }
+
+        return new Reader\CompositeTokenReader($readers);
     }
 
     public function updateReader(SavedPlaceholderValues $metaData): Reader
     {
-        $source = new Source\MetaDataFile($metaData, new Source\PredefinedValue(''));
-        return $this->readerInstance(fn(ReaderFactory $factory) => $factory->updateReader($source));
-    }
-
-    private function readerInstance(callable $createComponent): Reader
-    {
         $readers = [];
         foreach ($this->readerFactories as $name => $replacement) {
-            $readers[$name] = $createComponent($replacement);
+            $source = new Source\MetaDataFile($name, $metaData, new Source\PredefinedValue(''));
+            $readers[$name] = $replacement->updateReader($source);
         }
 
         return new Reader\CompositeTokenReader($readers);
