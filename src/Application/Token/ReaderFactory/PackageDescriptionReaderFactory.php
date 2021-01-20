@@ -46,6 +46,6 @@ class PackageDescriptionReaderFactory extends ValueReaderFactory
 
     protected function newReaderInstance(Source $source): Reader
     {
-        return new Reader\PackageDescription($this, $source);
+        return new Reader\ValueReader($this, $source);
     }
 }
