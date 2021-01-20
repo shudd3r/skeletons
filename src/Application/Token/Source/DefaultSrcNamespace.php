@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Application\Token\Reader\PackageName;
-use Shudd3r\PackageFiles\Application\Token\Validator;
 
 
 class DefaultSrcNamespace implements Source
@@ -28,7 +27,7 @@ class DefaultSrcNamespace implements Source
         $this->packageName = $packageName;
     }
 
-    public function value(Validator $validator): string
+    public function value(): string
     {
         return $this->namespaceFromComposer() ?? $this->namespaceFromPackageName();
     }

@@ -24,13 +24,13 @@ class MetaDataFileTest extends TestCase
     {
         $source = $this->source('placeholder.name', null);
         $this->expectException(RuntimeException::class);
-        $source->value(new Doubles\FakeValidator());
+        $source->value();
     }
 
     public function testWithExistingMetaDataValue_ValueMethod_ReturnsMetaData()
     {
         $source = $this->source('foo', ['foo' => 'meta data']);
-        $this->assertSame('meta data', $source->value(new Doubles\FakeValidator()));
+        $this->assertSame('meta data', $source->value());
     }
 
     public function testValueMethod_ReturnsValueAssociatedWithGivenName()
@@ -40,13 +40,13 @@ class MetaDataFileTest extends TestCase
             'two' => 'second value'
         ]);
 
-        $this->assertSame('second value', $source->value(new Doubles\FakeValidator()));
+        $this->assertSame('second value', $source->value());
     }
 
     public function testWithoutMetaDataValue_ValueMethod_ReturnsFromFallbackSource()
     {
         $source = $this->source('another.name', ['placeholder.name' => 'bar']);
-        $this->assertSame('fallback', $source->value(new Doubles\FakeValidator()));
+        $this->assertSame('fallback', $source->value());
     }
 
     private function source(string $name, ?array $data): MetaDataFile

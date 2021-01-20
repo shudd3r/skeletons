@@ -20,29 +20,29 @@ class DefaultRepositoryNameTest extends TestCase
 {
     public function testWithoutConfig_ValueMethod_ResolvesNameFromPackageName()
     {
-        $this->assertSame('package/name', $this->source()->value(new Doubles\FakeValidator()));
-        $this->assertSame('package/name', $this->source(null)->value(new Doubles\FakeValidator()));
+        $this->assertSame('package/name', $this->source()->value());
+        $this->assertSame('package/name', $this->source(null)->value());
     }
 
     public function testWithConfigName_ValueMethod_ResolvesNameFromConfig()
     {
         $config = ['origin' => 'https://github.com/config/repo.git'];
-        $this->assertSame('config/repo', $this->source($config)->value(new Doubles\FakeValidator()));
+        $this->assertSame('config/repo', $this->source($config)->value());
     }
 
     public function testPathPriorityForMultipleRemotesInGitConfig()
     {
         $config = [];
-        $this->assertSame('package/name', $this->source($config)->value(new Doubles\FakeValidator()));
+        $this->assertSame('package/name', $this->source($config)->value());
 
         $config += ['foo' => 'git@github.com:other/repo.git'];
-        $this->assertSame('other/repo', $this->source($config)->value(new Doubles\FakeValidator()));
+        $this->assertSame('other/repo', $this->source($config)->value());
 
         $config += ['origin' => 'https://github.com/orig/repo.git'];
-        $this->assertSame('orig/repo', $this->source($config)->value(new Doubles\FakeValidator()));
+        $this->assertSame('orig/repo', $this->source($config)->value());
 
         $config += ['upstream' => 'git@github.com:master/ssh-repo.git'];
-        $this->assertSame('master/ssh-repo', $this->source($config)->value(new Doubles\FakeValidator()));
+        $this->assertSame('master/ssh-repo', $this->source($config)->value());
     }
 
     private function source(?array $config = []): DefaultRepositoryName

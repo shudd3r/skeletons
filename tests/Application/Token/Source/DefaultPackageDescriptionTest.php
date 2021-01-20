@@ -21,12 +21,12 @@ class DefaultPackageDescriptionTest extends TestCase
 {
     public function testWithComposerDescription_ValueMethod_ResolvesDescriptionFromComposerFile()
     {
-        $this->assertSame('composer package description', $this->source()->value(new Doubles\FakeValidator()));
+        $this->assertSame('composer package description', $this->source()->value());
     }
 
     public function testWithEmptyComposerDescription_ValueMethod_ResolvesDescriptionFromPackageName()
     {
-        $this->assertSame('package/name package', $this->source(false)->value(new Doubles\FakeValidator()));
+        $this->assertSame('package/name package', $this->source(false)->value());
     }
 
     private function source(bool $composer = true): DefaultPackageDescription

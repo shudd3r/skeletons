@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Application\Token\Source;
 
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\Source\Data\SavedPlaceholderValues;
-use Shudd3r\PackageFiles\Application\Token\Validator;
 
 
 class MetaDataFile implements Source
@@ -29,8 +28,8 @@ class MetaDataFile implements Source
         $this->fallback = $fallback;
     }
 
-    public function value(Validator $validator): string
+    public function value(): string
     {
-        return $this->metaData->value($this->name) ?? $this->fallback->value($validator);
+        return $this->metaData->value($this->name) ?? $this->fallback->value();
     }
 }

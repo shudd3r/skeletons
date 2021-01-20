@@ -20,12 +20,12 @@ class DefaultSrcNamespaceTest extends TestCase
 {
     public function testWithComposerNamespace_ValueMethod_ResolvesNamespaceFromComposerFile()
     {
-        $this->assertSame('Composer\\Namespace', $this->source()->value(new Doubles\FakeValidator()));
+        $this->assertSame('Composer\\Namespace', $this->source()->value());
     }
 
     public function testWithoutComposerNamespace_ValueMethod_ResolvesNamespaceFromPackageName()
     {
-        $this->assertSame('Package\\Name', $this->source(false)->value(new Doubles\FakeValidator()));
+        $this->assertSame('Package\\Name', $this->source(false)->value());
     }
 
     private function source(bool $composer = true): DefaultSrcNamespace

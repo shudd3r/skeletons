@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\Token\Validator;
 
 
 class DefaultPackageName implements Source
@@ -28,7 +27,7 @@ class DefaultPackageName implements Source
         $this->package  = $package;
     }
 
-    public function value(Validator $validator): string
+    public function value(): string
     {
         return $this->composer->value('name') ?? $this->directoryFallback();
     }

@@ -51,17 +51,17 @@ class InteractiveInputTest extends TestCase
     {
         $source = $this->source($terminal, '');
         $this->assertSame([], $terminal->messagesSent);
-        $source->value(new Doubles\FakeValidator());
+        $source->value();
         $this->assertSame(['Input value:'], $terminal->messagesSent);
 
         $source = $this->source($terminal, 'default value');
-        $source->value(new Doubles\FakeValidator());
+        $source->value();
         $this->assertSame(['Input value [default: `default value`]:'], $terminal->messagesSent);
     }
 
     private function assertSourceValue(string $value, InteractiveInput $source): void
     {
-        $this->assertSame($value, $source->value(new Doubles\FakeValidator()));
+        $this->assertSame($value, $source->value());
     }
 
     private function source(?Doubles\MockedTerminal &$terminal, string $default = 'default'): InteractiveInput

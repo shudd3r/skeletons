@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Tests\Application\Token\Source;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token\Source\PredefinedValue;
-use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class PredefinedValueTest extends TestCase
@@ -21,6 +20,6 @@ class PredefinedValueTest extends TestCase
     public function testSource_ValueMethod_ReturnsConstructorParamValue()
     {
         $source = new PredefinedValue('constructor value');
-        $this->assertSame('constructor value', $source->value(new Doubles\FakeValidator()));
+        $this->assertSame('constructor value', $source->value());
     }
 }

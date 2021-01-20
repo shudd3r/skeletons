@@ -21,12 +21,12 @@ class DefaultPackageNameTest extends TestCase
 {
     public function testWithComposerName_ValueMethod_ResolvesNameFromComposer()
     {
-        $this->assertSame('composer/package', $this->source()->value(new Doubles\FakeValidator()));
+        $this->assertSame('composer/package', $this->source()->value());
     }
 
     public function testWithEmptyComposerName_ValueMethod_ResolvesNameFromDirectoryStructure()
     {
-        $this->assertSame('root/path', $this->source(false)->value(new Doubles\FakeValidator()));
+        $this->assertSame('root/path', $this->source(false)->value());
     }
 
     private function source(bool $composer = true): DefaultPackageName
