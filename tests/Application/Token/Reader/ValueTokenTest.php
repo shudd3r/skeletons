@@ -22,7 +22,6 @@ class ValueTokenTest extends TestCase
     {
         $reader = $this->reader();
         $this->assertInstanceOf(Token\Reader::class, $reader);
-        $this->assertInstanceOf(Token\Validator::class, $reader);
     }
 
     public function testReader_WithSourceMethod_CreatesNewInstanceWithChangedSource()

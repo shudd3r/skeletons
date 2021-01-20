@@ -40,12 +40,6 @@ class SubTokenReaderTest extends TestCase
         $this->assertSame('main value', $this->reader('main value')->value());
     }
 
-    public function testValidationIsDelegatedToMainReader()
-    {
-        $this->assertTrue($this->reader('foo', true)->isValid('something'));
-        $this->assertFalse($this->reader('foo', false)->isValid('something'));
-    }
-
     private function reader(string $mainValue, bool $valid = true): SubTokenReader
     {
         $transform = fn(string $value) => strtoupper($value);

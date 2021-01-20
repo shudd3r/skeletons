@@ -13,10 +13,9 @@ namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Validator;
 
 
-class SubTokenReader implements Reader, Validator
+class SubTokenReader implements Reader
 {
     private ValueReader $reader;
     private string      $subtypeName;
@@ -38,11 +37,6 @@ class SubTokenReader implements Reader, Validator
     public function value(): string
     {
         return $this->reader->value();
-    }
-
-    public function isValid(string $value): bool
-    {
-        return $this->reader->isValid($value);
     }
 
     private function subToken(string $namespace): Token
