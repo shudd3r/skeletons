@@ -45,12 +45,33 @@ class SrcNamespaceReaderFactory extends ValueReaderFactory
         $packageName = $this->packageName->initializationReader();
 
         $composer = new Source\Data\ComposerJsonData($this->env->package()->file('composer.json'));
-        $source   = new Source\DefaultSrcNamespace($composer, $packageName);
+        $callback = fn() => $this->namespaceFromComposer($composer) ?? $this->namespaceFromPackageName($packageName);
+        $source   = new Source\CallbackSource($callback);
         return $this->userSource($source);
     }
 
     protected function newReaderInstance(Source $source): Reader
     {
         return new Reader\SrcNamespace($this, $source);
+    }
+
+    private function namespaceFromComposer(Source\Data\ComposerJsonData $composer): ?string
+    {
+        if (!$psr = $composer->array('autoload.psr-4')) { return null; }
+        $namespace = array_search('src/', $psr, true);
+
+        return $namespace ? rtrim($namespace, '\\') : null;
+    }
+
+    private function namespaceFromPackageName(Reader\PackageName $packageName): string
+    {
+        [$vendor, $package] = explode('/', $packageName->value());
+        return $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
+    }
+
+    private function toPascalCase(string $name): string
+    {
+        $name = ltrim($name, '0..9');
+        return implode('', array_map(fn ($part) => ucfirst($part), preg_split('#[_.-]#', $name)));
     }
 }
