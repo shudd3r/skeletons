@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
 class PackageNameReaderFactory extends ValueReaderFactory
@@ -28,11 +29,19 @@ class PackageNameReaderFactory extends ValueReaderFactory
     protected function defaultSource(): Source
     {
         $composer = new Source\Data\ComposerJsonData($this->env->package()->file('composer.json'));
-        return $this->userSource(new Source\DefaultPackageName($composer, $this->env->package()));
+        $callback = fn() => $composer->value('name') ?? $this->directoryFallback($this->env->package());
+        $source   = new Source\CallbackSource($callback);
+        return $this->userSource($source);
     }
 
     protected function newReaderInstance(Source $source): Reader
     {
         return new Reader\PackageName($this, $source);
+    }
+
+    private function directoryFallback(Directory $rootDirectory): string
+    {
+        $path = $rootDirectory->path();
+        return $path ? basename(dirname($path)) . '/' . basename($path) : '';
     }
 }
