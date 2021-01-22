@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 
 class RepositoryNameReaderFactory extends ValueReaderFactory
@@ -39,13 +40,38 @@ class RepositoryNameReaderFactory extends ValueReaderFactory
         /** @var Reader\PackageName $packageName */
         $packageName = $this->packageName->initializationReader();
 
-        $config = $this->env->package()->file('.git/config');
-        $source = new Source\DefaultRepositoryName($config, $packageName);
+        $config   = $this->env->package()->file('.git/config');
+        $callback = fn() => $this->repositoryFromGitConfig($config) ?? $packageName->value();
+        $source   = new Source\CallbackSource($callback);
         return $this->userSource($source);
     }
 
     protected function newReaderInstance(Source $source): Reader
     {
         return new Reader\ValueReader($this, $source);
+    }
+
+    private function repositoryFromGitConfig(File $gitConfig): ?string
+    {
+        if (!$gitConfig->exists()) { return null; }
+
+        $config = parse_ini_string($gitConfig->contents(), true);
+        if (!$url = $this->remoteUrl($config)) { return null; }
+
+        $path = str_replace(':', '/', $url);
+        return basename(dirname($path)) . '/' . basename($path, '.git');
+    }
+
+    private function remoteUrl(array $config): ?string
+    {
+        $url = $config['remote upstream']['url'] ?? $config['remote origin']['url'] ?? '';
+        if ($url) { return $url; }
+
+        foreach ($config as $section => $definitions) {
+            if (strpos($section, 'remote ') !== 0) { continue; }
+            return $definitions['url'] ?? null;
+        }
+
+        return null;
     }
 }
