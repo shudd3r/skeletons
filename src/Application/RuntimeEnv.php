@@ -16,6 +16,7 @@ use Shudd3r\PackageFiles\Environment\Output;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Token\Source\Data\ComposerJsonData;
+use Shudd3r\PackageFiles\Application\Token\Source\Data\SavedPlaceholderValues;
 use Shudd3r\PackageFiles\Application\Exception;
 
 
@@ -28,7 +29,8 @@ class RuntimeEnv
     private Directory $backup;
     private File      $metaFile;
 
-    private ComposerJsonData $composer;
+    private ComposerJsonData       $composer;
+    private SavedPlaceholderValues $metaData;
 
     public function __construct(
         Input $input,
@@ -36,14 +38,14 @@ class RuntimeEnv
         Directory $package,
         Directory $skeleton,
         ?Directory $backup = null,
-        ?File $metaDataFile = null
+        ?File $metaFile = null
     ) {
         $this->input    = $input;
         $this->output   = $output;
         $this->package  = $this->validDirectory($package);
         $this->skeleton = $this->validDirectory($skeleton);
         $this->backup   = $backup ?? $this->package->subdirectory('.skeleton-backup');
-        $this->metaFile = $metaDataFile ?? $this->package->file('.github/skeleton.json');
+        $this->metaFile = $metaFile ?? $this->package->file('.github/skeleton.json');
     }
 
     public function input(): Input
@@ -79,6 +81,11 @@ class RuntimeEnv
     public function composer(): ComposerJsonData
     {
         return $this->composer ??= new ComposerJsonData($this->package()->file('composer.json'));
+    }
+
+    public function metaData(): SavedPlaceholderValues
+    {
+        return $this->metaData ??= new SavedPlaceholderValues($this->metaDataFile());
     }
 
     private function validDirectory(Directory $directory): Directory

@@ -15,7 +15,6 @@ use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Template;
 
@@ -53,7 +52,6 @@ class Validate extends Command\Factory
 
     private function tokenReader(): Reader
     {
-        $metaData = new Source\Data\SavedPlaceholderValues($this->env->metaDataFile());
-        return $this->tokenReaders()->validationReader($metaData);
+        return $this->tokenReaders()->validationReader($this->env->metaData());
     }
 }
