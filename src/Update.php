@@ -25,7 +25,7 @@ class Update extends Command\Factory
         $validation = new Validate($this->env, $this->options);
         $cache      = new TokenCache();
 
-        $tokenReader   = $this->tokenReaders()->updateReader($this->env->metaData());
+        $tokenReader   = $this->tokenReaders()->updateReader();
         $processTokens = new Command\TokenProcessor($tokenReader, $this->processor($cache), $this->env->output());
         $writeMetaData = new Command\WriteMetaData($tokenReader, $this->env->metaDataFile());
 

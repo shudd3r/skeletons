@@ -41,14 +41,14 @@ abstract class ValueReaderFactory implements ReaderFactory, Validator
         return $this->initializeReader ??= $this->newReaderInstance($this->defaultSource());
     }
 
-    public function validationReader(Source $metaDataSource): Reader
+    public function validationReader(string $namespace): Reader
     {
-        return $this->validationReader ??= $this->newReaderInstance($metaDataSource);
+        return $this->validationReader ??= $this->newReaderInstance($this->metaDataSource($namespace));
     }
 
-    public function updateReader(Source $metaDataSource): Reader
+    public function updateReader(string $namespace): Reader
     {
-        return $this->updateReader ??= $this->newReaderInstance($this->userSource($metaDataSource));
+        return $this->updateReader ??= $this->newReaderInstance($this->userSource($this->metaDataSource($namespace)));
     }
 
     abstract public function isValid(string $value): bool;
@@ -56,6 +56,11 @@ abstract class ValueReaderFactory implements ReaderFactory, Validator
     abstract protected function defaultSource(): Source;
 
     abstract protected function newReaderInstance(Source $source): Reader;
+
+    protected function metaDataSource(string $namespace): Source
+    {
+        return new Source\MetaDataFile($namespace, $this->env->metaData(), new Source\PredefinedValue(''));
+    }
 
     protected function userSource(Source $source): Source
     {

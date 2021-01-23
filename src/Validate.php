@@ -52,6 +52,6 @@ class Validate extends Command\Factory
 
     private function tokenReader(): Reader
     {
-        return $this->tokenReaders()->validationReader($this->env->metaData());
+        return $this->tokenReaders()->validationReader();
     }
 }

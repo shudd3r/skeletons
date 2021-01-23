@@ -16,7 +16,7 @@ interface ReaderFactory
 {
     public function initializationReader(): Reader;
 
-    public function validationReader(Source $metaDataSource): Reader;
+    public function validationReader(string $namespace): Reader;
 
-    public function updateReader(Source $metaDataSource): Reader;
+    public function updateReader(string $namespace): Reader;
 }

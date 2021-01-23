@@ -12,8 +12,6 @@
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Application\Token\Source\Data\SavedPlaceholderValues;
 
 
 class TokenReaders
@@ -35,23 +33,21 @@ class TokenReaders
         return new Reader\CompositeTokenReader($readers);
     }
 
-    public function validationReader(SavedPlaceholderValues $metaData): Reader
+    public function validationReader(): Reader
     {
         $readers = [];
         foreach ($this->readerFactories as $name => $replacement) {
-            $source = new Source\MetaDataFile($name, $metaData, new Source\PredefinedValue(''));
-            $readers[$name] = $replacement->validationReader($source);
+            $readers[$name] = $replacement->validationReader($name);
         }
 
         return new Reader\CompositeTokenReader($readers);
     }
 
-    public function updateReader(SavedPlaceholderValues $metaData): Reader
+    public function updateReader(): Reader
     {
         $readers = [];
         foreach ($this->readerFactories as $name => $replacement) {
-            $source = new Source\MetaDataFile($name, $metaData, new Source\PredefinedValue(''));
-            $readers[$name] = $replacement->updateReader($source);
+            $readers[$name] = $replacement->updateReader($name);
         }
 
         return new Reader\CompositeTokenReader($readers);
