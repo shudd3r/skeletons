@@ -59,7 +59,7 @@ abstract class ValueReaderFactory implements ReaderFactory, Validator
 
     protected function metaDataSource(string $namespace): Source
     {
-        return new Source\MetaDataFile($namespace, $this->env->metaData(), new Source\PredefinedValue(''));
+        return new Source\CallbackSource(fn() => $this->env->metaData()->value($namespace) ?? '');
     }
 
     protected function userSource(Source $source): Source
