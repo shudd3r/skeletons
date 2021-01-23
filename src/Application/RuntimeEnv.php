@@ -15,6 +15,7 @@ use Shudd3r\PackageFiles\Environment\Input;
 use Shudd3r\PackageFiles\Environment\Output;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Application\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Application\Exception;
 
 
@@ -25,7 +26,9 @@ class RuntimeEnv
     private Directory $package;
     private Directory $skeleton;
     private Directory $backup;
-    private File      $metaData;
+    private File      $metaFile;
+
+    private ComposerJsonData $composer;
 
     public function __construct(
         Input $input,
@@ -40,7 +43,7 @@ class RuntimeEnv
         $this->package  = $this->validDirectory($package);
         $this->skeleton = $this->validDirectory($skeleton);
         $this->backup   = $backup ?? $this->package->subdirectory('.skeleton-backup');
-        $this->metaData = $metaDataFile ?? $this->package->file('.github/skeleton.json');
+        $this->metaFile = $metaDataFile ?? $this->package->file('.github/skeleton.json');
     }
 
     public function input(): Input
@@ -70,7 +73,12 @@ class RuntimeEnv
 
     public function metaDataFile(): File
     {
-        return $this->metaData;
+        return $this->metaFile;
+    }
+
+    public function composer(): ComposerJsonData
+    {
+        return $this->composer ??= new ComposerJsonData($this->package()->file('composer.json'));
     }
 
     private function validDirectory(Directory $directory): Directory

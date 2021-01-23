@@ -28,10 +28,8 @@ class PackageNameReaderFactory extends ValueReaderFactory
 
     protected function defaultSource(): Source
     {
-        $composer = new Source\Data\ComposerJsonData($this->env->package()->file('composer.json'));
-        $callback = fn() => $composer->value('name') ?? $this->directoryFallback($this->env->package());
-        $source   = new Source\CallbackSource($callback);
-        return $this->userSource($source);
+        $callback = fn() => $this->env->composer()->value('name') ?? $this->directoryFallback($this->env->package());
+        return $this->userSource(new Source\CallbackSource($callback));
     }
 
     protected function newReaderInstance(Source $source): Reader

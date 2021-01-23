@@ -39,11 +39,8 @@ class PackageDescriptionReaderFactory extends ValueReaderFactory
         /** @var Reader\PackageName $packageName */
         $packageName = $this->packageName->initializationReader();
 
-        $composer = new Source\Data\ComposerJsonData($this->env->package()->file('composer.json'));
-        $callback = fn() => $composer->value('description') ?? $packageName->value() . ' package';
-        $source   = new Source\CallbackSource($callback);
-
-        return $this->userSource($source);
+        $callback = fn() => $this->env->composer()->value('description') ?? $packageName->value() . ' package';
+        return $this->userSource(new Source\CallbackSource($callback));
     }
 
     protected function newReaderInstance(Source $source): Reader

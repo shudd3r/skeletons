@@ -44,10 +44,8 @@ class SrcNamespaceReaderFactory extends ValueReaderFactory
         /** @var Reader\PackageName $packageName */
         $packageName = $this->packageName->initializationReader();
 
-        $composer = new Source\Data\ComposerJsonData($this->env->package()->file('composer.json'));
-        $callback = fn() => $this->namespaceFromComposer($composer) ?? $this->namespaceFromPackageName($packageName);
-        $source   = new Source\CallbackSource($callback);
-        return $this->userSource($source);
+        $callback = fn() => $this->namespaceFromComposer() ?? $this->namespaceFromPackageName($packageName);
+        return $this->userSource(new Source\CallbackSource($callback));
     }
 
     protected function newReaderInstance(Source $source): Reader
@@ -55,9 +53,9 @@ class SrcNamespaceReaderFactory extends ValueReaderFactory
         return new Reader\SrcNamespace($this, $source);
     }
 
-    private function namespaceFromComposer(Source\Data\ComposerJsonData $composer): ?string
+    private function namespaceFromComposer(): ?string
     {
-        if (!$psr = $composer->array('autoload.psr-4')) { return null; }
+        if (!$psr = $this->env->composer()->array('autoload.psr-4')) { return null; }
         $namespace = array_search('src/', $psr, true);
 
         return $namespace ? rtrim($namespace, '\\') : null;

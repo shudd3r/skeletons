@@ -42,8 +42,7 @@ class RepositoryNameReaderFactory extends ValueReaderFactory
 
         $config   = $this->env->package()->file('.git/config');
         $callback = fn() => $this->repositoryFromGitConfig($config) ?? $packageName->value();
-        $source   = new Source\CallbackSource($callback);
-        return $this->userSource($source);
+        return $this->userSource(new Source\CallbackSource($callback));
     }
 
     protected function newReaderInstance(Source $source): Reader
