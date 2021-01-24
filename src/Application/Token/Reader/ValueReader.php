@@ -12,21 +12,21 @@
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Validator;
+use Shudd3r\PackageFiles\Application\Token\TokenFactory;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token;
 
 
 class ValueReader implements Reader
 {
-    private Validator $validator;
-    private Source    $source;
-    private string    $cachedValue;
+    private TokenFactory $factory;
+    private Source       $source;
+    private string       $cachedValue;
 
-    public function __construct(Validator $validator, ?Source $source = null)
+    public function __construct(TokenFactory $factory, ?Source $source = null)
     {
-        $this->validator = $validator;
-        $this->source    = $source ?? new Source\PredefinedValue('');
+        $this->factory = $factory;
+        $this->source  = $source ?? new Source\PredefinedValue('');
     }
 
     public function withSource(Source $source): self
@@ -39,17 +39,11 @@ class ValueReader implements Reader
 
     public function token(string $namespace = ''): ?Token
     {
-        $value = $this->value();
-        return $this->validator->isValid($value) ? $this->newTokenInstance($namespace, $value) : null;
+        return $this->factory->token($namespace, $this->value());
     }
 
     public function value(): string
     {
         return $this->cachedValue ??= $this->source->value($this);
-    }
-
-    protected function newTokenInstance(string $namespace, string $value): Token
-    {
-        return new Token\ValueToken($namespace, $value);
     }
 }

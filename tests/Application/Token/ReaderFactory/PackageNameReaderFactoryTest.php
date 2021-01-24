@@ -12,22 +12,31 @@
 namespace Shudd3r\PackageFiles\Tests\Application\Token\ReaderFactory;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory\PackageNameReaderFactory;
+use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 class PackageNameReaderFactoryTest extends TestCase
 {
+    public function testTokenFactoryMethod_ReturnsCorrectToken()
+    {
+        $expected = new Token\CompositeToken(
+            new Token\ValueToken('package.name', 'source/package'),
+            new Token\ValueToken('package.name.title', 'Source/Package')
+        );
+        $this->assertEquals($expected, $this->replacement()->token('package.name', 'source/package'));
+    }
+
     /**
      * @dataProvider valueExamples
      *
      * @param string $invalid
      * @param string $valid
      */
-    public function testReaderValueValidation(string $invalid, string $valid)
+    public function testTokenFactoryMethod_ValidatesValue(string $invalid, string $valid)
     {
         $replacement = $this->replacement();
-        $this->assertTrue($replacement->isValid($valid));
-        $this->assertFalse($replacement->isValid($invalid));
+        $this->assertInstanceOf(Token::class, $replacement->token('foo', $valid));
+        $this->assertNull($replacement->token('foo', $invalid));
     }
 
     public function valueExamples()
@@ -38,8 +47,8 @@ class PackageNameReaderFactoryTest extends TestCase
         ];
     }
 
-    private function replacement(): PackageNameReaderFactory
+    private function replacement(): Token\ReaderFactory\PackageNameReaderFactory
     {
-        return new PackageNameReaderFactory(new Doubles\FakeRuntimeEnv(), []);
+        return new Token\ReaderFactory\PackageNameReaderFactory(new Doubles\FakeRuntimeEnv(), []);
     }
 }

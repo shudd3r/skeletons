@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token;
 
 
 class PackageDescriptionReaderFactory extends ValueReaderFactory
@@ -29,9 +30,9 @@ class PackageDescriptionReaderFactory extends ValueReaderFactory
         parent::__construct($env, $options);
     }
 
-    public function isValid(string $value): bool
+    public function token(string $name, string $value): ?Token
     {
-        return !empty($value);
+        return !empty($value) ? new Token\ValueToken($name, $value) : null;
     }
 
     protected function defaultSource(): Source

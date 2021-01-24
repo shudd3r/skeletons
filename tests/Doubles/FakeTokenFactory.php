@@ -11,10 +11,11 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\Token\Validator;
+use Shudd3r\PackageFiles\Application\Token\TokenFactory;
+use Shudd3r\PackageFiles\Application\Token;
 
 
-class FakeValidator implements Validator
+class FakeTokenFactory implements TokenFactory
 {
     private bool $isValid;
 
@@ -23,8 +24,8 @@ class FakeValidator implements Validator
         $this->isValid = $validationResult;
     }
 
-    public function isValid(string $value): bool
+    public function token(string $name, string $value): ?Token
     {
-        return $this->isValid;
+        return $this->isValid ? new FakeToken($value, $name) : null;
     }
 }

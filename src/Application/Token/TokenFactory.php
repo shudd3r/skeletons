@@ -11,8 +11,10 @@
 
 namespace Shudd3r\PackageFiles\Application\Token;
 
+use Shudd3r\PackageFiles\Application\Token;
 
-interface Validator
+
+interface TokenFactory
 {
-    public function isValid(string $value): bool;
+    public function token(string $name, string $value): ?Token;
 }

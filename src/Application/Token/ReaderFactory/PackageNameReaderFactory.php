@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\Token;
 
 
 class PackageNameReaderFactory extends ValueReaderFactory
@@ -21,9 +22,15 @@ class PackageNameReaderFactory extends ValueReaderFactory
     protected ?string $inputPrompt = 'Packagist package name';
     protected ?string $optionName  = 'package';
 
-    public function isValid(string $value): bool
+    public function token(string $name, string $value): ?Token
     {
-        return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
+        $isValid = (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
+        if (!$isValid) { return null; }
+
+        return new Token\CompositeToken(
+            new Token\ValueToken($name, $value),
+            new Token\ValueToken($name . '.title', $this->titleName($value))
+        );
     }
 
     protected function defaultSource(): Source
@@ -41,5 +48,11 @@ class PackageNameReaderFactory extends ValueReaderFactory
     {
         $path = $rootDirectory->path();
         return $path ? basename(dirname($path)) . '/' . basename($path) : '';
+    }
+
+    private function titleName(string $value): string
+    {
+        [$vendor, $package] = explode('/', $value);
+        return ucfirst($vendor) . '/' . ucfirst($package);
     }
 }

@@ -11,14 +11,15 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
+use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Application\Token\Validator;
+use Shudd3r\PackageFiles\Application\Token\TokenFactory;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-abstract class ValueReaderFactory implements ReaderFactory, Validator
+abstract class ValueReaderFactory implements ReaderFactory, TokenFactory
 {
     protected RuntimeEnv $env;
     protected array      $options;
@@ -51,7 +52,7 @@ abstract class ValueReaderFactory implements ReaderFactory, Validator
         return $this->updateReader ??= $this->newReaderInstance($this->userSource($this->metaDataSource($namespace)));
     }
 
-    abstract public function isValid(string $value): bool;
+    abstract public function token(string $name, string $value): ?Token;
 
     abstract protected function defaultSource(): Source;
 

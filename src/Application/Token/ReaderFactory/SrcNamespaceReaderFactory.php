@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token;
 
 
 class SrcNamespaceReaderFactory extends ValueReaderFactory
@@ -29,14 +30,17 @@ class SrcNamespaceReaderFactory extends ValueReaderFactory
         parent::__construct($env, $options);
     }
 
-    public function isValid(string $value): bool
+    public function token(string $name, string $value): ?Token
     {
         foreach (explode('\\', $value) as $label) {
             $isValidLabel = (bool) preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label);
-            if (!$isValidLabel) { return false; }
+            if (!$isValidLabel) { return null; }
         }
 
-        return true;
+        return new Token\CompositeToken(
+            new Token\ValueToken($name, $value),
+            new Token\ValueToken($name . '.esc', str_replace('\\', '\\\\', $value))
+        );
     }
 
     protected function defaultSource(): Source
@@ -50,7 +54,7 @@ class SrcNamespaceReaderFactory extends ValueReaderFactory
 
     protected function newReaderInstance(Source $source): Reader
     {
-        return new Reader\SrcNamespace($this, $source);
+        return new Reader\ValueReader($this, $source);
     }
 
     private function namespaceFromComposer(): ?string

@@ -21,6 +21,6 @@ class MockedValueReader extends ValueReader
     public function __construct(?string $sourceValue = 'foo', bool $valid = true)
     {
         $this->source = isset($sourceValue) ? new FakeSource($sourceValue) : null;
-        parent::__construct(new FakeValidator($valid), $this->source);
+        parent::__construct(new FakeTokenFactory($valid), $this->source);
     }
 }

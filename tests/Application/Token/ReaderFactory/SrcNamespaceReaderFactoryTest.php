@@ -12,24 +12,33 @@
 namespace Shudd3r\PackageFiles\Tests\Application\Token\ReaderFactory;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory\SrcNamespaceReaderFactory;
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory\PackageNameReaderFactory;
+use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class SrcNamespaceReaderFactoryTest extends TestCase
 {
+    public function testTokenFactoryMethod_CreatesCorrectToken()
+    {
+        $expected = new Token\CompositeToken(
+            new Token\ValueToken('namespace', 'Some\\Namespace'),
+            new Token\ValueToken('namespace.esc', 'Some\\\\Namespace')
+        );
+
+        $this->assertEquals($expected, $this->replacement()->token('namespace', 'Some\Namespace'));
+    }
+
     /**
      * @dataProvider valueExamples
      *
      * @param string $invalid
      * @param string $valid
      */
-    public function testReaderValueValidation(string $invalid, string $valid)
+    public function testTokenFactoryMethod_ValidatesValue(string $invalid, string $valid)
     {
         $replacement = $this->replacement();
-        $this->assertTrue($replacement->isValid($valid));
-        $this->assertFalse($replacement->isValid($invalid));
+        $this->assertInstanceOf(Token::class, $replacement->token('foo', $valid));
+        $this->assertNull($replacement->token('foo', $invalid));
     }
 
     public function valueExamples()
@@ -41,10 +50,10 @@ class SrcNamespaceReaderFactoryTest extends TestCase
         ];
     }
 
-    private function replacement(): SrcNamespaceReaderFactory
+    private function replacement(): Token\ReaderFactory\SrcNamespaceReaderFactory
     {
         $env     = new Doubles\FakeRuntimeEnv();
-        $package = new PackageNameReaderFactory($env, []);
-        return new SrcNamespaceReaderFactory($env, [], $package);
+        $package = new Token\ReaderFactory\PackageNameReaderFactory($env, []);
+        return new Token\ReaderFactory\SrcNamespaceReaderFactory($env, [], $package);
     }
 }
