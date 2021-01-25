@@ -22,4 +22,10 @@ class ValueTokenTest extends TestCase
         $token = new ValueToken('replace', 'bar');
         $this->assertSame('foo bar', $token->replacePlaceholders('foo {replace}'));
     }
+
+    public function testMetaData_ReturnsCorrectKeyValuePair()
+    {
+        $token = new ValueToken('foo', 'bar');
+        $this->assertSame(['foo' => 'bar'], $token->metaData());
+    }
 }

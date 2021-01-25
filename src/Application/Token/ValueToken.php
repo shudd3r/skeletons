@@ -29,4 +29,9 @@ class ValueToken implements Token
     {
         return str_replace('{' . $this->placeholder . '}', $this->value, $template);
     }
+
+    public function metaData(): array
+    {
+        return [$this->placeholder => $this->value];
+    }
 }
