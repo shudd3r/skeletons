@@ -26,6 +26,6 @@ class ValueTokenTest extends TestCase
     public function testMetaData_ReturnsCorrectKeyValuePair()
     {
         $token = new ValueToken('foo', 'bar');
-        $this->assertSame(['foo' => 'bar'], $token->metaData());
+        $this->assertSame('bar', $token->value());
     }
 }
