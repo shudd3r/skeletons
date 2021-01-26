@@ -15,6 +15,7 @@ use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Template;
 
@@ -52,6 +53,7 @@ class Validate extends Command\Factory
 
     private function tokenReader(): Reader
     {
-        return $this->tokenReaders()->validationReader();
+        $createReader = fn(string $name, ReaderFactory $factory) => $factory->validationReader($name);
+        return $this->tokenReaders($createReader)->reader();
     }
 }

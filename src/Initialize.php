@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
+use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Template;
@@ -22,7 +23,8 @@ class Initialize extends Command\Factory
 {
     public function command(): CommandInterface
     {
-        $tokenReader     = $this->tokenReaders()->initializationReader();
+        $createReader    = fn(string $name, ReaderFactory $factory) => $factory->initializationReader();
+        $tokenReader     = $this->tokenReaders($createReader)->reader();
         $generatedFiles  = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupDirectory = $this->env->backup();
 

@@ -16,38 +16,24 @@ use Shudd3r\PackageFiles\Application\Token\Reader;
 
 class TokenReaders
 {
+    private $createMethod;
     private array $readerFactories;
 
-    public function __construct(array $readerFactories)
+    /**
+     * @param callable $createMethod    fn(string, ReaderFactory) => Reader
+     * @param array    $readerFactories
+     */
+    public function __construct(callable $createMethod, array $readerFactories)
     {
+        $this->createMethod    = $createMethod;
         $this->readerFactories = $readerFactories;
     }
 
-    public function initializationReader(): Reader
+    public function reader(): Reader
     {
         $readers = [];
         foreach ($this->readerFactories as $name => $replacement) {
-            $readers[$name] = $replacement->initializationReader();
-        }
-
-        return new Reader\CompositeTokenReader($readers);
-    }
-
-    public function validationReader(): Reader
-    {
-        $readers = [];
-        foreach ($this->readerFactories as $name => $replacement) {
-            $readers[$name] = $replacement->validationReader($name);
-        }
-
-        return new Reader\CompositeTokenReader($readers);
-    }
-
-    public function updateReader(): Reader
-    {
-        $readers = [];
-        foreach ($this->readerFactories as $name => $replacement) {
-            $readers[$name] = $replacement->updateReader($name);
+            $readers[$name] = ($this->createMethod)($name, $replacement);
         }
 
         return new Reader\CompositeTokenReader($readers);

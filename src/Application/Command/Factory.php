@@ -34,11 +34,11 @@ abstract class Factory
 
     abstract public function command(): Command;
 
-    protected function tokenReaders(): Readers\TokenReaders
+    protected function tokenReaders(callable $createMethod): Readers\TokenReaders
     {
         $packageName = new Readers\PackageNameReaderFactory($this->env, $this->options);
 
-        return new Readers\TokenReaders([
+        return new Readers\TokenReaders($createMethod, [
             self::PACKAGE_NAME  => $packageName,
             self::REPO_NAME     => new Readers\RepositoryNameReaderFactory($this->env, $this->options, $packageName),
             self::PACKAGE_DESC  => new Readers\PackageDescriptionReaderFactory($this->env, $this->options, $packageName),
