@@ -20,10 +20,8 @@ class SrcNamespaceReaderFactoryTest extends TestCase
 {
     public function testTokenFactoryMethod_CreatesCorrectToken()
     {
-        $expected = new Token\CompositeToken(
-            new Token\ValueToken('namespace', 'Some\\Namespace'),
-            new Token\ValueToken('namespace.esc', 'Some\\\\Namespace')
-        );
+        $subToken = new Token\ValueToken('namespace.esc', 'Some\\\\Namespace');
+        $expected = new Token\CompositeValueToken('namespace', 'Some\\Namespace', $subToken);
 
         $this->assertEquals($expected, $this->replacement()->token('namespace', 'Some\Namespace'));
     }

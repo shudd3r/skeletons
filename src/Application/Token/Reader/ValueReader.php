@@ -37,7 +37,7 @@ class ValueReader implements Reader
         return $clone;
     }
 
-    public function token(string $namespace = ''): ?Token
+    public function token(string $namespace = ''): ?Token\ValueToken
     {
         return $this->factory->token($namespace, $this->value());
     }

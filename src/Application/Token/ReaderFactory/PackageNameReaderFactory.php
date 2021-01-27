@@ -22,15 +22,13 @@ class PackageNameReaderFactory extends ValueReaderFactory
     protected ?string $inputPrompt = 'Packagist package name';
     protected ?string $optionName  = 'package';
 
-    public function token(string $name, string $value): ?Token
+    public function token(string $name, string $value): ?Token\ValueToken
     {
         $isValid = (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
         if (!$isValid) { return null; }
 
-        return new Token\CompositeToken(
-            new Token\ValueToken($name, $value),
-            new Token\ValueToken($name . '.title', $this->titleName($value))
-        );
+        $subToken = new Token\ValueToken($name . '.title', $this->titleName($value));
+        return new Token\CompositeValueToken($name, $value, $subToken);
     }
 
     protected function defaultSource(): Source

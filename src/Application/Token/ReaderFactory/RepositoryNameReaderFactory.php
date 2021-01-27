@@ -31,7 +31,7 @@ class RepositoryNameReaderFactory extends ValueReaderFactory
         parent::__construct($env, $options);
     }
 
-    public function token(string $name, string $value): ?Token
+    public function token(string $name, string $value): ?Token\ValueToken
     {
         $isValid = (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
         return $isValid ? new Token\ValueToken($name, $value) : null;

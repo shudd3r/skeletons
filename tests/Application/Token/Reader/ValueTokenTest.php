@@ -49,12 +49,12 @@ class ValueTokenTest extends TestCase
 
     public function testReaderWithoutSource_TokenMethod_ReturnsTokenUsingEmptyString()
     {
-        $this->assertEquals(new Doubles\FakeToken('', 'placeholder'), $this->reader(null)->token('placeholder'));
+        $this->assertEquals(new Token\ValueToken('placeholder', ''), $this->reader(null)->token('placeholder'));
     }
 
     public function testReaderWithSourceProvidedValue_TokenMethod_ReturnsTokenUsingSourceValue()
     {
-        $this->assertEquals(new Doubles\FakeToken('source', 'test'), $this->reader('source')->token('test'));
+        $this->assertEquals(new Token\ValueToken('test', 'source'), $this->reader('source')->token('test'));
     }
 
     public function testInvalidTokenValue()

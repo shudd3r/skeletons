@@ -53,7 +53,7 @@ abstract class ValueReaderFactory implements ReaderFactory, TokenFactory
         return $this->updateReader ??= $this->newReaderInstance($this->userSource($this->metaDataSource($namespace)));
     }
 
-    abstract public function token(string $name, string $value): ?Token;
+    abstract public function token(string $name, string $value): ?Token\ValueToken;
 
     abstract protected function defaultSource(): Source;
 

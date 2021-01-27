@@ -24,8 +24,8 @@ class FakeTokenFactory implements TokenFactory
         $this->isValid = $validationResult;
     }
 
-    public function token(string $name, string $value): ?Token
+    public function token(string $name, string $value): ?Token\ValueToken
     {
-        return $this->isValid ? new FakeToken($value, $name) : null;
+        return $this->isValid ? new Token\ValueToken($name, $value) : null;
     }
 }

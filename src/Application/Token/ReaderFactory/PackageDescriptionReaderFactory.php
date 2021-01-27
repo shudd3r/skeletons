@@ -30,7 +30,7 @@ class PackageDescriptionReaderFactory extends ValueReaderFactory
         parent::__construct($env, $options);
     }
 
-    public function token(string $name, string $value): ?Token
+    public function token(string $name, string $value): ?Token\ValueToken
     {
         return !empty($value) ? new Token\ValueToken($name, $value) : null;
     }

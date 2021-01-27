@@ -19,10 +19,8 @@ class PackageNameReaderFactoryTest extends TestCase
 {
     public function testTokenFactoryMethod_ReturnsCorrectToken()
     {
-        $expected = new Token\CompositeToken(
-            new Token\ValueToken('package.name', 'source/package'),
-            new Token\ValueToken('package.name.title', 'Source/Package')
-        );
+        $subToken = new Token\ValueToken('package.name.title', 'Source/Package');
+        $expected = new Token\CompositeValueToken('package.name', 'source/package', $subToken);
         $this->assertEquals($expected, $this->replacement()->token('package.name', 'source/package'));
     }
 

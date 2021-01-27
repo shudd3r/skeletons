@@ -30,17 +30,15 @@ class SrcNamespaceReaderFactory extends ValueReaderFactory
         parent::__construct($env, $options);
     }
 
-    public function token(string $name, string $value): ?Token
+    public function token(string $name, string $value): ?Token\ValueToken
     {
         foreach (explode('\\', $value) as $label) {
             $isValidLabel = (bool) preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label);
             if (!$isValidLabel) { return null; }
         }
 
-        return new Token\CompositeToken(
-            new Token\ValueToken($name, $value),
-            new Token\ValueToken($name . '.esc', str_replace('\\', '\\\\', $value))
-        );
+        $subToken = new Token\ValueToken($name . '.esc', str_replace('\\', '\\\\', $value));
+        return new Token\CompositeValueToken($name, $value, $subToken);
     }
 
     protected function defaultSource(): Source

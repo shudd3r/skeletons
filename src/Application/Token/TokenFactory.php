@@ -11,10 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Application\Token;
 
-use Shudd3r\PackageFiles\Application\Token;
-
 
 interface TokenFactory
 {
-    public function token(string $name, string $value): ?Token;
+    public function token(string $name, string $value): ?ValueToken;
 }
