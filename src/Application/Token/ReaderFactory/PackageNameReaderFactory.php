@@ -39,7 +39,7 @@ class PackageNameReaderFactory extends ValueReaderFactory
         return $this->userSource(new Source\CallbackSource($callback));
     }
 
-    protected function newReaderInstance(Source $source): Reader
+    protected function newReaderInstance(Source $source): Reader\ValueReader
     {
         return new Reader\PackageName($this, $source);
     }

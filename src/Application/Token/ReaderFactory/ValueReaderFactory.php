@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\Reader\ValueReader;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\TokenFactory;
@@ -37,17 +38,17 @@ abstract class ValueReaderFactory implements ReaderFactory, TokenFactory
         $this->options = $options;
     }
 
-    public function initializationReader(): Reader
+    public function initializationReader(): ValueReader
     {
         return $this->initializeReader ??= $this->newReaderInstance($this->defaultSource());
     }
 
-    public function validationReader(string $namespace): Reader
+    public function validationReader(string $namespace): ValueReader
     {
         return $this->validationReader ??= $this->newReaderInstance($this->metaDataSource($namespace));
     }
 
-    public function updateReader(string $namespace): Reader
+    public function updateReader(string $namespace): ValueReader
     {
         return $this->updateReader ??= $this->newReaderInstance($this->userSource($this->metaDataSource($namespace)));
     }
@@ -56,7 +57,7 @@ abstract class ValueReaderFactory implements ReaderFactory, TokenFactory
 
     abstract protected function defaultSource(): Source;
 
-    abstract protected function newReaderInstance(Source $source): Reader;
+    abstract protected function newReaderInstance(Source $source): ValueReader;
 
     protected function metaDataSource(string $namespace): Source
     {
