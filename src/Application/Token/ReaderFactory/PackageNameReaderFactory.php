@@ -39,7 +39,7 @@ class PackageNameReaderFactory extends ValueReaderFactory
 
     protected function newReaderInstance(Source $source): Reader\ValueReader
     {
-        return new Reader\PackageName($this, $source);
+        return new Reader\ValueReader($this, $source);
     }
 
     private function directoryFallback(Directory $rootDirectory): string

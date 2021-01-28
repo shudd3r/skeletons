@@ -43,10 +43,8 @@ class SrcNamespaceReaderFactory extends ValueReaderFactory
 
     protected function defaultSource(): Source
     {
-        /** @var Reader\PackageName $packageName */
         $packageName = $this->packageName->initializationReader();
-
-        $callback = fn() => $this->namespaceFromComposer() ?? $this->namespaceFromPackageName($packageName);
+        $callback    = fn() => $this->namespaceFromComposer() ?? $this->namespaceFromPackageName($packageName);
         return $this->userSource(new Source\CallbackSource($callback));
     }
 
@@ -63,7 +61,7 @@ class SrcNamespaceReaderFactory extends ValueReaderFactory
         return $namespace ? rtrim($namespace, '\\') : null;
     }
 
-    private function namespaceFromPackageName(Reader\PackageName $packageName): string
+    private function namespaceFromPackageName(Reader $packageName): string
     {
         [$vendor, $package] = explode('/', $packageName->value());
         return $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
