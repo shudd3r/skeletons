@@ -23,8 +23,8 @@ class Initialize extends Command\Factory
 {
     public function command(): CommandInterface
     {
-        $createReader    = fn(string $name, ReaderFactory $factory) => $factory->initializationReader();
-        $tokenReader     = $this->tokenReaders($createReader)->reader();
+        $createReader    = fn(string $name, ReaderFactory $factory) => $factory->initialToken($name);
+        $tokenReader     = $this->tokenReaders($createReader);
         $generatedFiles  = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupDirectory = $this->env->backup();
 

@@ -11,14 +11,12 @@
 
 namespace Shudd3r\PackageFiles\Application\Token;
 
-use Shudd3r\PackageFiles\Application\Token\Reader\ValueReader;
-
 
 interface ReaderFactory
 {
-    public function initializationReader(): ValueReader;
+    public function initialToken(string $name): ?ValueToken;
 
-    public function validationReader(string $namespace): ValueReader;
+    public function validationToken(string $name): ?ValueToken;
 
-    public function updateReader(string $namespace): ValueReader;
+    public function updateToken(string $name): ?ValueToken;
 }

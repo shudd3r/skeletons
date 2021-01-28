@@ -11,10 +11,9 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
-use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\Token\Reader\ValueReader;
-use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\TokenFactory;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
@@ -28,9 +27,7 @@ abstract class ValueReaderFactory implements ReaderFactory, TokenFactory
     protected ?string $inputPrompt;
     protected ?string $optionName;
 
-    private Reader $initializeReader;
-    private Reader $validationReader;
-    private Reader $updateReader;
+    private ValueToken $initialToken;
 
     public function __construct(RuntimeEnv $env, array $options)
     {
@@ -38,22 +35,22 @@ abstract class ValueReaderFactory implements ReaderFactory, TokenFactory
         $this->options = $options;
     }
 
-    public function initializationReader(): ValueReader
+    public function initialToken(string $name): ?ValueToken
     {
-        return $this->initializeReader ??= $this->newReaderInstance($this->defaultSource());
+        return $this->initialToken ??= $this->newReaderInstance($this->defaultSource())->token($name);
     }
 
-    public function validationReader(string $namespace): ValueReader
+    public function validationToken(string $name): ?ValueToken
     {
-        return $this->validationReader ??= $this->newReaderInstance($this->metaDataSource($namespace));
+        return $this->newReaderInstance($this->metaDataSource($name))->token($name);
     }
 
-    public function updateReader(string $namespace): ValueReader
+    public function updateToken(string $name): ?ValueToken
     {
-        return $this->updateReader ??= $this->newReaderInstance($this->userSource($this->metaDataSource($namespace)));
+        return $this->newReaderInstance($this->userSource($this->metaDataSource($name)))->token($name);
     }
 
-    abstract public function token(string $name, string $value): ?Token\ValueToken;
+    abstract public function token(string $name, string $value): ?ValueToken;
 
     abstract protected function defaultSource(): Source;
 

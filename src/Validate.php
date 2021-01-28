@@ -53,7 +53,7 @@ class Validate extends Command\Factory
 
     private function tokenReader(): Reader
     {
-        $createReader = fn(string $name, ReaderFactory $factory) => $factory->validationReader($name);
-        return $this->tokenReaders($createReader)->reader();
+        $createReader = fn(string $name, ReaderFactory $factory) => $factory->validationToken($name);
+        return $this->tokenReaders($createReader);
     }
 }

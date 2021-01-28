@@ -39,7 +39,7 @@ class RepositoryNameReaderFactory extends ValueReaderFactory
 
     protected function defaultSource(): Source
     {
-        $packageName = $this->packageName->initializationReader();
+        $packageName = $this->packageName->initialToken('');
         $config      = $this->env->package()->file('.git/config');
         $callback    = fn() => $this->repositoryFromGitConfig($config) ?? $packageName->value();
         return $this->userSource(new Source\CallbackSource($callback));

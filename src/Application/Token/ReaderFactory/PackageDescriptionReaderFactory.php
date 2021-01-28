@@ -37,7 +37,7 @@ class PackageDescriptionReaderFactory extends ValueReaderFactory
 
     protected function defaultSource(): Source
     {
-        $packageName = $this->packageName->initializationReader();
+        $packageName = $this->packageName->initialToken('');
         $callback    = fn() => $this->env->composer()->value('description') ?? $packageName->value() . ' package';
         return $this->userSource(new Source\CallbackSource($callback));
     }

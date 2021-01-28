@@ -12,12 +12,15 @@
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token;
 
 
-class TokenReaders
+class TokenReaders implements Reader
 {
     private $createMethod;
     private array $readerFactories;
+
+    private array $tokens;
 
     /**
      * @param callable $createMethod    fn(string, ReaderFactory) => Reader
@@ -29,13 +32,38 @@ class TokenReaders
         $this->readerFactories = $readerFactories;
     }
 
-    public function reader(): Reader
+    public function token(string $namespace = ''): ?Token
     {
-        $readers = [];
-        foreach ($this->readerFactories as $name => $replacement) {
-            $readers[$name] = ($this->createMethod)($name, $replacement);
+        $this->tokens ??= $this->readTokens();
+        return $this->validTokens() ? new Token\CompositeToken(...array_values($this->tokens)) : null;
+    }
+
+    public function value(): string
+    {
+        isset($this->tokens) or $this->token();
+
+        $values = [];
+        foreach ($this->tokens as $name => $token) {
+            $values[$name] = $token->value();
         }
 
-        return new Reader\CompositeTokenReader($readers);
+        return json_encode($values, JSON_PRETTY_PRINT);
+    }
+
+    private function readTokens(): array
+    {
+        $tokens = [];
+        foreach ($this->readerFactories as $name => $replacement) {
+            $token = ($this->createMethod)($name, $replacement);
+            if (!$token) { continue; }
+            $tokens[$name] = $token;
+        }
+
+        return $tokens;
+    }
+
+    private function validTokens(): bool
+    {
+        return count($this->tokens) === count($this->readerFactories);
     }
 }
