@@ -13,13 +13,11 @@ namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
 use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
-use Shudd3r\PackageFiles\Application\Token\Reader\ValueReader;
 use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Application\Token\TokenFactory;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-abstract class ValueReaderFactory implements ReaderFactory, TokenFactory
+abstract class ValueReaderFactory implements ReaderFactory
 {
     protected RuntimeEnv $env;
     protected array      $options;
@@ -37,24 +35,22 @@ abstract class ValueReaderFactory implements ReaderFactory, TokenFactory
 
     public function initialToken(string $name): ?ValueToken
     {
-        return $this->initialToken ??= $this->newReaderInstance($this->defaultSource())->token($name);
+        return $this->initialToken ??= $this->token($name, $this->defaultSource()->value());
     }
 
     public function validationToken(string $name): ?ValueToken
     {
-        return $this->newReaderInstance($this->metaDataSource($name))->token($name);
+        return $this->token($name, $this->metaDataSource($name)->value());
     }
 
     public function updateToken(string $name): ?ValueToken
     {
-        return $this->newReaderInstance($this->userSource($this->metaDataSource($name)))->token($name);
+        return $this->token($name, $this->userSource($this->metaDataSource($name))->value());
     }
 
     abstract public function token(string $name, string $value): ?ValueToken;
 
     abstract protected function defaultSource(): Source;
-
-    abstract protected function newReaderInstance(Source $source): ValueReader;
 
     protected function metaDataSource(string $namespace): Source
     {

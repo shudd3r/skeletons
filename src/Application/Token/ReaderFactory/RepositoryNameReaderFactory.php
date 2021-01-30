@@ -11,11 +11,9 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
-use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Application\Token;
 
 
 class RepositoryNameReaderFactory extends ValueReaderFactory
@@ -31,27 +29,21 @@ class RepositoryNameReaderFactory extends ValueReaderFactory
         parent::__construct($env, $options);
     }
 
-    public function token(string $name, string $value): ?Token\ValueToken
+    public function token(string $name, string $value): ?ValueToken
     {
         $isValid = (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
-        return $isValid ? new Token\ValueToken($name, $value) : null;
+        return $isValid ? new ValueToken($name, $value) : null;
     }
 
     protected function defaultSource(): Source
     {
-        $packageName = $this->packageName->initialToken('');
-        $config      = $this->env->package()->file('.git/config');
-        $callback    = fn() => $this->repositoryFromGitConfig($config) ?? $packageName->value();
+        $callback = fn() => $this->repositoryFromGitConfig() ?? $this->packageName->initialToken('')->value();
         return $this->userSource(new Source\CallbackSource($callback));
     }
 
-    protected function newReaderInstance(Source $source): Reader\ValueReader
+    private function repositoryFromGitConfig(): ?string
     {
-        return new Reader\ValueReader($this, $source);
-    }
-
-    private function repositoryFromGitConfig(File $gitConfig): ?string
-    {
+        $gitConfig = $this->env->package()->file('.git/config');
         if (!$gitConfig->exists()) { return null; }
 
         $config = parse_ini_string($gitConfig->contents(), true);

@@ -11,10 +11,9 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
-use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\ValueToken;
+use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
 use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\Token;
 
 
 class PackageNameReaderFactory extends ValueReaderFactory
@@ -22,29 +21,24 @@ class PackageNameReaderFactory extends ValueReaderFactory
     protected ?string $inputPrompt = 'Packagist package name';
     protected ?string $optionName  = 'package';
 
-    public function token(string $name, string $value): ?Token\ValueToken
+    public function token(string $name, string $value): ?ValueToken
     {
         $isValid = (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
         if (!$isValid) { return null; }
 
-        $subToken = new Token\ValueToken($name . '.title', $this->titleName($value));
-        return new Token\CompositeValueToken($name, $value, $subToken);
+        $subToken = new ValueToken($name . '.title', $this->titleName($value));
+        return new CompositeValueToken($name, $value, $subToken);
     }
 
     protected function defaultSource(): Source
     {
-        $callback = fn() => $this->env->composer()->value('name') ?? $this->directoryFallback($this->env->package());
+        $callback = fn() => $this->env->composer()->value('name') ?? $this->directoryFallback();
         return $this->userSource(new Source\CallbackSource($callback));
     }
 
-    protected function newReaderInstance(Source $source): Reader\ValueReader
+    private function directoryFallback(): string
     {
-        return new Reader\ValueReader($this, $source);
-    }
-
-    private function directoryFallback(Directory $rootDirectory): string
-    {
-        $path = $rootDirectory->path();
+        $path = $this->env->package()->path();
         return $path ? basename(dirname($path)) . '/' . basename($path) : '';
     }
 

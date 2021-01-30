@@ -11,10 +11,9 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
-use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Token;
 
 
 class PackageDescriptionReaderFactory extends ValueReaderFactory
@@ -30,9 +29,9 @@ class PackageDescriptionReaderFactory extends ValueReaderFactory
         parent::__construct($env, $options);
     }
 
-    public function token(string $name, string $value): ?Token\ValueToken
+    public function token(string $name, string $value): ?ValueToken
     {
-        return !empty($value) ? new Token\ValueToken($name, $value) : null;
+        return !empty($value) ? new ValueToken($name, $value) : null;
     }
 
     protected function defaultSource(): Source
@@ -40,10 +39,5 @@ class PackageDescriptionReaderFactory extends ValueReaderFactory
         $packageName = $this->packageName->initialToken('');
         $callback    = fn() => $this->env->composer()->value('description') ?? $packageName->value() . ' package';
         return $this->userSource(new Source\CallbackSource($callback));
-    }
-
-    protected function newReaderInstance(Source $source): Reader\ValueReader
-    {
-        return new Reader\ValueReader($this, $source);
     }
 }

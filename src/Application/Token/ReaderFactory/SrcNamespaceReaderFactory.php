@@ -11,10 +11,10 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
-use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\ValueToken;
+use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Token;
 
 
 class SrcNamespaceReaderFactory extends ValueReaderFactory
@@ -30,27 +30,21 @@ class SrcNamespaceReaderFactory extends ValueReaderFactory
         parent::__construct($env, $options);
     }
 
-    public function token(string $name, string $value): ?Token\ValueToken
+    public function token(string $name, string $value): ?ValueToken
     {
         foreach (explode('\\', $value) as $label) {
             $isValidLabel = (bool) preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label);
             if (!$isValidLabel) { return null; }
         }
 
-        $subToken = new Token\ValueToken($name . '.esc', str_replace('\\', '\\\\', $value));
-        return new Token\CompositeValueToken($name, $value, $subToken);
+        $subToken = new ValueToken($name . '.esc', str_replace('\\', '\\\\', $value));
+        return new CompositeValueToken($name, $value, $subToken);
     }
 
     protected function defaultSource(): Source
     {
-        $packageName = $this->packageName->initialToken('');
-        $callback    = fn() => $this->namespaceFromComposer() ?? $this->namespaceFromPackageName($packageName);
+        $callback = fn() => $this->namespaceFromComposer() ?? $this->namespaceFromPackageName();
         return $this->userSource(new Source\CallbackSource($callback));
-    }
-
-    protected function newReaderInstance(Source $source): Reader\ValueReader
-    {
-        return new Reader\ValueReader($this, $source);
     }
 
     private function namespaceFromComposer(): ?string
@@ -61,9 +55,9 @@ class SrcNamespaceReaderFactory extends ValueReaderFactory
         return $namespace ? rtrim($namespace, '\\') : null;
     }
 
-    private function namespaceFromPackageName(Token\ValueToken $packageName): string
+    private function namespaceFromPackageName(): string
     {
-        [$vendor, $package] = explode('/', $packageName->value());
+        [$vendor, $package] = explode('/', $this->packageName->initialToken('')->value());
         return $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
     }
 
