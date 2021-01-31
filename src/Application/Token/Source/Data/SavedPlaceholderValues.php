@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Application\Token\Source\Data;
 
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use RuntimeException;
 
 
 class SavedPlaceholderValues
@@ -34,10 +33,6 @@ class SavedPlaceholderValues
     private function generateData(): array
     {
         $data = json_decode($this->metaFile->contents(), true);
-        if (!$data || !is_array($data)) {
-            throw new RuntimeException();
-        }
-
-        return $data;
+        return is_array($data) ? $data : [];
     }
 }
