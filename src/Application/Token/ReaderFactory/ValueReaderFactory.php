@@ -40,47 +40,49 @@ abstract class ValueReaderFactory implements ReaderFactory
 
     public function validationToken(string $name): ?ValueToken
     {
-        return $this->token($name, $this->metaDataSource($name)->value());
+        $value = $this->metaDataSource($name)->value();
+        return $this->token($name, $value);
     }
 
     public function updateToken(string $name): ?ValueToken
     {
-        return $this->token($name, $this->userSource($this->metaDataSource($name))->value());
+        $value = $this->userSource($this->metaDataSource($name))->value();
+        return $this->token($name, $value);
     }
 
-    abstract public function token(string $name, string $value): ?ValueToken;
+    public function token(string $name, string $value): ?ValueToken
+    {
+        return $this->isValid($value) ? new ValueToken($name, $value) : null;
+    }
+
+    abstract protected function isValid(string $value): bool;
 
     abstract protected function defaultSource(): Source;
 
     protected function metaDataSource(string $namespace): Source
     {
-        return new Source\CallbackSource(fn() => $this->env->metaData()->value($namespace) ?? '');
+        $callback = fn() => $this->env->metaData()->value($namespace) ?? '';
+        return new Source\CallbackSource($callback);
     }
 
     protected function userSource(Source $source): Source
     {
-        if (isset($this->optionName)) {
-            $source = $this->option($this->optionName, $source);
-        }
-
-        if (isset($this->inputPrompt)) {
-            $source = $this->interactive($this->inputPrompt, $source);
-        }
-
-        return $source;
+        return $this->interactive($this->option($source));
     }
 
-    private function option(string $name, Source $default): Source
+    private function option(Source $default): Source
     {
-        return isset($this->options[$name])
-            ? new Source\PredefinedValue($this->options[$name])
+        $hasOption = isset($this->optionName) && isset($this->options[$this->optionName]);
+        return $hasOption
+            ? new Source\PredefinedValue($this->options[$this->optionName])
             : $default;
     }
 
-    private function interactive(string $prompt, Source $source): Source
+    private function interactive(Source $source): Source
     {
-        return isset($this->options['i']) || isset($this->options['interactive'])
-            ? new Source\InteractiveInput($prompt, $this->env->input(), $source)
+        $fromInput = isset($this->inputPrompt) && (isset($this->options['i']) || isset($this->options['interactive']));
+        return $fromInput
+            ? new Source\InteractiveInput($this->inputPrompt, $this->env->input(), $source)
             : $source;
     }
 }

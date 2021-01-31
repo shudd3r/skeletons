@@ -23,11 +23,15 @@ class PackageNameReaderFactory extends ValueReaderFactory
 
     public function token(string $name, string $value): ?ValueToken
     {
-        $isValid = (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
-        if (!$isValid) { return null; }
+        if (!$this->isValid($value)) { return null; }
 
         $subToken = new ValueToken($name . '.title', $this->titleName($value));
         return new CompositeValueToken($name, $value, $subToken);
+    }
+
+    protected function isValid(string $value): bool
+    {
+        return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
     }
 
     protected function defaultSource(): Source

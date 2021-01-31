@@ -11,7 +11,6 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
-use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
@@ -29,10 +28,9 @@ class RepositoryNameReaderFactory extends ValueReaderFactory
         parent::__construct($env, $options);
     }
 
-    public function token(string $name, string $value): ?ValueToken
+    protected function isValid(string $value): bool
     {
-        $isValid = (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
-        return $isValid ? new ValueToken($name, $value) : null;
+        return (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
     }
 
     protected function defaultSource(): Source
