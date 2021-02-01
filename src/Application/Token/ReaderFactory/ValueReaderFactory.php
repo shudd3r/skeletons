@@ -25,7 +25,7 @@ abstract class ValueReaderFactory implements ReaderFactory
     protected ?string $inputPrompt;
     protected ?string $optionName;
 
-    private ValueToken $initialToken;
+    private ?ValueToken $initialToken;
 
     public function __construct(RuntimeEnv $env, array $options)
     {
