@@ -20,34 +20,56 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class PackageDescriptionReaderFactoryTest extends TestCase
 {
-    public function testTokenFactoryMethod_CreatesCorrectToken()
+    public function testWithDescriptionInComposerJson_InitialTokenValue_IsReadFromComposerJson()
     {
-        $expected = new Token\ValueToken('namespace', 'Some\\Namespace');
-        $this->assertEquals($expected, $this->replacement()->token('namespace', 'Some\Namespace'));
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->package()->addFile('composer.json', '{"description": "composer json description"}');
+
+        $replacement = $this->replacement($env);
+        $this->assertToken($replacement->initialToken('package.desc'), 'composer json description');
     }
 
-    /**
-     * @dataProvider valueExamples
-     *
-     * @param string $invalid
-     * @param string $valid
-     */
-    public function testTokenFactoryMethod_ValidatesValue(string $invalid, string $valid)
+    public function testWithoutDescriptionInComposerJson_InitialTokenValue_IsResolvedFromPackageName()
     {
-        $replacement = $this->replacement();
-        $this->assertInstanceOf(Token::class, $replacement->token('foo', $valid));
-        $this->assertNull($replacement->token('foo', $invalid));
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->package()->path = 'root/package/path';
+
+        $replacement = $this->replacement($env);
+        $this->assertToken($replacement->initialToken('package.desc'), 'package/path package');
     }
 
-    public function valueExamples()
+    public function testTokenFactoryMethods_CreateCorrectToken()
     {
-        return [['', 'package description']];
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->package()->addFile('composer.json', '{"description": "composer desc"}');
+        $env->metaDataFile()->contents = '{"desc.placeholder": "meta desc"}';
+
+        $replacement = $this->replacement($env);
+        $this->assertToken($replacement->initialToken('desc.placeholder'), 'composer desc', 'desc.placeholder');
+        $this->assertToken($replacement->validationToken('desc.placeholder'), 'meta desc', 'desc.placeholder');
+        $this->assertToken($replacement->updateToken('desc.placeholder'), 'meta desc', 'desc.placeholder');
     }
 
-    private function replacement(): PackageDescriptionReaderFactory
+    public function testForEmptyTokenValue_TokenFactoryMethods_ReturnNull()
     {
-        $env     = new Doubles\FakeRuntimeEnv();
-        $package = new PackageNameReaderFactory($env, []);
-        return new PackageDescriptionReaderFactory($env, [], $package);
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->package()->addFile('composer.json', '{"description": ""}');
+        $env->metaDataFile()->contents = '{"desc.placeholder": ""}';
+
+        $replacement = $this->replacement($env);
+        $this->assertNull($replacement->initialToken('foo'));
+        $this->assertNull($replacement->validationToken('desc.placeholder'));
+        $this->assertNull($replacement->updateToken('not.existing.data'));
+    }
+
+    private function assertToken(Token $token, string $value, string $name = 'package.desc')
+    {
+        $expected = new Token\ValueToken($name, $value);
+        $this->assertEquals($expected, $token);
+    }
+
+    private function replacement(Doubles\FakeRuntimeEnv $env): PackageDescriptionReaderFactory
+    {
+        return new PackageDescriptionReaderFactory($env, [], new PackageNameReaderFactory($env, []));
     }
 }
