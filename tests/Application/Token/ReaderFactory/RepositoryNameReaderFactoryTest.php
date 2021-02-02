@@ -12,16 +12,68 @@
 namespace Shudd3r\PackageFiles\Tests\Application\Token\ReaderFactory;
 
 use PHPUnit\Framework\TestCase;
+use Shudd3r\PackageFiles\Application\Token\ReaderFactory\RepositoryNameReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\ReaderFactory\PackageNameReaderFactory;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class RepositoryNameReaderFactoryTest extends TestCase
 {
-    public function testTokenFactoryMethod_CreatesCorrectToken()
+    public function testWithoutGitConfigFile_InitialTokenValue_IsResolvedFromPackageName()
     {
-        $expected = new Token\ValueToken('repo.name', 'repository/name');
-        $this->assertEquals($expected, $this->replacement()->token('repo.name', 'repository/name'));
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->package()->path = 'some/directory/package/name';
+
+        $replacement = $this->replacement($env);
+        $this->assertToken($replacement->initialToken('repo.placeholder'), 'package/name', 'repo.placeholder');
+    }
+
+    public function testWithoutRemoteRepositoriesInGitConfig_InitialTokenValue_IsResolvedFromPackageName()
+    {
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->package()->file('.git/config')->write($this->config());
+        $env->package()->path = 'some/directory/package/name';
+
+        $replacement = $this->replacement($env);
+        $this->assertToken($replacement->initialToken('repo.placeholder'), 'package/name', 'repo.placeholder');
+    }
+
+    public function testWithRemoteRepositoriesInGitConfig_InitialTokenValue_IsReadWithCorrectPriority()
+    {
+        $env = new Doubles\FakeRuntimeEnv();
+
+        $remotes = ['foo' => 'git@github.com:some/repo.git'];
+        $env->package()->file('.git/config')->write($this->config($remotes));
+        $replacement = $this->replacement($env);
+        $this->assertToken($replacement->initialToken('repo.name'), 'some/repo');
+
+        $remotes += ['second' => 'git@github.com:other/repo.git'];
+        $env->package()->file('.git/config')->write($this->config($remotes));
+        $replacement = $this->replacement($env);
+        $this->assertToken($replacement->initialToken('repo.name'), 'some/repo');
+
+        $remotes += ['origin' => 'https://github.com/orig/repo.git'];
+        $env->package()->file('.git/config')->write($this->config($remotes));
+        $replacement = $this->replacement($env);
+        $this->assertToken($replacement->initialToken('repo.name'), 'orig/repo');
+
+        $remotes += ['upstream' => 'git@github.com:master/ssh-repo.git'];
+        $env->package()->file('.git/config')->write($this->config($remotes));
+        $replacement = $this->replacement($env);
+        $this->assertToken($replacement->initialToken('repo.name'), 'master/ssh-repo');
+    }
+
+    public function testTokenFactoryMethods_CreateCorrectToken()
+    {
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->metaDataFile()->contents = '{"repo.name": "meta/name"}';
+        $env->package()->path = 'root/directory/init/name';
+
+        $replacement = $this->replacement($env);
+        $this->assertToken($replacement->initialToken('repo.name'), 'init/name');
+        $this->assertToken($replacement->validationToken('repo.name'), 'meta/name');
+        $this->assertToken($replacement->updateToken('repo.name'), 'meta/name');
     }
 
     /**
@@ -30,11 +82,21 @@ class RepositoryNameReaderFactoryTest extends TestCase
      * @param string $invalid
      * @param string $valid
      */
-    public function testTokenFactoryMethod_ValidatesValue(string $invalid, string $valid)
+    public function testTokenFactoryMethods_ValidateTokenValue(string $invalid, string $valid)
     {
-        $replacement = $this->replacement();
-        $this->assertInstanceOf(Token::class, $replacement->token('foo', $valid));
-        $this->assertNull($replacement->token('foo', $invalid));
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->metaDataFile()->contents = '{"repo.name": "' . $invalid . '"}';
+        $replacement = $this->replacement($env, ['repo' => $invalid]);
+        $this->assertNull($replacement->initialToken('repo.name'));
+        $this->assertNull($replacement->validationToken('repo.name'));
+        $this->assertNull($replacement->updateToken('repo.name'));
+
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->metaDataFile()->contents = '{"repo.name": "' . $valid . '"}';
+        $replacement = $this->replacement($env, ['repo' => $valid]);
+        $this->assertInstanceOf(Token::class, $replacement->initialToken('repo.name'));
+        $this->assertInstanceOf(Token::class, $replacement->validationToken('repo.name'));
+        $this->assertInstanceOf(Token::class, $replacement->updateToken('repo.name'));
     }
 
     public function valueExamples()
@@ -56,10 +118,41 @@ class RepositoryNameReaderFactoryTest extends TestCase
         ];
     }
 
-    private function replacement(): Token\ReaderFactory\RepositoryNameReaderFactory
+    private function assertToken(Token $token, string $value, string $name = 'repo.name')
     {
-        $env     = new Doubles\FakeRuntimeEnv();
-        $package = new Token\ReaderFactory\PackageNameReaderFactory($env, []);
-        return new Token\ReaderFactory\RepositoryNameReaderFactory($env, [], $package);
+        $expected = new Token\ValueToken($name, $value);
+        $this->assertEquals($expected, $token);
+    }
+
+    private function replacement(Doubles\FakeRuntimeEnv $env, array $options = []): RepositoryNameReaderFactory
+    {
+        return new RepositoryNameReaderFactory($env, $options, new PackageNameReaderFactory($env, $options));
+    }
+
+    private function config(array $remotes = []): string
+    {
+        $remoteConfig = '';
+        foreach ($remotes as $name => $url) {
+            $remoteConfig .= <<<INI
+                [remote "{$name}"]
+                    url = {$url}
+                    fetch = +refs/heads/*:refs/remotes/{$name}/*
+                
+                INI;
+        }
+
+        return <<<INI
+            [core]
+                repositoryformatversion = 0
+                filemode = false
+                bare = false
+                logallrefupdates = true
+                symlinks = false
+                ignorecase = true
+            {$remoteConfig}[branch "develop"]
+                remote = origin
+                merge = refs/heads/develop
+            
+            INI;
     }
 }
