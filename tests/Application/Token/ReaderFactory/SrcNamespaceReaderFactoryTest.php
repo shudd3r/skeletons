@@ -12,18 +12,42 @@
 namespace Shudd3r\PackageFiles\Tests\Application\Token\ReaderFactory;
 
 use PHPUnit\Framework\TestCase;
+use Shudd3r\PackageFiles\Application\Token\ReaderFactory\SrcNamespaceReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\ReaderFactory\PackageNameReaderFactory;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class SrcNamespaceReaderFactoryTest extends TestCase
 {
-    public function testTokenFactoryMethod_CreatesCorrectToken()
+    public function testWithSrcNamespaceInComposerJson_InitialTokenValue_IsReadFromComposerJson()
     {
-        $subToken = new Token\ValueToken('namespace.esc', 'Some\\\\Namespace');
-        $expected = new Token\CompositeValueToken('namespace', 'Some\\Namespace', $subToken);
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->package()->addFile('composer.json', $this->composerData());
+        $replacement = $this->replacement($env);
 
-        $this->assertEquals($expected, $this->replacement()->token('namespace', 'Some\Namespace'));
+        $this->assertToken($replacement->initialToken('src.namespace'), 'Composer\\Namespace');
+    }
+
+    public function testWithoutSrcNamespaceInComposerJson_InitialTokenValue_IsResolvedFromPackageName()
+    {
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->package()->addFile('composer.json', $this->composerData(false));
+        $replacement = $this->replacement($env);
+
+        $this->assertToken($replacement->initialToken('src.namespace'), 'Package\\Name');
+    }
+
+    public function testTokenFactoryMethods_CreateCorrectToken()
+    {
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->metaDataFile()->contents = json_encode(['src.namespace' => 'Meta\\Namespace']);
+        $env->package()->addFile('composer.json', $this->composerData());
+
+        $replacement = $this->replacement($env);
+        $this->assertToken($replacement->initialToken('ns.placeholder'), 'Composer\\Namespace', 'ns.placeholder');
+        $this->assertToken($replacement->validationToken('src.namespace'), 'Meta\\Namespace');
+        $this->assertToken($replacement->updateToken('src.namespace'), 'Meta\\Namespace');
     }
 
     /**
@@ -34,9 +58,20 @@ class SrcNamespaceReaderFactoryTest extends TestCase
      */
     public function testTokenFactoryMethod_ValidatesValue(string $invalid, string $valid)
     {
-        $replacement = $this->replacement();
-        $this->assertInstanceOf(Token::class, $replacement->token('foo', $valid));
-        $this->assertNull($replacement->token('foo', $invalid));
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->metaDataFile()->contents = json_encode(['ns.placeholder' => $invalid]);
+        $replacement = $this->replacement($env, ['ns' => $invalid]);
+
+        $this->assertNull($replacement->initialToken('ns.placeholder'));
+        $this->assertNull($replacement->validationToken('ns.placeholder'));
+        $this->assertNull($replacement->updateToken('ns.placeholder'));
+
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->metaDataFile()->contents = json_encode(['ns.placeholder' => $valid]);
+        $replacement = $this->replacement($env, ['ns' => $valid]);
+        $this->assertInstanceOf(Token::class, $replacement->initialToken('ns.placeholder'));
+        $this->assertInstanceOf(Token::class, $replacement->validationToken('ns.placeholder'));
+        $this->assertInstanceOf(Token::class, $replacement->updateToken('ns.placeholder'));
     }
 
     public function valueExamples()
@@ -48,10 +83,27 @@ class SrcNamespaceReaderFactoryTest extends TestCase
         ];
     }
 
-    private function replacement(): Token\ReaderFactory\SrcNamespaceReaderFactory
+    private function assertToken(Token $token, string $value, string $name = 'src.namespace')
     {
-        $env     = new Doubles\FakeRuntimeEnv();
-        $package = new Token\ReaderFactory\PackageNameReaderFactory($env, []);
-        return new Token\ReaderFactory\SrcNamespaceReaderFactory($env, [], $package);
+        $subToken = new Token\ValueToken($name . '.esc', str_replace('\\', '\\\\', $value));
+        $expected = new Token\CompositeValueToken($name, $value, $subToken);
+        $this->assertEquals($expected, $token);
+    }
+
+    private function replacement(Doubles\FakeRuntimeEnv $env, array $options = []): SrcNamespaceReaderFactory
+    {
+        return new SrcNamespaceReaderFactory($env, $options, new PackageNameReaderFactory($env, $options));
+    }
+
+    private function composerData(bool $withAutoload = true): string
+    {
+        $srcNamespace = $withAutoload ? ['Composer\\Namespace\\' => 'src/'] : [];
+        $namespaces   = ['Some\\Namespace\\' => 'not/src/'] + $srcNamespace;
+        $composer     = [
+            'name' => 'package/name',
+            'autoload' => ['psr-4' => $namespaces]
+        ];
+
+        return json_encode($composer);
     }
 }
