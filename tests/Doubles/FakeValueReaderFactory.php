@@ -11,11 +11,11 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory\ValueReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\Source;
 
 
-class FakeValueReaderFactory extends ValueReaderFactory
+class FakeValueReaderFactory extends ReaderFactory
 {
     protected ?string $optionName  = 'option';
     protected ?string $inputPrompt = 'Provide value';

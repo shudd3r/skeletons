@@ -11,13 +11,14 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
+use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-class SrcNamespaceReaderFactory extends ValueReaderFactory
+class SrcNamespaceReaderFactory extends ReaderFactory
 {
     protected ?string $inputPrompt = 'Source files namespace';
     protected ?string $optionName  = 'ns';

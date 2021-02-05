@@ -11,12 +11,13 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
+use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
 use Shudd3r\PackageFiles\Application\Token\Source;
 
 
-class PackageNameReaderFactory extends ValueReaderFactory
+class PackageNameReaderFactory extends ReaderFactory
 {
     protected ?string $inputPrompt = 'Packagist package name';
     protected ?string $optionName  = 'package';

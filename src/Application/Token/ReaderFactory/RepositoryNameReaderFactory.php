@@ -11,11 +11,12 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
+use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-class RepositoryNameReaderFactory extends ValueReaderFactory
+class RepositoryNameReaderFactory extends ReaderFactory
 {
     protected ?string $inputPrompt = 'Github repository name';
     protected ?string $optionName  = 'repo';

@@ -11,11 +11,12 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 
+use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-class PackageDescriptionReaderFactory extends ValueReaderFactory
+class PackageDescriptionReaderFactory extends ReaderFactory
 {
     protected ?string $inputPrompt = 'Package description';
     protected ?string $optionName  = 'desc';
