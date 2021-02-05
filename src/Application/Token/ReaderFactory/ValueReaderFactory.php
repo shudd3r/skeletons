@@ -50,7 +50,7 @@ abstract class ValueReaderFactory implements ReaderFactory
         return $this->token($name, $value);
     }
 
-    public function token(string $name, string $value): ?ValueToken
+    protected function token(string $name, string $value): ?ValueToken
     {
         return $this->isValid($value) ? new ValueToken($name, $value) : null;
     }

@@ -21,7 +21,7 @@ class PackageNameReaderFactory extends ValueReaderFactory
     protected ?string $inputPrompt = 'Packagist package name';
     protected ?string $optionName  = 'package';
 
-    public function token(string $name, string $value): ?ValueToken
+    protected function token(string $name, string $value): ?ValueToken
     {
         if (!$this->isValid($value)) { return null; }
 

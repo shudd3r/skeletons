@@ -30,7 +30,7 @@ class SrcNamespaceReaderFactory extends ValueReaderFactory
         parent::__construct($env, $options);
     }
 
-    public function token(string $name, string $value): ?ValueToken
+    protected function token(string $name, string $value): ?ValueToken
     {
         if (!$this->isValid($value)) { return null; }
 
