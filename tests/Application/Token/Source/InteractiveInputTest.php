@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\Token\Source;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token\Source\InteractiveInput;
+use Shudd3r\PackageFiles\Application\Token\Source\PredefinedValue;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -67,6 +68,6 @@ class InteractiveInputTest extends TestCase
     private function source(?Doubles\MockedTerminal &$terminal, string $default = 'default'): InteractiveInput
     {
         $terminal = new Doubles\MockedTerminal();
-        return new InteractiveInput('Input value', $terminal, new Doubles\FakeSource($default));
+        return new InteractiveInput('Input value', $terminal, new PredefinedValue($default));
     }
 }
