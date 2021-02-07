@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Application\Command;
 
 use Shudd3r\PackageFiles\Environment\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\ReaderFactory as Readers;
 
 
@@ -27,6 +26,8 @@ abstract class Factory
     protected RuntimeEnv $env;
     protected array      $options;
 
+    private array $tokenReaders;
+
     public function __construct(RuntimeEnv $env, array $options)
     {
         $this->env     = $env;
@@ -35,15 +36,17 @@ abstract class Factory
 
     abstract public function command(): Command;
 
-    protected function tokenReaders(callable $createMethod): Reader
+    protected function tokenReaders(): array
     {
+        if (isset($this->tokenReaders)) { return $this->tokenReaders; }
+
         $packageName = new Readers\PackageNameReaderFactory($this->env, $this->options);
 
-        return new Reader($createMethod, [
+        return $this->tokenReaders = [
             self::PACKAGE_NAME  => $packageName,
             self::REPO_NAME     => new Readers\RepositoryNameReaderFactory($this->env, $this->options, $packageName),
             self::PACKAGE_DESC  => new Readers\PackageDescriptionReaderFactory($this->env, $this->options, $packageName),
             self::SRC_NAMESPACE => new Readers\SrcNamespaceReaderFactory($this->env, $this->options, $packageName)
-        ]);
+        ];
     }
 }

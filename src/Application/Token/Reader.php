@@ -14,20 +14,13 @@ namespace Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class Reader
+abstract class Reader
 {
-    private $createMethod;
     private array $readerFactories;
-
     private array $tokens;
 
-    /**
-     * @param callable $createMethod    fn(string, ReaderFactory) => Reader
-     * @param array    $readerFactories
-     */
-    public function __construct(callable $createMethod, array $readerFactories)
+    public function __construct(array $readerFactories)
     {
-        $this->createMethod    = $createMethod;
         $this->readerFactories = $readerFactories;
     }
 
@@ -49,11 +42,13 @@ class Reader
         return json_encode($values, JSON_PRETTY_PRINT);
     }
 
+    abstract protected function tokenInstance(string $name, ReaderFactory $replacement): ?Token;
+
     private function readTokens(): array
     {
         $tokens = [];
         foreach ($this->readerFactories as $name => $replacement) {
-            $token = ($this->createMethod)($name, $replacement);
+            $token = $this->tokenInstance($name, $replacement);
             if (!$token) { continue; }
             $tokens[$name] = $token;
         }

@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Template;
@@ -26,8 +26,7 @@ class Update extends Command\Factory
         $validation = new Validate($this->env, $this->options);
         $cache      = new TokenCache();
 
-        $createReader  = fn(string $name, ReaderFactory $factory) => $factory->updateToken($name);
-        $tokenReader   = $this->tokenReaders($createReader);
+        $tokenReader   = new Reader\UpdateReader($this->tokenReaders());
         $processTokens = new Command\TokenProcessor($tokenReader, $this->processor($cache), $this->env->output());
         $writeMetaData = new Command\WriteMetaData($tokenReader, $this->env->metaDataFile());
 

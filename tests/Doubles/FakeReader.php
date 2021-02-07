@@ -24,7 +24,7 @@ class FakeReader extends Reader
     {
         $this->value = $value;
         $this->token = isset($value) ? new FakeToken($value) : null;
-        parent::__construct(fn() => null, []);
+        parent::__construct([]);
     }
 
     public function token(string $namespace = ''): ?Token
@@ -35,5 +35,10 @@ class FakeReader extends Reader
     public function value(): string
     {
         return isset($this->value) ? $this->value : 'invalid string';
+    }
+
+    protected function tokenInstance(string $name, Token\ReaderFactory $replacement): ?Token
+    {
+        return null;
     }
 }
