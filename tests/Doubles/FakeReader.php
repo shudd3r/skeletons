@@ -15,7 +15,7 @@ use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class FakeReader implements Reader
+class FakeReader extends Reader
 {
     private ?string $value;
     private ?Token  $token;
@@ -24,6 +24,7 @@ class FakeReader implements Reader
     {
         $this->value = $value;
         $this->token = isset($value) ? new FakeToken($value) : null;
+        parent::__construct(fn() => null, []);
     }
 
     public function token(string $namespace = ''): ?Token

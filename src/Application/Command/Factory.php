@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Command;
 
 use Shudd3r\PackageFiles\Environment\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\ReaderFactory as Readers;
 
 
@@ -34,11 +35,11 @@ abstract class Factory
 
     abstract public function command(): Command;
 
-    protected function tokenReaders(callable $createMethod): Readers\TokenReaders
+    protected function tokenReaders(callable $createMethod): Reader
     {
         $packageName = new Readers\PackageNameReaderFactory($this->env, $this->options);
 
-        return new Readers\TokenReaders($createMethod, [
+        return new Reader($createMethod, [
             self::PACKAGE_NAME  => $packageName,
             self::REPO_NAME     => new Readers\RepositoryNameReaderFactory($this->env, $this->options, $packageName),
             self::PACKAGE_DESC  => new Readers\PackageDescriptionReaderFactory($this->env, $this->options, $packageName),
