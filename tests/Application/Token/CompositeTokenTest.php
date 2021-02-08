@@ -28,6 +28,6 @@ class CompositeTokenTest extends TestCase
         $token = new Token\CompositeToken(...$tokens);
         $template = "Template with {foo.token}-{bar.token}-{baz.token}";
 
-        $this->assertSame('Template with foo-bar-baz', $token->replacePlaceholders($template));
+        $this->assertSame('Template with foo-bar-baz', $token->replace($template));
     }
 }

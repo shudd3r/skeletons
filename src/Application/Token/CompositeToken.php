@@ -23,10 +23,10 @@ class CompositeToken implements Token
         $this->tokens = $tokens;
     }
 
-    public function replacePlaceholders(string $template): string
+    public function replace(string $template): string
     {
         foreach ($this->tokens as $token) {
-            $template = $token->replacePlaceholders($template);
+            $template = $token->replace($template);
         }
 
         return $template;

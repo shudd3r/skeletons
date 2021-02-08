@@ -26,7 +26,7 @@ class ValueListToken implements Token
         $this->values      = $values;
     }
 
-    public function replacePlaceholders(string $template): string
+    public function replace(string $template): string
     {
         $templateParts = explode('{' . $this->placeholder . '}', $template);
         if (count($templateParts) !== count($this->values) + 1) {

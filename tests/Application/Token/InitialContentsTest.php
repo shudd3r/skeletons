@@ -23,7 +23,7 @@ class InitialContentsTest extends TestCase
         $token    = new InitialContents();
         $template = 'example template {some.token} content';
 
-        $this->assertSame($template, $token->replacePlaceholders($template));
+        $this->assertSame($template, $token->replace($template));
     }
 
     public function testForTemplateWithMisplacedPlaceholders_ReturnsUnchangedTemplate()
@@ -31,7 +31,7 @@ class InitialContentsTest extends TestCase
         $token    = new InitialContents();
         $template = $this->template('example <<<end} template {start>>> and {some.token} content');
 
-        $this->assertSame($template, $token->replacePlaceholders($template));
+        $this->assertSame($template, $token->replace($template));
     }
 
     public function testInitialVsReplaced()
@@ -40,11 +40,11 @@ class InitialContentsTest extends TestCase
 
         $token    = new InitialContents();
         $expected = 'example initial template content and {some.token}';
-        $this->assertSame($expected, $token->replacePlaceholders($template));
+        $this->assertSame($expected, $token->replace($template));
 
         $token    = new InitialContents(false);
         $expected = 'example {' . OriginalContents::PLACEHOLDER . '} and {some.token}';
-        $this->assertSame($expected, $token->replacePlaceholders($template));
+        $this->assertSame($expected, $token->replace($template));
     }
 
     /**
@@ -55,7 +55,7 @@ class InitialContentsTest extends TestCase
     public function testReplacingWithInitialValue(string $template, string $expected)
     {
         $token = new InitialContents();
-        $this->assertSame($expected, $token->replacePlaceholders($template));
+        $this->assertSame($expected, $token->replace($template));
     }
 
     /**
@@ -66,7 +66,7 @@ class InitialContentsTest extends TestCase
     public function testReplacingWithOriginalContentPlaceholder(string $template, string $expected)
     {
         $token = new InitialContents(false);
-        $this->assertSame($expected, $token->replacePlaceholders($template));
+        $this->assertSame($expected, $token->replace($template));
     }
 
     public function replaceWithPlaceholder(): array

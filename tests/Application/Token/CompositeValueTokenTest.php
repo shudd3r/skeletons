@@ -28,7 +28,7 @@ class CompositeValueTokenTest extends TestCase
         $token = new Token\CompositeValueToken('base.token', 'base value', ...$tokens);
         $template = "Template for {base.token} with {foo.token}-{bar.token}-{baz.token}";
 
-        $this->assertSame('Template for base value with foo-bar-baz', $token->replacePlaceholders($template));
+        $this->assertSame('Template for base value with foo-bar-baz', $token->replace($template));
         $this->assertSame('base value', $token->value());
     }
 }

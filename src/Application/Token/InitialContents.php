@@ -26,7 +26,7 @@ class InitialContents implements Token
         $this->initialize = $initialize;
     }
 
-    public function replacePlaceholders(string $template): string
+    public function replace(string $template): string
     {
         if (!$this->hasPlaceholder($template)) { return $template; }
 

@@ -24,12 +24,12 @@ class CompositeValueToken extends ValueToken
         parent::__construct($placeholder, $value);
     }
 
-    public function replacePlaceholders(string $template): string
+    public function replace(string $template): string
     {
-        $template = parent::replacePlaceholders($template);
+        $template = parent::replace($template);
 
         foreach ($this->subTokens as $token) {
-            $template = $token->replacePlaceholders($template);
+            $template = $token->replace($template);
         }
 
         return $template;

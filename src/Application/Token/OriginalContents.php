@@ -26,10 +26,10 @@ class OriginalContents implements Token
         $this->packageFile = $packageFile;
     }
 
-    public function replacePlaceholders(string $template): string
+    public function replace(string $template): string
     {
         $token = $this->token($template);
-        return $token->replacePlaceholders($template);
+        return $token->replace($template);
     }
 
     public function token(string $mask): Token

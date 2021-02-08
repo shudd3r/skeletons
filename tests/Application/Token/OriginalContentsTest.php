@@ -27,11 +27,11 @@ class OriginalContentsTest extends TestCase
     public function testUseCases(string $original, string $mask, ?string $expected)
     {
         $token = $this->token($original);
-        $this->assertSame($expected ?? $original, $token->replacePlaceholders($mask));
+        $this->assertSame($expected ?? $original, $token->replace($mask));
 
         $cache = new Token\TokenCache();
-        $this->assertSame($expected ?? $original, $this->token($original, $cache)->replacePlaceholders($mask));
-        $this->assertSame($expected ?? $original, $cache->token('cached/file.txt')->replacePlaceholders($mask));
+        $this->assertSame($expected ?? $original, $this->token($original, $cache)->replace($mask));
+        $this->assertSame($expected ?? $original, $cache->token('cached/file.txt')->replace($mask));
     }
 
     public function useCases(): array

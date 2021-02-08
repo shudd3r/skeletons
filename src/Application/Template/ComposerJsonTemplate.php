@@ -48,7 +48,7 @@ class ComposerJsonTemplate implements Template
 
         $json = json_encode($newComposer + $composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
 
-        return $token->replacePlaceholders($json);
+        return $token->replace($json);
     }
 
     private function normalizedAutoload(array $autoload, string $namespace, string $path): array

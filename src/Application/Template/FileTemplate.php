@@ -31,6 +31,6 @@ class FileTemplate implements Template
 
     public function render(Token $token): string
     {
-        return $token->replacePlaceholders($this->templateFile->contents());
+        return $token->replace($this->templateFile->contents());
     }
 }

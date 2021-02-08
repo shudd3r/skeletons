@@ -25,7 +25,7 @@ class ValueToken implements Token
         $this->value       = $value;
     }
 
-    public function replacePlaceholders(string $template): string
+    public function replace(string $template): string
     {
         return str_replace('{' . $this->placeholder . '}', $this->value, $template);
     }
