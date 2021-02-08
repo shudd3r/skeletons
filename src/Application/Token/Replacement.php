@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-abstract class ReaderFactory
+abstract class Replacement
 {
     protected RuntimeEnv $env;
     protected array      $options;

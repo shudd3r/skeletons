@@ -9,21 +9,21 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
+namespace Shudd3r\PackageFiles\Application\Token\Replacement;
 
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\Replacement;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-class RepositoryNameReaderFactory extends ReaderFactory
+class RepositoryName extends Replacement
 {
     protected ?string $inputPrompt = 'Github repository name';
     protected ?string $optionName  = 'repo';
 
-    private PackageNameReaderFactory $packageName;
+    private PackageName $packageName;
 
-    public function __construct(RuntimeEnv $env, array $options, PackageNameReaderFactory $packageName)
+    public function __construct(RuntimeEnv $env, array $options, PackageName $packageName)
     {
         $this->packageName = $packageName;
         parent::__construct($env, $options);

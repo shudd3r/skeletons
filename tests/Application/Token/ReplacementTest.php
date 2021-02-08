@@ -13,15 +13,15 @@ namespace Shudd3r\PackageFiles\Tests\Application\Token;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeValueReaderFactory;
+use Shudd3r\PackageFiles\Tests\Doubles\FakeReplacement;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeRuntimeEnv;
 
 
-class ValueReaderFactoryTest extends TestCase
+class ReplacementTest extends TestCase
 {
     public function testForInvalidValue_TokenMethods_ReturnNull()
     {
-        $replacement = new FakeValueReaderFactory(new FakeRuntimeEnv(), [], false);
+        $replacement = new FakeReplacement(new FakeRuntimeEnv(), [], false);
         $this->assertNull($replacement->initialToken('foo'));
         $this->assertNull($replacement->updateToken('foo'));
         $this->assertNull($replacement->validationToken('foo'));
@@ -49,7 +49,7 @@ class ValueReaderFactoryTest extends TestCase
             $env->input()->inputStrings = ['input value', 'input value'];
         }
 
-        $replacement = new FakeValueReaderFactory($env, $options);
+        $replacement = new FakeReplacement($env, $options);
 
         $this->assertEquals(new ValueToken('foo', $init), $replacement->initialToken('foo'));
         $this->assertEquals(new ValueToken('foo', 'metaData'), $replacement->validationToken('foo'));

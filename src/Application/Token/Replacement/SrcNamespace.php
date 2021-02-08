@@ -9,23 +9,23 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Token\ReaderFactory;
+namespace Shudd3r\PackageFiles\Application\Token\Replacement;
 
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\Replacement;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
 use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-class SrcNamespaceReaderFactory extends ReaderFactory
+class SrcNamespace extends Replacement
 {
     protected ?string $inputPrompt = 'Source files namespace';
     protected ?string $optionName  = 'ns';
 
-    private PackageNameReaderFactory $packageName;
+    private PackageName $packageName;
 
-    public function __construct(RuntimeEnv $env, array $options, PackageNameReaderFactory $packageName)
+    public function __construct(RuntimeEnv $env, array $options, PackageName $packageName)
     {
         $this->packageName = $packageName;
         parent::__construct($env, $options);

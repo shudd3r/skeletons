@@ -37,7 +37,7 @@ class FakeReader extends Reader
         return isset($this->value) ? $this->value : 'invalid string';
     }
 
-    protected function tokenInstance(string $name, Token\ReaderFactory $replacement): ?Token
+    protected function tokenInstance(string $name, Token\Replacement $replacement): ?Token
     {
         return null;
     }

@@ -16,12 +16,12 @@ use Shudd3r\PackageFiles\Application\Token;
 
 abstract class Reader
 {
-    private array $readerFactories;
+    private array $replacements;
     private array $tokens;
 
-    public function __construct(array $readerFactories)
+    public function __construct(array $replacements)
     {
-        $this->readerFactories = $readerFactories;
+        $this->replacements = $replacements;
     }
 
     public function token(): ?Token
@@ -42,12 +42,12 @@ abstract class Reader
         return json_encode($values, JSON_PRETTY_PRINT);
     }
 
-    abstract protected function tokenInstance(string $name, ReaderFactory $replacement): ?Token;
+    abstract protected function tokenInstance(string $name, Replacement $replacement): ?Token;
 
     private function readTokens(): array
     {
         $tokens = [];
-        foreach ($this->readerFactories as $name => $replacement) {
+        foreach ($this->replacements as $name => $replacement) {
             $token = $this->tokenInstance($name, $replacement);
             if (!$token) { continue; }
             $tokens[$name] = $token;
@@ -58,6 +58,6 @@ abstract class Reader
 
     private function validTokens(): bool
     {
-        return count($this->tokens) === count($this->readerFactories);
+        return count($this->tokens) === count($this->replacements);
     }
 }

@@ -12,13 +12,13 @@
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\Replacement;
 use Shudd3r\PackageFiles\Application\Token;
 
 
 class UpdateReader extends Reader
 {
-    protected function tokenInstance(string $name, ReaderFactory $replacement): ?Token
+    protected function tokenInstance(string $name, Replacement $replacement): ?Token
     {
         return $replacement->updateToken($name);
     }

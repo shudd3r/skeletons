@@ -9,16 +9,16 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\Token\ReaderFactory;
+namespace Shudd3r\PackageFiles\Tests\Application\Token\Replacement;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory\PackageDescriptionReaderFactory;
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory\PackageNameReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\Replacement\PackageDescription;
+use Shudd3r\PackageFiles\Application\Token\Replacement\PackageName;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class PackageDescriptionReaderFactoryTest extends TestCase
+class PackageDescriptionTest extends TestCase
 {
     public function testWithDescriptionInComposerJson_InitialTokenValue_IsReadFromComposerJson()
     {
@@ -68,8 +68,8 @@ class PackageDescriptionReaderFactoryTest extends TestCase
         $this->assertEquals($expected, $token);
     }
 
-    private function replacement(Doubles\FakeRuntimeEnv $env): PackageDescriptionReaderFactory
+    private function replacement(Doubles\FakeRuntimeEnv $env): PackageDescription
     {
-        return new PackageDescriptionReaderFactory($env, [], new PackageNameReaderFactory($env, []));
+        return new PackageDescription($env, [], new PackageName($env, []));
     }
 }

@@ -9,16 +9,16 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\Token\ReaderFactory;
+namespace Shudd3r\PackageFiles\Tests\Application\Token\Replacement;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory\RepositoryNameReaderFactory;
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory\PackageNameReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\Replacement\RepositoryName;
+use Shudd3r\PackageFiles\Application\Token\Replacement\PackageName;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class RepositoryNameReaderFactoryTest extends TestCase
+class RepositoryNameTest extends TestCase
 {
     public function testWithoutGitConfigFile_InitialTokenValue_IsResolvedFromPackageName()
     {
@@ -124,9 +124,9 @@ class RepositoryNameReaderFactoryTest extends TestCase
         $this->assertEquals($expected, $token);
     }
 
-    private function replacement(Doubles\FakeRuntimeEnv $env, array $options = []): RepositoryNameReaderFactory
+    private function replacement(Doubles\FakeRuntimeEnv $env, array $options = []): RepositoryName
     {
-        return new RepositoryNameReaderFactory($env, $options, new PackageNameReaderFactory($env, $options));
+        return new RepositoryName($env, $options, new PackageName($env, $options));
     }
 
     private function config(array $remotes = []): string

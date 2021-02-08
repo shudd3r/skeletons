@@ -9,16 +9,16 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\Token\ReaderFactory;
+namespace Shudd3r\PackageFiles\Tests\Application\Token\Replacement;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory\SrcNamespaceReaderFactory;
-use Shudd3r\PackageFiles\Application\Token\ReaderFactory\PackageNameReaderFactory;
+use Shudd3r\PackageFiles\Application\Token\Replacement\SrcNamespace;
+use Shudd3r\PackageFiles\Application\Token\Replacement\PackageName;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class SrcNamespaceReaderFactoryTest extends TestCase
+class SrcNamespaceTest extends TestCase
 {
     public function testWithSrcNamespaceInComposerJson_InitialTokenValue_IsReadFromComposerJson()
     {
@@ -90,9 +90,9 @@ class SrcNamespaceReaderFactoryTest extends TestCase
         $this->assertEquals($expected, $token);
     }
 
-    private function replacement(Doubles\FakeRuntimeEnv $env, array $options = []): SrcNamespaceReaderFactory
+    private function replacement(Doubles\FakeRuntimeEnv $env, array $options = []): SrcNamespace
     {
-        return new SrcNamespaceReaderFactory($env, $options, new PackageNameReaderFactory($env, $options));
+        return new SrcNamespace($env, $options, new PackageName($env, $options));
     }
 
     private function composerData(bool $withAutoload = true): string
