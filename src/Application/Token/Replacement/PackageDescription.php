@@ -36,8 +36,13 @@ class PackageDescription extends Replacement
 
     protected function defaultSource(): Source
     {
-        $packageName = $this->packageName->initialToken('');
-        $callback    = fn() => $this->env->composer()->value('description') ?? $packageName->value() . ' package';
+        $callback = fn() => $this->env->composer()->value('description') ?? $this->fromPackageName();
         return $this->userSource(new Source\CallbackSource($callback));
+    }
+
+    private function fromPackageName(): string
+    {
+        $package = $this->packageName->sourceValue();
+        return $package ? $package . ' package' : '';
     }
 }

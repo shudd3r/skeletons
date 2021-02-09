@@ -65,7 +65,7 @@ class SrcNamespace extends Replacement
 
     private function namespaceFromPackageName(): string
     {
-        [$vendor, $package] = explode('/', $this->packageName->initialToken('')->value());
+        [$vendor, $package] = explode('/', $this->packageName->sourceValue());
         return $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
     }
 

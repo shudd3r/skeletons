@@ -36,7 +36,7 @@ class RepositoryName extends Replacement
 
     protected function defaultSource(): Source
     {
-        $callback = fn() => $this->repositoryFromGitConfig() ?? $this->packageName->initialToken('')->value();
+        $callback = fn() => $this->repositoryFromGitConfig() ?? $this->packageName->sourceValue();
         return $this->userSource(new Source\CallbackSource($callback));
     }
 
