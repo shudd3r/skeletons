@@ -22,10 +22,10 @@ class FakeReplacement extends Replacement
 
     private bool $isValid;
 
-    public function __construct(FakeRuntimeEnv $env, array $options, bool $isValid = true)
+    public function __construct(FakeRuntimeEnv $env, bool $isValid = true)
     {
         $this->isValid = $isValid;
-        parent::__construct($env, $options);
+        parent::__construct($env);
     }
 
     protected function isValid(string $value): bool
@@ -33,8 +33,8 @@ class FakeReplacement extends Replacement
         return $this->isValid;
     }
 
-    protected function defaultSource(): Source
+    protected function defaultSource(array $options): Source
     {
-        return $this->userSource(new Source\PredefinedValue('default value'));
+        return $this->userSource(new Source\PredefinedValue('default value'), $options);
     }
 }

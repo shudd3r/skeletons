@@ -21,9 +21,9 @@ class ReplacementTest extends TestCase
 {
     public function testForInvalidValue_TokenMethods_ReturnNull()
     {
-        $replacement = new FakeReplacement(new FakeRuntimeEnv(), [], false);
-        $this->assertNull($replacement->initialToken('foo'));
-        $this->assertNull($replacement->updateToken('foo'));
+        $replacement = new FakeReplacement(new FakeRuntimeEnv(), false);
+        $this->assertNull($replacement->initialToken('foo', []));
+        $this->assertNull($replacement->updateToken('foo', []));
         $this->assertNull($replacement->validationToken('foo'));
     }
 
@@ -49,11 +49,11 @@ class ReplacementTest extends TestCase
             $env->input()->inputStrings = ['input value', 'input value'];
         }
 
-        $replacement = new FakeReplacement($env, $options);
+        $replacement = new FakeReplacement($env);
 
-        $this->assertEquals(new ValueToken('foo', $init), $replacement->initialToken('foo'));
+        $this->assertEquals(new ValueToken('foo', $init), $replacement->initialToken('foo', $options));
         $this->assertEquals(new ValueToken('foo', 'metaData'), $replacement->validationToken('foo'));
-        $this->assertEquals(new ValueToken('foo', $update), $replacement->updateToken('foo'));
+        $this->assertEquals(new ValueToken('foo', $update), $replacement->updateToken('foo', $options));
     }
 
     public function inputOptions(): array

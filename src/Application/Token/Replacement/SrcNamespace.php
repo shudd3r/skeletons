@@ -25,10 +25,10 @@ class SrcNamespace extends Replacement
 
     private PackageName $packageName;
 
-    public function __construct(RuntimeEnv $env, array $options, PackageName $packageName)
+    public function __construct(RuntimeEnv $env, PackageName $packageName)
     {
         $this->packageName = $packageName;
-        parent::__construct($env, $options);
+        parent::__construct($env);
     }
 
     protected function token(string $name, string $value): ?ValueToken
@@ -49,10 +49,10 @@ class SrcNamespace extends Replacement
         return true;
     }
 
-    protected function defaultSource(): Source
+    protected function defaultSource(array $options): Source
     {
         $callback = fn() => $this->namespaceFromComposer() ?? $this->namespaceFromPackageName();
-        return $this->userSource(new Source\CallbackSource($callback));
+        return $this->userSource(new Source\CallbackSource($callback), $options);
     }
 
     private function namespaceFromComposer(): ?string

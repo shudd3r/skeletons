@@ -18,8 +18,16 @@ use Shudd3r\PackageFiles\Application\Token;
 
 class UpdateReader extends Reader
 {
+    private array $options;
+
+    public function __construct(array $replacements, array $options)
+    {
+        $this->options = $options;
+        parent::__construct($replacements);
+    }
+
     protected function tokenInstance(string $name, Replacement $replacement): ?Token
     {
-        return $replacement->updateToken($name);
+        return $replacement->updateToken($name, $this->options);
     }
 }

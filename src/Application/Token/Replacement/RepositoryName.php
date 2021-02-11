@@ -23,10 +23,10 @@ class RepositoryName extends Replacement
 
     private PackageName $packageName;
 
-    public function __construct(RuntimeEnv $env, array $options, PackageName $packageName)
+    public function __construct(RuntimeEnv $env, PackageName $packageName)
     {
         $this->packageName = $packageName;
-        parent::__construct($env, $options);
+        parent::__construct($env);
     }
 
     protected function isValid(string $value): bool
@@ -34,10 +34,10 @@ class RepositoryName extends Replacement
         return (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
     }
 
-    protected function defaultSource(): Source
+    protected function defaultSource(array $options): Source
     {
         $callback = fn() => $this->repositoryFromGitConfig() ?? $this->packageName->sourceValue();
-        return $this->userSource(new Source\CallbackSource($callback));
+        return $this->userSource(new Source\CallbackSource($callback), $options);
     }
 
     private function repositoryFromGitConfig(): ?string

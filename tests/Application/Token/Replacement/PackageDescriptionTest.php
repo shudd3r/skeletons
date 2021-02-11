@@ -26,7 +26,7 @@ class PackageDescriptionTest extends TestCase
         $env->package()->addFile('composer.json', '{"description": "composer json description"}');
 
         $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('package.desc'), 'composer json description');
+        $this->assertToken($replacement->initialToken('package.desc', []), 'composer json description');
     }
 
     public function testWithoutDescriptionInComposerJson_InitialTokenValue_IsResolvedFromPackageName()
@@ -35,7 +35,7 @@ class PackageDescriptionTest extends TestCase
         $env->package()->path = 'root/package/path';
 
         $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('package.desc'), 'package/path package');
+        $this->assertToken($replacement->initialToken('package.desc', []), 'package/path package');
     }
 
     public function testTokenFactoryMethods_CreateCorrectToken()
@@ -45,9 +45,9 @@ class PackageDescriptionTest extends TestCase
         $env->metaDataFile()->contents = '{"desc.placeholder": "meta desc"}';
 
         $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('desc.placeholder'), 'composer desc', 'desc.placeholder');
+        $this->assertToken($replacement->initialToken('desc.placeholder', []), 'composer desc', 'desc.placeholder');
         $this->assertToken($replacement->validationToken('desc.placeholder'), 'meta desc', 'desc.placeholder');
-        $this->assertToken($replacement->updateToken('desc.placeholder'), 'meta desc', 'desc.placeholder');
+        $this->assertToken($replacement->updateToken('desc.placeholder', []), 'meta desc', 'desc.placeholder');
     }
 
     public function testForEmptyTokenValue_TokenFactoryMethods_ReturnNull()
@@ -57,9 +57,9 @@ class PackageDescriptionTest extends TestCase
         $env->metaDataFile()->contents = '{"desc.placeholder": ""}';
 
         $replacement = $this->replacement($env);
-        $this->assertNull($replacement->initialToken('foo'));
+        $this->assertNull($replacement->initialToken('foo', []));
         $this->assertNull($replacement->validationToken('desc.placeholder'));
-        $this->assertNull($replacement->updateToken('not.existing.data'));
+        $this->assertNull($replacement->updateToken('not.existing.data', []));
     }
 
     private function assertToken(Token $token, string $value, string $name = 'package.desc')
@@ -70,6 +70,6 @@ class PackageDescriptionTest extends TestCase
 
     private function replacement(Doubles\FakeRuntimeEnv $env): PackageDescription
     {
-        return new PackageDescription($env, [], new PackageName($env, []));
+        return new PackageDescription($env, new PackageName($env));
     }
 }

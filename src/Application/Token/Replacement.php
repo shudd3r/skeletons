@@ -17,22 +17,20 @@ use Shudd3r\PackageFiles\Application\RuntimeEnv;
 abstract class Replacement
 {
     protected RuntimeEnv $env;
-    protected array      $options;
 
     protected ?string $inputPrompt;
     protected ?string $optionName;
 
     private ?ValueToken $initialToken;
 
-    public function __construct(RuntimeEnv $env, array $options)
+    public function __construct(RuntimeEnv $env)
     {
-        $this->env     = $env;
-        $this->options = $options;
+        $this->env = $env;
     }
 
-    public function initialToken(string $name): ?ValueToken
+    public function initialToken(string $name, array $options): ?ValueToken
     {
-        return $this->initialToken ??= $this->token($name, $this->defaultSource()->value());
+        return $this->initialToken ??= $this->token($name, $this->defaultSource($options)->value());
     }
 
     public function validationToken(string $name): ?ValueToken
@@ -41,9 +39,9 @@ abstract class Replacement
         return $this->token($name, $value);
     }
 
-    public function updateToken(string $name): ?ValueToken
+    public function updateToken(string $name, array $options): ?ValueToken
     {
-        $value = $this->userSource($this->metaDataSource($name))->value();
+        $value = $this->userSource($this->metaDataSource($name), $options)->value();
         return $this->token($name, $value);
     }
 
@@ -54,7 +52,7 @@ abstract class Replacement
 
     abstract protected function isValid(string $value): bool;
 
-    abstract protected function defaultSource(): Source;
+    abstract protected function defaultSource(array $options): Source;
 
     protected function metaDataSource(string $namespace): Source
     {
@@ -62,22 +60,22 @@ abstract class Replacement
         return new Source\CallbackSource($callback);
     }
 
-    protected function userSource(Source $source): Source
+    protected function userSource(Source $source, $options): Source
     {
-        return $this->interactive($this->option($source));
+        return $this->interactive($this->option($source, $options), $options);
     }
 
-    private function option(Source $default): Source
+    private function option(Source $default, array $options): Source
     {
-        $hasOption = isset($this->optionName) && isset($this->options[$this->optionName]);
+        $hasOption = isset($this->optionName) && isset($options[$this->optionName]);
         return $hasOption
-            ? new Source\PredefinedValue($this->options[$this->optionName])
+            ? new Source\PredefinedValue($options[$this->optionName])
             : $default;
     }
 
-    private function interactive(Source $source): Source
+    private function interactive(Source $source, array $options): Source
     {
-        $fromInput = isset($this->inputPrompt) && (isset($this->options['i']) || isset($this->options['interactive']));
+        $fromInput = isset($this->inputPrompt) && (isset($options['i']) || isset($options['interactive']));
         return $fromInput
             ? new Source\InteractiveInput($this->inputPrompt, $this->env->input(), $source)
             : $source;

@@ -26,7 +26,7 @@ class SrcNamespaceTest extends TestCase
         $env->package()->addFile('composer.json', $this->composerData());
         $replacement = $this->replacement($env);
 
-        $this->assertToken($replacement->initialToken('src.namespace'), 'Composer\\Namespace');
+        $this->assertToken($replacement->initialToken('src.namespace', []), 'Composer\\Namespace');
     }
 
     public function testWithoutSrcNamespaceInComposerJson_InitialTokenValue_IsResolvedFromPackageName()
@@ -35,7 +35,7 @@ class SrcNamespaceTest extends TestCase
         $env->package()->addFile('composer.json', $this->composerData(false));
         $replacement = $this->replacement($env);
 
-        $this->assertToken($replacement->initialToken('src.namespace'), 'Package\\Name');
+        $this->assertToken($replacement->initialToken('src.namespace', []), 'Package\\Name');
     }
 
     public function testTokenFactoryMethods_CreateCorrectToken()
@@ -45,9 +45,9 @@ class SrcNamespaceTest extends TestCase
         $env->package()->addFile('composer.json', $this->composerData());
 
         $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('ns.placeholder'), 'Composer\\Namespace', 'ns.placeholder');
+        $this->assertToken($replacement->initialToken('ns.placeholder', []), 'Composer\\Namespace', 'ns.placeholder');
         $this->assertToken($replacement->validationToken('src.namespace'), 'Meta\\Namespace');
-        $this->assertToken($replacement->updateToken('src.namespace'), 'Meta\\Namespace');
+        $this->assertToken($replacement->updateToken('src.namespace', []), 'Meta\\Namespace');
     }
 
     /**
@@ -60,18 +60,20 @@ class SrcNamespaceTest extends TestCase
     {
         $env = new Doubles\FakeRuntimeEnv();
         $env->metaDataFile()->contents = json_encode(['ns.placeholder' => $invalid]);
-        $replacement = $this->replacement($env, ['ns' => $invalid]);
+        $options     = ['ns' => $invalid];
+        $replacement = $this->replacement($env);
 
-        $this->assertNull($replacement->initialToken('ns.placeholder'));
+        $this->assertNull($replacement->initialToken('ns.placeholder', $options));
         $this->assertNull($replacement->validationToken('ns.placeholder'));
-        $this->assertNull($replacement->updateToken('ns.placeholder'));
+        $this->assertNull($replacement->updateToken('ns.placeholder', $options));
 
         $env = new Doubles\FakeRuntimeEnv();
         $env->metaDataFile()->contents = json_encode(['ns.placeholder' => $valid]);
-        $replacement = $this->replacement($env, ['ns' => $valid]);
-        $this->assertInstanceOf(Token::class, $replacement->initialToken('ns.placeholder'));
+        $options     = ['ns' => $valid];
+        $replacement = $this->replacement($env);
+        $this->assertInstanceOf(Token::class, $replacement->initialToken('ns.placeholder', $options));
         $this->assertInstanceOf(Token::class, $replacement->validationToken('ns.placeholder'));
-        $this->assertInstanceOf(Token::class, $replacement->updateToken('ns.placeholder'));
+        $this->assertInstanceOf(Token::class, $replacement->updateToken('ns.placeholder', $options));
     }
 
     public function valueExamples()
@@ -90,9 +92,9 @@ class SrcNamespaceTest extends TestCase
         $this->assertEquals($expected, $token);
     }
 
-    private function replacement(Doubles\FakeRuntimeEnv $env, array $options = []): SrcNamespace
+    private function replacement(Doubles\FakeRuntimeEnv $env): SrcNamespace
     {
-        return new SrcNamespace($env, $options, new PackageName($env, $options));
+        return new SrcNamespace($env, new PackageName($env));
     }
 
     private function composerData(bool $withAutoload = true): string

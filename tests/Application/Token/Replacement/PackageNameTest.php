@@ -23,7 +23,7 @@ class PackageNameTest extends TestCase
         $env = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"name": "composer/package"}');
 
-        $token = $this->replacement($env)->initialToken('package.name');
+        $token = $this->replacement($env)->initialToken('package.name', []);
         $this->assertToken($token, 'composer/package', 'Composer/Package');
     }
 
@@ -32,7 +32,7 @@ class PackageNameTest extends TestCase
         $env = new Doubles\FakeRuntimeEnv();
         $env->package()->path = 'D:\dev\www\project\directory';
 
-        $token = $this->replacement($env)->initialToken('package.name');
+        $token = $this->replacement($env)->initialToken('package.name', []);
         $this->assertToken($token, 'project/directory', 'Project/Directory');
     }
 
@@ -42,7 +42,7 @@ class PackageNameTest extends TestCase
         $env->package()->addFile('composer.json', '{"name": "composer/package"}');
 
         $replacement = $this->replacement($env);
-        $this->assertSame($replacement->initialToken('package.name'), $replacement->initialToken('anything'));
+        $this->assertSame($replacement->initialToken('package.name', []), $replacement->initialToken('anything', []));
     }
 
     public function testTokenFactoryMethods_ReturnCorrectToken()
@@ -52,9 +52,9 @@ class PackageNameTest extends TestCase
         $env->package()->path = 'package-root\path';
 
         $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('package.name'), 'package-root/path', 'Package-root/Path');
+        $this->assertToken($replacement->initialToken('package.name', []), 'package-root/path', 'Package-root/Path');
         $this->assertToken($replacement->validationToken('package.name'), 'source/package', 'Source/Package');
-        $this->assertToken($replacement->updateToken('package.name'), 'source/package', 'Source/Package');
+        $this->assertToken($replacement->updateToken('package.name', []), 'source/package', 'Source/Package');
     }
 
     /**
@@ -70,18 +70,18 @@ class PackageNameTest extends TestCase
         $env->package()->addFile('composer.json', '{"name": "'. $invalid .'"}');
 
         $replacement = $this->replacement($env);
-        $this->assertNull($replacement->initialToken('package.name'));
+        $this->assertNull($replacement->initialToken('package.name', []));
         $this->assertNull($replacement->validationToken('package.name'));
-        $this->assertNull($replacement->updateToken('package.name'));
+        $this->assertNull($replacement->updateToken('package.name', []));
 
         $env = new Doubles\FakeRuntimeEnv();
         $env->metaDataFile()->contents = '{"package.name": "'. $valid .'"}';
         $env->package()->addFile('composer.json', '{"name": "'. $valid .'"}');
 
         $replacement = $this->replacement($env);
-        $this->assertInstanceOf(Token::class, $replacement->initialToken('package.name'));
+        $this->assertInstanceOf(Token::class, $replacement->initialToken('package.name', []));
         $this->assertInstanceOf(Token::class, $replacement->validationToken('package.name'));
-        $this->assertInstanceOf(Token::class, $replacement->updateToken('package.name'));
+        $this->assertInstanceOf(Token::class, $replacement->updateToken('package.name', []));
     }
 
     public function valueExamples()
@@ -101,6 +101,6 @@ class PackageNameTest extends TestCase
 
     private function replacement(Doubles\FakeRuntimeEnv $env): PackageName
     {
-        return new PackageName($env, []);
+        return new PackageName($env);
     }
 }

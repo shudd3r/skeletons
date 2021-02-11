@@ -42,9 +42,9 @@ class PackageName extends Replacement
         return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
     }
 
-    protected function defaultSource(): Source
+    protected function defaultSource(array $options = []): Source
     {
-        return $this->defaultSource ??= new Source\CachedSource($this->defaultSourceInstance());
+        return $this->defaultSource ??= new Source\CachedSource($this->defaultSourceInstance($options));
     }
 
     private function directoryFallback(): string
@@ -59,9 +59,9 @@ class PackageName extends Replacement
         return ucfirst($vendor) . '/' . ucfirst($package);
     }
 
-    private function defaultSourceInstance(): Source
+    private function defaultSourceInstance(array $options): Source
     {
         $callback = fn() => $this->env->composer()->value('name') ?? $this->directoryFallback();
-        return $this->userSource(new Source\CallbackSource($callback));
+        return $this->userSource(new Source\CallbackSource($callback), $options);
     }
 }

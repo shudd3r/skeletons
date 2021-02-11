@@ -23,10 +23,10 @@ class PackageDescription extends Replacement
 
     private PackageName $packageName;
 
-    public function __construct(RuntimeEnv $env, array $options, PackageName $packageName)
+    public function __construct(RuntimeEnv $env, PackageName $packageName)
     {
         $this->packageName = $packageName;
-        parent::__construct($env, $options);
+        parent::__construct($env);
     }
 
     protected function isValid(string $value): bool
@@ -34,10 +34,10 @@ class PackageDescription extends Replacement
         return !empty($value);
     }
 
-    protected function defaultSource(): Source
+    protected function defaultSource(array $options): Source
     {
         $callback = fn() => $this->env->composer()->value('description') ?? $this->fromPackageName();
-        return $this->userSource(new Source\CallbackSource($callback));
+        return $this->userSource(new Source\CallbackSource($callback), $options);
     }
 
     private function fromPackageName(): string
