@@ -21,12 +21,12 @@ use Shudd3r\PackageFiles\Application\Template;
 
 class Update extends Command\Factory
 {
-    public function command(): CommandInterface
+    public function command(array $options): CommandInterface
     {
-        $validation = new Validate($this->env, $this->options);
+        $validation = new Validate($this->env);
         $cache      = new TokenCache();
 
-        $tokenReader   = new Reader\UpdateReader($this->replacements(), $this->options);
+        $tokenReader   = new Reader\UpdateReader($this->replacements(), $options);
         $processTokens = new Command\TokenProcessor($tokenReader, $this->processor($cache), $this->env->output());
         $writeMetaData = new Command\WriteMetaData($tokenReader, $this->env->metaDataFile());
 

@@ -19,9 +19,9 @@ class FakeCommandFactory extends Factory
 {
     public static array $optionsField = [];
 
-    public function command(): Command
+    public function command(array $options): Command
     {
-        self::$optionsField = $this->options;
+        self::$optionsField = $options;
         return new FakeCommand();
     }
 }

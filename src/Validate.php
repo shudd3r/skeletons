@@ -21,7 +21,7 @@ use Shudd3r\PackageFiles\Application\Template;
 
 class Validate extends Command\Factory
 {
-    public function command(): CommandInterface
+    public function command(array $options): CommandInterface
     {
         $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $fileValidators = new Processor\FileProcessors\FileValidators($this->env->package());

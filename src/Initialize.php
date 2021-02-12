@@ -21,9 +21,9 @@ use Shudd3r\PackageFiles\Application\Template;
 
 class Initialize extends Command\Factory
 {
-    public function command(): CommandInterface
+    public function command(array $options): CommandInterface
     {
-        $tokenReader     = new Reader\InitialReader($this->replacements(), $this->options);
+        $tokenReader     = new Reader\InitialReader($this->replacements(), $options);
         $generatedFiles  = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupDirectory = $this->env->backup();
 

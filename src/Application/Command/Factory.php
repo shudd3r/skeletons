@@ -24,17 +24,15 @@ abstract class Factory
     public const REPO_NAME     = 'repository.name';
 
     protected RuntimeEnv $env;
-    protected array      $options;
 
     private array $tokenReaders;
 
-    public function __construct(RuntimeEnv $env, array $options)
+    public function __construct(RuntimeEnv $env)
     {
-        $this->env     = $env;
-        $this->options = $options;
+        $this->env = $env;
     }
 
-    abstract public function command(): Command;
+    abstract public function command(array $options): Command;
 
     protected function replacements(): array
     {

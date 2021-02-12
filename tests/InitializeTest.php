@@ -20,8 +20,8 @@ class InitializeTest extends TestCase
 {
     public function testFactoryCreatesCommand()
     {
-        $factory = new Initialize(new Doubles\FakeRuntimeEnv(), []);
-        $this->assertInstanceOf(Command::class, $factory->command());
+        $factory = new Initialize(new Doubles\FakeRuntimeEnv());
+        $this->assertInstanceOf(Command::class, $factory->command([]));
     }
 
     public function testDefaultTokenValues_AreReadFromPackageFiles()
@@ -35,8 +35,8 @@ class InitializeTest extends TestCase
             'namespace.src'    => 'FooBarNamespace\\Baz'
         ]);
 
-        $factory = new Initialize($setup->env, ['i' => false]);
-        $factory->command()->execute();
+        $factory = new Initialize($setup->env);
+        $factory->command(['i' => false])->execute();
 
         $this->assertGeneratedFiles($setup, [
             'repository.name'  => 'username/repoOrigin',
@@ -55,8 +55,8 @@ class InitializeTest extends TestCase
             'namespace.src'    => null
         ]);
 
-        $factory = new Initialize($setup->env, ['i' => false]);
-        $factory->command()->execute();
+        $factory = new Initialize($setup->env);
+        $factory->command(['i' => false])->execute();
 
         $this->assertGeneratedFiles($setup, [
             'repository.name'  => 'fooBar/baz',
@@ -71,8 +71,8 @@ class InitializeTest extends TestCase
         $setup = new TestEnvSetup();
         $setup->env->package()->path = '/path/foo/bar';
 
-        $factory = new Initialize($setup->env, ['i' => false]);
-        $factory->command()->execute();
+        $factory = new Initialize($setup->env);
+        $factory->command(['i' => false])->execute();
 
         $this->assertGeneratedFiles($setup, [
             'repository.name'  => 'foo/bar',
@@ -92,8 +92,8 @@ class InitializeTest extends TestCase
             'ns'      => 'Cli\NamespaceX'
         ];
 
-        $factory = new Initialize($setup->env, $options);
-        $factory->command()->execute();
+        $factory = new Initialize($setup->env);
+        $factory->command($options)->execute();
 
         $this->assertGeneratedFiles($setup, [
             'repository.name'  => 'cli/repo',
@@ -120,8 +120,8 @@ class InitializeTest extends TestCase
             'ns'      => 'Cli\NamespaceX'
         ];
 
-        $factory = new Initialize($setup->env, $options);
-        $factory->command()->execute();
+        $factory = new Initialize($setup->env);
+        $factory->command($options)->execute();
 
         $this->assertGeneratedFiles($setup, [
             'repository.name'  => 'user/repo',
@@ -139,8 +139,8 @@ class InitializeTest extends TestCase
 
         $this->assertSame([], $setup->env->backup()->files());
 
-        $factory = new Initialize($setup->env, []);
-        $factory->command()->execute();
+        $factory = new Initialize($setup->env);
+        $factory->command([])->execute();
 
         $this->assertSame([$setup->env->backup()->file('file.ini')], $setup->env->backup()->files());
         $this->assertSame('original', $setup->env->backup()->file('file.ini')->contents());
@@ -154,8 +154,8 @@ class InitializeTest extends TestCase
         $setup->addMetaData();
         $metaData = $setup->env->metaDataFile()->contents();
 
-        $factory = new Initialize($setup->env, []);
-        $factory->command()->execute();
+        $factory = new Initialize($setup->env);
+        $factory->command([])->execute();
 
         $this->assertSame($metaData, $setup->env->metaDataFile()->contents());
         $this->assertFalse($setup->env->package()->file('file.ini')->exists());
@@ -168,8 +168,8 @@ class InitializeTest extends TestCase
         $setup->env->package()->addFile('file.ini', 'original');
         $setup->env->backup()->addFile('file.ini', 'backup');
 
-        $factory = new Initialize($setup->env, []);
-        $factory->command()->execute();
+        $factory = new Initialize($setup->env);
+        $factory->command([])->execute();
 
         $this->assertSame('original', $setup->env->package()->file('file.ini')->contents());
         $this->assertSame('backup', $setup->env->backup()->file('file.ini')->contents());
