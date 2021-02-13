@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Application;
 
+use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Environment\Input;
 use Shudd3r\PackageFiles\Environment\Output;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
@@ -31,6 +32,7 @@ class RuntimeEnv
 
     private ComposerJsonData       $composer;
     private SavedPlaceholderValues $metaData;
+    private Replacements           $replacements;
 
     public function __construct(
         Input $input,
@@ -46,6 +48,11 @@ class RuntimeEnv
         $this->skeleton = $this->validDirectory($skeleton);
         $this->backup   = $backup ?? $this->package->subdirectory('.skeleton-backup');
         $this->metaFile = $metaFile ?? $this->package->file('.github/skeleton.json');
+    }
+
+    public function replacements(): Replacements
+    {
+        return $this->replacements ??= new Replacements($this);
     }
 
     public function input(): Input
