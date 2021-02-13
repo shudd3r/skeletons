@@ -36,13 +36,13 @@ class PackageDescription extends Replacement
 
     protected function defaultSource(array $options): Source
     {
-        $callback = fn() => $this->env->composer()->value('description') ?? $this->fromPackageName();
+        $callback = fn() => $this->env->composer()->value('description') ?? $this->fromPackageName($options);
         return $this->userSource(new Source\CallbackSource($callback), $options);
     }
 
-    private function fromPackageName(): string
+    private function fromPackageName(array $options): string
     {
-        $package = $this->packageName->sourceValue();
+        $package = $this->packageName->sourceValue($options);
         return $package ? $package . ' package' : '';
     }
 }

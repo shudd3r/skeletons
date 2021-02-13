@@ -24,9 +24,9 @@ class PackageName extends Replacement
 
     private Source $defaultSource;
 
-    public function sourceValue(): string
+    public function sourceValue(array $options): string
     {
-        return $this->defaultSource()->value();
+        return $this->defaultSource($options)->value();
     }
 
     protected function token(string $name, string $value): ?ValueToken
@@ -42,7 +42,7 @@ class PackageName extends Replacement
         return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
     }
 
-    protected function defaultSource(array $options = []): Source
+    protected function defaultSource(array $options): Source
     {
         return $this->defaultSource ??= new Source\CachedSource($this->defaultSourceInstance($options));
     }
