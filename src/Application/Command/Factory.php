@@ -25,26 +25,37 @@ abstract class Factory
 
     protected RuntimeEnv $env;
 
-    private array $tokenReaders;
-
     public function __construct(RuntimeEnv $env)
     {
         $this->env = $env;
+        $this->setReplacements();
     }
 
     abstract public function command(array $options): Command;
 
-    protected function replacements(): array
+    protected function setReplacements(): void
     {
-        if (isset($this->tokenReaders)) { return $this->tokenReaders; }
+        $replacements = $this->env->replacements();
 
-        $packageName = new Replacement\PackageName($this->env);
+        $replacements->addReplacement(
+            self::PACKAGE_NAME,
+            fn($env) => new Replacement\PackageName($env)
+        );
 
-        return $this->tokenReaders = [
-            self::PACKAGE_NAME  => $packageName,
-            self::REPO_NAME     => new Replacement\RepositoryName($this->env, $packageName),
-            self::PACKAGE_DESC  => new Replacement\PackageDescription($this->env, $packageName),
-            self::SRC_NAMESPACE => new Replacement\SrcNamespace($this->env, $packageName)
-        ];
+        $packageName = $replacements->replacement(self::PACKAGE_NAME);
+        $replacements->addReplacement(
+            self::REPO_NAME,
+            fn($env) => new Replacement\RepositoryName($env, $packageName)
+        );
+
+        $replacements->addReplacement(
+            self::PACKAGE_DESC,
+            fn($env) => new Replacement\PackageDescription($this->env, $packageName)
+        );
+
+        $replacements->addReplacement(
+            self::SRC_NAMESPACE,
+            fn($env) => new Replacement\SrcNamespace($this->env, $packageName)
+        );
     }
 }
