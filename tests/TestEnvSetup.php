@@ -13,11 +13,16 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use Shudd3r\PackageFiles\Application\Token\InitialContents;
 use Shudd3r\PackageFiles\Application\Token\OriginalContents;
-use Shudd3r\PackageFiles\Application\Command\Factory;
+use Shudd3r\PackageFiles\Application\Token\Replacement;
 
 
 class TestEnvSetup
 {
+    public const PACKAGE_NAME  = 'package.name';
+    public const PACKAGE_DESC  = 'description.text';
+    public const SRC_NAMESPACE = 'namespace.src';
+    public const REPO_NAME     = 'repository.name';
+
     public const SKELETON_FILE = 'file/generate.txt';
 
     public Doubles\FakeRuntimeEnv $env;
@@ -30,6 +35,29 @@ class TestEnvSetup
         $this->env->skeleton()->path = '/path/to/skeleton/files';
 
         $this->env->skeleton()->addFile(self::SKELETON_FILE, $this->defaultTemplate());
+
+        $replacements = $this->env->replacements();
+
+        $replacements->addReplacement(
+            self::PACKAGE_NAME,
+            fn($env) => new Replacement\PackageName($env)
+        );
+
+        $packageName = $replacements->replacement(self::PACKAGE_NAME);
+        $replacements->addReplacement(
+            self::REPO_NAME,
+            fn($env) => new Replacement\RepositoryName($env, $packageName)
+        );
+
+        $replacements->addReplacement(
+            self::PACKAGE_DESC,
+            fn($env) => new Replacement\PackageDescription($this->env, $packageName)
+        );
+
+        $replacements->addReplacement(
+            self::SRC_NAMESPACE,
+            fn($env) => new Replacement\SrcNamespace($this->env, $packageName)
+        );
     }
 
     public function addMetaData(array $data = []): void
@@ -63,10 +91,10 @@ class TestEnvSetup
 
     public function defaultTemplate(bool $render = false, bool $orig = true): string
     {
-        $descToken = $this->placeholder(Factory::PACKAGE_DESC);
-        $repoToken = $this->placeholder(Factory::REPO_NAME);
-        $packToken = $this->placeholder(Factory::PACKAGE_NAME);
-        $nameToken = $this->placeholder(Factory::SRC_NAMESPACE);
+        $descToken = $this->placeholder(self::PACKAGE_DESC);
+        $repoToken = $this->placeholder(self::REPO_NAME);
+        $packToken = $this->placeholder(self::PACKAGE_NAME);
+        $nameToken = $this->placeholder(self::SRC_NAMESPACE);
         $origToken = $this->placeholder(OriginalContents::PLACEHOLDER);
 
         $marker    = '...Your own contents here...';
