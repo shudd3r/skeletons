@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Application\Token;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use RuntimeException;
 
 
 class Replacements
@@ -28,15 +27,6 @@ class Replacements
     public function add(string $name, Replacement $replacement): void
     {
         $this->replacements[$name] = $replacement;
-    }
-
-    public function replacement(string $name)
-    {
-        if (!$this->replacements[$name]) {
-            throw new RuntimeException(sprintf('Replacement `%s` is not defined', $name));
-        }
-
-        return $this->replacements[$name];
     }
 
     public function init(array $options): Reader
