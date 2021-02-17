@@ -25,13 +25,9 @@ class Replacements
         $this->env = $env;
     }
 
-    /**
-     * @param string   $name
-     * @param callable $createMethod fn(RuntimeEnv) => Replacement
-     */
-    public function add(string $name, callable $createMethod): void
+    public function add(string $name, Replacement $replacement): void
     {
-        $this->replacements[$name] = $createMethod($this->env);
+        $this->replacements[$name] = $replacement;
     }
 
     public function replacement(string $name)

@@ -37,13 +37,10 @@ class TestEnvSetup
         $this->env->skeleton()->addFile(self::SKELETON_FILE, $this->defaultTemplate());
 
         $replacements = $this->env->replacements();
-
-        $replacements->add(self::PACKAGE_NAME, fn($env) => new Replacement\PackageName($env));
-
-        $packageName = $replacements->replacement(self::PACKAGE_NAME);
-        $replacements->add(self::REPO_NAME, fn($env) => new Replacement\RepositoryName($env, $packageName));
-        $replacements->add(self::PACKAGE_DESC, fn($env) => new Replacement\PackageDescription($env, $packageName));
-        $replacements->add(self::SRC_NAMESPACE, fn($env) => new Replacement\SrcNamespace($env, $packageName));
+        $replacements->add(self::PACKAGE_NAME, $packageName = new Replacement\PackageName($this->env));
+        $replacements->add(self::REPO_NAME, new Replacement\RepositoryName($this->env, $packageName));
+        $replacements->add(self::PACKAGE_DESC, new Replacement\PackageDescription($this->env, $packageName));
+        $replacements->add(self::SRC_NAMESPACE, new Replacement\SrcNamespace($this->env, $packageName));
     }
 
     public function addMetaData(array $data = []): void
