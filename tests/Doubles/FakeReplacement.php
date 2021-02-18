@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\Token\Replacement;
+use Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Application\Token\Source;
 
 

@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Application\Token;
 
 use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Replacement;
 
 
 abstract class Reader

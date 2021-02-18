@@ -9,9 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Token;
+namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\ValueToken;
+use Shudd3r\PackageFiles\Application\Token\Source;
 
 
 abstract class Replacement

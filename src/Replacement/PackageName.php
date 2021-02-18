@@ -9,9 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Token\Replacement;
+namespace Shudd3r\PackageFiles\Replacement;
 
-use Shudd3r\PackageFiles\Application\Token\Replacement;
+use Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
 use Shudd3r\PackageFiles\Application\Token\Source;

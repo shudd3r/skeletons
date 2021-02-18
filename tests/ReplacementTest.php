@@ -9,19 +9,17 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\Token;
+namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeReplacement;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeRuntimeEnv;
 
 
 class ReplacementTest extends TestCase
 {
     public function testForInvalidValue_TokenMethods_ReturnNull()
     {
-        $replacement = new FakeReplacement(new FakeRuntimeEnv(), false);
+        $replacement = new Doubles\FakeReplacement(new Doubles\FakeRuntimeEnv(), false);
         $this->assertNull($replacement->initialToken('foo', []));
         $this->assertNull($replacement->updateToken('foo', []));
         $this->assertNull($replacement->validationToken('foo'));
@@ -37,7 +35,7 @@ class ReplacementTest extends TestCase
     public function testResolvingInputValues(bool $option, bool $input, string $init, string $update)
     {
         $options = [];
-        $env     = new FakeRuntimeEnv();
+        $env     = new Doubles\FakeRuntimeEnv();
 
         $env->metaDataFile()->contents = '{"foo": "metaData"}';
         if ($option) {
@@ -49,7 +47,7 @@ class ReplacementTest extends TestCase
             $env->input()->inputStrings = ['input value', 'input value'];
         }
 
-        $replacement = new FakeReplacement($env);
+        $replacement = new Doubles\FakeReplacement($env);
 
         $this->assertEquals(new ValueToken('foo', $init), $replacement->initialToken('foo', $options));
         $this->assertEquals(new ValueToken('foo', 'metaData'), $replacement->validationToken('foo'));

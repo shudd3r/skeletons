@@ -12,8 +12,8 @@
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Replacement;
 use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Replacement;
 
 
 class UpdateReader extends Reader

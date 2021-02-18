@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use Shudd3r\PackageFiles\Application\Token\InitialContents;
 use Shudd3r\PackageFiles\Application\Token\OriginalContents;
-use Shudd3r\PackageFiles\Application\Token\Replacement;
+use Shudd3r\PackageFiles\Replacement;
 
 
 class TestEnvSetup
