@@ -11,18 +11,16 @@
 
 namespace Shudd3r\PackageFiles\Application\Token;
 
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Replacement;
 
 
 class Replacements
 {
-    private RuntimeEnv $env;
-    private array      $replacements = [];
+    private array $replacements;
 
-    public function __construct(RuntimeEnv $env)
+    public function __construct(array $replacements = [])
     {
-        $this->env = $env;
+        $this->replacements = $replacements;
     }
 
     public function add(string $name, Replacement $replacement): void

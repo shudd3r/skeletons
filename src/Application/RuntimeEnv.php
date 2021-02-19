@@ -52,7 +52,7 @@ class RuntimeEnv
 
     public function replacements(): Replacements
     {
-        return $this->replacements ??= new Replacements($this);
+        return $this->replacements ??= new Replacements();
     }
 
     public function input(): Input
