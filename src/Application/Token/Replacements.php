@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Application\Token;
 
 use Shudd3r\PackageFiles\Replacement;
+use Shudd3r\PackageFiles\Application\Exception;
 
 
 class Replacements
@@ -25,6 +26,10 @@ class Replacements
 
     public function add(string $name, Replacement $replacement): void
     {
+        if (isset($this->replacements[$name])) {
+            throw new Exception\ReplacementOverwriteException();
+        }
+
         $this->replacements[$name] = $replacement;
     }
 
