@@ -14,17 +14,18 @@ namespace Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\Source;
 
 
-class PredefinedValue implements Source
+class CachedSource implements Source
 {
-    private string $value;
+    private Source $source;
+    private string $cachedValue;
 
-    public function __construct(string $value)
+    public function __construct(Source $source)
     {
-        $this->value = $value;
+        $this->source = $source;
     }
 
     public function value(): string
     {
-        return $this->value;
+        return $this->cachedValue ??= $this->source->value();
     }
 }

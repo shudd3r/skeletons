@@ -13,12 +13,16 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use Shudd3r\PackageFiles\Application\Token\InitialContents;
 use Shudd3r\PackageFiles\Application\Token\OriginalContents;
-use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Command\Factory;
+use Shudd3r\PackageFiles\Replacement;
 
 
 class TestEnvSetup
 {
+    public const PACKAGE_NAME  = 'package.name';
+    public const PACKAGE_DESC  = 'description.text';
+    public const SRC_NAMESPACE = 'namespace.src';
+    public const REPO_NAME     = 'repository.name';
+
     public const SKELETON_FILE = 'file/generate.txt';
 
     public Doubles\FakeRuntimeEnv $env;
@@ -31,12 +35,17 @@ class TestEnvSetup
         $this->env->skeleton()->path = '/path/to/skeleton/files';
 
         $this->env->skeleton()->addFile(self::SKELETON_FILE, $this->defaultTemplate());
+
+        $replacements = $this->env->replacements();
+        $replacements->add(self::PACKAGE_NAME, $packageName = new Replacement\PackageName($this->env));
+        $replacements->add(self::REPO_NAME, new Replacement\RepositoryName($this->env, $packageName));
+        $replacements->add(self::PACKAGE_DESC, new Replacement\PackageDescription($this->env, $packageName));
+        $replacements->add(self::SRC_NAMESPACE, new Replacement\SrcNamespace($this->env, $packageName));
     }
 
     public function addMetaData(array $data = []): void
     {
-        $metaData = $this->metaData($data);
-        $this->env->metaDataFile()->write(json_encode($metaData, JSON_PRETTY_PRINT));
+        $this->env->metaDataFile()->write(json_encode($this->data($data), JSON_PRETTY_PRINT));
     }
 
     public function addComposer(array $data = []): void
@@ -65,10 +74,10 @@ class TestEnvSetup
 
     public function defaultTemplate(bool $render = false, bool $orig = true): string
     {
-        $descToken = $this->placeholder(Factory::PACKAGE_DESC);
-        $repoToken = $this->placeholder(Factory::REPO_NAME);
-        $packToken = $this->placeholder(Factory::PACKAGE_NAME);
-        $nameToken = $this->placeholder(Factory::SRC_NAMESPACE);
+        $descToken = $this->placeholder(self::PACKAGE_DESC);
+        $repoToken = $this->placeholder(self::REPO_NAME);
+        $packToken = $this->placeholder(self::PACKAGE_NAME);
+        $nameToken = $this->placeholder(self::SRC_NAMESPACE);
         $origToken = $this->placeholder(OriginalContents::PLACEHOLDER);
 
         $marker    = '...Your own contents here...';
@@ -84,18 +93,6 @@ class TestEnvSetup
             
             THE END.
             TPL;
-    }
-
-    public function metaData(array $override = []): array
-    {
-        $data = $this->data($override);
-
-        return [
-            Reader\PackageName::class        => $data['package.name'],
-            Reader\RepositoryName::class     => $data['repository.name'],
-            Reader\PackageDescription::class => $data['description.text'],
-            Reader\SrcNamespace::class       => $data['namespace.src']
-        ];
     }
 
     public function composer(array $override = []): string
@@ -138,7 +135,7 @@ class TestEnvSetup
             'namespace.src'    => 'Default\\Namespace'
         ];
 
-        return $override + $data;
+        return array_merge($data, $override);
     }
 
     private function replaceOriginalContent(string $template): string

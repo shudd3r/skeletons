@@ -14,5 +14,5 @@ namespace Shudd3r\PackageFiles\Application;
 
 interface Token
 {
-    public function replacePlaceholders(string $template): string;
+    public function replace(string $template): string;
 }

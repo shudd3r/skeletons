@@ -25,7 +25,7 @@ class FakeToken implements Token
         $this->namespace = $namespace;
     }
 
-    public function replacePlaceholders(string $template): string
+    public function replace(string $template): string
     {
         return $template;
     }

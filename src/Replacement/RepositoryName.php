@@ -9,35 +9,43 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Token\Source;
+namespace Shudd3r\PackageFiles\Replacement;
 
+use Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Application\Token\Reader\PackageName;
-use Shudd3r\PackageFiles\Application\Token\Validator;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-class DefaultRepositoryName implements Source
+class RepositoryName extends Replacement
 {
-    private File        $gitConfig;
+    protected ?string $inputPrompt = 'Github repository name';
+    protected ?string $optionName  = 'repo';
+
     private PackageName $packageName;
 
-    public function __construct(File $gitConfig, PackageName $packageName)
+    public function __construct(RuntimeEnv $env, PackageName $packageName)
     {
-        $this->gitConfig   = $gitConfig;
         $this->packageName = $packageName;
+        parent::__construct($env);
     }
 
-    public function value(Validator $validator): string
+    protected function isValid(string $value): bool
     {
-        return $this->repositoryFromGitConfig() ?? $this->packageName->value();
+        return (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
+    }
+
+    protected function defaultSource(array $options): Source
+    {
+        $callback = fn() => $this->repositoryFromGitConfig() ?? $this->packageName->sourceValue($options);
+        return $this->userSource(new Source\CallbackSource($callback), $options);
     }
 
     private function repositoryFromGitConfig(): ?string
     {
-        if (!$this->gitConfig->exists()) { return null; }
+        $gitConfig = $this->env->package()->file('.git/config');
+        if (!$gitConfig->exists()) { return null; }
 
-        $config = parse_ini_string($this->gitConfig->contents(), true);
+        $config = parse_ini_string($gitConfig->contents(), true);
         if (!$url = $this->remoteUrl($config)) { return null; }
 
         $path = str_replace(':', '/', $url);

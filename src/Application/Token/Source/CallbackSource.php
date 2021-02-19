@@ -14,17 +14,20 @@ namespace Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\Source;
 
 
-class PredefinedValue implements Source
+class CallbackSource implements Source
 {
-    private string $value;
+    private $callback;
 
-    public function __construct(string $value)
+    /**
+     * @param callable $callback fn() => string
+     */
+    public function __construct(callable $callback)
     {
-        $this->value = $value;
+        $this->callback = $callback;
     }
 
     public function value(): string
     {
-        return $this->value;
+        return ($this->callback)();
     }
 }

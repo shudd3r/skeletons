@@ -13,16 +13,15 @@ namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
-use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Source;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
+use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Template;
 
 
 class Validate extends Command\Factory
 {
-    public function command(): CommandInterface
+    public function command(array $options): CommandInterface
     {
         $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $fileValidators = new Processor\FileProcessors\FileValidators($this->env->package());
@@ -53,7 +52,6 @@ class Validate extends Command\Factory
 
     private function tokenReader(): Reader
     {
-        $metaDataSource = new Source\MetaDataFile($this->env->metaDataFile(), new Source\PredefinedValue(''));
-        return $this->tokenReaders()->validationReader($metaDataSource);
+        return $this->env->replacements()->validate();
     }
 }

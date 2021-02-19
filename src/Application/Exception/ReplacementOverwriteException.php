@@ -9,9 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Token\Reader;
+namespace Shudd3r\PackageFiles\Application\Exception;
+
+use InvalidArgumentException;
 
 
-class PackageDescription extends ValueReader
+class ReplacementOverwriteException extends InvalidArgumentException
 {
 }

@@ -22,7 +22,7 @@ class ValueListTokenTest extends TestCase
     {
         $template = '{replace}=1 {replace}=2 {replace}=3 {replace}=4';
         $token    = $this->token(['one', 'two', 'three', 'four']);
-        $this->assertSame('one=1 two=2 three=3 four=4', $token->replacePlaceholders($template));
+        $this->assertSame('one=1 two=2 three=3 four=4', $token->replace($template));
     }
 
     /**
@@ -34,7 +34,7 @@ class ValueListTokenTest extends TestCase
     {
         $token = $this->token($values);
         $this->expectException(RuntimeException::class);
-        $token->replacePlaceholders($template);
+        $token->replace($template);
     }
 
     public function mismatchedPlaceholders(): array

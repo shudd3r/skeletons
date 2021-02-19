@@ -11,16 +11,15 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
+use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Replacement;
 
 
-class SrcNamespace extends ValueReader
+class ValidationReader extends Reader
 {
-    protected function newTokenInstance(string $namespace, string $value): Token
+    protected function tokenInstance(string $name, Replacement $replacement): ?Token
     {
-        return new Token\CompositeToken(
-            new Token\ValueToken($namespace, $value),
-            new Token\ValueToken($namespace . '.esc', str_replace('\\', '\\\\', $value))
-        );
+        return $replacement->validationToken($name);
     }
 }

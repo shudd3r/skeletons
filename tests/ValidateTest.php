@@ -22,13 +22,13 @@ class ValidateTest extends TestCase
 {
     public function testFactoryCreatesCommand()
     {
-        $factory = new Validate(new Doubles\FakeRuntimeEnv(), []);
-        $this->assertInstanceOf(Command::class, $factory->command());
+        $factory = new Validate(new Doubles\FakeRuntimeEnv());
+        $this->assertInstanceOf(Command::class, $factory->command([]));
     }
 
     public function testFactoryCanCreatePrecondition()
     {
-        $factory = new Validate(new Doubles\FakeRuntimeEnv(), []);
+        $factory = new Validate(new Doubles\FakeRuntimeEnv());
         $this->assertInstanceOf(Precondition::class, $factory->synchronizedSkeleton(new TokenCache()));
     }
 
@@ -36,8 +36,8 @@ class ValidateTest extends TestCase
     {
         $setup = new TestEnvSetup();
 
-        $factory = new Validate($setup->env, []);
-        $factory->command()->execute();
+        $factory = new Validate($setup->env);
+        $factory->command([])->execute();
 
         $this->assertSame([], $setup->env->output()->messagesSent);
     }
@@ -47,8 +47,8 @@ class ValidateTest extends TestCase
         $setup = new TestEnvSetup();
         $setup->addMetaData(['namespace.src' => 'Not/A/Namespace']);
 
-        $factory = new Validate($setup->env, []);
-        $factory->command()->execute();
+        $factory = new Validate($setup->env);
+        $factory->command([])->execute();
 
         $this->assertSame([], $setup->env->output()->messagesSent);
     }
@@ -60,8 +60,8 @@ class ValidateTest extends TestCase
         $setup->addComposer();
         $setup->addGeneratedFile();
 
-        $factory = new Validate($setup->env, []);
-        $factory->command()->execute();
+        $factory = new Validate($setup->env);
+        $factory->command([])->execute();
 
         $this->assertSame(0, $setup->env->output()->exitCode());
         $this->assertTrue($factory->synchronizedSkeleton(new TokenCache())->isFulfilled());
@@ -74,8 +74,8 @@ class ValidateTest extends TestCase
         $setup->addComposer();
         $setup->addGeneratedFile();
 
-        $factory = new Validate($setup->env, []);
-        $factory->command()->execute();
+        $factory = new Validate($setup->env);
+        $factory->command([])->execute();
 
         $this->assertSame(1, $setup->env->output()->exitCode());
         $this->assertFalse($factory->synchronizedSkeleton(new TokenCache())->isFulfilled());

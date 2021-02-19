@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class CompositeTokenTest extends TestCase
+class CompositeValueTokenTest extends TestCase
 {
     public function testTokenReplacesAllInternalPlaceholders()
     {
@@ -25,9 +25,10 @@ class CompositeTokenTest extends TestCase
             new Token\ValueToken('baz.token', 'baz')
         ];
 
-        $token = new Token\CompositeToken(...$tokens);
-        $template = "Template with {foo.token}-{bar.token}-{baz.token}";
+        $token = new Token\CompositeValueToken('base.token', 'base value', ...$tokens);
+        $template = "Template for {base.token} with {foo.token}-{bar.token}-{baz.token}";
 
-        $this->assertSame('Template with foo-bar-baz', $token->replace($template));
+        $this->assertSame('Template for base value with foo-bar-baz', $token->replace($template));
+        $this->assertSame('base value', $token->value());
     }
 }

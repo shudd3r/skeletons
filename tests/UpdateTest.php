@@ -20,8 +20,8 @@ class UpdateTest extends TestCase
 {
     public function testFactory_ReturnsCommand()
     {
-        $factory = new Update(new Doubles\FakeRuntimeEnv(), []);
-        $this->assertInstanceOf(Command::class, $factory->command());
+        $factory = new Update(new Doubles\FakeRuntimeEnv());
+        $this->assertInstanceOf(Command::class, $factory->command([]));
     }
 
     public function testValuesProvidedAsCommandLineOptions_UpdatePackage()
@@ -32,8 +32,8 @@ class UpdateTest extends TestCase
         $setup->addGeneratedFile();
         $setup->addComposer();
 
-        $factory = new Update($setup->env, ['ns' => 'New\\Namespace', 'repo' => 'new/repo']);
-        $factory->command()->execute();
+        $factory = new Update($setup->env);
+        $factory->command(['ns' => 'New\\Namespace', 'repo' => 'new/repo'])->execute();
 
         $newData = $setup->data([
             'repository.name' => 'new/repo',
@@ -52,8 +52,8 @@ class UpdateTest extends TestCase
         $setup->addComposer();
         $setup->env->input()->inputStrings = ['new/package', '', '!!! This is new description !!!', ''];
 
-        $factory = new Update($setup->env, ['repo' => 'new/repo', 'i' => true]);
-        $factory->command()->execute();
+        $factory = new Update($setup->env);
+        $factory->command(['repo' => 'new/repo', 'i' => true])->execute();
 
         $newData = $setup->data([
             'package.name'     => 'new/package',
@@ -71,8 +71,8 @@ class UpdateTest extends TestCase
         $setup->addGeneratedFile();
         $setup->addComposer();
 
-        $factory = new Update($setup->env, ['repo' => 'new/repo']);
-        $factory->command()->execute();
+        $factory = new Update($setup->env);
+        $factory->command(['repo' => 'new/repo'])->execute();
 
         $this->assertPackageFiles($setup, $data);
     }
@@ -85,8 +85,8 @@ class UpdateTest extends TestCase
         $setup->addGeneratedFile();
         $setup->addComposer();
 
-        $factory = new Update($setup->env, ['repo' => 'new/repo']);
-        $factory->command()->execute();
+        $factory = new Update($setup->env);
+        $factory->command(['repo' => 'new/repo'])->execute();
 
         $this->assertPackageFiles($setup, $data);
     }

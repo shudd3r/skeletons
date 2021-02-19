@@ -14,18 +14,21 @@ namespace Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class CompositeToken implements Token
+class CompositeValueToken extends ValueToken
 {
-    private array $tokens;
+    private array $subTokens;
 
-    public function __construct(Token ...$tokens)
+    public function __construct(string $placeholder, string $value, Token ...$subTokens)
     {
-        $this->tokens = $tokens;
+        $this->subTokens = $subTokens;
+        parent::__construct($placeholder, $value);
     }
 
     public function replace(string $template): string
     {
-        foreach ($this->tokens as $token) {
+        $template = parent::replace($template);
+
+        foreach ($this->subTokens as $token) {
             $template = $token->replace($template);
         }
 

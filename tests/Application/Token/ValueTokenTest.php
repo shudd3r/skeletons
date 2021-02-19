@@ -20,6 +20,12 @@ class ValueTokenTest extends TestCase
     public function testPlaceholderIsReplaced()
     {
         $token = new ValueToken('replace', 'bar');
-        $this->assertSame('foo bar', $token->replacePlaceholders('foo {replace}'));
+        $this->assertSame('foo bar', $token->replace('foo {replace}'));
+    }
+
+    public function testValueMethod_ReturnsCorrectValue()
+    {
+        $token = new ValueToken('foo', 'bar');
+        $this->assertSame('bar', $token->value());
     }
 }

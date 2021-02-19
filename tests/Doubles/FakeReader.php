@@ -13,9 +13,10 @@ namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Replacement;
 
 
-class FakeReader implements Reader
+class FakeReader extends Reader
 {
     private ?string $value;
     private ?Token  $token;
@@ -24,6 +25,7 @@ class FakeReader implements Reader
     {
         $this->value = $value;
         $this->token = isset($value) ? new FakeToken($value) : null;
+        parent::__construct([]);
     }
 
     public function token(string $namespace = ''): ?Token
@@ -34,5 +36,10 @@ class FakeReader implements Reader
     public function value(): string
     {
         return isset($this->value) ? $this->value : 'invalid string';
+    }
+
+    protected function tokenInstance(string $name, Replacement $replacement): ?Token
+    {
+        return null;
     }
 }
