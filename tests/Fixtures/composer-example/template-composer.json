@@ -15,6 +15,7 @@
     "autoload-dev": {
         "psr-4": {
             "{namespace.src.esc}\\Tests\\": "tests/"
-        }
+        },
+        "classmap": ["lib/"]
     }
 }

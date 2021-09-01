@@ -34,8 +34,8 @@
             "{namespace.src.esc}\\Tests\\": "tests/"
         },
         "classmap": [
-            "src/",
             "lib/",
+            "src/",
             "Something.php"
         ]
     }

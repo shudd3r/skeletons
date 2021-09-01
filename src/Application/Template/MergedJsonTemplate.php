@@ -53,6 +53,9 @@ class MergedJsonTemplate implements Template
                 continue;
             }
             if (is_array($value)) {
+                if (is_int(array_key_first($value))) {
+                    $value = $this->mergeListItems($value, $package[$key] ?? []);
+                }
                 $value = $this->mergedDataStructure($value, $package[$key] ?? []);
             }
             $merged[$key] = $value;
@@ -64,5 +67,16 @@ class MergedJsonTemplate implements Template
         }
 
         return $merged;
+    }
+
+    private function mergeListItems(array $template, array $package): array
+    {
+        foreach ($package as $value) {
+            if (!in_array($value, $template)) {
+                $template[] = $value;
+            }
+        }
+
+        return $template;
     }
 }
