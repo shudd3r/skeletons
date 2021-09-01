@@ -51,6 +51,12 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
+    public function testComposerJsonFileNormalization()
+    {
+        $template = $this->template($this->templateComposerJson(), $this->packageComposerJson());
+        $this->assertSame($this->mergedComposerJson(), $template->render(new Doubles\FakeToken()));
+    }
+
     public function possibleContents(): array
     {
         return [
@@ -68,5 +74,119 @@ class MergedJsonTemplateTest extends TestCase
     private function template(string $rendered, string $json): Template
     {
         return new Template\MergedJsonTemplate(new Doubles\FakeTemplate($rendered), new Doubles\MockedFile($json));
+    }
+
+    private function templateComposerJson(): string
+    {
+        return <<<'JSON'
+            {
+                "name": "{package.name}",
+                "description": "{package.description}",
+                "type": null,
+                "license": null,
+                "authors": null,
+                "minimum-stability": null,
+                "require": null,
+                "require-dev": null,
+                "autoload": {
+                    "psr-4": {
+                        "{namespace.src.esc}\\": "src/"
+                    }
+                },
+                "autoload-dev": {
+                    "psr-4": {
+                        "{namespace.src.esc}\\Tests\\": "tests/"
+                    }
+                }
+            }
+            
+            JSON;
+    }
+
+    private function packageComposerJson(): string
+    {
+        return <<<'JSON'
+            {
+                "description": "Default description text",
+                "license": "MIT",
+                "type": "library",
+                "authors": [
+                    {
+                        "name": "Shudd3r",
+                        "email": "shudder@example.com"
+                    }
+                ],
+                "autoload": {
+                    "psr-4": {
+                        "Library\\Namespace\\": "libs/src/"
+                    },
+                    "psr-0": {
+                        "Monolog\\": ["src/", "lib/"]
+                    }
+                },
+                "autoload-dev": {
+                    "classmap": ["src/", "lib/", "Something.php"]
+                },
+                "minimum-stability": "stable",
+                "require": {
+                    "php": "^7.4",
+                    "monolog/monolog": "2.0.*"
+                },
+                "require-dev": {
+                    "some/package": "^1.0"
+                }
+            }
+            
+            JSON;
+    }
+
+    private function mergedComposerJson(): string
+    {
+        return <<<'JSON'
+            {
+                "name": "{package.name}",
+                "description": "{package.description}",
+                "type": "library",
+                "license": "MIT",
+                "authors": [
+                    {
+                        "name": "Shudd3r",
+                        "email": "shudder@example.com"
+                    }
+                ],
+                "minimum-stability": "stable",
+                "require": {
+                    "php": "^7.4",
+                    "monolog/monolog": "2.0.*"
+                },
+                "require-dev": {
+                    "some/package": "^1.0"
+                },
+                "autoload": {
+                    "psr-4": {
+                        "{namespace.src.esc}\\": "src/",
+                        "Library\\Namespace\\": "libs/src/"
+                    },
+                    "psr-0": {
+                        "Monolog\\": [
+                            "src/",
+                            "lib/"
+                        ]
+                    }
+                },
+                "autoload-dev": {
+                    "psr-4": {
+                        "{namespace.src.esc}\\Tests\\": "tests/"
+                    },
+                    "classmap": [
+                        "src/",
+                        "lib/",
+                        "Something.php"
+                    ]
+                }
+            }
+            
+            
+            JSON;
     }
 }
