@@ -39,7 +39,7 @@ class MergedJsonTemplate implements Template
     private function mergedJson(array $template, array $package): string
     {
         $data = $this->mergedDataStructure($template, $package);
-        return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
+        return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     private function mergedDataStructure(array $template, array $package): array
