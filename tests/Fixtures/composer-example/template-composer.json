@@ -1,0 +1,20 @@
+{
+    "name": "{package.name}",
+    "description": "{package.description}",
+    "type": null,
+    "license": null,
+    "authors": null,
+    "minimum-stability": null,
+    "require": null,
+    "require-dev": null,
+    "autoload": {
+        "psr-4": {
+            "{namespace.src.esc}\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "{namespace.src.esc}\\Tests\\": "tests/"
+        }
+    }
+}
