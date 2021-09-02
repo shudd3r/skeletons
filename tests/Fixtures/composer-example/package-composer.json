@@ -4,8 +4,10 @@
     "type": "library",
     "authors": [
         {
-            "name": "Shudd3r",
-            "email": "shudder@example.com"
+            "role": "developer",
+            "name": "Someone",
+            "homepage": "https://www.example.com",
+            "email": "mail@example.com"
         }
     ],
     "autoload": {

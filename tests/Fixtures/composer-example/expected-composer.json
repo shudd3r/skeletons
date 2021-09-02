@@ -7,6 +7,12 @@
         {
             "name": "Shudd3r",
             "email": "shudder@example.com"
+        },
+        {
+            "name": "Someone",
+            "email": "mail@example.com",
+            "homepage": "https://www.example.com",
+            "role": "developer"
         }
     ],
     "minimum-stability": "stable",

@@ -53,10 +53,11 @@ class MergedJsonTemplate implements Template
                 continue;
             }
             if (is_array($value)) {
-                if (is_int(array_key_first($value))) {
+                if ($this->isList($value)) {
                     $value = $this->mergeListItems($value, $package[$key] ?? []);
+                } else {
+                    $value = $this->mergedDataStructure($value, $package[$key] ?? []);
                 }
-                $value = $this->mergedDataStructure($value, $package[$key] ?? []);
             }
             $merged[$key] = $value;
             unset($package[$key]);
@@ -69,13 +70,30 @@ class MergedJsonTemplate implements Template
         return $merged;
     }
 
-    private function mergeListItems(array $template, array $package): array
+    private function mergeListItems(array $items, array $package): array
     {
+        $template = $this->extractedFirstItemTemplate($items);
         foreach ($package as $value) {
-            if (!in_array($value, $template)) {
-                $template[] = $value;
+            if (!in_array($value, $items)) {
+                $items[] = $template ? $this->mergedDataStructure($template, $value) : $value;
             }
         }
+
+        return $items;
+    }
+
+    private function isList(array $data): bool
+    {
+        return is_int(array_key_first($data));
+    }
+
+    private function extractedFirstItemTemplate(array &$items): ?array
+    {
+        $assocItems = is_array($items[0]) && !$this->isList($items[0]);
+        if (!$assocItems) { return null; }
+
+        $template = array_fill_keys(array_keys($items[0]), null);
+        $items[0] = array_filter($items[0], fn($value) => !is_null($value));
 
         return $template;
     }

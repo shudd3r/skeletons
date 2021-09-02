@@ -69,6 +69,14 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
+    public function testForTemplateArraysInNestedLists_ReturnsUniqueElementsListWithFirstArrayAsTemplate()
+    {
+        $template = json_encode(['list' => [['a' => 1, 'b' => 1]]]);
+        $package  = json_encode(['list' => [['b' => 2, 'a' => 2, 'c' => 2], ['c' => 3, 'a' => 3], ['b' => 1, 'a' => 1]]]);
+        $expected = ['list' => [['a' => 1, 'b' => 1], ['a' => 2, 'b' => 2, 'c' => 2], ['a' => 3, 'c' => 3]]];
+        $this->assertJsonData($expected, $this->template($template, $package));
+    }
+
     public function testExampleComposerJsonFileNormalization()
     {
         $files = new Fixtures\ExampleFiles('composer-example');
