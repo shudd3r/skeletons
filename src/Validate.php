@@ -16,7 +16,6 @@ use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
-use Shudd3r\PackageFiles\Application\Template;
 
 
 class Validate extends Command\Factory
@@ -41,13 +40,7 @@ class Validate extends Command\Factory
 
     protected function processor(Processor\FileProcessors $fileValidators): Processor
     {
-        $composerFile    = $this->env->package()->file('composer.json');
-        $template        = new Template\ComposerJsonTemplate($composerFile);
-        $compareComposer = new Processor\CompareFile($template, $composerFile);
-
-        $comparePackage  = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $fileValidators);
-
-        return new Processor\ProcessorSequence($compareComposer, $comparePackage);
+        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $fileValidators);
     }
 
     private function tokenReader(): Reader

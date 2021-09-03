@@ -15,7 +15,6 @@ use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
-use Shudd3r\PackageFiles\Application\Template;
 
 
 class Update extends Command\Factory
@@ -40,13 +39,7 @@ class Update extends Command\Factory
 
     protected function processor(TokenCache $cache): Processor
     {
-        $composerFile     = $this->env->package()->file('composer.json');
-        $template         = new Template\ComposerJsonTemplate($composerFile);
-        $generateComposer = new Processor\GenerateFile($template, $composerFile);
-
         $generatorFactory = new Processor\FileProcessors\UpdatedFileGenerators($this->env->package(), $cache);
-        $generatePackage  = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
-
-        return new Processor\ProcessorSequence($generateComposer, $generatePackage);
+        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
     }
 }

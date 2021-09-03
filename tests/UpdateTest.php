@@ -30,7 +30,6 @@ class UpdateTest extends TestCase
         $data  = $setup->data();
         $setup->addMetaData();
         $setup->addGeneratedFile();
-        $setup->addComposer();
 
         $factory = new Update($setup->env);
         $factory->command(['ns' => 'New\\Namespace', 'repo' => 'new/repo'])->execute();
@@ -49,7 +48,6 @@ class UpdateTest extends TestCase
         $data  = $setup->data();
         $setup->addMetaData();
         $setup->addGeneratedFile();
-        $setup->addComposer();
         $setup->env->input()->inputStrings = ['new/package', '', '!!! This is new description !!!', ''];
 
         $factory = new Update($setup->env);
@@ -69,7 +67,6 @@ class UpdateTest extends TestCase
         $setup = new TestEnvSetup();
         $data  = $setup->data();
         $setup->addGeneratedFile();
-        $setup->addComposer();
 
         $factory = new Update($setup->env);
         $factory->command(['repo' => 'new/repo'])->execute();
@@ -83,7 +80,6 @@ class UpdateTest extends TestCase
         $data  = $setup->data();
         $setup->addMetaData(['repository.name' => 'other/repo']);
         $setup->addGeneratedFile();
-        $setup->addComposer();
 
         $factory = new Update($setup->env);
         $factory->command(['repo' => 'new/repo'])->execute();
@@ -95,6 +91,5 @@ class UpdateTest extends TestCase
     {
         if ($oldData) { $this->assertNotEquals($oldData, $data); }
         $this->assertSame($setup->render($data), $setup->env->package()->file($setup::SKELETON_FILE)->contents());
-        $this->assertSame($setup->composer($data), $setup->env->package()->file('composer.json')->contents());
     }
 }
