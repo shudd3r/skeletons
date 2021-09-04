@@ -21,10 +21,10 @@ class CachingFileValidators extends FileValidators
 {
     private TokenCache $cache;
 
-    public function __construct(Directory $package, TokenCache $cache)
+    public function __construct(Directory $package, array $templates, TokenCache $cache)
     {
         $this->cache = $cache;
-        parent::__construct($package);
+        parent::__construct($package, $templates);
     }
 
     protected function originalContentsToken(File $packageFile): Token

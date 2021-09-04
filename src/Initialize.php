@@ -40,7 +40,7 @@ class Initialize extends Command\Factory
 
     protected function processor(): Processor
     {
-        $generatorFactory = new Processor\FileProcessors\NewFileGenerators($this->env->package());
+        $generatorFactory = new Processor\FileProcessors\NewFileGenerators($this->env->package(), $this->env->templates());
         return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
     }
 }

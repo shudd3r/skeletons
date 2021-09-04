@@ -39,7 +39,7 @@ class Update extends Command\Factory
 
     protected function processor(TokenCache $cache): Processor
     {
-        $generatorFactory = new Processor\FileProcessors\UpdatedFileGenerators($this->env->package(), $cache);
+        $generatorFactory = new Processor\FileProcessors\UpdatedFileGenerators($this->env->package(), $this->env->templates(), $cache);
         return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
     }
 }

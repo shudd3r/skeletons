@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -20,16 +20,23 @@ use Shudd3r\PackageFiles\Application\Template;
 abstract class FileProcessors
 {
     private Directory $package;
+    private array     $templates;
 
-    public function __construct(Directory $package)
+    public function __construct(Directory $package, array $templates = [])
     {
-        $this->package = $package;
+        $this->package   = $package;
+        $this->templates = $templates;
     }
 
     public function processor(File $skeletonFile): Processor
     {
-        $template    = new Template\FileTemplate($skeletonFile);
-        $packageFile = $this->package->file($skeletonFile->name());
+        $filename        = $skeletonFile->name();
+        $packageFile     = $this->package->file($filename);
+        $genericTemplate = new Template\FileTemplate($skeletonFile);
+        $customTemplate  = $this->templates[$filename] ?? null;
+
+        $template = ($customTemplate) ? $customTemplate($genericTemplate, $packageFile) : $genericTemplate;
+
         return $this->newProcessorInstance($template, $packageFile);
     }
 
