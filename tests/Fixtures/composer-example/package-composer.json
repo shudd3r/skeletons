@@ -1,0 +1,32 @@
+{
+    "description": "Default description text",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "role": "developer",
+            "name": "Someone",
+            "homepage": "https://www.example.com",
+            "email": "mail@example.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Library\\Namespace\\": "libs/src/"
+        },
+        "psr-0": {
+            "Monolog\\": ["src/", "lib/"]
+        }
+    },
+    "autoload-dev": {
+        "classmap": ["src/", "lib/", "Something.php"]
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.4",
+        "monolog/monolog": "2.0.*"
+    },
+    "require-dev": {
+        "some/package": "^1.0"
+    }
+}

@@ -34,6 +34,8 @@ class RuntimeEnv
     private SavedPlaceholderValues $metaData;
     private Replacements           $replacements;
 
+    private array $templates = [];
+
     public function __construct(
         Input $input,
         Output $output,
@@ -53,6 +55,16 @@ class RuntimeEnv
     public function replacements(): Replacements
     {
         return $this->replacements ??= new Replacements();
+    }
+
+    public function addTemplate(string $filename, callable $template): void
+    {
+        $this->templates[$filename] = $template;
+    }
+
+    public function templates(): array
+    {
+        return $this->templates;
     }
 
     public function input(): Input

@@ -15,7 +15,6 @@ use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\Processor;
-use Shudd3r\PackageFiles\Application\Template;
 
 
 class Initialize extends Command\Factory
@@ -41,13 +40,7 @@ class Initialize extends Command\Factory
 
     protected function processor(): Processor
     {
-        $composerFile     = $this->env->package()->file('composer.json');
-        $template         = new Template\ComposerJsonTemplate($composerFile);
-        $generateComposer = new Processor\GenerateFile($template, $composerFile);
-
-        $generatorFactory = new Processor\FileProcessors\NewFileGenerators($this->env->package());
-        $generatePackage  = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
-
-        return new Processor\ProcessorSequence($generateComposer, $generatePackage);
+        $generatorFactory = new Processor\FileProcessors\NewFileGenerators($this->env->package(), $this->env->templates());
+        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
     }
 }
