@@ -19,7 +19,7 @@ class ReplacementTest extends TestCase
 {
     public function testForInvalidValue_TokenMethods_ReturnNull()
     {
-        $replacement = new Doubles\FakeReplacement(new Doubles\FakeRuntimeEnv(), false);
+        $replacement = new Doubles\FakeReplacement(new Doubles\FakeRuntimeEnv(), 'invalid value', false);
         $this->assertNull($replacement->initialToken('foo', []));
         $this->assertNull($replacement->updateToken('foo', []));
         $this->assertNull($replacement->validationToken('foo'));
