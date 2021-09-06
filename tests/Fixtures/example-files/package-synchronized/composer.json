@@ -1,0 +1,50 @@
+{
+    "name": "initial/package-name",
+    "description": "Initial package description",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Shudd3r",
+            "email": "shudder@example.com"
+        },
+        {
+            "name": "Someone",
+            "email": "mail@example.com",
+            "homepage": "https://www.example.com",
+            "role": "developer"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.0",
+        "monolog/monolog": "2.0.*"
+    },
+    "require-dev": {
+        "some/package": "^1.0",
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Package\\Initial\\": "src/",
+            "Library\\Namespace\\": "libs/src/"
+        },
+        "psr-0": {
+            "Monolog\\": [
+                "src/",
+                "lib/"
+            ]
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Package\\Initial\\Tests\\": "tests/",
+            "Testing\\Files\\": "tests/examples/"
+        },
+        "classmap": [
+            "lib/",
+            "src/",
+            "Something.php"
+        ]
+    }
+}
