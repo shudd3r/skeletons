@@ -79,7 +79,7 @@ class MergedJsonTemplateTest extends TestCase
 
     public function testExampleComposerJsonFileNormalization()
     {
-        $files = new Fixtures\ExampleFiles('composer-example');
+        $files = new Fixtures\ExampleFiles('json-merge-example');
 
         $template = $files->contentsOf('template-composer.json');
         $package  = $files->contentsOf('package-composer.json');
