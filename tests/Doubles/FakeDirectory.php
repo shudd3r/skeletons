@@ -60,6 +60,12 @@ class FakeDirectory implements Directory
 
     public function files(): array
     {
+        foreach ($this->subdirectories as $dirname => $directory) {
+            foreach ($directory->files() as $file) {
+                $this->addFile($dirname . '/' . $file->name(), $file->contents());
+            }
+        }
+
         $files = [];
         foreach ($this->files as $filename => $file) {
             $files[] = $this->file($filename);
