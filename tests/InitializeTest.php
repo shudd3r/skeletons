@@ -31,11 +31,11 @@ class InitializeTest extends TestCase
 
     public function testInitialization_GeneratesFilesFromTemplate()
     {
-        $files      = new Fixtures\ExampleFiles('example-files');
-        $package    = $files->directory('package');
-        $initialize = $this->initialize($package, $files->directory('template'));
+        $files   = new Fixtures\ExampleFiles('example-files');
+        $package = $files->directory('package');
+        $env     = $this->envSetup($package, $files->directory('template'));
 
-        $initialize->execute();
+        $this->initializeCommand($env)->execute();
 
         $expectedFiles = new Fixtures\ExampleFiles('example-files/package-initialized');
         $this->assertTrue($expectedFiles->hasSameFilesAs($package));
@@ -43,11 +43,11 @@ class InitializeTest extends TestCase
 
     public function testExistingMetaDataFile_AbortsExecutionWithoutSideEffects()
     {
-        $files      = new Fixtures\ExampleFiles('example-files');
-        $package    = $files->directory('package');
-        $initialize = $this->initialize($package, $files->directory('template'), null, new Doubles\MockedFile());
+        $files   = new Fixtures\ExampleFiles('example-files');
+        $package = $files->directory('package');
+        $env     = $this->envSetup($package, $files->directory('template'), null, new Doubles\MockedFile());
 
-        $initialize->execute();
+        $this->initializeCommand($env)->execute();
 
         $expectedFiles = new Fixtures\ExampleFiles('example-files/package');
         $this->assertTrue($expectedFiles->hasSameFilesAs($package));
@@ -59,20 +59,20 @@ class InitializeTest extends TestCase
         $package = $files->directory('package');
         $backup  = new Doubles\FakeDirectory();
         $backup->addFile('README.md', 'anything');
-        $initialize = $this->initialize($package, $files->directory('template'), $backup);
+        $env = $this->envSetup($package, $files->directory('template'), $backup);
 
-        $initialize->execute();
+        $this->initializeCommand($env)->execute();
 
         $expectedFiles = new Fixtures\ExampleFiles('example-files/package');
         $this->assertTrue($expectedFiles->hasSameFilesAs($package));
     }
 
-    private function initialize(
+    private function envSetup(
         Directory $package,
         Directory $skeleton,
         ?Directory $backup = null,
         File $metaFile = null
-    ): Command {
+    ): RuntimeEnv {
         $terminal = new Doubles\MockedTerminal();
         $env = new RuntimeEnv($terminal, $terminal, $package, $skeleton, $backup, $metaFile);
 
@@ -85,14 +85,17 @@ class InitializeTest extends TestCase
         $jsonMerge = fn (Template $template, File $composer) => new Template\MergedJsonTemplate($template, $composer);
         $env->addTemplate('composer.json', $jsonMerge);
 
+        return $env;
+    }
+
+    private function initializeCommand(RuntimeEnv $env): Command
+    {
         $initialize = new Initialize($env);
-        $options    = [
+        return $initialize->command([
             'repo'    => 'initial/repo',
             'package' => 'initial/package-name',
             'desc'    => 'Initial package description',
             'ns'      => 'Package\Initial'
-        ];
-
-        return $initialize->command($options);
+        ]);
     }
 }
