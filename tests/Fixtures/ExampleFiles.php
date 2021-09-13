@@ -28,7 +28,7 @@ class ExampleFiles
     {
         $fakeDirectory = new FakeDirectory('/' . $name);
         foreach ($this->directory->subdirectory($name)->files() as $file) {
-            $fakeDirectory->addFile($file->name(), $file->contents());
+            $fakeDirectory->addFile(str_replace('\\', '/', $file->name()), $file->contents());
         }
 
         return $fakeDirectory;
