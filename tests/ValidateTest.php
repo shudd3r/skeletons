@@ -14,70 +14,88 @@ namespace Shudd3r\PackageFiles\Tests;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Validate;
 use Shudd3r\PackageFiles\Environment\Command;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Command\Precondition;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
+use Shudd3r\PackageFiles\Replacement;
 
 
 class ValidateTest extends TestCase
 {
-    public function testFactoryCreatesCommand()
+    public const PACKAGE_NAME  = 'package.name';
+    public const PACKAGE_DESC  = 'package.description';
+    public const SRC_NAMESPACE = 'namespace.src';
+    public const REPO_NAME     = 'repository.name';
+
+    public function testInitializedPackage_IsValid()
     {
-        $factory = new Validate(new Doubles\FakeRuntimeEnv());
-        $this->assertInstanceOf(Command::class, $factory->command([]));
+        $files   = new Fixtures\ExampleFiles('example-files');
+        $package = $files->directory('package-initialized');
+        $env     = $this->envSetup($package, $files->directory('template'));
+
+        $this->validateCommand($env)->execute();
+
+        $this->assertSame(0, $env->output()->exitCode());
+        $this->assertTrue($this->validatePrecondition($env)->isFulfilled());
     }
 
-    public function testFactoryCanCreatePrecondition()
+    public function testSynchronizedPackage_IsValid()
     {
-        $factory = new Validate(new Doubles\FakeRuntimeEnv());
-        $this->assertInstanceOf(Precondition::class, $factory->synchronizedSkeleton(new TokenCache()));
+        $files   = new Fixtures\ExampleFiles('example-files');
+        $package = $files->directory('package-synchronized');
+        $env     = $this->envSetup($package, $files->directory('template'));
+
+        $this->validateCommand($env)->execute();
+
+        $this->assertSame(0, $env->output()->exitCode());
+        $this->assertTrue($this->validatePrecondition($env)->isFulfilled());
     }
 
-    public function testMissingMetaDataFile_StopsExecution()
+    public function testDesynchronizedPackage_IsInvalid()
     {
-        $setup = new TestEnvSetup();
+        $files   = new Fixtures\ExampleFiles('example-files');
+        $package = $files->directory('package-unsynchronized');
+        $env     = $this->envSetup($package, $files->directory('template'));
 
-        $factory = new Validate($setup->env);
-        $factory->command([])->execute();
+        $this->validateCommand($env)->execute();
 
-        $this->assertSame([], $setup->env->output()->messagesSent);
+        $this->assertNotEquals(0, $env->output()->exitCode());
+        $this->assertFalse($this->validatePrecondition($env)->isFulfilled());
     }
 
-    public function testInvalidMetaData_StopsExecution()
-    {
-        $setup = new TestEnvSetup();
-        $setup->addMetaData(['namespace.src' => 'Not/A/Namespace']);
+    //todo: failed precondition tests
 
-        $factory = new Validate($setup->env);
-        $factory->command([])->execute();
+    private function envSetup(
+        Directory $package,
+        Directory $skeleton
+    ): RuntimeEnv {
+        $terminal = new Doubles\MockedTerminal();
+        $env = new RuntimeEnv($terminal, $terminal, $package, $skeleton);
 
-        $this->assertSame([], $setup->env->output()->messagesSent);
+        $replacements = $env->replacements();
+        $replacements->add(self::PACKAGE_NAME, $packageName = new Replacement\PackageName($env));
+        $replacements->add(self::REPO_NAME, new Replacement\RepositoryName($env, $packageName));
+        $replacements->add(self::PACKAGE_DESC, new Replacement\PackageDescription($env, $packageName));
+        $replacements->add(self::SRC_NAMESPACE, new Replacement\SrcNamespace($env, $packageName));
+
+        $jsonMerge = fn (Template $template, File $composer) => new Template\MergedJsonTemplate($template, $composer);
+        $env->addTemplate('composer.json', $jsonMerge);
+
+        return $env;
     }
 
-    public function testMatchingFiles_OutputsNoErrorCode()
+    private function validateCommand(RuntimeEnv $env): Command
     {
-        $setup = new TestEnvSetup();
-        $setup->addMetaData();
-        $setup->addComposer();
-        $setup->addGeneratedFile();
-
-        $factory = new Validate($setup->env);
-        $factory->command([])->execute();
-
-        $this->assertSame(0, $setup->env->output()->exitCode());
-        $this->assertTrue($factory->synchronizedSkeleton(new TokenCache())->isFulfilled());
+        $validate = new Validate($env);
+        return $validate->command([]);
     }
 
-    public function testNotMatchingFiles_OutputsErrorCode()
+    private function validatePrecondition(RuntimeEnv $env): Precondition
     {
-        $setup = new TestEnvSetup();
-        $setup->addMetaData(['repository.name' => 'another/repo']);
-        $setup->addComposer();
-        $setup->addGeneratedFile();
-
-        $factory = new Validate($setup->env);
-        $factory->command([])->execute();
-
-        $this->assertSame(1, $setup->env->output()->exitCode());
-        $this->assertFalse($factory->synchronizedSkeleton(new TokenCache())->isFulfilled());
+        $validate = new Validate($env);
+        return $validate->synchronizedSkeleton(new TokenCache());
     }
 }
