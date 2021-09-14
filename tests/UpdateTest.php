@@ -14,82 +14,85 @@ namespace Shudd3r\PackageFiles\Tests;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Update;
 use Shudd3r\PackageFiles\Environment\Command;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Replacement;
+use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class UpdateTest extends TestCase
 {
-    public function testFactory_ReturnsCommand()
+    public const PACKAGE_NAME  = 'package.name';
+    public const PACKAGE_DESC  = 'package.description';
+    public const SRC_NAMESPACE = 'namespace.src';
+    public const REPO_NAME     = 'repository.name';
+
+    public function testSynchronizedPackage_IsUpdated()
     {
-        $factory = new Update(new Doubles\FakeRuntimeEnv());
-        $this->assertInstanceOf(Command::class, $factory->command([]));
+        $files   = new Fixtures\ExampleFiles('example-files');
+        $package = $files->directory('package-synchronized');
+        $env     = $this->envSetup($package, $files->directory('template'));
+
+        $this->updateCommand($env)->execute();
+
+        $expectedFiles = new Fixtures\ExampleFiles('example-files/package-updated');
+        $this->assertTrue($expectedFiles->hasSameFilesAs($package));
     }
 
-    public function testValuesProvidedAsCommandLineOptions_UpdatePackage()
+    public function testPackageWithoutMetaDataFile_IsNotUpdated()
     {
-        $setup = new TestEnvSetup();
-        $data  = $setup->data();
-        $setup->addMetaData();
-        $setup->addGeneratedFile();
+        $files   = new Fixtures\ExampleFiles('example-files');
+        $package = $files->directory('package-synchronized');
+        $env     = $this->envSetup($package, $files->directory('template'), new Doubles\MockedFile(null));
 
-        $factory = new Update($setup->env);
-        $factory->command(['ns' => 'New\\Namespace', 'repo' => 'new/repo'])->execute();
+        $this->updateCommand($env)->execute();
 
-        $newData = $setup->data([
-            'repository.name' => 'new/repo',
-            'namespace.src'   => 'New\\Namespace'
+        $expectedFiles = new Fixtures\ExampleFiles('example-files/package-synchronized');
+        $this->assertTrue($expectedFiles->hasSameFilesAs($package));
+    }
+
+    public function testDesynchronizedPackage_IsNotUpdated()
+    {
+        $files   = new Fixtures\ExampleFiles('example-files');
+        $package = $files->directory('package-unsynchronized');
+        $env     = $this->envSetup($package, $files->directory('template'), new Doubles\MockedFile(null));
+
+        $this->updateCommand($env)->execute();
+
+        $expectedFiles = new Fixtures\ExampleFiles('example-files/package-unsynchronized');
+        $this->assertTrue($expectedFiles->hasSameFilesAs($package));
+    }
+
+    private function envSetup(
+        Directory $package,
+        Directory $skeleton,
+        File $metaFile = null
+    ): RuntimeEnv {
+        $terminal = new Doubles\MockedTerminal();
+        $env = new RuntimeEnv($terminal, $terminal, $package, $skeleton, null, $metaFile);
+
+        $replacements = $env->replacements();
+        $replacements->add(self::PACKAGE_NAME, $packageName = new Replacement\PackageName($env));
+        $replacements->add(self::REPO_NAME, new Replacement\RepositoryName($env, $packageName));
+        $replacements->add(self::PACKAGE_DESC, new Replacement\PackageDescription($env, $packageName));
+        $replacements->add(self::SRC_NAMESPACE, new Replacement\SrcNamespace($env, $packageName));
+
+        $jsonMerge = fn (Template $template, File $composer) => new Template\MergedJsonTemplate($template, $composer);
+        $env->addTemplate('composer.json', $jsonMerge);
+
+        return $env;
+    }
+
+    private function updateCommand(RuntimeEnv $env): Command
+    {
+        $update = new Update($env);
+        return $update->command([
+            'repo'    => 'updated/repo',
+            'package' => 'updated/package-name',
+            'desc'    => 'Updated package description',
+            'ns'      => 'Package\Updated'
         ]);
-
-        $this->assertPackageFiles($setup, $newData, $data);
-    }
-
-    public function testValuesProvidedAsInteractiveInput_UpdatePackage()
-    {
-        $setup = new TestEnvSetup();
-        $data  = $setup->data();
-        $setup->addMetaData();
-        $setup->addGeneratedFile();
-        $setup->env->input()->inputStrings = ['new/package', '', '!!! This is new description !!!', ''];
-
-        $factory = new Update($setup->env);
-        $factory->command(['repo' => 'new/repo', 'i' => true])->execute();
-
-        $newData = $setup->data([
-            'package.name'     => 'new/package',
-            'repository.name'  => 'new/repo',
-            'description.text' => '!!! This is new description !!!'
-        ]);
-
-        $this->assertPackageFiles($setup, $newData, $data);
-    }
-
-    public function testMissingMetaDataFile_PreventsExecution()
-    {
-        $setup = new TestEnvSetup();
-        $data  = $setup->data();
-        $setup->addGeneratedFile();
-
-        $factory = new Update($setup->env);
-        $factory->command(['repo' => 'new/repo'])->execute();
-
-        $this->assertPackageFiles($setup, $data);
-    }
-
-    public function testNotSynchronizedMetaData_PreventsExecution()
-    {
-        $setup = new TestEnvSetup();
-        $data  = $setup->data();
-        $setup->addMetaData(['repository.name' => 'other/repo']);
-        $setup->addGeneratedFile();
-
-        $factory = new Update($setup->env);
-        $factory->command(['repo' => 'new/repo'])->execute();
-
-        $this->assertPackageFiles($setup, $data);
-    }
-
-    private function assertPackageFiles(TestEnvSetup $setup, array $data, array $oldData = null)
-    {
-        if ($oldData) { $this->assertNotEquals($oldData, $data); }
-        $this->assertSame($setup->render($data), $setup->env->package()->file($setup::SKELETON_FILE)->contents());
     }
 }
