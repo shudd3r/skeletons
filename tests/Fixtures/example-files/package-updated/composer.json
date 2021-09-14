@@ -27,6 +27,7 @@
     "autoload": {
         "psr-4": {
             "Package\\Updated\\": "src/",
+            "Package\\Initial\\": "src/",
             "Library\\Namespace\\": "libs/src/"
         },
         "psr-0": {
@@ -39,6 +40,7 @@
     "autoload-dev": {
         "psr-4": {
             "Package\\Updated\\Tests\\": "tests/",
+            "Package\\Initial\\Tests\\": "tests/",
             "Testing\\Files\\": "tests/examples/"
         },
         "classmap": [
