@@ -11,31 +11,20 @@
 
 namespace Shudd3r\PackageFiles\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Initialize;
 use Shudd3r\PackageFiles\Environment\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Application\Template;
-use Shudd3r\PackageFiles\Replacement;
-use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class InitializeTest extends TestCase
+class InitializeTest extends IntegrationTestCase
 {
-    public const PACKAGE_NAME  = 'package.name';
-    public const PACKAGE_DESC  = 'package.description';
-    public const SRC_NAMESPACE = 'namespace.src';
-    public const REPO_NAME     = 'repository.name';
-
     public function testInitialization_GeneratesFilesFromTemplate()
     {
         $files   = new Fixtures\ExampleFiles('example-files');
         $package = $files->directory('package');
         $env     = $this->envSetup($package, $files->directory('template'));
 
-        $this->initializeCommand($env)->execute();
+        $this->command($env)->execute();
 
         $expectedFiles = new Fixtures\ExampleFiles('example-files/package-initialized');
         $this->assertTrue($expectedFiles->hasSameFilesAs($package));
@@ -47,7 +36,7 @@ class InitializeTest extends TestCase
         $package = $files->directory('package');
         $env     = $this->envSetup($package, $files->directory('template'), null, new Doubles\MockedFile());
 
-        $this->initializeCommand($env)->execute();
+        $this->command($env)->execute();
 
         $expectedFiles = new Fixtures\ExampleFiles('example-files/package');
         $this->assertTrue($expectedFiles->hasSameFilesAs($package));
@@ -61,34 +50,13 @@ class InitializeTest extends TestCase
         $backup->addFile('README.md', 'anything');
         $env = $this->envSetup($package, $files->directory('template'), $backup);
 
-        $this->initializeCommand($env)->execute();
+        $this->command($env)->execute();
 
         $expectedFiles = new Fixtures\ExampleFiles('example-files/package');
         $this->assertTrue($expectedFiles->hasSameFilesAs($package));
     }
 
-    private function envSetup(
-        Directory $package,
-        Directory $skeleton,
-        ?Directory $backup = null,
-        File $metaFile = null
-    ): RuntimeEnv {
-        $terminal = new Doubles\MockedTerminal();
-        $env = new RuntimeEnv($terminal, $terminal, $package, $skeleton, $backup, $metaFile);
-
-        $replacements = $env->replacements();
-        $replacements->add(self::PACKAGE_NAME, $packageName = new Replacement\PackageName($env));
-        $replacements->add(self::REPO_NAME, new Replacement\RepositoryName($env, $packageName));
-        $replacements->add(self::PACKAGE_DESC, new Replacement\PackageDescription($env, $packageName));
-        $replacements->add(self::SRC_NAMESPACE, new Replacement\SrcNamespace($env, $packageName));
-
-        $jsonMerge = fn (Template $template, File $composer) => new Template\MergedJsonTemplate($template, $composer);
-        $env->addTemplate('composer.json', $jsonMerge);
-
-        return $env;
-    }
-
-    private function initializeCommand(RuntimeEnv $env): Command
+    protected function command(RuntimeEnv $env): Command
     {
         $initialize = new Initialize($env);
         return $initialize->command([
