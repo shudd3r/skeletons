@@ -45,12 +45,12 @@ class UpdateTest extends IntegrationTestCase
     public function testDesynchronizedPackage_IsNotUpdated()
     {
         $files   = new Fixtures\ExampleFiles('example-files');
-        $package = $files->directory('package-unsynchronized');
+        $package = $files->directory('package-desynchronized');
         $env     = $this->envSetup($package, $files->directory('template'), null, new Doubles\MockedFile(null));
 
         $this->command($env)->execute();
 
-        $expectedFiles = new Fixtures\ExampleFiles('example-files/package-unsynchronized');
+        $expectedFiles = new Fixtures\ExampleFiles('example-files/package-desynchronized');
         $this->assertTrue($expectedFiles->hasSameFilesAs($package));
     }
 

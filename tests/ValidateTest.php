@@ -47,7 +47,7 @@ class ValidateTest extends IntegrationTestCase
     public function testDesynchronizedPackage_IsInvalid()
     {
         $files   = new Fixtures\ExampleFiles('example-files');
-        $package = $files->directory('package-unsynchronized');
+        $package = $files->directory('package-desynchronized');
         $env     = $this->envSetup($package, $files->directory('template'));
 
         $this->command($env)->execute();
