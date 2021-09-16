@@ -46,7 +46,7 @@ class UpdateTest extends IntegrationTestCase
     {
         $files   = new Fixtures\ExampleFiles('example-files');
         $package = $files->directory('package-desynchronized');
-        $env     = $this->envSetup($package, $files->directory('template'), null, new Doubles\MockedFile(null));
+        $env     = $this->envSetup($package, $files->directory('template'));
 
         $this->command($env)->execute();
 
