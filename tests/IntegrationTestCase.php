@@ -26,20 +26,29 @@ abstract class IntegrationTestCase extends TestCase
     private const SRC_NAMESPACE = 'namespace.src';
     private const REPO_NAME     = 'repository.name';
 
+    private static Fixtures\ExampleFiles $files;
+    private static Doubles\FakeDirectory $skeleton;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::$files    = new Fixtures\ExampleFiles('example-files');
+        self::$skeleton = self::$files->directory('template');
+    }
+
     protected function assertSameFiles(RuntimeEnv $env, string $fixturesDirectory): void
     {
         $expectedFiles = new Fixtures\ExampleFiles('example-files/' . $fixturesDirectory);
         $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
     }
 
+    abstract protected function command(RuntimeEnv $env): Command;
+
     protected function envSetup(string $packageDir, ?File $metaFile = null, bool $backupExists = false): RuntimeEnv
     {
-        $files    = new Fixtures\ExampleFiles('example-files');
-        $package  = $files->directory($packageDir);
-        $skeleton = $files->directory('template');
+        $package  = self::$files->directory($packageDir);
         $backup   = $backupExists ? $this->backupFiles() : null;
         $terminal = new Doubles\MockedTerminal();
-        $env      = new RuntimeEnv($terminal, $terminal, $package, $skeleton, $backup, $metaFile);
+        $env      = new RuntimeEnv($terminal, $terminal, $package, self::$skeleton, $backup, $metaFile);
 
         $replacements = $env->replacements();
         $replacements->add(self::PACKAGE_NAME, $packageName = new Replacement\PackageName($env));
@@ -52,8 +61,6 @@ abstract class IntegrationTestCase extends TestCase
 
         return $env;
     }
-
-    abstract protected function command(RuntimeEnv $env): Command;
 
     private function backupFiles(): Doubles\FakeDirectory
     {
