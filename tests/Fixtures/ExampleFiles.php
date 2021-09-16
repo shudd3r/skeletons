@@ -34,29 +34,6 @@ class ExampleFiles
         return $fakeDirectory;
     }
 
-    public function hasSameFilesAs(Directory $directory): bool
-    {
-        $givenFiles = $directory->files();
-
-        if (count($givenFiles) !== count($this->directory->files())) {
-            echo 'Directories are not the same: File number mismatch';
-            return false;
-        }
-
-        foreach ($givenFiles as $file) {
-            $givenContents     = $file->contents();
-            $directoryContents = $this->directory->file($file->name())->contents();
-
-            if ($givenContents !== $directoryContents) {
-                echo 'expected: ---------------' . PHP_EOL . $directoryContents . PHP_EOL;
-                echo 'given: ------------------' . PHP_EOL . $givenContents . PHP_EOL;
-                echo '-------------------------';
-                return false;
-            }
-        }
-        return true;
-    }
-
     public function contentsOf(string $filename): string
     {
         return $this->directory->file($filename)->contents();

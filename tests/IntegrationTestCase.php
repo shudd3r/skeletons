@@ -37,8 +37,16 @@ abstract class IntegrationTestCase extends TestCase
 
     protected function assertSameFiles(RuntimeEnv $env, string $fixturesDirectory): void
     {
-        $expectedFiles = new Fixtures\ExampleFiles('example-files/' . $fixturesDirectory);
-        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
+        $given    = $env->package();
+        $expected = self::$files->directory($fixturesDirectory);
+
+        $givenFiles = $given->files();
+        $this->assertCount(count($expected->files()), $givenFiles, 'Different number of files');
+
+        foreach ($givenFiles as $file) {
+            $message = 'Contents mismatch for file: ' . $file->name();
+            $this->assertSame($expected->file($file->name())->contents(), $file->contents(), $message);
+        }
     }
 
     abstract protected function command(RuntimeEnv $env): Command;
