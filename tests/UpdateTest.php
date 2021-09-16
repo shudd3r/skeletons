@@ -22,27 +22,21 @@ class UpdateTest extends IntegrationTestCase
     {
         $env = $this->envSetup('package-synchronized');
         $this->command($env)->execute();
-
-        $expectedFiles = new Fixtures\ExampleFiles('example-files/package-updated');
-        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
+        $this->assertSameFiles($env, 'package-updated');
     }
 
     public function testPackageWithoutMetaDataFile_IsNotUpdated()
     {
         $env = $this->envSetup('package-synchronized', new Doubles\MockedFile(null));
         $this->command($env)->execute();
-
-        $expectedFiles = new Fixtures\ExampleFiles('example-files/package-synchronized');
-        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
+        $this->assertSameFiles($env, 'package-synchronized');
     }
 
     public function testDesynchronizedPackage_IsNotUpdated()
     {
         $env = $this->envSetup('package-desynchronized');
         $this->command($env)->execute();
-
-        $expectedFiles = new Fixtures\ExampleFiles('example-files/package-desynchronized');
-        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
+        $this->assertSameFiles($env, 'package-desynchronized');
     }
 
     protected function command(RuntimeEnv $env): Command

@@ -22,27 +22,21 @@ class InitializeTest extends IntegrationTestCase
     {
         $env = $this->envSetup('package');
         $this->command($env)->execute();
-
-        $expectedFiles = new Fixtures\ExampleFiles('example-files/package-initialized');
-        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
+        $this->assertSameFiles($env, 'package-initialized');
     }
 
     public function testExistingMetaDataFile_AbortsExecutionWithoutSideEffects()
     {
         $env = $this->envSetup('package', new Doubles\MockedFile());
         $this->command($env)->execute();
-
-        $expectedFiles = new Fixtures\ExampleFiles('example-files/package');
-        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
+        $this->assertSameFiles($env, 'package');
     }
 
     public function testOverwritingBackupFile_AbortsExecutionWithoutSideEffects()
     {
         $env = $this->envSetup('package', null, true);
         $this->command($env)->execute();
-
-        $expectedFiles = new Fixtures\ExampleFiles('example-files/package');
-        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
+        $this->assertSameFiles($env, 'package');
     }
 
     protected function command(RuntimeEnv $env): Command

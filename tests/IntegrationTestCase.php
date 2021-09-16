@@ -26,6 +26,12 @@ abstract class IntegrationTestCase extends TestCase
     private const SRC_NAMESPACE = 'namespace.src';
     private const REPO_NAME     = 'repository.name';
 
+    protected function assertSameFiles(RuntimeEnv $env, string $fixturesDirectory): void
+    {
+        $expectedFiles = new Fixtures\ExampleFiles('example-files/' . $fixturesDirectory);
+        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
+    }
+
     protected function envSetup(string $packageDir, ?File $metaFile = null, bool $backupExists = false): RuntimeEnv
     {
         $files    = new Fixtures\ExampleFiles('example-files');
