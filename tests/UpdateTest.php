@@ -20,38 +20,29 @@ class UpdateTest extends IntegrationTestCase
 {
     public function testSynchronizedPackage_IsUpdated()
     {
-        $files   = new Fixtures\ExampleFiles('example-files');
-        $package = $files->directory('package-synchronized');
-        $env     = $this->envSetup($package, $files->directory('template'));
-
+        $env = $this->envSetup('package-synchronized');
         $this->command($env)->execute();
 
         $expectedFiles = new Fixtures\ExampleFiles('example-files/package-updated');
-        $this->assertTrue($expectedFiles->hasSameFilesAs($package));
+        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
     }
 
     public function testPackageWithoutMetaDataFile_IsNotUpdated()
     {
-        $files   = new Fixtures\ExampleFiles('example-files');
-        $package = $files->directory('package-synchronized');
-        $env     = $this->envSetup($package, $files->directory('template'), null, new Doubles\MockedFile(null));
-
+        $env = $this->envSetup('package-synchronized', new Doubles\MockedFile(null));
         $this->command($env)->execute();
 
         $expectedFiles = new Fixtures\ExampleFiles('example-files/package-synchronized');
-        $this->assertTrue($expectedFiles->hasSameFilesAs($package));
+        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
     }
 
     public function testDesynchronizedPackage_IsNotUpdated()
     {
-        $files   = new Fixtures\ExampleFiles('example-files');
-        $package = $files->directory('package-desynchronized');
-        $env     = $this->envSetup($package, $files->directory('template'));
-
+        $env = $this->envSetup('package-desynchronized');
         $this->command($env)->execute();
 
         $expectedFiles = new Fixtures\ExampleFiles('example-files/package-desynchronized');
-        $this->assertTrue($expectedFiles->hasSameFilesAs($package));
+        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
     }
 
     protected function command(RuntimeEnv $env): Command

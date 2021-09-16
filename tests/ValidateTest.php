@@ -22,10 +22,7 @@ class ValidateTest extends IntegrationTestCase
 {
     public function testInitializedPackage_IsValid()
     {
-        $files   = new Fixtures\ExampleFiles('example-files');
-        $package = $files->directory('package-initialized');
-        $env     = $this->envSetup($package, $files->directory('template'));
-
+        $env = $this->envSetup('package-initialized');
         $this->command($env)->execute();
 
         $this->assertSame(0, $env->output()->exitCode());
@@ -34,10 +31,7 @@ class ValidateTest extends IntegrationTestCase
 
     public function testSynchronizedPackage_IsValid()
     {
-        $files   = new Fixtures\ExampleFiles('example-files');
-        $package = $files->directory('package-synchronized');
-        $env     = $this->envSetup($package, $files->directory('template'));
-
+        $env = $this->envSetup('package-synchronized');
         $this->command($env)->execute();
 
         $this->assertSame(0, $env->output()->exitCode());
@@ -46,10 +40,7 @@ class ValidateTest extends IntegrationTestCase
 
     public function testDesynchronizedPackage_IsInvalid()
     {
-        $files   = new Fixtures\ExampleFiles('example-files');
-        $package = $files->directory('package-desynchronized');
-        $env     = $this->envSetup($package, $files->directory('template'));
-
+        $env = $this->envSetup('package-desynchronized');
         $this->command($env)->execute();
 
         $this->assertNotEquals(0, $env->output()->exitCode());

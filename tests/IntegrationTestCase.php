@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Environment\Command;
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Template;
@@ -27,14 +26,14 @@ abstract class IntegrationTestCase extends TestCase
     private const SRC_NAMESPACE = 'namespace.src';
     private const REPO_NAME     = 'repository.name';
 
-    protected function envSetup(
-        Directory $package,
-        Directory $skeleton,
-        ?Directory $backup = null,
-        File $metaFile = null
-    ): RuntimeEnv {
+    protected function envSetup(string $packageDir, ?File $metaFile = null, bool $backupExists = false): RuntimeEnv
+    {
+        $files    = new Fixtures\ExampleFiles('example-files');
+        $package  = $files->directory($packageDir);
+        $skeleton = $files->directory('template');
+        $backup   = $backupExists ? $this->backupFiles() : null;
         $terminal = new Doubles\MockedTerminal();
-        $env = new RuntimeEnv($terminal, $terminal, $package, $skeleton, $backup, $metaFile);
+        $env      = new RuntimeEnv($terminal, $terminal, $package, $skeleton, $backup, $metaFile);
 
         $replacements = $env->replacements();
         $replacements->add(self::PACKAGE_NAME, $packageName = new Replacement\PackageName($env));
@@ -49,4 +48,11 @@ abstract class IntegrationTestCase extends TestCase
     }
 
     abstract protected function command(RuntimeEnv $env): Command;
+
+    private function backupFiles(): Doubles\FakeDirectory
+    {
+        $backup = new Doubles\FakeDirectory();
+        $backup->addFile('README.md', 'anything');
+        return $backup;
+    }
 }

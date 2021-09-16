@@ -20,40 +20,29 @@ class InitializeTest extends IntegrationTestCase
 {
     public function testInitialization_GeneratesFilesFromTemplate()
     {
-        $files   = new Fixtures\ExampleFiles('example-files');
-        $package = $files->directory('package');
-        $env     = $this->envSetup($package, $files->directory('template'));
-
+        $env = $this->envSetup('package');
         $this->command($env)->execute();
 
         $expectedFiles = new Fixtures\ExampleFiles('example-files/package-initialized');
-        $this->assertTrue($expectedFiles->hasSameFilesAs($package));
+        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
     }
 
     public function testExistingMetaDataFile_AbortsExecutionWithoutSideEffects()
     {
-        $files   = new Fixtures\ExampleFiles('example-files');
-        $package = $files->directory('package');
-        $env     = $this->envSetup($package, $files->directory('template'), null, new Doubles\MockedFile());
-
+        $env = $this->envSetup('package', new Doubles\MockedFile());
         $this->command($env)->execute();
 
         $expectedFiles = new Fixtures\ExampleFiles('example-files/package');
-        $this->assertTrue($expectedFiles->hasSameFilesAs($package));
+        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
     }
 
     public function testOverwritingBackupFile_AbortsExecutionWithoutSideEffects()
     {
-        $files   = new Fixtures\ExampleFiles('example-files');
-        $package = $files->directory('package');
-        $backup  = new Doubles\FakeDirectory();
-        $backup->addFile('README.md', 'anything');
-        $env = $this->envSetup($package, $files->directory('template'), $backup);
-
+        $env = $this->envSetup('package', null, true);
         $this->command($env)->execute();
 
         $expectedFiles = new Fixtures\ExampleFiles('example-files/package');
-        $this->assertTrue($expectedFiles->hasSameFilesAs($package));
+        $this->assertTrue($expectedFiles->hasSameFilesAs($env->package()));
     }
 
     protected function command(RuntimeEnv $env): Command
