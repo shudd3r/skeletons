@@ -11,178 +11,42 @@
 
 namespace Shudd3r\PackageFiles\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Initialize;
 use Shudd3r\PackageFiles\Environment\Command;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-class InitializeTest extends TestCase
+class InitializeTest extends IntegrationTestCase
 {
-    public function testFactoryCreatesCommand()
+    public function testInitialization_GeneratesFilesFromTemplate()
     {
-        $factory = new Initialize(new Doubles\FakeRuntimeEnv());
-        $this->assertInstanceOf(Command::class, $factory->command([]));
-    }
-
-    public function testDefaultTokenValues_AreReadFromPackageFiles()
-    {
-        $setup     = new TestEnvSetup();
-        $gitConfig = '[remote "origin"] url = https://github.com/username/repoOrigin.git';
-        $setup->env->package()->addFile('.git/config', $gitConfig);
-        $setup->addComposer([
-            'package.name'     => 'fooBar/baz',
-            'description.text' => 'My library package',
-            'namespace.src'    => 'FooBarNamespace\\Baz'
-        ]);
-
-        $factory = new Initialize($setup->env);
-        $factory->command(['i' => false])->execute();
-
-        $this->assertGeneratedFiles($setup, [
-            'repository.name'  => 'username/repoOrigin',
-            'package.name'     => 'fooBar/baz',
-            'description.text' => 'My library package',
-            'namespace.src'    => 'FooBarNamespace\\Baz'
-        ]);
-    }
-
-    public function testPackageNameValue_IsUsedAsFallbackForDefaultValues()
-    {
-        $setup = new TestEnvSetup();
-        $setup->addComposer([
-            'package.name'     => 'fooBar/baz',
-            'description.text' => null,
-            'namespace.src'    => null
-        ]);
-
-        $factory = new Initialize($setup->env);
-        $factory->command(['i' => false])->execute();
-
-        $this->assertGeneratedFiles($setup, [
-            'repository.name'  => 'fooBar/baz',
-            'package.name'     => 'fooBar/baz',
-            'description.text' => 'fooBar/baz package',
-            'namespace.src'    => 'FooBar\\Baz'
-        ]);
-    }
-
-    public function testUnresolvedPackageNameValue_IsReadFromDirectoryStructure()
-    {
-        $setup = new TestEnvSetup();
-        $setup->env->package()->path = '/path/foo/bar';
-
-        $factory = new Initialize($setup->env);
-        $factory->command(['i' => false])->execute();
-
-        $this->assertGeneratedFiles($setup, [
-            'repository.name'  => 'foo/bar',
-            'package.name'     => 'foo/bar',
-            'description.text' => 'foo/bar package',
-            'namespace.src'    => 'Foo\\Bar'
-        ]);
-    }
-
-    public function testCommandLineValues_OverwriteDefault()
-    {
-        $setup   = new TestEnvSetup();
-        $options = [
-            'repo'    => 'cli/repo',
-            'package' => 'cli/package',
-            'desc'    => 'cli desc',
-            'ns'      => 'Cli\NamespaceX'
-        ];
-
-        $factory = new Initialize($setup->env);
-        $factory->command($options)->execute();
-
-        $this->assertGeneratedFiles($setup, [
-            'repository.name'  => 'cli/repo',
-            'package.name'     => 'cli/package',
-            'description.text' => 'cli desc',
-            'namespace.src'    => 'Cli\NamespaceX'
-        ]);
-    }
-
-    public function testInteractiveInputValues_OverwriteOtherSources()
-    {
-        $setup = new TestEnvSetup();
-        $setup->env->input()->inputStrings = [
-            'package/name',
-            'user/repo',
-            'package input description',
-            'My\Namespace'
-        ];
-        $options = [
-            'i'       => true,
-            'repo'    => 'cli/repo',
-            'package' => 'cli/package',
-            'desc'    => 'cli desc',
-            'ns'      => 'Cli\NamespaceX'
-        ];
-
-        $factory = new Initialize($setup->env);
-        $factory->command($options)->execute();
-
-        $this->assertGeneratedFiles($setup, [
-            'repository.name'  => 'user/repo',
-            'package.name'     => 'package/name',
-            'description.text' => 'package input description',
-            'namespace.src'    => 'My\Namespace'
-        ]);
-    }
-
-    public function testOverwrittenPackageFiles_AreCopiedIntoBackupDirectory()
-    {
-        $setup = new TestEnvSetup();
-        $setup->env->skeleton()->addFile('file.ini', 'generated');
-        $setup->env->package()->addFile('file.ini', 'original');
-
-        $this->assertSame([], $setup->env->backup()->files());
-
-        $factory = new Initialize($setup->env);
-        $factory->command([])->execute();
-
-        $this->assertSame([$setup->env->backup()->file('file.ini')], $setup->env->backup()->files());
-        $this->assertSame('original', $setup->env->backup()->file('file.ini')->contents());
-        $this->assertSame('generated', $setup->env->package()->file('file.ini')->contents());
+        $env = $this->envSetup('package');
+        $this->command($env)->execute();
+        $this->assertSameFiles($env, 'package-initialized');
     }
 
     public function testExistingMetaDataFile_AbortsExecutionWithoutSideEffects()
     {
-        $setup = new TestEnvSetup();
-        $setup->env->skeleton()->addFile('file.ini', 'contents');
-        $setup->addMetaData();
-        $metaData = $setup->env->metaDataFile()->contents();
-
-        $factory = new Initialize($setup->env);
-        $factory->command([])->execute();
-
-        $this->assertSame($metaData, $setup->env->metaDataFile()->contents());
-        $this->assertFalse($setup->env->package()->file('file.ini')->exists());
+        $env = $this->envSetup('package', new Doubles\MockedFile());
+        $this->command($env)->execute();
+        $this->assertSameFiles($env, 'package');
     }
 
     public function testOverwritingBackupFile_AbortsExecutionWithoutSideEffects()
     {
-        $setup = new TestEnvSetup();
-        $setup->env->skeleton()->addFile('file.ini', 'skeleton');
-        $setup->env->package()->addFile('file.ini', 'original');
-        $setup->env->backup()->addFile('file.ini', 'backup');
-
-        $factory = new Initialize($setup->env);
-        $factory->command([])->execute();
-
-        $this->assertSame('original', $setup->env->package()->file('file.ini')->contents());
-        $this->assertSame('backup', $setup->env->backup()->file('file.ini')->contents());
-        $this->assertFalse($setup->env->metaDataFile()->exists());
-        $this->assertFalse($setup->env->package()->file('composer.json')->exists());
+        $env = $this->envSetup('package', null, true);
+        $this->command($env)->execute();
+        $this->assertSameFiles($env, 'package');
     }
 
-    private function assertGeneratedFiles(TestEnvSetup $setup, array $data): void
+    protected function command(RuntimeEnv $env): Command
     {
-        $generatedFile = $setup->env->package()->file($setup::SKELETON_FILE)->contents();
-        $this->assertSame($setup->render($data, false), $generatedFile);
-
-        $expectedMetaData = json_encode($setup->data($data), JSON_PRETTY_PRINT);
-        $this->assertSame($expectedMetaData, $setup->env->metaDataFile()->contents());
+        $initialize = new Initialize($env);
+        return $initialize->command([
+            'repo'    => 'initial/repo',
+            'package' => 'initial/package-name',
+            'desc'    => 'Initial package description',
+            'ns'      => 'Package\Initial'
+        ]);
     }
 }

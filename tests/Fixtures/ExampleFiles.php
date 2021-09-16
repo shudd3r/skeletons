@@ -11,18 +11,31 @@
 
 namespace Shudd3r\PackageFiles\Tests\Fixtures;
 
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
+use Shudd3r\PackageFiles\Tests\Doubles\FakeDirectory;
+
 
 class ExampleFiles
 {
-    private string $directory;
+    private Directory $directory;
 
     public function __construct(string $directory)
     {
-        $this->directory = __DIR__ . DIRECTORY_SEPARATOR . $directory;
+        $this->directory = new Directory\LocalDirectory(__DIR__ . DIRECTORY_SEPARATOR . $directory);
+    }
+
+    public function directory(string $name): FakeDirectory
+    {
+        $fakeDirectory = new FakeDirectory('/' . $name);
+        foreach ($this->directory->subdirectory($name)->files() as $file) {
+            $fakeDirectory->addFile(str_replace('\\', '/', $file->name()), $file->contents());
+        }
+
+        return $fakeDirectory;
     }
 
     public function contentsOf(string $filename): string
     {
-        return file_get_contents($this->directory . DIRECTORY_SEPARATOR . $filename);
+        return $this->directory->file($filename)->contents();
     }
 }

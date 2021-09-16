@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Replacement;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\Source;
 
 
@@ -20,10 +21,12 @@ class FakeReplacement extends Replacement
     protected ?string $optionName  = 'option';
     protected ?string $inputPrompt = 'Provide value';
 
-    private bool $isValid;
+    private string $value;
+    private bool   $isValid;
 
-    public function __construct(FakeRuntimeEnv $env, bool $isValid = true)
+    public function __construct(RuntimeEnv $env, string $value = 'default value', bool $isValid = true)
     {
+        $this->value   = $value;
         $this->isValid = $isValid;
         parent::__construct($env);
     }
@@ -35,6 +38,6 @@ class FakeReplacement extends Replacement
 
     protected function defaultSource(array $options): Source
     {
-        return $this->userSource(new Source\PredefinedValue('default value'), $options);
+        return $this->userSource(new Source\PredefinedValue($this->value), $options);
     }
 }

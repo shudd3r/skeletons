@@ -11,73 +11,53 @@
 
 namespace Shudd3r\PackageFiles\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Validate;
 use Shudd3r\PackageFiles\Environment\Command;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Command\Precondition;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 
 
-class ValidateTest extends TestCase
+class ValidateTest extends IntegrationTestCase
 {
-    public function testFactoryCreatesCommand()
+    public function testInitializedPackage_IsValid()
     {
-        $factory = new Validate(new Doubles\FakeRuntimeEnv());
-        $this->assertInstanceOf(Command::class, $factory->command([]));
+        $env = $this->envSetup('package-initialized');
+        $this->command($env)->execute();
+
+        $this->assertSame(0, $env->output()->exitCode());
+        $this->assertTrue($this->validatePrecondition($env)->isFulfilled());
     }
 
-    public function testFactoryCanCreatePrecondition()
+    public function testSynchronizedPackage_IsValid()
     {
-        $factory = new Validate(new Doubles\FakeRuntimeEnv());
-        $this->assertInstanceOf(Precondition::class, $factory->synchronizedSkeleton(new TokenCache()));
+        $env = $this->envSetup('package-synchronized');
+        $this->command($env)->execute();
+
+        $this->assertSame(0, $env->output()->exitCode());
+        $this->assertTrue($this->validatePrecondition($env)->isFulfilled());
     }
 
-    public function testMissingMetaDataFile_StopsExecution()
+    public function testDesynchronizedPackage_IsInvalid()
     {
-        $setup = new TestEnvSetup();
+        $env = $this->envSetup('package-desynchronized');
+        $this->command($env)->execute();
 
-        $factory = new Validate($setup->env);
-        $factory->command([])->execute();
-
-        $this->assertSame([], $setup->env->output()->messagesSent);
+        $this->assertNotEquals(0, $env->output()->exitCode());
+        $this->assertFalse($this->validatePrecondition($env)->isFulfilled());
     }
 
-    public function testInvalidMetaData_StopsExecution()
+    //todo: failed precondition tests
+
+    protected function command(RuntimeEnv $env): Command
     {
-        $setup = new TestEnvSetup();
-        $setup->addMetaData(['namespace.src' => 'Not/A/Namespace']);
-
-        $factory = new Validate($setup->env);
-        $factory->command([])->execute();
-
-        $this->assertSame([], $setup->env->output()->messagesSent);
+        $validate = new Validate($env);
+        return $validate->command([]);
     }
 
-    public function testMatchingFiles_OutputsNoErrorCode()
+    private function validatePrecondition(RuntimeEnv $env): Precondition
     {
-        $setup = new TestEnvSetup();
-        $setup->addMetaData();
-        $setup->addComposer();
-        $setup->addGeneratedFile();
-
-        $factory = new Validate($setup->env);
-        $factory->command([])->execute();
-
-        $this->assertSame(0, $setup->env->output()->exitCode());
-        $this->assertTrue($factory->synchronizedSkeleton(new TokenCache())->isFulfilled());
-    }
-
-    public function testNotMatchingFiles_OutputsErrorCode()
-    {
-        $setup = new TestEnvSetup();
-        $setup->addMetaData(['repository.name' => 'another/repo']);
-        $setup->addComposer();
-        $setup->addGeneratedFile();
-
-        $factory = new Validate($setup->env);
-        $factory->command([])->execute();
-
-        $this->assertSame(1, $setup->env->output()->exitCode());
-        $this->assertFalse($factory->synchronizedSkeleton(new TokenCache())->isFulfilled());
+        $validate = new Validate($env);
+        return $validate->synchronizedSkeleton(new TokenCache());
     }
 }
