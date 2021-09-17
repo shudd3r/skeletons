@@ -12,10 +12,8 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Environment\CommandLineApp;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory\LocalDirectory;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\FactoryRouting;
 
 
 // This script is assumed to be one of composer dependencies of the package
@@ -36,16 +34,10 @@ require_once $rootDirectory . '/vendor/autoload.php';
 $skeletonFiles = new LocalDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
 $packageFiles  = new LocalDirectory($rootDirectory);
 $environment   = new RuntimeEnv($packageFiles, $skeletonFiles);
-
-$routing = new FactoryRouting($environment, [
-    'init'   => Initialize::class,
-    'check'  => Validate::class,
-    'update' => Update::class
-]);
+$app           = new Application($environment);
 
 $options = getopt('i', ['package:', 'repo:', 'desc:', 'interactive'], $commandIdx);
 $command = $argv[$commandIdx] ?? 'init';
 
-$app = new CommandLineApp($environment->output(), $routing);
 $exitCode = $app->run($command, $options);
 exit($exitCode);

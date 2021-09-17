@@ -11,20 +11,19 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Environment\Output;
-use Shudd3r\PackageFiles\Environment\Routing;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Environment\Command;
+use Shudd3r\PackageFiles\Application\Command\Factory;
 use Exception;
 
 
 class Application
 {
-    private Output  $output;
-    private Routing $routing;
+    private RuntimeEnv $env;
 
-    public function __construct(Output $output, Routing $routing)
+    public function __construct(RuntimeEnv $env)
     {
-        $this->output  = $output;
-        $this->routing = $routing;
+        $this->env = $env;
     }
 
     /**
@@ -35,12 +34,30 @@ class Application
      */
     public function run(string $command, array $options = []): int
     {
+        $output = $this->env->output();
+
         try {
-            $this->routing->command($command, $options)->execute();
+            $this->command($command, $options)->execute();
         } catch (Exception $e) {
-            $this->output->send($e->getMessage(), 1);
+            $output->send($e->getMessage(), 1);
         }
 
-        return $this->output->exitCode();
+        return $output->exitCode();
+    }
+
+    private function command(string $command, array $options): Command
+    {
+        return $this->factory($command, $this->env)->command($options);
+    }
+
+    protected function factory(string $command, RuntimeEnv $env): Factory
+    {
+        switch ($command) {
+            case 'init':   return new Initialize($env);
+            case 'check':  return new Validate($env);
+            case 'update': return new Update($env);
+        }
+
+        throw new Exception("Unknown `{$command}` command");
     }
 }
