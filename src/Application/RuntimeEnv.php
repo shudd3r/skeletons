@@ -19,14 +19,14 @@ use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Application\Token\Source\Data\SavedPlaceholderValues;
 use Shudd3r\PackageFiles\Application\Exception;
+use Shudd3r\PackageFiles\Environment\Terminal;
 
 
 class RuntimeEnv
 {
-    private Input     $input;
-    private Output    $output;
     private Directory $package;
     private Directory $skeleton;
+    private Terminal  $terminal;
     private Directory $backup;
     private File      $metaFile;
 
@@ -37,17 +37,15 @@ class RuntimeEnv
     private array $templates = [];
 
     public function __construct(
-        Input $input,
-        Output $output,
         Directory $package,
         Directory $skeleton,
+        ?Terminal $terminal = null,
         ?Directory $backup = null,
         ?File $metaFile = null
     ) {
-        $this->input    = $input;
-        $this->output   = $output;
         $this->package  = $this->validDirectory($package);
         $this->skeleton = $this->validDirectory($skeleton);
+        $this->terminal = $terminal ?? new Terminal();
         $this->backup   = $backup ?? $this->package->subdirectory('.skeleton-backup');
         $this->metaFile = $metaFile ?? $this->package->file('.github/skeleton.json');
     }
@@ -69,12 +67,12 @@ class RuntimeEnv
 
     public function input(): Input
     {
-        return $this->input;
+        return $this->terminal;
     }
 
     public function output(): Output
     {
-        return $this->output;
+        return $this->terminal;
     }
 
     public function package(): Directory

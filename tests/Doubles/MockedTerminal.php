@@ -11,11 +11,10 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Environment\Output;
-use Shudd3r\PackageFiles\Environment\Input;
+use Shudd3r\PackageFiles\Environment\Terminal;
 
 
-class MockedTerminal implements Input, Output
+class MockedTerminal extends Terminal
 {
     public array $inputStrings;
     public array $messagesSent = [];
@@ -24,6 +23,7 @@ class MockedTerminal implements Input, Output
     public function __construct(array $inputStrings = [])
     {
         $this->inputStrings = $inputStrings;
+        parent::__construct();
     }
 
     public function value(string $prompt = ''): string

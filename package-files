@@ -1,5 +1,5 @@
 #!/usr/bin/env php
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -13,7 +13,6 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Environment\CommandLineApp;
-use Shudd3r\PackageFiles\Environment\Terminal;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory\LocalDirectory;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\FactoryRouting;
@@ -34,10 +33,9 @@ if (!file_exists($rootDirectory . '/composer.json')) {
 
 require_once $rootDirectory . '/vendor/autoload.php';
 
-$terminal      = new Terminal(STDIN, STDOUT, STDERR);
 $skeletonFiles = new LocalDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'skeleton');
 $packageFiles  = new LocalDirectory($rootDirectory);
-$environment   = new RuntimeEnv($terminal, $terminal, $packageFiles, $skeletonFiles);
+$environment   = new RuntimeEnv($packageFiles, $skeletonFiles);
 
 $routing = new FactoryRouting($environment, [
     'init'   => Initialize::class,
@@ -48,6 +46,6 @@ $routing = new FactoryRouting($environment, [
 $options = getopt('i', ['package:', 'repo:', 'desc:', 'interactive'], $commandIdx);
 $command = $argv[$commandIdx] ?? 'init';
 
-$app = new CommandLineApp($terminal, $routing);
+$app = new CommandLineApp($environment->output(), $routing);
 $exitCode = $app->run($command, $options);
 exit($exitCode);

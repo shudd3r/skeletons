@@ -53,10 +53,13 @@ abstract class IntegrationTestCase extends TestCase
 
     protected function envSetup(string $packageDir, ?File $metaFile = null, bool $backupExists = false): RuntimeEnv
     {
-        $package  = self::$files->directory($packageDir);
-        $backup   = $backupExists ? $this->backupFiles() : null;
-        $terminal = new Doubles\MockedTerminal();
-        $env      = new RuntimeEnv($terminal, $terminal, $package, self::$skeleton, $backup, $metaFile);
+        $env = new RuntimeEnv(
+            self::$files->directory($packageDir),
+            self::$skeleton,
+            new Doubles\MockedTerminal(),
+            $backupExists ? $this->backupFiles() : null,
+            $metaFile
+        );
 
         $replacements = $env->replacements();
         $replacements->add(self::PACKAGE_NAME, $packageName = new Replacement\PackageName($env));

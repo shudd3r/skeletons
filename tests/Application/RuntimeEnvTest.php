@@ -28,10 +28,10 @@ class RuntimeEnvTest extends TestCase
     {
         $env = $this->env($params);
 
-        $this->assertSame($params['input'], $env->input());
-        $this->assertSame($params['output'], $env->output());
         $this->assertSame($params['packageDir'], $env->package());
         $this->assertSame($params['templateDir'], $env->skeleton());
+        $this->assertSame($params['terminal'], $env->input());
+        $this->assertSame($params['terminal'], $env->output());
         $this->assertSame($params['backupDir'], $env->backup());
         $this->assertSame($params['metaData'], $env->metaDataFile());
     }
@@ -39,10 +39,9 @@ class RuntimeEnvTest extends TestCase
     public function testDefaultBackupFile()
     {
         $env = new RuntimeEnv(
-            new Doubles\MockedTerminal(),
-            new Doubles\MockedTerminal(),
             $packageDirectory = new Doubles\FakeDirectory(),
-            new Doubles\FakeDirectory()
+            new Doubles\FakeDirectory(),
+            new Doubles\MockedTerminal()
         );
 
         $this->assertSame($env->backup(), $packageDirectory->subdirectory('.skeleton-backup'));
@@ -54,10 +53,9 @@ class RuntimeEnvTest extends TestCase
         $packageDirectory->addFile('.github/skeleton.json');
 
         $env = new RuntimeEnv(
-            new Doubles\MockedTerminal(),
-            new Doubles\MockedTerminal(),
             $packageDirectory,
-            new Doubles\FakeDirectory()
+            new Doubles\FakeDirectory(),
+            new Doubles\MockedTerminal()
         );
 
         $this->assertSame($env->metaDataFile(), $packageDirectory->file('.github/skeleton.json'));
@@ -93,10 +91,9 @@ class RuntimeEnvTest extends TestCase
     private function env(?array &$params = []): RuntimeEnv
     {
         return new RuntimeEnv(
-            $params['input'] ??= new Doubles\MockedTerminal(),
-            $params['output'] ??= new Doubles\MockedTerminal(),
             $params['packageDir'] ??= new Doubles\FakeDirectory(),
             $params['templateDir'] ??= new Doubles\FakeDirectory(),
+            $params['terminal'] ??= new Doubles\MockedTerminal(),
             $params['backupDir'] ??= new Doubles\FakeDirectory(),
             $params['metaData'] ??= new Doubles\MockedFile()
         );

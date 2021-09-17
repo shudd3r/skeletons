@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -25,11 +25,11 @@ class Terminal implements Input, Output
      * @param resource $output
      * @param resource $error
      */
-    public function __construct($input, $output, $error)
+    public function __construct($input = null, $output = null, $error = null)
     {
-        $this->input  = $input;
-        $this->output = $output;
-        $this->error  = $error;
+        $this->input  = $input ?? STDIN;
+        $this->output = $output ?? STDOUT;
+        $this->error  = $error ?? STDERR;
     }
 
     public function value(string $prompt = ''): string
