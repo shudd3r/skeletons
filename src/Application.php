@@ -9,12 +9,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Environment;
+namespace Shudd3r\PackageFiles;
 
+use Shudd3r\PackageFiles\Environment\Output;
+use Shudd3r\PackageFiles\Environment\Routing;
 use Exception;
 
 
-class CommandLineApp
+class Application
 {
     private Output  $output;
     private Routing $routing;

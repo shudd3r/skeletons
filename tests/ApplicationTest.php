@@ -9,19 +9,18 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Environment;
+namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Environment\CommandLineApp;
-use Shudd3r\PackageFiles\Tests\Doubles;
+use Shudd3r\PackageFiles\Application;
 use Exception;
 
 
-class CommandLineAppTest extends TestCase
+class ApplicationTest extends TestCase
 {
     public function testInstantiation()
     {
-        $this->assertInstanceOf(CommandLineApp::class, $this->app());
+        $this->assertInstanceOf(Application::class, $this->app());
     }
 
     public function testForExecutedCommand_RunMethod_ReturnsOutputErrorCode()
@@ -61,8 +60,8 @@ class CommandLineAppTest extends TestCase
         $this->assertSame(['exc.message'], $output->messagesSent);
     }
 
-    private function app(Doubles\MockedTerminal &$output = null, Doubles\FakeRouting &$routing = null): CommandLineApp
+    private function app(Doubles\MockedTerminal &$output = null, Doubles\FakeRouting &$routing = null): Application
     {
-        return new CommandLineApp($output = new Doubles\MockedTerminal(), $routing ??= new Doubles\FakeRouting());
+        return new Application($output = new Doubles\MockedTerminal(), $routing ??= new Doubles\FakeRouting());
     }
 }
