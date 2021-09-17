@@ -12,14 +12,13 @@
 namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Environment\Command;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Replacement;
 
 
-abstract class IntegrationTestCase extends TestCase
+class IntegrationTestCase extends TestCase
 {
     private const PACKAGE_NAME  = 'package.name';
     private const PACKAGE_DESC  = 'package.description';
@@ -48,8 +47,6 @@ abstract class IntegrationTestCase extends TestCase
             $this->assertSame($expected->file($file->name())->contents(), $file->contents(), $message);
         }
     }
-
-    abstract protected function command(RuntimeEnv $env): Command;
 
     protected function envSetup(string $packageDir, ?File $metaFile = null, bool $backupExists = false): RuntimeEnv
     {

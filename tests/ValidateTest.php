@@ -11,11 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests;
 
-use Shudd3r\PackageFiles\Validate;
-use Shudd3r\PackageFiles\Environment\Command;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Command\Precondition;
-use Shudd3r\PackageFiles\Application\Token\TokenCache;
+use Shudd3r\PackageFiles\Application;
 
 
 class ValidateTest extends IntegrationTestCase
@@ -23,41 +19,29 @@ class ValidateTest extends IntegrationTestCase
     public function testInitializedPackage_IsValid()
     {
         $env = $this->envSetup('package-initialized');
-        $this->command($env)->execute();
+        $app = new Application($env);
 
+        $app->run('check');
         $this->assertSame(0, $env->output()->exitCode());
-        $this->assertTrue($this->validatePrecondition($env)->isFulfilled());
     }
 
     public function testSynchronizedPackage_IsValid()
     {
         $env = $this->envSetup('package-synchronized');
-        $this->command($env)->execute();
+        $app = new Application($env);
 
+        $app->run('check');
         $this->assertSame(0, $env->output()->exitCode());
-        $this->assertTrue($this->validatePrecondition($env)->isFulfilled());
     }
 
     public function testDesynchronizedPackage_IsInvalid()
     {
         $env = $this->envSetup('package-desynchronized');
-        $this->command($env)->execute();
+        $app = new Application($env);
 
+        $app->run('check');
         $this->assertNotEquals(0, $env->output()->exitCode());
-        $this->assertFalse($this->validatePrecondition($env)->isFulfilled());
     }
 
     //todo: failed precondition tests
-
-    protected function command(RuntimeEnv $env): Command
-    {
-        $validate = new Validate($env);
-        return $validate->command([]);
-    }
-
-    private function validatePrecondition(RuntimeEnv $env): Precondition
-    {
-        $validate = new Validate($env);
-        return $validate->synchronizedSkeleton(new TokenCache());
-    }
 }

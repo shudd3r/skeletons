@@ -11,42 +11,42 @@
 
 namespace Shudd3r\PackageFiles\Tests;
 
-use Shudd3r\PackageFiles\Update;
-use Shudd3r\PackageFiles\Environment\Command;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application;
 
 
 class UpdateTest extends IntegrationTestCase
 {
+    private array $options = [
+        'repo'    => 'updated/repo',
+        'package' => 'updated/package-name',
+        'desc'    => 'Updated package description',
+        'ns'      => 'Package\Updated'
+    ];
+
     public function testSynchronizedPackage_IsUpdated()
     {
         $env = $this->envSetup('package-synchronized');
-        $this->command($env)->execute();
+        $app = new Application($env);
+
+        $app->run('update', $this->options);
         $this->assertSameFiles($env, 'package-updated');
     }
 
     public function testPackageWithoutMetaDataFile_IsNotUpdated()
     {
         $env = $this->envSetup('package-synchronized', new Doubles\MockedFile(null));
-        $this->command($env)->execute();
+        $app = new Application($env);
+
+        $app->run('update', $this->options);
         $this->assertSameFiles($env, 'package-synchronized');
     }
 
     public function testDesynchronizedPackage_IsNotUpdated()
     {
         $env = $this->envSetup('package-desynchronized');
-        $this->command($env)->execute();
-        $this->assertSameFiles($env, 'package-desynchronized');
-    }
+        $app = new Application($env);
 
-    protected function command(RuntimeEnv $env): Command
-    {
-        $update = new Update($env);
-        return $update->command([
-            'repo'    => 'updated/repo',
-            'package' => 'updated/package-name',
-            'desc'    => 'Updated package description',
-            'ns'      => 'Package\Updated'
-        ]);
+        $app->run('update', $this->options);
+        $this->assertSameFiles($env, 'package-desynchronized');
     }
 }
