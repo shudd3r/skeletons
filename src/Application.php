@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Environment\Command;
+use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\Command\Factory;
 use Exception;
 
