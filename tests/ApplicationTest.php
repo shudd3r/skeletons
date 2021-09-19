@@ -62,7 +62,7 @@ class ApplicationTest extends TestCase
         $env = $this->envSetup('package');
         $app = new Application($env);
 
-        $app->run('init', $this->initOptions);
+        $this->assertSame(0, $app->run('init', $this->initOptions));
         $this->assertSameFiles($env, 'package-initialized');
     }
 
@@ -71,7 +71,7 @@ class ApplicationTest extends TestCase
         $env = $this->envSetup('package', new Doubles\MockedFile());
         $app = new Application($env);
 
-        $app->run('init', $this->initOptions);
+        $this->assertNotEquals(0, $app->run('init', $this->initOptions));
         $this->assertSameFiles($env, 'package');
     }
 
@@ -80,7 +80,7 @@ class ApplicationTest extends TestCase
         $env = $this->envSetup('package', null, true);
         $app = new Application($env);
 
-        $app->run('init', $this->initOptions);
+        $this->assertNotEquals(0, $app->run('init', $this->initOptions));
         $this->assertSameFiles($env, 'package');
     }
 
@@ -89,8 +89,7 @@ class ApplicationTest extends TestCase
         $env = $this->envSetup('package-initialized');
         $app = new Application($env);
 
-        $app->run('check');
-        $this->assertSame(0, $env->output()->exitCode());
+        $this->assertSame(0, $app->run('check'));
     }
 
     public function testSynchronizedPackage_IsValid()
@@ -98,8 +97,7 @@ class ApplicationTest extends TestCase
         $env = $this->envSetup('package-synchronized');
         $app = new Application($env);
 
-        $app->run('check');
-        $this->assertSame(0, $env->output()->exitCode());
+        $this->assertSame(0, $app->run('check'));
     }
 
     public function testDesynchronizedPackage_IsInvalid()
@@ -107,18 +105,23 @@ class ApplicationTest extends TestCase
         $env = $this->envSetup('package-desynchronized');
         $app = new Application($env);
 
-        $app->run('check');
-        $this->assertNotEquals(0, $env->output()->exitCode());
+        $this->assertNotEquals(0, $app->run('check'));
     }
 
-    //todo: validation failed on precondition tests
+    public function testPackageWithoutMetaDataFile_IsInvalid()
+    {
+        $env = $this->envSetup('package-synchronized', new Doubles\MockedFile(null));
+        $app = new Application($env);
+
+        $this->assertNotEquals(0, $app->run('check'));
+    }
 
     public function testUpdatingSynchronizedPackage_GeneratesUpdatedPackageFiles()
     {
         $env = $this->envSetup('package-synchronized');
         $app = new Application($env);
 
-        $app->run('update', $this->updateOptions);
+        $this->assertSame(0, $app->run('update', $this->updateOptions));
         $this->assertSameFiles($env, 'package-updated');
     }
 
@@ -127,7 +130,7 @@ class ApplicationTest extends TestCase
         $env = $this->envSetup('package-synchronized', new Doubles\MockedFile(null));
         $app = new Application($env);
 
-        $app->run('update', $this->updateOptions);
+        $this->assertNotEquals(0, $app->run('update', $this->updateOptions));
         $this->assertSameFiles($env, 'package-synchronized');
     }
 
@@ -136,7 +139,7 @@ class ApplicationTest extends TestCase
         $env = $this->envSetup('package-desynchronized');
         $app = new Application($env);
 
-        $app->run('update', $this->updateOptions);
+        $this->assertNotEquals(0, $app->run('update', $this->updateOptions));
         $this->assertSameFiles($env, 'package-desynchronized');
     }
 

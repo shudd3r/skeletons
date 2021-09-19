@@ -23,9 +23,10 @@ class Initialize extends Command\Factory
         $tokenReader     = $this->env->replacements()->init($options);
         $generatedFiles  = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupDirectory = $this->env->backup();
+        $output          = $this->env->output();
 
         $backupFiles   = new Command\BackupFiles($generatedFiles, $backupDirectory);
-        $processTokens = new Command\TokenProcessor($tokenReader, $this->processor(), $this->env->output());
+        $processTokens = new Command\TokenProcessor($tokenReader, $this->processor(), $output);
         $writeMetaData = new Command\WriteMetaData($tokenReader, $this->env->metaDataFile());
 
         $noMetaDataFile    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), false);
@@ -33,7 +34,8 @@ class Initialize extends Command\Factory
 
         return new Command\ProtectedCommand(
             new Command\CommandSequence($backupFiles, $processTokens, $writeMetaData),
-            new Command\Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite)
+            new Command\Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite),
+            $output
         );
     }
 

@@ -21,12 +21,13 @@ class Validate extends Command\Factory
 {
     public function command(array $options): Command
     {
+        $output         = $this->env->output();
         $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $fileValidators = new Processor\FileProcessors\FileValidators($this->env->package(), $this->env->templates());
         $tokenProcessor = $this->processor($fileValidators);
-        $processTokens  = new Command\TokenProcessor($this->tokenReader(), $tokenProcessor, $this->env->output());
+        $processTokens  = new Command\TokenProcessor($this->tokenReader(), $tokenProcessor, $output);
 
-        return new Command\ProtectedCommand($processTokens, $metaDataExists);
+        return new Command\ProtectedCommand($processTokens, $metaDataExists, $output);
     }
 
     public function synchronizedSkeleton(TokenCache $cache): Command\Precondition

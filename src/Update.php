@@ -20,11 +20,12 @@ class Update extends Command\Factory
 {
     public function command(array $options): Command
     {
-        $validation = new Validate($this->env);
-        $cache      = new TokenCache();
+        $tokenReader = $this->env->replacements()->update($options);
+        $validation  = new Validate($this->env);
+        $cache       = new TokenCache();
+        $output      = $this->env->output();
 
-        $tokenReader   = $this->env->replacements()->update($options);
-        $processTokens = new Command\TokenProcessor($tokenReader, $this->processor($cache), $this->env->output());
+        $processTokens = new Command\TokenProcessor($tokenReader, $this->processor($cache), $output);
         $writeMetaData = new Command\WriteMetaData($tokenReader, $this->env->metaDataFile());
 
         $metaDataExists    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
@@ -32,7 +33,8 @@ class Update extends Command\Factory
 
         return new Command\ProtectedCommand(
             new Command\CommandSequence($processTokens, $writeMetaData),
-            new Command\Precondition\Preconditions($metaDataExists, $synchronizedFiles)
+            new Command\Precondition\Preconditions($metaDataExists, $synchronizedFiles),
+            $output
         );
     }
 
