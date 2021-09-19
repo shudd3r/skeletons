@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Application\Command;
 
-use Shudd3r\PackageFiles\Environment\Command;
+use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 

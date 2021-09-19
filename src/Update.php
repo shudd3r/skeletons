@@ -12,14 +12,13 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
 
 
 class Update extends Command\Factory
 {
-    public function command(array $options): CommandInterface
+    public function command(array $options): Command
     {
         $validation = new Validate($this->env);
         $cache      = new TokenCache();

@@ -12,14 +12,13 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\Environment\Command as CommandInterface;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\Processor;
 
 
 class Initialize extends Command\Factory
 {
-    public function command(array $options): CommandInterface
+    public function command(array $options): Command
     {
         $tokenReader     = $this->env->replacements()->init($options);
         $generatedFiles  = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
