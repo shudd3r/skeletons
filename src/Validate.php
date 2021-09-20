@@ -18,7 +18,7 @@ use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
 
 
-class Validate implements Command\Factory
+class Validate implements Factory
 {
     private RuntimeEnv $env;
 

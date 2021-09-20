@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\Processor;
 
 
-class Initialize implements Command\Factory
+class Initialize implements Factory
 {
     private RuntimeEnv $env;
 

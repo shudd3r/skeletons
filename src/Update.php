@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
 
 
-class Update implements Command\Factory
+class Update implements Factory
 {
     private RuntimeEnv $env;
 
