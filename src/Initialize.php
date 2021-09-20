@@ -12,12 +12,20 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\Processor;
 
 
-class Initialize extends Command\Factory
+class Initialize implements Command\Factory
 {
+    private RuntimeEnv $env;
+
+    public function __construct(RuntimeEnv $env)
+    {
+        $this->env = $env;
+    }
+
     public function command(array $options): Command
     {
         $tokenReader     = $this->env->replacements()->init($options);

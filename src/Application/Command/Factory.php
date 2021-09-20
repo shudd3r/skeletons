@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of Shudd3r/Package-Files package.
@@ -12,17 +12,9 @@
 namespace Shudd3r\PackageFiles\Application\Command;
 
 use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-abstract class Factory
+interface Factory
 {
-    protected RuntimeEnv $env;
-
-    public function __construct(RuntimeEnv $env)
-    {
-        $this->env = $env;
-    }
-
-    abstract public function command(array $options): Command;
+    public function command(array $options): Command;
 }

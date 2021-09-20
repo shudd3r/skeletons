@@ -12,12 +12,20 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
 
 
-class Update extends Command\Factory
+class Update implements Command\Factory
 {
+    private RuntimeEnv $env;
+
+    public function __construct(RuntimeEnv $env)
+    {
+        $this->env = $env;
+    }
+
     public function command(array $options): Command
     {
         $tokenReader = $this->env->replacements()->update($options);

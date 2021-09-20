@@ -12,13 +12,21 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
 
 
-class Validate extends Command\Factory
+class Validate implements Command\Factory
 {
+    private RuntimeEnv $env;
+
+    public function __construct(RuntimeEnv $env)
+    {
+        $this->env = $env;
+    }
+
     public function command(array $options): Command
     {
         $output         = $this->env->output();
