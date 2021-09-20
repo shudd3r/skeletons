@@ -9,8 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles;
+namespace Shudd3r\PackageFiles\Factory;
 
+use Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
