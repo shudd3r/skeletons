@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\Application\Command\Factory;
 use Exception;
 
 
@@ -53,9 +52,9 @@ class Application
     protected function factory(string $command, RuntimeEnv $env): Factory
     {
         switch ($command) {
-            case 'init':   return new Initialize($env);
-            case 'check':  return new Validate($env);
-            case 'update': return new Update($env);
+            case 'init':   return new Factory\Initialize($env);
+            case 'check':  return new Factory\Validate($env);
+            case 'update': return new Factory\Update($env);
         }
 
         throw new Exception("Unknown `{$command}` command");
