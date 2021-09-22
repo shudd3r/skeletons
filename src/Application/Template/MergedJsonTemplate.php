@@ -14,26 +14,29 @@ namespace Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
 class MergedJsonTemplate implements Template
 {
-    private Template $template;
-    private File     $jsonFile;
+    private File      $templateFile;
+    private Directory $packageFiles;
 
-    public function __construct(Template $template, File $packageJsonFile)
+    public function __construct(File $templateFile, Directory $package)
     {
-        $this->template = $template;
-        $this->jsonFile = $packageJsonFile;
+        $this->templateFile = $templateFile;
+        $this->packageFiles = $package;
     }
 
     public function render(Token $token): string
     {
-        $rendered = $this->template->render($token);
-        $template = json_decode($rendered, true);
-        $package  = json_decode($this->jsonFile->contents(), true);
+        $template     = $this->templateFile->contents();
+        $rendered     = $token->replace($template);
+        $templateData = json_decode($rendered, true);
+        $packageFile  = $this->packageFiles->file($this->templateFile->name());
+        $packageData  = json_decode($packageFile->contents(), true);
 
-        return $template && $package ? $this->mergedJson($template, $package) . "\n" : $rendered;
+        return $templateData && $packageData ? $this->mergedJson($templateData, $packageData) . "\n" : $rendered;
     }
 
     private function mergedJson(array $template, array $package): string
