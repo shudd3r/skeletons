@@ -98,6 +98,6 @@ class MergedJsonTemplateTest extends TestCase
         $packageDirectory = new Doubles\FakeDirectory();
         $packageDirectory->addFile($templateFile->name(), $package);
 
-        return new Template\MergedJsonTemplate($templateFile, $packageDirectory);
+        return new Template\MergedJsonTemplate($templateFile, $packageDirectory, false);
     }
 }

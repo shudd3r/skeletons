@@ -21,11 +21,13 @@ class MergedJsonTemplate implements Template
 {
     private File      $templateFile;
     private Directory $packageFiles;
+    private bool      $synchronized;
 
-    public function __construct(File $templateFile, Directory $package)
+    public function __construct(File $templateFile, Directory $package, bool $synchronized)
     {
         $this->templateFile = $templateFile;
         $this->packageFiles = $package;
+        $this->synchronized = $synchronized;
     }
 
     public function render(Token $token): string
@@ -52,6 +54,7 @@ class MergedJsonTemplate implements Template
             if ($value === null) {
                 if (isset($package[$key])) {
                     $merged[$key] = $package[$key];
+                    unset($package[$key]);
                 }
                 continue;
             }
@@ -63,7 +66,8 @@ class MergedJsonTemplate implements Template
                 }
             }
             $merged[$key] = $value;
-            unset($package[$key]);
+            $usedKey = $this->synchronized ? array_key_first($package) : $key;
+            unset($package[$usedKey]);
         }
 
         foreach ($package as $key => $value) {
