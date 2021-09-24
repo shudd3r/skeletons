@@ -28,6 +28,15 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertSame('not json', $this->template('not json', $contents)->render(new Doubles\FakeToken()));
     }
 
+    public function testDecoratedTemplate_IsRenderedWithProvidedToken()
+    {
+        $decorated = new Doubles\FakeTemplate('render');
+        $template  = new Template\MergedJsonTemplate($decorated, new Doubles\MockedFile(), false);
+        $token     = new Doubles\FakeToken();
+        $template->render($token);
+        $this->assertSame($token, $decorated->receivedToken);
+    }
+
     public function testForFlatArrays_ReturnsMergedJsonMatchingTemplateStructure()
     {
         $template = json_encode(['first' => 'template_first', 'bar' => 'template_bar']);
@@ -106,10 +115,9 @@ class MergedJsonTemplateTest extends TestCase
 
     private function template(string $template, string $package, bool $synchronized = false): Template
     {
-        $templateFile     = new Doubles\MockedFile($template);
-        $packageDirectory = new Doubles\FakeDirectory();
-        $packageDirectory->addFile($templateFile->name(), $package);
+        $template    = new Doubles\FakeTemplate($template);
+        $packageFile = new Doubles\MockedFile($package);
 
-        return new Template\MergedJsonTemplate($templateFile, $packageDirectory, $synchronized);
+        return new Template\MergedJsonTemplate($template, $packageFile, $synchronized);
     }
 }

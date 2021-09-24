@@ -14,37 +14,34 @@ namespace Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
 class MergedJsonTemplate implements Template
 {
-    private File      $templateFile;
-    private Directory $packageFiles;
-    private bool      $synchronized;
+    private Template $template;
+    private File     $packageFile;
+    private bool     $synchronized;
 
-    public function __construct(File $templateFile, Directory $package, bool $synchronized)
+    public function __construct(Template $template, File $packageFile, bool $synchronized)
     {
-        $this->templateFile = $templateFile;
-        $this->packageFiles = $package;
+        $this->template     = $template;
+        $this->packageFile  = $packageFile;
         $this->synchronized = $synchronized;
     }
 
     public function render(Token $token): string
     {
-        $template     = $this->templateFile->contents();
-        $rendered     = $token->replace($template);
+        $rendered     = $this->template->render($token);
         $templateData = json_decode($rendered, true);
-        $packageFile  = $this->packageFiles->file($this->templateFile->name());
-        $packageData  = json_decode($packageFile->contents(), true);
+        $packageData  = json_decode($this->packageFile->contents(), true);
 
-        return $templateData && $packageData ? $this->mergedJson($templateData, $packageData) . "\n" : $rendered;
+        return $templateData && $packageData ? $this->mergedJson($templateData, $packageData) : $rendered;
     }
 
     private function mergedJson(array $template, array $package): string
     {
         $data = $this->mergedDataStructure($template, $package);
-        return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
     }
 
     private function mergedDataStructure(array $template, array $package): array
