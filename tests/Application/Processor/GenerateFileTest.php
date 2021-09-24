@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\Processor;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Processor\GenerateFile;
+use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -23,7 +24,7 @@ class GenerateFileTest extends TestCase
         $template  = new Doubles\FakeTemplate($rendered = 'rendered string');
         $fileMock  = new Doubles\MockedFile();
         $processor = new GenerateFile($template, $fileMock);
-        $token     = new Doubles\FakeToken();
+        $token     = new Token\ValueToken('foo', 'bar');
 
         $this->assertTrue($processor->process($token));
         $this->assertSame($token, $template->receivedToken);

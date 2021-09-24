@@ -12,18 +12,17 @@
 namespace Shudd3r\PackageFiles\Tests\Application\Token;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Token\TokenCache;
-use Shudd3r\PackageFiles\Tests\Doubles;
+use Shudd3r\PackageFiles\Application\Token;
 
 
 class TokenCacheTest extends TestCase
 {
     public function testGettingTokenFromCache()
     {
-        $predefinedToken = new Doubles\FakeToken();
-        $addedToken      = new Doubles\FakeToken();
+        $predefinedToken = new Token\ValueToken('foo', 'one');
+        $addedToken      = new Token\ValueToken('bar', 'two');
 
-        $tokens = new TokenCache(['name' => $predefinedToken]);
+        $tokens = new Token\TokenCache(['name' => $predefinedToken]);
         $tokens->add('foo/bar.php', $addedToken);
 
         $this->assertSame($predefinedToken, $tokens->token('name'));
@@ -32,7 +31,7 @@ class TokenCacheTest extends TestCase
 
     public function testMissingToken_ReturnsNull()
     {
-        $tokens = new TokenCache();
+        $tokens = new Token\TokenCache();
         $this->assertNull($tokens->token('someName'));
     }
 }

@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\Processor;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Processor\CompareFile;
+use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -25,7 +26,7 @@ class CompareFileTest extends TestCase
         $file      = new Doubles\MockedFile($contents);
         $processor = new CompareFile($template, $file);
 
-        $token = new Doubles\FakeToken();
+        $token = new Token\ValueToken('foo', 'bar');
 
         $this->assertTrue($processor->process($token));
         $this->assertSame($token, $template->receivedToken);
@@ -37,7 +38,7 @@ class CompareFileTest extends TestCase
         $file      = new Doubles\MockedFile('expected contents');
         $processor = new CompareFile($template, $file);
 
-        $token = new Doubles\FakeToken();
+        $token = new Token\ValueToken('foo', 'bar');
 
         $this->assertFalse($processor->process($token));
         $this->assertSame($token, $template->receivedToken);
