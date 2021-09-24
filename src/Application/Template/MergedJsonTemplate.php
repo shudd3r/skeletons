@@ -19,27 +19,29 @@ use Shudd3r\PackageFiles\Environment\FileSystem\File;
 class MergedJsonTemplate implements Template
 {
     private Template $template;
-    private File     $jsonFile;
+    private File     $packageFile;
+    private bool     $synchronized;
 
-    public function __construct(Template $template, File $packageJsonFile)
+    public function __construct(Template $template, File $packageFile, bool $synchronized)
     {
-        $this->template = $template;
-        $this->jsonFile = $packageJsonFile;
+        $this->template     = $template;
+        $this->packageFile  = $packageFile;
+        $this->synchronized = $synchronized;
     }
 
     public function render(Token $token): string
     {
-        $rendered = $this->template->render($token);
-        $template = json_decode($rendered, true);
-        $package  = json_decode($this->jsonFile->contents(), true);
+        $rendered     = $this->template->render($token);
+        $templateData = json_decode($rendered, true);
+        $packageData  = json_decode($this->packageFile->contents(), true);
 
-        return $template && $package ? $this->mergedJson($template, $package) . "\n" : $rendered;
+        return $templateData && $packageData ? $this->mergedJson($templateData, $packageData) : $rendered;
     }
 
     private function mergedJson(array $template, array $package): string
     {
         $data = $this->mergedDataStructure($template, $package);
-        return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
     }
 
     private function mergedDataStructure(array $template, array $package): array
@@ -49,6 +51,7 @@ class MergedJsonTemplate implements Template
             if ($value === null) {
                 if (isset($package[$key])) {
                     $merged[$key] = $package[$key];
+                    unset($package[$key]);
                 }
                 continue;
             }
@@ -60,7 +63,8 @@ class MergedJsonTemplate implements Template
                 }
             }
             $merged[$key] = $value;
-            unset($package[$key]);
+            $usedKey = $this->synchronized ? array_key_first($package) : $key;
+            unset($package[$usedKey]);
         }
 
         foreach ($package as $key => $value) {

@@ -31,7 +31,7 @@ class MergedJsonTemplateTest extends TestCase
     public function testDecoratedTemplate_IsRenderedWithProvidedToken()
     {
         $decorated = new Doubles\FakeTemplate('render');
-        $template  = new Template\MergedJsonTemplate($decorated, new Doubles\MockedFile(''));
+        $template  = new Template\MergedJsonTemplate($decorated, new Doubles\MockedFile(), false);
         $token     = new Doubles\FakeToken();
         $template->render($token);
         $this->assertSame($token, $decorated->receivedToken);
@@ -77,6 +77,18 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
+    public function testUpdatedKeysInSynchronizedStructures_AreMerged()
+    {
+        $template = json_encode(['foo' => null, 'updated_key' => 'something']);
+        $package  = json_encode(['foo' => 'value', 'old_key' => 'something', 'bar' => 'value']);
+
+        $initialMerge = ['foo' => 'value', 'updated_key' => 'something', 'old_key' => 'something', 'bar' => 'value'];
+        $this->assertJsonData($initialMerge, $this->template($template, $package));
+
+        $synchronizedMerge = ['foo' => 'value', 'updated_key' => 'something', 'bar' => 'value'];
+        $this->assertJsonData($synchronizedMerge, $this->template($template, $package, true));
+    }
+
     public function testExampleComposerJsonFileNormalization()
     {
         $files = new Fixtures\ExampleFiles('json-merge-example');
@@ -101,8 +113,11 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertSame($expected, json_decode($json->render(new Doubles\FakeToken()), true));
     }
 
-    private function template(string $rendered, string $json): Template
+    private function template(string $template, string $package, bool $synchronized = false): Template
     {
-        return new Template\MergedJsonTemplate(new Doubles\FakeTemplate($rendered), new Doubles\MockedFile($json));
+        $template    = new Doubles\FakeTemplate($template);
+        $packageFile = new Doubles\MockedFile($package);
+
+        return new Template\MergedJsonTemplate($template, $packageFile, $synchronized);
     }
 }

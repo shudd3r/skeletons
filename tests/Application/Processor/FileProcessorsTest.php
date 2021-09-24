@@ -33,7 +33,7 @@ class FileProcessorsTest extends TestCase
     public function testWithDefinedCustomTemplate_ProcessorUsesThisTemplate()
     {
         $custom     = new Doubles\FakeTemplate('render');
-        $templates  = ['myFile.txt' => fn ($template, $file) => $custom];
+        $templates  = ['myFile.txt' => fn ($templateFile) => $custom];
         $processors = new Doubles\MockedFileProcessors(new Doubles\FakeDirectory(), $templates);
 
         $file = new Doubles\MockedFile();

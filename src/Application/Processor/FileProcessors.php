@@ -30,15 +30,17 @@ abstract class FileProcessors
 
     public function processor(File $skeletonFile): Processor
     {
-        $filename        = $skeletonFile->name();
-        $packageFile     = $this->package->file($filename);
-        $genericTemplate = new Template\FileTemplate($skeletonFile);
-        $customTemplate  = $this->templates[$filename] ?? null;
-
-        $template = ($customTemplate) ? $customTemplate($genericTemplate, $packageFile) : $genericTemplate;
+        $template    = $this->template($skeletonFile);
+        $packageFile = $this->package->file($skeletonFile->name());
 
         return $this->newProcessorInstance($template, $packageFile);
     }
 
     abstract protected function newProcessorInstance(Template $template, File $packageFile): Processor;
+
+    private function template(File $skeletonFile): Template
+    {
+        $customized = $this->templates[$skeletonFile->name()] ?? null;
+        return $customized ? $customized($skeletonFile) : new Template\FileTemplate($skeletonFile);
+    }
 }
