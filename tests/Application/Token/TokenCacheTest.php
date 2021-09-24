@@ -19,13 +19,13 @@ class TokenCacheTest extends TestCase
 {
     public function testGettingTokenFromCache()
     {
-        $predefinedToken = new Token\ValueToken('foo', 'one');
-        $addedToken      = new Token\ValueToken('bar', 'two');
+        $initialToken = new Token\ValueToken('foo', 'one');
+        $addedToken   = new Token\ValueToken('bar', 'two');
 
-        $tokens = new Token\TokenCache(['name' => $predefinedToken]);
+        $tokens = new Token\TokenCache(['name' => $initialToken]);
         $tokens->add('foo/bar.php', $addedToken);
 
-        $this->assertSame($predefinedToken, $tokens->token('name'));
+        $this->assertSame($initialToken, $tokens->token('name'));
         $this->assertSame($addedToken, $tokens->token('foo/bar.php'));
     }
 

@@ -18,7 +18,7 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class TokenProcessorTest extends TestCase
 {
-    public function testTokensArePassedToProcessor()
+    public function testResolvedTokens_ArePassedToProcessor()
     {
         $reader    = new Doubles\FakeReader();
         $processor = new Doubles\MockedProcessor();
@@ -31,7 +31,7 @@ class TokenProcessorTest extends TestCase
         $this->assertEquals($reader->token(), $processor->passedToken);
     }
 
-    public function testUnresolvedTokensStopExecution()
+    public function testUnresolvedTokens_ExecutionIsStopped()
     {
         $reader    = new Doubles\FakeReader(null);
         $processor = new Doubles\MockedProcessor();

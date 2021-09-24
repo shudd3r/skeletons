@@ -19,7 +19,7 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class ExpandedTokenProcessorTest extends TestCase
 {
-    public function testSubsequentProcessorReceivesExpandedToken()
+    public function testSubsequentProcessor_ReceivesExpandedToken()
     {
         $newToken     = new Token\ValueToken('foo', 'one');
         $subProcessor = new Doubles\MockedProcessor();

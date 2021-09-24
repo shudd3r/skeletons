@@ -1,4 +1,13 @@
-<?php
+<?php declare(strict_types=1);
+
+/*
+ * This file is part of Shudd3r/Package-Files package.
+ *
+ * (c) Shudd3r <q3.shudder@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Shudd3r\PackageFiles\Tests\Application\Command\Precondition;
 
@@ -17,10 +26,10 @@ class SkeletonSynchronizationTest extends TestCase
         $this->assertFalse($precondition->isFulfilled());
     }
 
-    public function testResolvedToken_ReturnsProcessorStatus()
+    public function testResolvedToken_ReturnsStatusFromProcessor()
     {
         $reader       = new Doubles\FakeReader();
-        $processor    = new Doubles\MockedProcessor();
+        $processor    = new Doubles\MockedProcessor(true);
         $precondition = new SkeletonSynchronization($reader, $processor);
         $this->assertTrue($precondition->isFulfilled());
         $this->assertEquals($reader->token(), $processor->passedToken);

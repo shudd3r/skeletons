@@ -19,7 +19,7 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class CompareFileTest extends TestCase
 {
-    public function testSuccessfulComparison_RendersSuccessMessage()
+    public function testSuccessfulComparison_ReturnsTrue()
     {
         $contents  = 'expected contents';
         $template  = new Doubles\FakeTemplate($contents);
@@ -32,7 +32,7 @@ class CompareFileTest extends TestCase
         $this->assertSame($token, $template->receivedToken);
     }
 
-    public function testFailedComparison_RendersErrorMessage()
+    public function testFailedComparison_ReturnsFalse()
     {
         $template  = new Doubles\FakeTemplate('generated contents');
         $file      = new Doubles\MockedFile('expected contents');

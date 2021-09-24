@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Environment;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Environment as App;
+use Shudd3r\PackageFiles\Environment;
 
 
 class TerminalTest extends TestCase
@@ -20,9 +20,9 @@ class TerminalTest extends TestCase
     public function testInstantiation()
     {
         $terminal = $this->terminal($input, $output, $error);
-        $this->assertInstanceOf(App\Terminal::class, $terminal);
-        $this->assertInstanceOf(App\Input::class, $terminal);
-        $this->assertInstanceOf(App\Output::class, $terminal);
+        $this->assertInstanceOf(Environment\Terminal::class, $terminal);
+        $this->assertInstanceOf(Environment\Input::class, $terminal);
+        $this->assertInstanceOf(Environment\Output::class, $terminal);
     }
 
     public function testRender_SendsMessagesToOutputStream()
@@ -70,12 +70,12 @@ class TerminalTest extends TestCase
         }
     }
 
-    private function terminal(&$input, &$output, &$error): App\Terminal
+    private function terminal(&$input, &$output, &$error): Environment\Terminal
     {
         $input  = fopen('php://memory', 'r+b');
         $output = fopen('php://memory', 'w+b');
         $error  = fopen('php://memory', 'r+b');
 
-        return new App\Terminal($input, $output, $error);
+        return new Environment\Terminal($input, $output, $error);
     }
 }
