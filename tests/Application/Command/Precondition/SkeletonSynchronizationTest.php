@@ -20,21 +20,21 @@ class SkeletonSynchronizationTest extends TestCase
 {
     public function testUnresolvedToken_ReturnsFalse()
     {
-        $reader       = new Doubles\FakeReader(null);
-        $processor    = new Doubles\MockedProcessor();
+        $reader       = new Doubles\FakeReader(false);
+        $processor    = new Doubles\MockedProcessor(true);
         $precondition = new SkeletonSynchronization($reader, $processor);
         $this->assertFalse($precondition->isFulfilled());
     }
 
     public function testResolvedToken_ReturnsStatusFromProcessor()
     {
-        $reader       = new Doubles\FakeReader();
+        $reader       = new Doubles\FakeReader(true);
         $processor    = new Doubles\MockedProcessor(true);
         $precondition = new SkeletonSynchronization($reader, $processor);
         $this->assertTrue($precondition->isFulfilled());
         $this->assertEquals($reader->token(), $processor->passedToken);
 
-        $reader       = new Doubles\FakeReader();
+        $reader       = new Doubles\FakeReader(true);
         $processor    = new Doubles\MockedProcessor(false);
         $precondition = new SkeletonSynchronization($reader, $processor);
         $this->assertFalse($precondition->isFulfilled());

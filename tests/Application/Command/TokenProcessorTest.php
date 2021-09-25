@@ -20,12 +20,10 @@ class TokenProcessorTest extends TestCase
 {
     public function testResolvedTokens_ArePassedToProcessor()
     {
-        $reader    = new Doubles\FakeReader();
+        $reader    = new Doubles\FakeReader(true);
         $processor = new Doubles\MockedProcessor();
         $terminal  = new Doubles\MockedTerminal();
         $command   = new TokenProcessor($reader, $processor, $terminal);
-
-        $this->assertInstanceOf(TokenProcessor::class, $command);
 
         $command->execute();
         $this->assertEquals($reader->token(), $processor->passedToken);
@@ -33,7 +31,7 @@ class TokenProcessorTest extends TestCase
 
     public function testUnresolvedTokens_ExecutionIsStopped()
     {
-        $reader    = new Doubles\FakeReader(null);
+        $reader    = new Doubles\FakeReader(false);
         $processor = new Doubles\MockedProcessor();
         $terminal  = new Doubles\MockedTerminal();
         $command   = new TokenProcessor($reader, $processor, $terminal);
