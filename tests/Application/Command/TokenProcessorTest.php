@@ -26,7 +26,7 @@ class TokenProcessorTest extends TestCase
         $command   = new TokenProcessor($reader, $processor, $terminal);
 
         $command->execute();
-        $this->assertEquals($reader->token(), $processor->passedToken);
+        $this->assertEquals($reader->token(), $processor->passedToken());
     }
 
     public function testUnresolvedTokens_ExecutionIsStopped()
@@ -37,6 +37,6 @@ class TokenProcessorTest extends TestCase
         $command   = new TokenProcessor($reader, $processor, $terminal);
 
         $command->execute();
-        $this->assertNull($processor->passedToken);
+        $this->assertNull($processor->passedToken());
     }
 }

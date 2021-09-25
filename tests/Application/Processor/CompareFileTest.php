@@ -29,7 +29,7 @@ class CompareFileTest extends TestCase
         $token = new Token\ValueToken('foo', 'bar');
 
         $this->assertTrue($processor->process($token));
-        $this->assertSame($token, $template->receivedToken);
+        $this->assertSame($token, $template->receivedToken());
     }
 
     public function testFailedComparison_ReturnsFalse()
@@ -41,6 +41,6 @@ class CompareFileTest extends TestCase
         $token = new Token\ValueToken('foo', 'bar');
 
         $this->assertFalse($processor->process($token));
-        $this->assertSame($token, $template->receivedToken);
+        $this->assertSame($token, $template->receivedToken());
     }
 }

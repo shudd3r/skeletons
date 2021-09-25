@@ -18,7 +18,12 @@ use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 class MockedFileProcessors extends Processor\FileProcessors
 {
-    public Template $usedTemplate;
+    private ?Template $usedTemplate = null;
+
+    public function usedTemplate(): ?Template
+    {
+        return $this->usedTemplate;
+    }
 
     protected function newProcessorInstance(Template $template, File $packageFile): Processor
     {

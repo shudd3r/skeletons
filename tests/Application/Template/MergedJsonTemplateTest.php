@@ -41,7 +41,7 @@ class MergedJsonTemplateTest extends TestCase
         $decorated = new Doubles\MockedTemplate('render');
         $template  = new Template\MergedJsonTemplate($decorated, new Doubles\MockedFile(), false);
         $template->render(self::$token);
-        $this->assertSame(self::$token, $decorated->receivedToken);
+        $this->assertSame(self::$token, $decorated->receivedToken());
     }
 
     public function testForFlatArrays_ReturnsMergedJsonMatchingTemplateStructure()

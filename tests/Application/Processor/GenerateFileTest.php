@@ -27,7 +27,7 @@ class GenerateFileTest extends TestCase
         $token     = new Token\ValueToken('foo', 'bar');
 
         $this->assertTrue($processor->process($token));
-        $this->assertSame($token, $template->receivedToken);
+        $this->assertSame($token, $template->receivedToken());
         $this->assertSame($rendered, $fileMock->contents());
     }
 }

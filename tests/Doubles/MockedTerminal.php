@@ -16,15 +16,9 @@ use Shudd3r\PackageFiles\Environment\Terminal;
 
 class MockedTerminal extends Terminal
 {
-    public array $inputStrings;
-    public array $messagesSent = [];
-    public int   $errorCode    = 0;
-
-    public function __construct(array $inputStrings = [])
-    {
-        $this->inputStrings = $inputStrings;
-        parent::__construct();
-    }
+    private array $inputStrings = [];
+    private array $messagesSent = [];
+    private int   $errorCode    = 0;
 
     public function value(string $prompt = ''): string
     {
@@ -44,5 +38,15 @@ class MockedTerminal extends Terminal
     public function exitCode(): int
     {
         return $this->errorCode;
+    }
+
+    public function addInput(string $input): void
+    {
+        $this->inputStrings[] = $input;
+    }
+
+    public function messagesSent(): array
+    {
+        return $this->messagesSent;
     }
 }

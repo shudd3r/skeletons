@@ -26,7 +26,7 @@ class FileProcessorsTest extends TestCase
         $file = new Doubles\MockedFile('', 'differentFile.txt');
         $processors->processor($file);
 
-        $this->assertNotEquals($custom, $processors->usedTemplate);
+        $this->assertNotEquals($custom, $processors->usedTemplate());
     }
 
     public function testWithDefinedCustomTemplate_ProcessorUsesThisTemplate()
@@ -38,6 +38,6 @@ class FileProcessorsTest extends TestCase
         $file = new Doubles\MockedFile('', 'myFile.txt');
         $processors->processor($file);
 
-        $this->assertSame($custom, $processors->usedTemplate);
+        $this->assertSame($custom, $processors->usedTemplate());
     }
 }

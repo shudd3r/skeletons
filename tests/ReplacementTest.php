@@ -44,7 +44,8 @@ class ReplacementTest extends TestCase
 
         if ($input) {
             $options['i'] = true;
-            $env->input()->inputStrings = ['input value', 'input value'];
+            $env->input()->addInput('input value');
+            $env->input()->addInput('input value');
         }
 
         $replacement = new Doubles\FakeReplacement($env);
