@@ -79,22 +79,22 @@ class ComposerJsonDataTest extends TestCase
         $composer->value($notValidKey);
     }
 
-    public function notValueKeys()
+    public function notValueKeys(): array
     {
         return [['arrays'], ['strings'], ['arrays.first'], ['arrays.second']];
     }
 
-    public function notArrayKeys()
+    public function notArrayKeys(): array
     {
         return [['name'], ['strings.value1'], ['strings.value2']];
     }
 
-    public function notValidKeys()
+    public function notValidKeys(): array
     {
         return [['name.something'], ['strings.value1.more']];
     }
 
-    private function composer(array &$data = null)
+    private function composer(array &$data = null): ComposerJsonData
     {
         $data ??= [
             'name' => 'FooName',

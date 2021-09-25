@@ -115,7 +115,7 @@ class MergedJsonTemplateTest extends TestCase
         ];
     }
 
-    private function assertJsonData(array $expected, Template $json)
+    private function assertJsonData(array $expected, Template $json): void
     {
         $this->assertSame($expected, json_decode($json->render(self::$token), true));
     }
