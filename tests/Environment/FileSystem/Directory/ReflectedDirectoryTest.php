@@ -40,14 +40,12 @@ class ReflectedDirectoryTest extends TestCase
 
     public function testExists_ReturnsFromRootDirectory()
     {
-        $root      = new FakeDirectory('/root/path');
-        $reflected = new ReflectedDirectory($root, new FakeDirectory('/origin/path', false));
-
-        $root->exists = true;
-        $this->assertTrue($reflected->exists());
-
-        $root->exists = false;
+        $origin    = new FakeDirectory('/origin/path', true);
+        $reflected = new ReflectedDirectory(new FakeDirectory('/root/path', false), $origin);
         $this->assertFalse($reflected->exists());
+
+        $reflected = new ReflectedDirectory(new FakeDirectory('/root/path', true), $origin);
+        $this->assertTrue($reflected->exists());
     }
 
     public function testSubdirectory_ReturnsReflectedSubdirectory()

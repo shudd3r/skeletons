@@ -45,6 +45,6 @@ class MockedFile implements File
     public function write(string $contents): void
     {
         $this->contents = $contents;
-        $this->root->files[$this->name] = $this;
+        $this->root->updateIndex($this);
     }
 }

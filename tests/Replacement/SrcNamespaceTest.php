@@ -24,8 +24,8 @@ class SrcNamespaceTest extends TestCase
     {
         $env = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', $this->composerData());
-        $replacement = $this->replacement($env);
 
+        $replacement = $this->replacement($env);
         $this->assertToken($replacement->initialToken('src.namespace', []), 'Composer\\Namespace');
     }
 
@@ -33,8 +33,8 @@ class SrcNamespaceTest extends TestCase
     {
         $env = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', $this->composerData(false));
-        $replacement = $this->replacement($env);
 
+        $replacement = $this->replacement($env);
         $this->assertToken($replacement->initialToken('src.namespace', []), 'Package\\Name');
     }
 
@@ -60,23 +60,24 @@ class SrcNamespaceTest extends TestCase
     {
         $env = new Doubles\FakeRuntimeEnv();
         $env->metaDataFile()->write(json_encode(['ns.placeholder' => $invalid]));
-        $options     = ['ns' => $invalid];
-        $replacement = $this->replacement($env);
+        $options = ['ns' => $invalid];
 
+        $replacement = $this->replacement($env);
         $this->assertNull($replacement->initialToken('ns.placeholder', $options));
         $this->assertNull($replacement->validationToken('ns.placeholder'));
         $this->assertNull($replacement->updateToken('ns.placeholder', $options));
 
         $env = new Doubles\FakeRuntimeEnv();
         $env->metaDataFile()->write(json_encode(['ns.placeholder' => $valid]));
-        $options     = ['ns' => $valid];
+        $options = ['ns' => $valid];
+
         $replacement = $this->replacement($env);
         $this->assertInstanceOf(Token::class, $replacement->initialToken('ns.placeholder', $options));
         $this->assertInstanceOf(Token::class, $replacement->validationToken('ns.placeholder'));
         $this->assertInstanceOf(Token::class, $replacement->updateToken('ns.placeholder', $options));
     }
 
-    public function valueExamples()
+    public function valueExamples(): array
     {
         return [
             ['Foo/Bar', 'Foo\Bar'],
@@ -85,7 +86,7 @@ class SrcNamespaceTest extends TestCase
         ];
     }
 
-    private function assertToken(Token $token, string $value, string $name = 'src.namespace')
+    private function assertToken(Token $token, string $value, string $name = 'src.namespace'): void
     {
         $subToken = new Token\ValueToken($name . '.esc', str_replace('\\', '\\\\', $value));
         $expected = new Token\CompositeValueToken($name, $value, $subToken);

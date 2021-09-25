@@ -23,17 +23,16 @@ class PackageNameTest extends TestCase
         $env = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"name": "composer/package"}');
 
-        $token = $this->replacement($env)->initialToken('package.name', []);
-        $this->assertToken($token, 'composer/package', 'Composer/Package');
+        $replacement = $this->replacement($env);
+        $this->assertToken($replacement->initialToken('package.name', []), 'composer/package', 'Composer/Package');
     }
 
     public function testWithoutPackageNameInComposerJson_InitialTokenValue_IsResolvedFromDirectoryStructure()
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->package()->path = 'D:\dev\www\project\directory';
+        $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('D:\dev\www\project\directory'));
 
-        $token = $this->replacement($env)->initialToken('package.name', []);
-        $this->assertToken($token, 'project/directory', 'Project/Directory');
+        $replacement = $this->replacement($env);
+        $this->assertToken($replacement->initialToken('package.name', []), 'project/directory', 'Project/Directory');
     }
 
     public function testInitialToken_IsCached()
@@ -47,9 +46,8 @@ class PackageNameTest extends TestCase
 
     public function testTokenFactoryMethods_ReturnCorrectToken()
     {
-        $env = new Doubles\FakeRuntimeEnv();
+        $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('package-root\path'));
         $env->metaDataFile()->write('{"package.name": "source/package"}');
-        $env->package()->path = 'package-root\path';
 
         $replacement = $this->replacement($env);
         $this->assertToken($replacement->initialToken('package.name', []), 'package-root/path', 'Package-root/Path');
@@ -84,7 +82,7 @@ class PackageNameTest extends TestCase
         $this->assertInstanceOf(Token::class, $replacement->updateToken('package.name', []));
     }
 
-    public function valueExamples()
+    public function valueExamples(): array
     {
         return [
             ['-Packa-ge1/na.me', 'Packa-ge1/na.me'],
@@ -92,10 +90,10 @@ class PackageNameTest extends TestCase
         ];
     }
 
-    private function assertToken(Token $token, string $value, string $title, string $name = 'package.name'): void
+    private function assertToken(Token $token, string $value, string $title): void
     {
-        $subToken = new Token\ValueToken($name . '.title', $title);
-        $expected = new Token\CompositeValueToken($name, $value, $subToken);
+        $subToken = new Token\ValueToken('package.name.title', $title);
+        $expected = new Token\CompositeValueToken('package.name', $value, $subToken);
         $this->assertEquals($expected, $token);
     }
 

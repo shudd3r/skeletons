@@ -18,14 +18,14 @@ use Exception;
 
 class FakeDirectory implements Directory
 {
-    public string $path;
-    public bool   $exists;
+    private string $path;
+    private bool   $exists;
 
     /** @var MockedFile[] */
-    public array $files = [];
+    private array $files = [];
 
     /** @var FakeDirectory[] */
-    public array $subdirectories = [];
+    private array $subdirectories = [];
 
     public function __construct(string $path = '/fake/directory', bool $exists = true)
     {
@@ -71,11 +71,17 @@ class FakeDirectory implements Directory
 
     public function addFile(string $name, string $contents = ''): void
     {
-        $file = $this->file($name);
-        if ($file->exists()) {
-            throw new Exception('File already exists');
+        if (isset($this->files[$name])) {
+            throw new Exception('File already added');
         }
 
-        $file->write($contents);
+        $this->files[$name] = new MockedFile($contents, $name, $this);
+    }
+
+    public function updateIndex(File $file): void
+    {
+        $filename = $file->name();
+        if (isset($this->files[$filename])) { return; }
+        $this->files[$filename] = $file;
     }
 }

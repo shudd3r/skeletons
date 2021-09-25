@@ -22,8 +22,7 @@ class RepositoryNameTest extends TestCase
 {
     public function testWithoutGitConfigFile_InitialTokenValue_IsResolvedFromPackageName()
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->package()->path = 'some/directory/package/name';
+        $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('some/directory/package/name'));
 
         $replacement = $this->replacement($env);
         $this->assertToken($replacement->initialToken('repo.placeholder', []), 'package/name', 'repo.placeholder');
@@ -31,9 +30,8 @@ class RepositoryNameTest extends TestCase
 
     public function testWithoutRemoteRepositoriesInGitConfig_InitialTokenValue_IsResolvedFromPackageName()
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->package()->file('.git/config')->write($this->config());
-        $env->package()->path = 'some/directory/package/name';
+        $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('some/directory/package/name'));
+        $env->package()->addFile('.git/config', $this->config());
 
         $replacement = $this->replacement($env);
         $this->assertToken($replacement->initialToken('repo.placeholder', []), 'package/name', 'repo.placeholder');
@@ -41,34 +39,34 @@ class RepositoryNameTest extends TestCase
 
     public function testWithRemoteRepositoriesInGitConfig_InitialTokenValue_IsReadWithCorrectPriority()
     {
-        $env = new Doubles\FakeRuntimeEnv();
+        $env       = new Doubles\FakeRuntimeEnv();
+        $gitConfig = $env->package()->file('.git/config');
 
         $remotes = ['foo' => 'git@github.com:some/repo.git'];
-        $env->package()->file('.git/config')->write($this->config($remotes));
+        $gitConfig->write($this->config($remotes));
         $replacement = $this->replacement($env);
         $this->assertToken($replacement->initialToken('repo.name', []), 'some/repo');
 
         $remotes += ['second' => 'git@github.com:other/repo.git'];
-        $env->package()->file('.git/config')->write($this->config($remotes));
+        $gitConfig->write($this->config($remotes));
         $replacement = $this->replacement($env);
         $this->assertToken($replacement->initialToken('repo.name', []), 'some/repo');
 
         $remotes += ['origin' => 'https://github.com/orig/repo.git'];
-        $env->package()->file('.git/config')->write($this->config($remotes));
+        $gitConfig->write($this->config($remotes));
         $replacement = $this->replacement($env);
         $this->assertToken($replacement->initialToken('repo.name', []), 'orig/repo');
 
         $remotes += ['upstream' => 'git@github.com:master/ssh-repo.git'];
-        $env->package()->file('.git/config')->write($this->config($remotes));
+        $gitConfig->write($this->config($remotes));
         $replacement = $this->replacement($env);
         $this->assertToken($replacement->initialToken('repo.name', []), 'master/ssh-repo');
     }
 
     public function testTokenFactoryMethods_CreateCorrectToken()
     {
-        $env = new Doubles\FakeRuntimeEnv();
+        $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('root/directory/init/name'));
         $env->metaDataFile()->write('{"repo.name": "meta/name"}');
-        $env->package()->path = 'root/directory/init/name';
 
         $replacement = $this->replacement($env);
         $this->assertToken($replacement->initialToken('repo.name', []), 'init/name');
@@ -86,7 +84,8 @@ class RepositoryNameTest extends TestCase
     {
         $env = new Doubles\FakeRuntimeEnv();
         $env->metaDataFile()->write('{"repo.name": "' . $invalid . '"}');
-        $options     = ['repo' => $invalid];
+        $options = ['repo' => $invalid];
+
         $replacement = $this->replacement($env);
         $this->assertNull($replacement->initialToken('repo.name', $options));
         $this->assertNull($replacement->validationToken('repo.name'));
@@ -94,14 +93,15 @@ class RepositoryNameTest extends TestCase
 
         $env = new Doubles\FakeRuntimeEnv();
         $env->metaDataFile()->write('{"repo.name": "' . $valid . '"}');
-        $options     = ['repo' => $valid];
+        $options = ['repo' => $valid];
+
         $replacement = $this->replacement($env);
         $this->assertInstanceOf(Token::class, $replacement->initialToken('repo.name', $options));
         $this->assertInstanceOf(Token::class, $replacement->validationToken('repo.name'));
         $this->assertInstanceOf(Token::class, $replacement->updateToken('repo.name', $options));
     }
 
-    public function valueExamples()
+    public function valueExamples(): array
     {
         $name = function (int $length) { return str_pad('x', $length, 'x'); };
 
@@ -120,7 +120,7 @@ class RepositoryNameTest extends TestCase
         ];
     }
 
-    private function assertToken(Token $token, string $value, string $name = 'repo.name')
+    private function assertToken(Token $token, string $value, string $name = 'repo.name'): void
     {
         $expected = new Token\ValueToken($name, $value);
         $this->assertEquals($expected, $token);
@@ -136,9 +136,9 @@ class RepositoryNameTest extends TestCase
         $remoteConfig = '';
         foreach ($remotes as $name => $url) {
             $remoteConfig .= <<<INI
-                [remote "{$name}"]
-                    url = {$url}
-                    fetch = +refs/heads/*:refs/remotes/{$name}/*
+                [remote "$name"]
+                    url = $url
+                    fetch = +refs/heads/*:refs/remotes/$name/*
                 
                 INI;
         }
@@ -151,7 +151,8 @@ class RepositoryNameTest extends TestCase
                 logallrefupdates = true
                 symlinks = false
                 ignorecase = true
-            {$remoteConfig}[branch "develop"]
+            $remoteConfig
+            [branch "develop"]
                 remote = origin
                 merge = refs/heads/develop
             
