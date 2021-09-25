@@ -48,7 +48,7 @@ class PackageNameTest extends TestCase
     public function testTokenFactoryMethods_ReturnCorrectToken()
     {
         $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->contents = '{"package.name": "source/package"}';
+        $env->metaDataFile()->write('{"package.name": "source/package"}');
         $env->package()->path = 'package-root\path';
 
         $replacement = $this->replacement($env);
@@ -66,7 +66,7 @@ class PackageNameTest extends TestCase
     public function testTokenFactoryMethods_ValidatesValue(string $invalid, string $valid)
     {
         $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->contents = '{"package.name": "'. $invalid .'"}';
+        $env->metaDataFile()->write('{"package.name": "'. $invalid .'"}');
         $env->package()->addFile('composer.json', '{"name": "'. $invalid .'"}');
 
         $replacement = $this->replacement($env);
@@ -75,7 +75,7 @@ class PackageNameTest extends TestCase
         $this->assertNull($replacement->updateToken('package.name', []));
 
         $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->contents = '{"package.name": "'. $valid .'"}';
+        $env->metaDataFile()->write('{"package.name": "'. $valid .'"}');
         $env->package()->addFile('composer.json', '{"name": "'. $valid .'"}');
 
         $replacement = $this->replacement($env);

@@ -11,20 +11,19 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 
 class MockedFile implements File
 {
-    public string    $name;
-    public Directory $root;
-    public ?string   $contents;
+    private string        $name;
+    private FakeDirectory $root;
+    private ?string       $contents;
 
-    public function __construct(?string $contents = '')
+    public function __construct(?string $contents = '', string $name = 'file.txt', FakeDirectory $root = null)
     {
-        $this->name     = 'file.txt';
-        $this->root     = new FakeDirectory();
+        $this->name     = $name;
+        $this->root     = $root ?? new FakeDirectory();
         $this->contents = $contents;
     }
 

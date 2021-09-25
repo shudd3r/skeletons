@@ -41,7 +41,7 @@ class SrcNamespaceTest extends TestCase
     public function testTokenFactoryMethods_CreateCorrectToken()
     {
         $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->contents = json_encode(['src.namespace' => 'Meta\\Namespace']);
+        $env->metaDataFile()->write(json_encode(['src.namespace' => 'Meta\\Namespace']));
         $env->package()->addFile('composer.json', $this->composerData());
 
         $replacement = $this->replacement($env);
@@ -59,7 +59,7 @@ class SrcNamespaceTest extends TestCase
     public function testTokenFactoryMethod_ValidatesValue(string $invalid, string $valid)
     {
         $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->contents = json_encode(['ns.placeholder' => $invalid]);
+        $env->metaDataFile()->write(json_encode(['ns.placeholder' => $invalid]));
         $options     = ['ns' => $invalid];
         $replacement = $this->replacement($env);
 
@@ -68,7 +68,7 @@ class SrcNamespaceTest extends TestCase
         $this->assertNull($replacement->updateToken('ns.placeholder', $options));
 
         $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->contents = json_encode(['ns.placeholder' => $valid]);
+        $env->metaDataFile()->write(json_encode(['ns.placeholder' => $valid]));
         $options     = ['ns' => $valid];
         $replacement = $this->replacement($env);
         $this->assertInstanceOf(Token::class, $replacement->initialToken('ns.placeholder', $options));

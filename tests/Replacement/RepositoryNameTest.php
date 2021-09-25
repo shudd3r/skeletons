@@ -67,7 +67,7 @@ class RepositoryNameTest extends TestCase
     public function testTokenFactoryMethods_CreateCorrectToken()
     {
         $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->contents = '{"repo.name": "meta/name"}';
+        $env->metaDataFile()->write('{"repo.name": "meta/name"}');
         $env->package()->path = 'root/directory/init/name';
 
         $replacement = $this->replacement($env);
@@ -85,7 +85,7 @@ class RepositoryNameTest extends TestCase
     public function testTokenFactoryMethods_ValidateTokenValue(string $invalid, string $valid)
     {
         $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->contents = '{"repo.name": "' . $invalid . '"}';
+        $env->metaDataFile()->write('{"repo.name": "' . $invalid . '"}');
         $options     = ['repo' => $invalid];
         $replacement = $this->replacement($env);
         $this->assertNull($replacement->initialToken('repo.name', $options));
@@ -93,7 +93,7 @@ class RepositoryNameTest extends TestCase
         $this->assertNull($replacement->updateToken('repo.name', $options));
 
         $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->contents = '{"repo.name": "' . $valid . '"}';
+        $env->metaDataFile()->write('{"repo.name": "' . $valid . '"}');
         $options     = ['repo' => $valid];
         $replacement = $this->replacement($env);
         $this->assertInstanceOf(Token::class, $replacement->initialToken('repo.name', $options));

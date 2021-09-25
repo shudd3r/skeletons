@@ -28,6 +28,6 @@ class GenerateFileTest extends TestCase
 
         $this->assertTrue($processor->process($token));
         $this->assertSame($token, $template->receivedToken);
-        $this->assertSame($rendered, $fileMock->contents);
+        $this->assertSame($rendered, $fileMock->contents());
     }
 }

@@ -42,7 +42,7 @@ class PackageDescriptionTest extends TestCase
     {
         $env = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"description": "composer desc"}');
-        $env->metaDataFile()->contents = '{"desc.placeholder": "meta desc"}';
+        $env->metaDataFile()->write('{"desc.placeholder": "meta desc"}');
 
         $replacement = $this->replacement($env);
         $this->assertToken($replacement->initialToken('desc.placeholder', []), 'composer desc', 'desc.placeholder');
@@ -54,7 +54,7 @@ class PackageDescriptionTest extends TestCase
     {
         $env = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"description": ""}');
-        $env->metaDataFile()->contents = '{"desc.placeholder": ""}';
+        $env->metaDataFile()->write('{"desc.placeholder": ""}');
 
         $replacement = $this->replacement($env);
         $this->assertNull($replacement->initialToken('foo', []));
