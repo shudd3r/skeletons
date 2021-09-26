@@ -12,23 +12,24 @@
 namespace Shudd3r\PackageFiles\Application\Token;
 
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 
 class CachedOriginalContents extends OriginalContents
 {
     private TokenCache $cache;
+    private string     $cacheKey;
 
-    public function __construct(File $packageFile, TokenCache $cache)
+    public function __construct(string $contents, string $cacheKey, TokenCache $cache)
     {
-        $this->cache = $cache;
-        parent::__construct($packageFile);
+        $this->cache    = $cache;
+        $this->cacheKey = $cacheKey;
+        parent::__construct($contents);
     }
 
     protected function newTokenInstance(array $values = null): Token
     {
         $token = parent::newTokenInstance($values);
-        $this->cache->add($this->packageFile->name(), $token);
+        $this->cache->add($this->cacheKey, $token);
 
         return $token;
     }

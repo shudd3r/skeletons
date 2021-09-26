@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Tests\Application\Token;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class OriginalContentsTest extends TestCase
@@ -59,12 +58,10 @@ class OriginalContentsTest extends TestCase
         ];
     }
 
-    private function token(string $originalContents = null, Token\TokenCache $cache = null): Token\OriginalContents
+    private function token(string $contents, Token\TokenCache $cache = null): Token\OriginalContents
     {
-        $file = new Doubles\MockedFile($originalContents, self::FILENAME);
-
         return $cache
-            ? new Token\CachedOriginalContents($file, $cache)
-            : new Token\OriginalContents($file);
+            ? new Token\CachedOriginalContents($contents, self::FILENAME, $cache)
+            : new Token\OriginalContents($contents);
     }
 }

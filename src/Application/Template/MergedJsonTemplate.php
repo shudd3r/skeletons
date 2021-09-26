@@ -13,19 +13,18 @@ namespace Shudd3r\PackageFiles\Application\Template;
 
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 
 class MergedJsonTemplate implements Template
 {
     private Template $template;
-    private File     $packageFile;
+    private string   $jsonString;
     private bool     $synchronized;
 
-    public function __construct(Template $template, File $packageFile, bool $synchronized)
+    public function __construct(Template $template, string $jsonString, bool $synchronized)
     {
         $this->template     = $template;
-        $this->packageFile  = $packageFile;
+        $this->jsonString   = $jsonString;
         $this->synchronized = $synchronized;
     }
 
@@ -33,7 +32,7 @@ class MergedJsonTemplate implements Template
     {
         $rendered     = $this->template->render($token);
         $templateData = json_decode($rendered, true);
-        $packageData  = json_decode($this->packageFile->contents(), true);
+        $packageData  = json_decode($this->jsonString, true);
 
         return $templateData && $packageData ? $this->mergedJson($templateData, $packageData) : $rendered;
     }

@@ -29,6 +29,6 @@ class CachingFileValidators extends FileValidators
 
     protected function originalContentsToken(File $packageFile): Token
     {
-        return new Token\CachedOriginalContents($packageFile, $this->cache);
+        return new Token\CachedOriginalContents($packageFile->contents(), $packageFile->name(), $this->cache);
     }
 }

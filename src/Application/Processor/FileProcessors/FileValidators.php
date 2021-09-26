@@ -32,6 +32,6 @@ class FileValidators extends Processor\FileProcessors
 
     protected function originalContentsToken(File $packageFile): Token
     {
-        return new Token\OriginalContents($packageFile);
+        return new Token\OriginalContents($packageFile->contents());
     }
 }

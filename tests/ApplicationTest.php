@@ -175,8 +175,8 @@ class ApplicationTest extends TestCase
 
         $jsonMerge = function (File $template) use ($env) {
             return new Template\MergedJsonTemplate(
-                new Template\FileTemplate($template),
-                $env->package()->file($template->name()),
+                new Template\BasicTemplate($template->contents()),
+                $env->package()->file($template->name())->contents(),
                 $env->metaDataFile()->exists()
             );
         };
