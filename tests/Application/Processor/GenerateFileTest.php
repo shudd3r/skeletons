@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\Processor;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Processor\GenerateFile;
+use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
@@ -21,13 +22,12 @@ class GenerateFileTest extends TestCase
 {
     public function testRenderedStringIsWrittenToFile()
     {
-        $template  = new Doubles\MockedTemplate($rendered = 'rendered string');
-        $fileMock  = new Doubles\MockedFile();
-        $processor = new GenerateFile($template, $fileMock);
-        $token     = new Token\ValueToken('foo', 'bar');
+        $template  = new Template\BasicTemplate('{replace.me} string');
+        $file      = new Doubles\MockedFile();
+        $processor = new GenerateFile($template, $file);
 
+        $token = new Token\ValueToken('replace.me', 'rendered');
         $this->assertTrue($processor->process($token));
-        $this->assertSame($token, $template->receivedToken());
-        $this->assertSame($rendered, $fileMock->contents());
+        $this->assertSame('rendered string', $file->contents());
     }
 }

@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Application\Template;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\Tests\Doubles;
 use Shudd3r\PackageFiles\Tests\Fixtures;
 
 
@@ -24,7 +23,7 @@ class MergedJsonTemplateTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        self::$token = new Token\ValueToken('foo', 'bar');
+        self::$token = new Token\ValueToken('replace.me', 'replaced');
     }
 
     /**
@@ -38,10 +37,10 @@ class MergedJsonTemplateTest extends TestCase
 
     public function testDecoratedTemplate_IsRenderedWithProvidedToken()
     {
-        $decorated = new Doubles\MockedTemplate('render');
-        $template  = new Template\MergedJsonTemplate($decorated, '', false);
-        $template->render(self::$token);
-        $this->assertSame(self::$token, $decorated->receivedToken());
+        $template = json_encode(['foo' => '{replace.me}', 'bar' => 'value']);
+        $package  = json_encode(['baz' => 'merged']);
+        $expected = ['foo' => 'replaced', 'bar' => 'value', 'baz' => 'merged'];
+        $this->assertJsonData($expected, $this->template($template, $package));
     }
 
     public function testForFlatArrays_ReturnsMergedJsonMatchingTemplateStructure()
@@ -122,7 +121,7 @@ class MergedJsonTemplateTest extends TestCase
 
     private function template(string $template, string $package, bool $synchronized = false): Template
     {
-        $template = new Doubles\MockedTemplate($template);
+        $template = new Template\BasicTemplate($template);
         return new Template\MergedJsonTemplate($template, $package, $synchronized);
     }
 }

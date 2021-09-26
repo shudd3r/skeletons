@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Application;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Exception;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
@@ -82,7 +83,7 @@ class RuntimeEnvTest extends TestCase
         $env = $this->env();
         $this->assertEmpty($env->templates());
 
-        $callback = fn ($template, $packageFile) => new Doubles\MockedTemplate('');
+        $callback = fn ($template, $packageFile) => new Template\BasicTemplate('');
         $env->addTemplate('someFile.txt', $callback);
 
         $this->assertSame(['someFile.txt' => $callback], $env->templates());
