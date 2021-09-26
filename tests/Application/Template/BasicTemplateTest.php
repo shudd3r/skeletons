@@ -12,13 +12,11 @@
 namespace Shudd3r\PackageFiles\Tests\Application\Template;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Template\FileTemplate;
+use Shudd3r\PackageFiles\Application\Template\BasicTemplate;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
-use Shudd3r\PackageFiles\Tests\Doubles;
-use InvalidArgumentException;
 
 
-class FileTemplateTest extends TestCase
+class BasicTemplateTest extends TestCase
 {
     public function testPlaceholders_AreReplacedByTokenValues()
     {
@@ -26,7 +24,7 @@ class FileTemplateTest extends TestCase
             This file is part of {placeholder.name} package.
             TPL;
 
-        $template = new FileTemplate(new Doubles\MockedFile($contents));
+        $template = new BasicTemplate($contents);
         $token    = new ValueToken('placeholder.name', 'package/name');
 
         $render = $template->render($token);
@@ -36,13 +34,5 @@ class FileTemplateTest extends TestCase
             RENDER;
 
         $this->assertSame($expected, $render);
-    }
-
-    public function testNotExistingTemplateFile_ThrowsException()
-    {
-        $templateFile = new Doubles\MockedFile(null);
-
-        $this->expectException(InvalidArgumentException::class);
-        new FileTemplate($templateFile);
     }
 }

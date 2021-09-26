@@ -12,25 +12,20 @@
 namespace Shudd3r\PackageFiles\Application\Template;
 
 use Shudd3r\PackageFiles\Application\Template;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Token;
-use InvalidArgumentException;
 
 
-class FileTemplate implements Template
+class BasicTemplate implements Template
 {
-    private File $templateFile;
+    private string $contents;
 
-    public function __construct(File $templateFile)
+    public function __construct(string $contents)
     {
-        if (!$templateFile->exists()) {
-            throw new InvalidArgumentException();
-        }
-        $this->templateFile = $templateFile;
+        $this->contents = $contents;
     }
 
     public function render(Token $token): string
     {
-        return $token->replace($this->templateFile->contents());
+        return $token->replace($this->contents);
     }
 }

@@ -41,6 +41,6 @@ abstract class FileProcessors
     private function template(File $skeletonFile): Template
     {
         $customized = $this->templates[$skeletonFile->name()] ?? null;
-        return $customized ? $customized($skeletonFile) : new Template\FileTemplate($skeletonFile);
+        return $customized ? $customized($skeletonFile) : new Template\BasicTemplate($skeletonFile->contents());
     }
 }
