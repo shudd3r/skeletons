@@ -19,27 +19,25 @@ class FileProcessorsTest extends TestCase
 {
     public function testWithoutDefinedCustomTemplate_ProcessorUsesGenericTemplate()
     {
-        $custom     = new Doubles\FakeTemplate('render');
+        $custom     = new Doubles\MockedTemplate('render');
         $templates  = ['myFile.txt' => fn ($template, $file) => $custom];
         $processors = new Doubles\MockedFileProcessors(new Doubles\FakeDirectory(), $templates);
 
-        $file = new Doubles\MockedFile();
-        $file->name = 'differentFile.txt';
+        $file = new Doubles\MockedFile('', 'differentFile.txt');
         $processors->processor($file);
 
-        $this->assertNotEquals($custom, $processors->usedTemplate);
+        $this->assertNotEquals($custom, $processors->usedTemplate());
     }
 
     public function testWithDefinedCustomTemplate_ProcessorUsesThisTemplate()
     {
-        $custom     = new Doubles\FakeTemplate('render');
+        $custom     = new Doubles\MockedTemplate('render');
         $templates  = ['myFile.txt' => fn ($templateFile) => $custom];
         $processors = new Doubles\MockedFileProcessors(new Doubles\FakeDirectory(), $templates);
 
-        $file = new Doubles\MockedFile();
-        $file->name = 'myFile.txt';
+        $file = new Doubles\MockedFile('', 'myFile.txt');
         $processors->processor($file);
 
-        $this->assertSame($custom, $processors->usedTemplate);
+        $this->assertSame($custom, $processors->usedTemplate());
     }
 }

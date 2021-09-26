@@ -18,6 +18,8 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class OriginalContentsTest extends TestCase
 {
+    private const FILENAME = 'cached/file.txt';
+
     /**
      * @dataProvider useCases
      * @param string  $original
@@ -30,8 +32,9 @@ class OriginalContentsTest extends TestCase
         $this->assertSame($expected ?? $original, $token->replace($mask));
 
         $cache = new Token\TokenCache();
-        $this->assertSame($expected ?? $original, $this->token($original, $cache)->replace($mask));
-        $this->assertSame($expected ?? $original, $cache->token('cached/file.txt')->replace($mask));
+        $token = $this->token($original, $cache);
+        $this->assertSame($expected ?? $original, $token->replace($mask));
+        $this->assertSame($expected ?? $original, $cache->token(self::FILENAME)->replace($mask));
     }
 
     public function useCases(): array
@@ -58,8 +61,7 @@ class OriginalContentsTest extends TestCase
 
     private function token(string $originalContents = null, Token\TokenCache $cache = null): Token\OriginalContents
     {
-        $file = new Doubles\MockedFile($originalContents);
-        $file->name = 'cached/file.txt';
+        $file = new Doubles\MockedFile($originalContents, self::FILENAME);
 
         return $cache
             ? new Token\CachedOriginalContents($file, $cache)

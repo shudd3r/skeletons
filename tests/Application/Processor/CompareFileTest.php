@@ -13,33 +13,34 @@ namespace Shudd3r\PackageFiles\Tests\Application\Processor;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Processor\CompareFile;
+use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class CompareFileTest extends TestCase
 {
-    public function testSuccessfulComparison_RendersSuccessMessage()
+    public function testSuccessfulComparison_ReturnsTrue()
     {
         $contents  = 'expected contents';
-        $template  = new Doubles\FakeTemplate($contents);
+        $template  = new Doubles\MockedTemplate($contents);
         $file      = new Doubles\MockedFile($contents);
         $processor = new CompareFile($template, $file);
 
-        $token = new Doubles\FakeToken();
+        $token = new Token\ValueToken('foo', 'bar');
 
         $this->assertTrue($processor->process($token));
-        $this->assertSame($token, $template->receivedToken);
+        $this->assertSame($token, $template->receivedToken());
     }
 
-    public function testFailedComparison_RendersErrorMessage()
+    public function testFailedComparison_ReturnsFalse()
     {
-        $template  = new Doubles\FakeTemplate('generated contents');
+        $template  = new Doubles\MockedTemplate('generated contents');
         $file      = new Doubles\MockedFile('expected contents');
         $processor = new CompareFile($template, $file);
 
-        $token = new Doubles\FakeToken();
+        $token = new Token\ValueToken('foo', 'bar');
 
         $this->assertFalse($processor->process($token));
-        $this->assertSame($token, $template->receivedToken);
+        $this->assertSame($token, $template->receivedToken());
     }
 }

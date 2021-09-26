@@ -21,43 +21,52 @@ class InteractiveInputTest extends TestCase
 {
     public function testEmptyInputReturnsDefaultValue()
     {
+        $terminal = new Doubles\MockedTerminal();
+
         $source = $this->source($terminal, 'default');
-        $terminal->inputStrings = [''];
         $this->assertSourceValue('default', $source);
 
         $source = $this->source($terminal, '');
-        $terminal->inputStrings = [''];
         $this->assertSourceValue('', $source);
     }
 
     public function testNotEmptyInputReturnsInputString()
     {
+        $terminal = new Doubles\MockedTerminal();
+        $terminal->addInput('input string');
+
         $source = $this->source($terminal, 'default');
-        $terminal->inputStrings = ['input string'];
         $this->assertSourceValue('input string', $source);
     }
 
     public function testRepeatedInput()
     {
-        $source = $this->source($terminal, 'baz (default)');
-        $terminal->inputStrings = ['foo', 'bar'];
+        $terminal = new Doubles\MockedTerminal();
+        $terminal->addInput('foo');
+        $terminal->addInput('bar');
 
+        $source = $this->source($terminal, 'baz (default)');
         $this->assertSourceValue('foo', $source);
         $this->assertSourceValue('bar', $source);
         $this->assertSourceValue('baz (default)', $source);
-        $this->assertCount(3, $terminal->messagesSent);
+        $this->assertCount(3, $terminal->messagesSent());
     }
 
     public function testTerminalDisplaysCorrectPrompt()
     {
-        $source = $this->source($terminal, '');
-        $this->assertSame([], $terminal->messagesSent);
-        $source->value();
-        $this->assertSame(['Input value:'], $terminal->messagesSent);
+        $terminal = new Doubles\MockedTerminal();
+        $source   = $this->source($terminal, '');
 
-        $source = $this->source($terminal, 'default value');
+        $this->assertEmpty($terminal->messagesSent());
+
         $source->value();
-        $this->assertSame(['Input value [default: `default value`]:'], $terminal->messagesSent);
+        $this->assertSame(['Input value:'], $terminal->messagesSent());
+
+        $terminal = new Doubles\MockedTerminal();
+        $source   = $this->source($terminal, 'default value');
+
+        $source->value();
+        $this->assertSame(['Input value [default: `default value`]:'], $terminal->messagesSent());
     }
 
     private function assertSourceValue(string $value, InteractiveInput $source): void
@@ -65,9 +74,8 @@ class InteractiveInputTest extends TestCase
         $this->assertSame($value, $source->value());
     }
 
-    private function source(?Doubles\MockedTerminal &$terminal, string $default = 'default'): InteractiveInput
+    private function source(Doubles\MockedTerminal $terminal, string $default): InteractiveInput
     {
-        $terminal = new Doubles\MockedTerminal();
         return new InteractiveInput('Input value', $terminal, new PredefinedValue($default));
     }
 }

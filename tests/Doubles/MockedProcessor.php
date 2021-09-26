@@ -17,9 +17,8 @@ use Shudd3r\PackageFiles\Application\Token;
 
 class MockedProcessor implements Processor
 {
-    public ?Token $passedToken = null;
-
-    private bool $status;
+    private ?Token $passedToken = null;
+    private bool   $status;
 
     public function __construct(bool $status = true)
     {
@@ -30,5 +29,10 @@ class MockedProcessor implements Processor
     {
         $this->passedToken = $token;
         return $this->status;
+    }
+
+    public function passedToken(): ?Token
+    {
+        return $this->passedToken;
     }
 }

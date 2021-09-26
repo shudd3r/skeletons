@@ -127,7 +127,7 @@ class InitialContentsTest extends TestCase
         ];
     }
 
-    private function template(string $template)
+    private function template(string $template): string
     {
         $realPlaceholders = [InitialContents::CONTENT_START, InitialContents::CONTENT_END];
         return str_replace(['{start>>>', '<<<end}'], $realPlaceholders, $template);

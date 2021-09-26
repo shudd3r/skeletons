@@ -31,8 +31,7 @@ class PackageDescriptionTest extends TestCase
 
     public function testWithoutDescriptionInComposerJson_InitialTokenValue_IsResolvedFromPackageName()
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->package()->path = 'root/package/path';
+        $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('root/package/path'));
 
         $replacement = $this->replacement($env);
         $this->assertToken($replacement->initialToken('package.desc', []), 'package/path package');
@@ -42,7 +41,7 @@ class PackageDescriptionTest extends TestCase
     {
         $env = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"description": "composer desc"}');
-        $env->metaDataFile()->contents = '{"desc.placeholder": "meta desc"}';
+        $env->metaDataFile()->write('{"desc.placeholder": "meta desc"}');
 
         $replacement = $this->replacement($env);
         $this->assertToken($replacement->initialToken('desc.placeholder', []), 'composer desc', 'desc.placeholder');
@@ -54,7 +53,7 @@ class PackageDescriptionTest extends TestCase
     {
         $env = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"description": ""}');
-        $env->metaDataFile()->contents = '{"desc.placeholder": ""}';
+        $env->metaDataFile()->write('{"desc.placeholder": ""}');
 
         $replacement = $this->replacement($env);
         $this->assertNull($replacement->initialToken('foo', []));
@@ -62,7 +61,7 @@ class PackageDescriptionTest extends TestCase
         $this->assertNull($replacement->updateToken('not.existing.data', []));
     }
 
-    private function assertToken(Token $token, string $value, string $name = 'package.desc')
+    private function assertToken(Token $token, string $value, string $name = 'package.desc'): void
     {
         $expected = new Token\ValueToken($name, $value);
         $this->assertEquals($expected, $token);

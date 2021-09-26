@@ -37,14 +37,15 @@ class ReplacementTest extends TestCase
         $options = [];
         $env     = new Doubles\FakeRuntimeEnv();
 
-        $env->metaDataFile()->contents = '{"foo": "metaData"}';
+        $env->metaDataFile()->write('{"foo": "metaData"}');
         if ($option) {
             $options['option'] = 'option value';
         }
 
         if ($input) {
             $options['i'] = true;
-            $env->input()->inputStrings = ['input value', 'input value'];
+            $env->input()->addInput('input value');
+            $env->input()->addInput('input value');
         }
 
         $replacement = new Doubles\FakeReplacement($env);

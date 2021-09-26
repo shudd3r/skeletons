@@ -15,10 +15,9 @@ use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class FakeTemplate implements Template
+class MockedTemplate implements Template
 {
-    public ?Token $receivedToken = null;
-
+    private ?Token $receivedToken = null;
     private string $rendered;
 
     public function __construct(string $rendered)
@@ -30,5 +29,10 @@ class FakeTemplate implements Template
     {
         $this->receivedToken = $token;
         return $this->rendered;
+    }
+
+    public function receivedToken(): ?Token
+    {
+        return $this->receivedToken;
     }
 }

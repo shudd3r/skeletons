@@ -18,24 +18,22 @@ use Shudd3r\PackageFiles\Replacement;
 
 class FakeReader extends Reader
 {
-    private ?string $value;
-    private ?Token  $token;
+    private bool $returnsToken;
 
-    public function __construct(?string $value = 'foo')
+    public function __construct(bool $returnsToken = true)
     {
-        $this->value = $value;
-        $this->token = isset($value) ? new FakeToken($value) : null;
+        $this->returnsToken = $returnsToken;
         parent::__construct([]);
     }
 
     public function token(string $namespace = ''): ?Token
     {
-        return isset($this->value) ? new FakeToken($this->value, $namespace) : null;
+        return $this->returnsToken ? new Token\ValueToken('placeholder', 'foo') : null;
     }
 
     public function value(): string
     {
-        return isset($this->value) ? $this->value : 'invalid string';
+        return $this->returnsToken ? 'foo' : 'invalid string';
     }
 
     protected function tokenInstance(string $name, Replacement $replacement): ?Token

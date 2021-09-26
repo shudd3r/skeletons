@@ -13,28 +13,35 @@ namespace Shudd3r\PackageFiles\Tests\Application\Template;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use Shudd3r\PackageFiles\Tests\Fixtures;
 
 
 class MergedJsonTemplateTest extends TestCase
 {
+    private static Token $token;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::$token = new Token\ValueToken('foo', 'bar');
+    }
+
     /**
      * @dataProvider possibleContents
      */
     public function testWithoutContentsToMerge_ReturnsOriginalRender(string $contents)
     {
-        $this->assertSame($contents, $this->template($contents, '')->render(new Doubles\FakeToken()));
-        $this->assertSame('not json', $this->template('not json', $contents)->render(new Doubles\FakeToken()));
+        $this->assertSame($contents, $this->template($contents, '')->render(self::$token));
+        $this->assertSame('not json', $this->template('not json', $contents)->render(self::$token));
     }
 
     public function testDecoratedTemplate_IsRenderedWithProvidedToken()
     {
-        $decorated = new Doubles\FakeTemplate('render');
+        $decorated = new Doubles\MockedTemplate('render');
         $template  = new Template\MergedJsonTemplate($decorated, new Doubles\MockedFile(), false);
-        $token     = new Doubles\FakeToken();
-        $template->render($token);
-        $this->assertSame($token, $decorated->receivedToken);
+        $template->render(self::$token);
+        $this->assertSame(self::$token, $decorated->receivedToken());
     }
 
     public function testForFlatArrays_ReturnsMergedJsonMatchingTemplateStructure()
@@ -96,7 +103,7 @@ class MergedJsonTemplateTest extends TestCase
         $template = $files->contentsOf('template-composer.json');
         $package  = $files->contentsOf('package-composer.json');
         $expected = $files->contentsOf('expected-composer.json');
-        $this->assertSame($expected, $this->template($template, $package)->render(new Doubles\FakeToken()));
+        $this->assertSame($expected, $this->template($template, $package)->render(self::$token));
     }
 
     public function possibleContents(): array
@@ -108,14 +115,14 @@ class MergedJsonTemplateTest extends TestCase
         ];
     }
 
-    private function assertJsonData(array $expected, Template $json)
+    private function assertJsonData(array $expected, Template $json): void
     {
-        $this->assertSame($expected, json_decode($json->render(new Doubles\FakeToken()), true));
+        $this->assertSame($expected, json_decode($json->render(self::$token), true));
     }
 
     private function template(string $template, string $package, bool $synchronized = false): Template
     {
-        $template    = new Doubles\FakeTemplate($template);
+        $template    = new Doubles\MockedTemplate($template);
         $packageFile = new Doubles\MockedFile($package);
 
         return new Template\MergedJsonTemplate($template, $packageFile, $synchronized);

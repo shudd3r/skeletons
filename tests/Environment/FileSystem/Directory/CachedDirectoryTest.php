@@ -43,18 +43,17 @@ class CachedDirectoryTest extends TestCase
 
     public function testMethodsForwardedToOriginDirectory()
     {
-        $origin = new FakeDirectory('origin/path');
+        $origin = new FakeDirectory('origin/path', true);
         $cached = new CachedDirectory($origin);
 
         $this->assertSame($origin->path(), $cached->path());
-
-        $origin->exists = true;
         $this->assertTrue($cached->exists());
-
-        $origin->exists = false;
-        $this->assertFalse($cached->exists());
 
         $origin->addFile('foo/bar.txt');
         $this->assertSame($origin->file('foo/bar.txt'), $cached->file('foo/bar.txt'));
+
+        $cached = new CachedDirectory(new FakeDirectory('origin/path', false));
+        $this->assertFalse($cached->exists());
+
     }
 }
