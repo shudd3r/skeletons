@@ -22,7 +22,7 @@ class CompareFileTest extends TestCase
     public function testSuccessfulComparison_ReturnsTrue()
     {
         $contents  = 'expected contents';
-        $template  = new Doubles\FakeTemplate($contents);
+        $template  = new Doubles\MockedTemplate($contents);
         $file      = new Doubles\MockedFile($contents);
         $processor = new CompareFile($template, $file);
 
@@ -34,7 +34,7 @@ class CompareFileTest extends TestCase
 
     public function testFailedComparison_ReturnsFalse()
     {
-        $template  = new Doubles\FakeTemplate('generated contents');
+        $template  = new Doubles\MockedTemplate('generated contents');
         $file      = new Doubles\MockedFile('expected contents');
         $processor = new CompareFile($template, $file);
 

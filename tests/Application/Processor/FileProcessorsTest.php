@@ -19,7 +19,7 @@ class FileProcessorsTest extends TestCase
 {
     public function testWithoutDefinedCustomTemplate_ProcessorUsesGenericTemplate()
     {
-        $custom     = new Doubles\FakeTemplate('render');
+        $custom     = new Doubles\MockedTemplate('render');
         $templates  = ['myFile.txt' => fn ($template, $file) => $custom];
         $processors = new Doubles\MockedFileProcessors(new Doubles\FakeDirectory(), $templates);
 
@@ -31,7 +31,7 @@ class FileProcessorsTest extends TestCase
 
     public function testWithDefinedCustomTemplate_ProcessorUsesThisTemplate()
     {
-        $custom     = new Doubles\FakeTemplate('render');
+        $custom     = new Doubles\MockedTemplate('render');
         $templates  = ['myFile.txt' => fn ($templateFile) => $custom];
         $processors = new Doubles\MockedFileProcessors(new Doubles\FakeDirectory(), $templates);
 

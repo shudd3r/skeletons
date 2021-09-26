@@ -38,7 +38,7 @@ class MergedJsonTemplateTest extends TestCase
 
     public function testDecoratedTemplate_IsRenderedWithProvidedToken()
     {
-        $decorated = new Doubles\FakeTemplate('render');
+        $decorated = new Doubles\MockedTemplate('render');
         $template  = new Template\MergedJsonTemplate($decorated, new Doubles\MockedFile(), false);
         $template->render(self::$token);
         $this->assertSame(self::$token, $decorated->receivedToken);
@@ -122,7 +122,7 @@ class MergedJsonTemplateTest extends TestCase
 
     private function template(string $template, string $package, bool $synchronized = false): Template
     {
-        $template    = new Doubles\FakeTemplate($template);
+        $template    = new Doubles\MockedTemplate($template);
         $packageFile = new Doubles\MockedFile($package);
 
         return new Template\MergedJsonTemplate($template, $packageFile, $synchronized);

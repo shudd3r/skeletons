@@ -21,7 +21,7 @@ class GenerateFileTest extends TestCase
 {
     public function testRenderedStringIsWrittenToFile()
     {
-        $template  = new Doubles\FakeTemplate($rendered = 'rendered string');
+        $template  = new Doubles\MockedTemplate($rendered = 'rendered string');
         $fileMock  = new Doubles\MockedFile();
         $processor = new GenerateFile($template, $fileMock);
         $token     = new Token\ValueToken('foo', 'bar');

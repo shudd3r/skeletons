@@ -15,7 +15,7 @@ use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class FakeTemplate implements Template
+class MockedTemplate implements Template
 {
     public ?Token $receivedToken = null;
 
