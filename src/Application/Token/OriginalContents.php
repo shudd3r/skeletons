@@ -12,18 +12,17 @@
 namespace Shudd3r\PackageFiles\Application\Token;
 
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 
 class OriginalContents implements Token
 {
     public const PLACEHOLDER = 'original.content';
 
-    protected File $packageFile;
+    protected string $contents;
 
-    public function __construct(File $packageFile)
+    public function __construct(string $contents)
     {
-        $this->packageFile = $packageFile;
+        $this->contents = $contents;
     }
 
     public function replace(string $template): string
@@ -40,10 +39,9 @@ class OriginalContents implements Token
         if (!$hasPlaceholder) { return $this->newTokenInstance(); }
 
         $fixedParts = explode($placeholder, $mask);
-        $contents   = $this->packageFile->contents();
-        if (!$contents) { return $this->newTokenInstance(); }
+        if (!$this->contents) { return $this->newTokenInstance(); }
 
-        $contents = $this->trimmedContents($contents, array_shift($fixedParts), array_pop($fixedParts));
+        $contents = $this->trimmedContents($this->contents, array_shift($fixedParts), array_pop($fixedParts));
 
         $clips = [];
         foreach ($fixedParts as $fixedPart) {
