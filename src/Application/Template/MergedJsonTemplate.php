@@ -34,34 +34,34 @@ class MergedJsonTemplate implements Template
         $templateData = json_decode($rendered, true);
         $packageData  = json_decode($this->jsonString, true);
 
-        return $templateData && $packageData ? $this->mergedJson($templateData, $packageData) : $rendered;
-    }
+        if (!$templateData || !$packageData) { return $rendered; }
 
-    private function mergedJson(array $template, array $package): string
-    {
-        $data = $this->mergedDataStructure($template, $package);
-        return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
+        $mergedData = $this->mergedDataStructure($templateData, $packageData);
+        return json_encode($mergedData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
     }
 
     private function mergedDataStructure(array $template, array $package): array
     {
+        return $this->isList($template)
+            ? $this->mergedListItems($template, $package)
+            : $this->mergedAssocStructure($template, $package);
+    }
+
+    private function isList(array $data): bool
+    {
+        return is_int(array_key_first($data));
+    }
+
+    private function mergedAssocStructure(array $template, array $package): array
+    {
         $merged = [];
         foreach ($template as $key => $value) {
-            if ($value === null) {
-                if (isset($package[$key])) {
-                    $merged[$key] = $package[$key];
-                    unset($package[$key]);
-                }
-                continue;
-            }
-            if (is_array($value)) {
-                if ($this->isList($value)) {
-                    $value = $this->mergeListItems($value, $package[$key] ?? []);
-                } else {
-                    $value = $this->mergedDataStructure($value, $package[$key] ?? []);
-                }
-            }
-            $merged[$key] = $value;
+            $mergedValue = is_array($value)
+                ? $this->mergedDataStructure($value, $package[$key] ?? [])
+                : $value ?? $package[$key] ?? null;
+            if ($mergedValue === null) { continue; }
+
+            $merged[$key] = $mergedValue;
             $usedKey = $this->synchronized ? array_key_first($package) : $key;
             unset($package[$usedKey]);
         }
@@ -73,21 +73,15 @@ class MergedJsonTemplate implements Template
         return $merged;
     }
 
-    private function mergeListItems(array $items, array $package): array
+    private function mergedListItems(array $items, array $package): array
     {
         $template = $this->extractedFirstItemTemplate($items);
         foreach ($package as $value) {
-            if (!in_array($value, $items)) {
-                $items[] = $template ? $this->mergedDataStructure($template, $value) : $value;
-            }
+            if (in_array($value, $items)) { continue; }
+            $items[] = $template ? $this->mergedAssocStructure($template, $value) : $value;
         }
 
         return $items;
-    }
-
-    private function isList(array $data): bool
-    {
-        return is_int(array_key_first($data));
     }
 
     private function extractedFirstItemTemplate(array &$items): ?array
