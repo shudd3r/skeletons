@@ -1,6 +1,6 @@
 {
     "name": "new-package/name",
-    "description": "Initial package description (updated)",
+    "description": "Updated description",
     "type": "library",
     "license": "MIT",
     "authors": [
