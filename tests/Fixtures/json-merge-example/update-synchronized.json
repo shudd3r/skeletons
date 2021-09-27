@@ -1,6 +1,6 @@
 {
-    "name": "{package.name}",
-    "description": "{package.description}",
+    "name": "new-package/name",
+    "description": "Initial package description (updated)",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -25,7 +25,7 @@
     },
     "autoload": {
         "psr-4": {
-            "{namespace.src.esc}\\": "src/",
+            "MyProject\\UpdatedNamespace\\": "src/",
             "Library\\Namespace\\": "libs/src/"
         },
         "psr-0": {
@@ -37,7 +37,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "{namespace.src.esc}\\Tests\\": "tests/"
+            "MyProject\\UpdatedNamespace\\Tests\\": "tests/"
         },
         "classmap": [
             "lib/",

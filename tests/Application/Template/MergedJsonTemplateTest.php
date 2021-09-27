@@ -95,14 +95,55 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($synchronizedMerge, $this->template($template, $package, true));
     }
 
-    public function testExampleComposerJsonFileNormalization()
+    public function testExampleComposerJsonFileInitialization()
     {
         $files = new Fixtures\ExampleFiles('json-merge-example');
 
         $template = $files->contentsOf('template-composer.json');
         $package  = $files->contentsOf('package-composer.json');
-        $expected = $files->contentsOf('expected-composer.json');
-        $this->assertSame($expected, $this->template($template, $package)->render(self::$token));
+
+        $token = new Token\CompositeToken(
+            new Token\ValueToken('package.name', 'package/name'),
+            new Token\ValueToken('package.description', 'Initial package description'),
+            new Token\ValueToken('namespace.src.esc', 'MyProject\\\\Namespace')
+        );
+
+        $expected = $files->contentsOf('initialized-composer.json');
+        $this->assertSame($expected, $this->template($template, $package)->render($token));
+    }
+
+    public function testWithoutSynchronizationFlag_UpdatedKeyIsAdded()
+    {
+        $files = new Fixtures\ExampleFiles('json-merge-example');
+
+        $template = $files->contentsOf('template-composer.json');
+        $package  = $files->contentsOf('initialized-composer.json');
+
+        $token = new Token\CompositeToken(
+            new Token\ValueToken('package.name', 'new-package/name'),
+            new Token\ValueToken('package.description', 'Initial package description (updated)'),
+            new Token\ValueToken('namespace.src.esc', 'MyProject\\\\UpdatedNamespace')
+        );
+
+        $expected = $files->contentsOf('update-not-synchronized.json');
+        $this->assertSame($expected, $this->template($template, $package)->render($token));
+    }
+
+    public function testWithSynchronizationFlag_UpdatedKeyIsReplaced()
+    {
+        $files = new Fixtures\ExampleFiles('json-merge-example');
+
+        $template = $files->contentsOf('template-composer.json');
+        $package  = $files->contentsOf('initialized-composer.json');
+
+        $token = new Token\CompositeToken(
+            new Token\ValueToken('package.name', 'new-package/name'),
+            new Token\ValueToken('package.description', 'Initial package description (updated)'),
+            new Token\ValueToken('namespace.src.esc', 'MyProject\\\\UpdatedNamespace')
+        );
+
+        $expected = $files->contentsOf('update-synchronized.json');
+        $this->assertSame($expected, $this->template($template, $package, true)->render($token));
     }
 
     public function possibleContents(): array
