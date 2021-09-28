@@ -23,7 +23,7 @@ class UpdatedFileGenerators extends Processor\FileProcessors
 {
     private TokenCache $cache;
 
-    public function __construct(Directory $package, array $templates, TokenCache $cache)
+    public function __construct(Directory $package, Template\Factory $templates, TokenCache $cache)
     {
         $this->cache = $cache;
         parent::__construct($package, $templates);

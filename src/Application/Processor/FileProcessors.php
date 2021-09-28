@@ -19,10 +19,10 @@ use Shudd3r\PackageFiles\Application\Template;
 
 abstract class FileProcessors
 {
-    private Directory $package;
-    private array     $templates;
+    private Directory        $package;
+    private Template\Factory $templates;
 
-    public function __construct(Directory $package, array $templates = [])
+    public function __construct(Directory $package, Template\Factory $templates)
     {
         $this->package   = $package;
         $this->templates = $templates;
@@ -30,19 +30,11 @@ abstract class FileProcessors
 
     public function processor(File $skeletonFile): Processor
     {
-        $template    = $this->template($skeletonFile);
+        $template    = $this->templates->template($skeletonFile);
         $packageFile = $this->package->file($skeletonFile->name());
 
         return $this->newProcessorInstance($template, $packageFile);
     }
 
     abstract protected function newProcessorInstance(Template $template, File $packageFile): Processor;
-
-    private function template(File $skeletonFile): Template
-    {
-        $customized = $this->templates[$skeletonFile->name()] ?? null;
-        return $customized
-            ? $customized->template($skeletonFile)
-            : new Template\BasicTemplate($skeletonFile->contents());
-    }
 }

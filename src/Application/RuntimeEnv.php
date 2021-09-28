@@ -60,9 +60,9 @@ class RuntimeEnv
         $this->templates[$filename] = $factory;
     }
 
-    public function templates(): array
+    public function templates(): Template\Factory
     {
-        return $this->templates;
+        return new Template\Factory\Templates($this->templates);
     }
 
     public function input(): Input

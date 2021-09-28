@@ -81,12 +81,12 @@ class RuntimeEnvTest extends TestCase
     public function testCustomTemplatesCanBeAdded()
     {
         $env = $this->env();
-        $this->assertEmpty($env->templates());
+        $this->assertEquals(new Template\Factory\Templates([]), $env->templates());
 
         $factory = new Doubles\FakeTemplateFactory(new Template\BasicTemplate(''));
         $env->addTemplate('someFile.txt', $factory);
 
-        $this->assertSame(['someFile.txt' => $factory], $env->templates());
+        $this->assertEquals(new Template\Factory\Templates(['someFile.txt' => $factory]), $env->templates());
     }
 
     private function env(?array &$params = []): RuntimeEnv
