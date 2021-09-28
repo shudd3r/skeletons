@@ -55,9 +55,9 @@ class RuntimeEnv
         return $this->replacements ??= new Replacements();
     }
 
-    public function addTemplate(string $filename, callable $template): void
+    public function addTemplate(string $filename, Template\Factory $factory): void
     {
-        $this->templates[$filename] = $template;
+        $this->templates[$filename] = $factory;
     }
 
     public function templates(): array

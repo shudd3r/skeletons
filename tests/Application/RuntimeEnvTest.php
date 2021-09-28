@@ -83,10 +83,10 @@ class RuntimeEnvTest extends TestCase
         $env = $this->env();
         $this->assertEmpty($env->templates());
 
-        $callback = fn ($template, $packageFile) => new Template\BasicTemplate('');
-        $env->addTemplate('someFile.txt', $callback);
+        $factory = new Doubles\FakeTemplateFactory(new Template\BasicTemplate(''));
+        $env->addTemplate('someFile.txt', $factory);
 
-        $this->assertSame(['someFile.txt' => $callback], $env->templates());
+        $this->assertSame(['someFile.txt' => $factory], $env->templates());
     }
 
     private function env(?array &$params = []): RuntimeEnv
