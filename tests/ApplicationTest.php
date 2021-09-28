@@ -173,14 +173,8 @@ class ApplicationTest extends TestCase
         $replacements->add(self::PACKAGE_DESC, new Replacement\PackageDescription($env, $packageName));
         $replacements->add(self::SRC_NAMESPACE, new Replacement\SrcNamespace($env, $packageName));
 
-        $jsonMerge = function (File $template) use ($env) {
-            return new Template\MergedJsonTemplate(
-                new Template\BasicTemplate($template->contents()),
-                $env->package()->file($template->name())->contents(),
-                $env->metaDataFile()->exists()
-            );
-        };
-        $env->addTemplate('composer.json', $jsonMerge);
+        $templates = $env->templates();
+        $templates->add('composer.json', new Template\Factory\MergedJsonFactory($env));
 
         return $env;
     }
