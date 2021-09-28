@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Template\Factory;
 
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Application\Exception;
 
 
 class Templates implements Template\Factory
@@ -26,6 +27,10 @@ class Templates implements Template\Factory
 
     public function add(string $filename, Template\Factory $factory): void
     {
+        if (isset($this->factories[$filename])) {
+            throw new Exception\TemplateOverwriteException();
+        }
+
         $this->factories[$filename] = $factory;
     }
 
