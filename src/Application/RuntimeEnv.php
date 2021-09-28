@@ -16,6 +16,7 @@ use Shudd3r\PackageFiles\Environment\Output;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Template\Factory\Templates;
 use Shudd3r\PackageFiles\Application\Token\Source\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Application\Token\Source\Data\SavedPlaceholderValues;
 use Shudd3r\PackageFiles\Application\Exception;
@@ -33,8 +34,7 @@ class RuntimeEnv
     private ComposerJsonData       $composer;
     private SavedPlaceholderValues $metaData;
     private Replacements           $replacements;
-
-    private array $templates = [];
+    private Templates              $templates;
 
     public function __construct(
         Directory $package,
@@ -55,14 +55,9 @@ class RuntimeEnv
         return $this->replacements ??= new Replacements();
     }
 
-    public function addTemplate(string $filename, Template\Factory $factory): void
+    public function templates(): Templates
     {
-        $this->templates[$filename] = $factory;
-    }
-
-    public function templates(): Template\Factory
-    {
-        return new Template\Factory\Templates($this->templates);
+        return $this->templates ??= new Templates();
     }
 
     public function input(): Input

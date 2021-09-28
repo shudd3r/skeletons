@@ -19,9 +19,14 @@ class Templates implements Template\Factory
 {
     private array $factories;
 
-    public function __construct(array $factories)
+    public function __construct(array $factories = [])
     {
         $this->factories = $factories;
+    }
+
+    public function add(string $filename, Template\Factory $factory): void
+    {
+        $this->factories[$filename] = $factory;
     }
 
     public function template(File $skeletonFile): Template
