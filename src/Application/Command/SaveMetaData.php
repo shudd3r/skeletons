@@ -12,23 +12,23 @@
 namespace Shudd3r\PackageFiles\Application\Command;
 
 use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\Source\Data\MetaData;
 
 
-class WriteMetaData implements Command
+class SaveMetaData implements Command
 {
-    private Reader $reader;
-    private File   $metaFile;
+    private Reader   $reader;
+    private MetaData $metaData;
 
-    public function __construct(Reader $reader, File $metaFile)
+    public function __construct(Reader $reader, MetaData $metaData)
     {
         $this->reader   = $reader;
-        $this->metaFile = $metaFile;
+        $this->metaData = $metaData;
     }
 
     public function execute(): void
     {
-        $this->metaFile->write($this->reader->value());
+        $this->metaData->save($this->reader->tokenValues());
     }
 }

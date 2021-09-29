@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Application\Token\Source\Data;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 
-class SavedPlaceholderValues
+class MetaData
 {
     private File  $metaFile;
     private array $data;
@@ -26,8 +26,15 @@ class SavedPlaceholderValues
 
     public function value(string $name): ?string
     {
-        isset($this->data) or $this->data = $this->generateData();
+        $this->data ??= $this->generateData();
         return $this->data[$name] ?? null;
+    }
+
+    public function save(array $data): void
+    {
+        $contents = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
+        $this->metaFile->write($contents);
+        $this->data = $data;
     }
 
     private function generateData(): array

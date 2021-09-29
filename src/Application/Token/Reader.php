@@ -31,16 +31,16 @@ abstract class Reader
         return $this->validTokens() ? new Token\CompositeToken(...array_values($this->tokens)) : null;
     }
 
-    public function value(): string
+    public function tokenValues(): array
     {
-        isset($this->tokens) or $this->token();
+        $this->tokens ??= $this->token();
 
         $values = [];
         foreach ($this->tokens as $name => $token) {
             $values[$name] = $token->value();
         }
 
-        return json_encode($values, JSON_PRETTY_PRINT);
+        return $values;
     }
 
     abstract protected function tokenInstance(string $name, Replacement $replacement): ?Token;

@@ -18,7 +18,7 @@ use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Template\Factory\Templates;
 use Shudd3r\PackageFiles\Application\Token\Source\Data\ComposerJsonData;
-use Shudd3r\PackageFiles\Application\Token\Source\Data\SavedPlaceholderValues;
+use Shudd3r\PackageFiles\Application\Token\Source\Data\MetaData;
 use Shudd3r\PackageFiles\Application\Exception;
 use Shudd3r\PackageFiles\Environment\Terminal;
 
@@ -31,9 +31,9 @@ class RuntimeEnv
     private Directory $backup;
     private File      $metaFile;
 
-    private ComposerJsonData       $composer;
-    private SavedPlaceholderValues $metaData;
-    private Replacements           $replacements;
+    private ComposerJsonData $composer;
+    private MetaData         $metaData;
+    private Replacements     $replacements;
     private Templates              $templates;
 
     public function __construct(
@@ -95,9 +95,9 @@ class RuntimeEnv
         return $this->composer ??= new ComposerJsonData($this->package()->file('composer.json'));
     }
 
-    public function metaData(): SavedPlaceholderValues
+    public function metaData(): MetaData
     {
-        return $this->metaData ??= new SavedPlaceholderValues($this->metaDataFile());
+        return $this->metaData ??= new MetaData($this->metaDataFile());
     }
 
     private function validDirectory(Directory $directory): Directory
