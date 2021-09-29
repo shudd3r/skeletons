@@ -29,6 +29,6 @@ class WriteMetaData implements Command
 
     public function execute(): void
     {
-        $this->metaData->save($this->reader->value());
+        $this->metaData->save($this->reader->tokenValues());
     }
 }

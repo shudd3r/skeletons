@@ -31,9 +31,9 @@ abstract class Reader
         return $this->validTokens() ? new Token\CompositeToken(...array_values($this->tokens)) : null;
     }
 
-    public function value(): array
+    public function tokenValues(): array
     {
-        isset($this->tokens) or $this->token();
+        $this->tokens ??= $this->token();
 
         $values = [];
         foreach ($this->tokens as $name => $token) {

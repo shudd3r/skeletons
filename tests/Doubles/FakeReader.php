@@ -31,7 +31,7 @@ class FakeReader extends Reader
         return $this->returnsToken ? new Token\ValueToken('placeholder', 'foo') : null;
     }
 
-    public function value(): array
+    public function tokenValues(): array
     {
         return $this->returnsToken ? ['placeholder' => 'foo'] : [];
     }
