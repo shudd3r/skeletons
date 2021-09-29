@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Source\Data\MetaData;
 
 
-class WriteMetaData implements Command
+class SaveMetaData implements Command
 {
     private Reader   $reader;
     private MetaData $metaData;

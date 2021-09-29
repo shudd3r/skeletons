@@ -36,13 +36,13 @@ class Initialize implements Factory
 
         $backupFiles   = new Command\BackupFiles($generatedFiles, $backupDirectory);
         $processTokens = new Command\TokenProcessor($tokenReader, $this->processor(), $output);
-        $writeMetaData = new Command\WriteMetaData($tokenReader, $this->env->metaData());
+        $saveMetaData  = new Command\SaveMetaData($tokenReader, $this->env->metaData());
 
         $noMetaDataFile    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), false);
         $noBackupOverwrite = new Command\Precondition\CheckFilesOverwrite($generatedFiles, $backupDirectory);
 
         return new Command\ProtectedCommand(
-            new Command\CommandSequence($backupFiles, $processTokens, $writeMetaData),
+            new Command\CommandSequence($backupFiles, $processTokens, $saveMetaData),
             new Command\Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite),
             $output
         );
