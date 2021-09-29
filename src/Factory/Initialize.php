@@ -36,7 +36,7 @@ class Initialize implements Factory
 
         $backupFiles   = new Command\BackupFiles($generatedFiles, $backupDirectory);
         $processTokens = new Command\TokenProcessor($tokenReader, $this->processor(), $output);
-        $writeMetaData = new Command\WriteMetaData($tokenReader, $this->env->metaDataFile());
+        $writeMetaData = new Command\WriteMetaData($tokenReader, $this->env->metaData());
 
         $noMetaDataFile    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), false);
         $noBackupOverwrite = new Command\Precondition\CheckFilesOverwrite($generatedFiles, $backupDirectory);

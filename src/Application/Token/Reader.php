@@ -31,7 +31,7 @@ abstract class Reader
         return $this->validTokens() ? new Token\CompositeToken(...array_values($this->tokens)) : null;
     }
 
-    public function value(): string
+    public function value(): array
     {
         isset($this->tokens) or $this->token();
 
@@ -40,7 +40,7 @@ abstract class Reader
             $values[$name] = $token->value();
         }
 
-        return json_encode($values, JSON_PRETTY_PRINT);
+        return $values;
     }
 
     abstract protected function tokenInstance(string $name, Replacement $replacement): ?Token;

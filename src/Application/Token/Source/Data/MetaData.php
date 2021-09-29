@@ -26,8 +26,15 @@ class MetaData
 
     public function value(string $name): ?string
     {
-        isset($this->data) or $this->data = $this->generateData();
+        $this->data ??= $this->generateData();
         return $this->data[$name] ?? null;
+    }
+
+    public function save(array $data): void
+    {
+        $contents = json_encode($data, JSON_PRETTY_PRINT);
+        $this->metaFile->write($contents);
+        $this->data = $data;
     }
 
     private function generateData(): array

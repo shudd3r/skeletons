@@ -35,7 +35,7 @@ class Update implements Factory
         $output      = $this->env->output();
 
         $processTokens = new Command\TokenProcessor($tokenReader, $this->processor($cache), $output);
-        $writeMetaData = new Command\WriteMetaData($tokenReader, $this->env->metaDataFile());
+        $writeMetaData = new Command\WriteMetaData($tokenReader, $this->env->metaData());
 
         $metaDataExists    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $synchronizedFiles = $validation->synchronizedSkeleton($cache);
