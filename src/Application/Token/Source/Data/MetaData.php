@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Application\Token\Source\Data;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 
-class SavedPlaceholderValues
+class MetaData
 {
     private File  $metaFile;
     private array $data;
