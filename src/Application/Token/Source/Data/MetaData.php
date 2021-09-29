@@ -32,7 +32,7 @@ class MetaData
 
     public function save(array $data): void
     {
-        $contents = json_encode($data, JSON_PRETTY_PRINT);
+        $contents = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
         $this->metaFile->write($contents);
         $this->data = $data;
     }

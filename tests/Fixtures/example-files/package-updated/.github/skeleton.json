@@ -1,6 +1,6 @@
 {
-    "package.name": "updated\/package-name",
-    "repository.name": "updated\/repo",
+    "package.name": "updated/package-name",
+    "repository.name": "updated/repo",
     "package.description": "Updated package description",
     "namespace.src": "Package\\Updated"
 }
