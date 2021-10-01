@@ -33,6 +33,11 @@ class Replacements
         $this->replacements[$name] = $replacement;
     }
 
+    public function replacement(string $name): ?Replacement
+    {
+        return $this->replacements[$name] ?? null;
+    }
+
     public function init(array $options): Reader
     {
         return new Reader\InitialReader($this->replacements, $options);
