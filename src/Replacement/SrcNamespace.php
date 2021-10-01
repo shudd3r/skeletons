@@ -23,11 +23,11 @@ class SrcNamespace extends Replacement
     protected ?string $inputPrompt = 'Source files namespace';
     protected ?string $optionName  = 'ns';
 
-    private PackageName $packageName;
+    private ?string $packageNamePlaceholder;
 
-    public function __construct(RuntimeEnv $env, PackageName $packageName)
+    public function __construct(RuntimeEnv $env, ?string $packageNamePlaceholder = null)
     {
-        $this->packageName = $packageName;
+        $this->packageNamePlaceholder = $packageNamePlaceholder;
         parent::__construct($env);
     }
 
@@ -65,8 +65,18 @@ class SrcNamespace extends Replacement
 
     private function namespaceFromPackageName(array $options): string
     {
-        [$vendor, $package] = explode('/', $this->packageName->sourceValue($options));
-        return $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
+        if (!$this->packageNamePlaceholder) { return ''; }
+
+        $replacement = $this->env->replacements()->replacement($this->packageNamePlaceholder);
+        if (!$replacement) { return ''; }
+
+        $token = $replacement->initialToken($this->packageNamePlaceholder, $options);
+        if (!$token) { return ''; }
+
+        [$vendor, $package] = explode('/', $token->value());
+        $namespace = $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
+
+        return $this->isValid($namespace) ? $namespace : '';
     }
 
     private function toPascalCase(string $name): string

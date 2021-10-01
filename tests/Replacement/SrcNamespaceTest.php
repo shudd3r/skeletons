@@ -95,7 +95,8 @@ class SrcNamespaceTest extends TestCase
 
     private function replacement(Doubles\FakeRuntimeEnv $env): SrcNamespace
     {
-        return new SrcNamespace($env, new PackageName($env));
+        $env->replacements()->add('fallback', new PackageName($env));
+        return new SrcNamespace($env, 'fallback');
     }
 
     private function composerData(bool $withAutoload = true): string
