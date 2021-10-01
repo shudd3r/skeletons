@@ -15,21 +15,12 @@ use Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
 use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
 class SrcNamespace extends Replacement
 {
     protected ?string $inputPrompt = 'Source files namespace';
     protected ?string $optionName  = 'ns';
-
-    private ?string $packageNamePlaceholder;
-
-    public function __construct(RuntimeEnv $env, ?string $packageNamePlaceholder = null)
-    {
-        $this->packageNamePlaceholder = $packageNamePlaceholder;
-        parent::__construct($env);
-    }
 
     protected function token(string $name, string $value): ?ValueToken
     {
@@ -65,15 +56,7 @@ class SrcNamespace extends Replacement
 
     private function namespaceFromPackageName(array $options): string
     {
-        if (!$this->packageNamePlaceholder) { return ''; }
-
-        $replacement = $this->env->replacements()->replacement($this->packageNamePlaceholder);
-        if (!$replacement) { return ''; }
-
-        $token = $replacement->initialToken($this->packageNamePlaceholder, $options);
-        if (!$token) { return ''; }
-
-        [$vendor, $package] = explode('/', $token->value());
+        [$vendor, $package] = explode('/', $this->fallbackValue($options)) + ['', ''];
         $namespace = $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
 
         return $this->isValid($namespace) ? $namespace : '';
