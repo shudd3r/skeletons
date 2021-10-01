@@ -22,13 +22,6 @@ class PackageName extends Replacement
     protected ?string $inputPrompt = 'Packagist package name';
     protected ?string $optionName  = 'package';
 
-    private Source $defaultSource;
-
-    public function sourceValue(array $options): string
-    {
-        return $this->defaultSource($options)->value();
-    }
-
     protected function token(string $name, string $value): ?ValueToken
     {
         if (!$this->isValid($value)) { return null; }
@@ -44,7 +37,8 @@ class PackageName extends Replacement
 
     protected function defaultSource(array $options): Source
     {
-        return $this->defaultSource ??= new Source\CachedSource($this->defaultSourceInstance($options));
+        $callback = fn() => $this->env->composer()->value('name') ?? $this->directoryFallback();
+        return $this->userSource(new Source\CallbackSource($callback), $options);
     }
 
     private function directoryFallback(): string
@@ -57,11 +51,5 @@ class PackageName extends Replacement
     {
         [$vendor, $package] = explode('/', $value);
         return ucfirst($vendor) . '/' . ucfirst($package);
-    }
-
-    private function defaultSourceInstance(array $options): Source
-    {
-        $callback = fn() => $this->env->composer()->value('name') ?? $this->directoryFallback();
-        return $this->userSource(new Source\CallbackSource($callback), $options);
     }
 }
