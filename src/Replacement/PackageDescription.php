@@ -21,14 +21,6 @@ class PackageDescription extends Replacement
     protected ?string $inputPrompt = 'Package description';
     protected ?string $optionName  = 'desc';
 
-    private PackageName $packageName;
-
-    public function __construct(RuntimeEnv $env, PackageName $packageName)
-    {
-        $this->packageName = $packageName;
-        parent::__construct($env);
-    }
-
     protected function isValid(string $value): bool
     {
         return !empty($value);
@@ -42,7 +34,7 @@ class PackageDescription extends Replacement
 
     private function fromPackageName(array $options): string
     {
-        $package = $this->packageName->sourceValue($options);
+        $package = $this->fallbackValue($options);
         return $package ? $package . ' package' : '';
     }
 }

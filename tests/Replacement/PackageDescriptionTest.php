@@ -29,7 +29,7 @@ class PackageDescriptionTest extends TestCase
         $this->assertToken($replacement->initialToken('package.desc', []), 'composer json description');
     }
 
-    public function testWithoutDescriptionInComposerJson_InitialTokenValue_IsResolvedFromPackageName()
+    public function testWithoutDescriptionInComposerJson_InitialTokenValue_IsResolvedFromFallbackReplacement()
     {
         $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('root/package/path'));
 
@@ -69,6 +69,7 @@ class PackageDescriptionTest extends TestCase
 
     private function replacement(Doubles\FakeRuntimeEnv $env): PackageDescription
     {
-        return new PackageDescription($env, new PackageName($env));
+        $env->replacements()->add('fallback', new PackageName($env));
+        return new PackageDescription($env, 'fallback');
     }
 }
