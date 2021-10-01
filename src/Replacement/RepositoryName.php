@@ -13,21 +13,12 @@ namespace Shudd3r\PackageFiles\Replacement;
 
 use Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Application\Token\Source;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
 class RepositoryName extends Replacement
 {
     protected ?string $inputPrompt = 'Github repository name';
     protected ?string $optionName  = 'repo';
-
-    private PackageName $packageName;
-
-    public function __construct(RuntimeEnv $env, PackageName $packageName)
-    {
-        $this->packageName = $packageName;
-        parent::__construct($env);
-    }
 
     protected function isValid(string $value): bool
     {
@@ -36,7 +27,7 @@ class RepositoryName extends Replacement
 
     protected function defaultSource(array $options): Source
     {
-        $callback = fn() => $this->repositoryFromGitConfig() ?? $this->packageName->sourceValue($options);
+        $callback = fn() => $this->repositoryFromGitConfig() ?? $this->fallbackValue($options) ?? '';
         return $this->userSource(new Source\CallbackSource($callback), $options);
     }
 

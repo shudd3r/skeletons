@@ -20,6 +20,16 @@ use Shudd3r\PackageFiles\Application\Exception;
 
 class ReplacementsTest extends TestCase
 {
+    public function testReplacementMethod_ReturnsDefinedReplacement()
+    {
+        $replacements = new Replacements(['predefined' => $predefined = new FakeReplacement(new FakeRuntimeEnv())]);
+        $replacements->add('added', $added = new FakeReplacement(new FakeRuntimeEnv()));
+
+        $this->assertNull($replacements->replacement('undefined'));
+        $this->assertSame($predefined, $replacements->replacement('predefined'));
+        $this->assertSame($added, $replacements->replacement('added'));
+    }
+
     public function testOverwritingDefinedReplacement_ThrowsException()
     {
         $replacements = new Replacements();

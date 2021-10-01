@@ -20,20 +20,20 @@ use Shudd3r\PackageFiles\Tests\Doubles;
 
 class RepositoryNameTest extends TestCase
 {
-    public function testWithoutGitConfigFile_InitialTokenValue_IsResolvedFromPackageName()
+    public function testWithoutGitConfigFile_InitialTokenValue_IsResolvedFromFallbackReplacement()
     {
         $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('some/directory/package/name'));
 
-        $replacement = $this->replacement($env);
+        $replacement = $this->replacement($env, 'fallback');
         $this->assertToken($replacement->initialToken('repo.placeholder', []), 'package/name', 'repo.placeholder');
     }
 
-    public function testWithoutRemoteRepositoriesInGitConfig_InitialTokenValue_IsResolvedFromPackageName()
+    public function testWithoutRemoteRepositoriesInGitConfig_InitialTokenValue_IsResolvedFromFallbackReplacement()
     {
         $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('some/directory/package/name'));
         $env->package()->addFile('.git/config', $this->config());
 
-        $replacement = $this->replacement($env);
+        $replacement = $this->replacement($env, 'fallback');
         $this->assertToken($replacement->initialToken('repo.placeholder', []), 'package/name', 'repo.placeholder');
     }
 
@@ -68,7 +68,7 @@ class RepositoryNameTest extends TestCase
         $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('root/directory/init/name'));
         $env->metaDataFile()->write('{"repo.name": "meta/name"}');
 
-        $replacement = $this->replacement($env);
+        $replacement = $this->replacement($env, 'fallback');
         $this->assertToken($replacement->initialToken('repo.name', []), 'init/name');
         $this->assertToken($replacement->validationToken('repo.name'), 'meta/name');
         $this->assertToken($replacement->updateToken('repo.name', []), 'meta/name');
@@ -126,9 +126,12 @@ class RepositoryNameTest extends TestCase
         $this->assertEquals($expected, $token);
     }
 
-    private function replacement(Doubles\FakeRuntimeEnv $env): RepositoryName
+    private function replacement(Doubles\FakeRuntimeEnv $env, ?string $fallback = null): RepositoryName
     {
-        return new RepositoryName($env, new PackageName($env));
+        if ($fallback) {
+            $env->replacements()->add($fallback, new PackageName($env));
+        }
+        return new RepositoryName($env, $fallback);
     }
 
     private function config(array $remotes = []): string

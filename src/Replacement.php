@@ -18,6 +18,8 @@ use Shudd3r\PackageFiles\Application\Token\Source;
 
 abstract class Replacement
 {
+    private ?string $fallback;
+
     protected RuntimeEnv $env;
 
     protected ?string $inputPrompt;
@@ -25,9 +27,10 @@ abstract class Replacement
 
     private ?ValueToken $initialToken;
 
-    public function __construct(RuntimeEnv $env)
+    public function __construct(RuntimeEnv $env, ?string $fallbackPlaceholder = null)
     {
-        $this->env = $env;
+        $this->env      = $env;
+        $this->fallback = $fallbackPlaceholder;
     }
 
     public function initialToken(string $name, array $options): ?ValueToken
@@ -62,9 +65,20 @@ abstract class Replacement
         return new Source\CallbackSource($callback);
     }
 
-    protected function userSource(Source $source, $options): Source
+    protected function userSource(Source $source, array $options): Source
     {
         return $this->interactive($this->option($source, $options), $options);
+    }
+
+    protected function fallbackValue(array $options): ?string
+    {
+        if (!$this->fallback) { return null; }
+
+        $replacement = $this->env->replacements()->replacement($this->fallback);
+        if (!$replacement) { return null; }
+
+        $token = $replacement->initialToken($this->fallback, $options);
+        return $token ? $token->value() : null;
     }
 
     private function option(Source $default, array $options): Source
