@@ -169,7 +169,7 @@ class ApplicationTest extends TestCase
 
         $replacements = $env->replacements();
         $replacements->add(self::PACKAGE_NAME, $packageName = new Replacement\PackageName($env));
-        $replacements->add(self::REPO_NAME, new Replacement\RepositoryName($env, $packageName));
+        $replacements->add(self::REPO_NAME, new Replacement\RepositoryName($env, self::PACKAGE_NAME));
         $replacements->add(self::PACKAGE_DESC, new Replacement\PackageDescription($env, $packageName));
         $replacements->add(self::SRC_NAMESPACE, new Replacement\SrcNamespace($env, self::PACKAGE_NAME));
 
