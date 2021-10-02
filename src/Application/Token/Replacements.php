@@ -19,6 +19,7 @@ class Replacements
 {
     /** @var Replacement[] */
     private array $replacements;
+    private array $currentRefs;
 
     public function __construct(array $replacements = [])
     {
@@ -36,10 +37,16 @@ class Replacements
 
     public function valueOf(string $replacementName, array $options): string
     {
+        $isCurrentRef = $this->currentRefs[$replacementName] ?? false;
+        if ($isCurrentRef) { return ''; }
+
         $replacement = $this->replacements[$replacementName] ?? null;
         if (!$replacement) { return ''; }
 
+        $this->currentRefs[$replacementName] = true;
         $token = $replacement->initialToken($replacementName, $options);
+        $this->currentRefs[$replacementName] = false;
+
         return $token ? $token->value() : '';
     }
 
