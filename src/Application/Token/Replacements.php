@@ -17,6 +17,7 @@ use Shudd3r\PackageFiles\Application\Exception;
 
 class Replacements
 {
+    /** @var Replacement[] */
     private array $replacements;
 
     public function __construct(array $replacements = [])
@@ -33,9 +34,13 @@ class Replacements
         $this->replacements[$name] = $replacement;
     }
 
-    public function replacement(string $name): ?Replacement
+    public function valueOf(string $replacementName, array $options): string
     {
-        return $this->replacements[$name] ?? null;
+        $replacement = $this->replacements[$replacementName] ?? null;
+        if (!$replacement) { return ''; }
+
+        $token = $replacement->initialToken($replacementName, $options);
+        return $token ? $token->value() : '';
     }
 
     public function init(array $options): Reader
