@@ -19,7 +19,7 @@ class ReplacementTest extends TestCase
 {
     public function testForInvalidValue_TokenMethods_ReturnNull()
     {
-        $replacement = new Doubles\FakeReplacement(new Doubles\FakeRuntimeEnv(), 'invalid value', false);
+        $replacement = new Doubles\FakeReplacement(new Doubles\FakeRuntimeEnv(), null, 'invalid value', false);
         $this->assertNull($replacement->initialToken('foo', []));
         $this->assertNull($replacement->updateToken('foo', []));
         $this->assertNull($replacement->validationToken('foo'));
@@ -49,10 +49,18 @@ class ReplacementTest extends TestCase
         }
 
         $replacement = new Doubles\FakeReplacement($env);
-
         $this->assertEquals(new ValueToken('foo', $init), $replacement->initialToken('foo', $options));
         $this->assertEquals(new ValueToken('foo', 'metaData'), $replacement->validationToken('foo'));
         $this->assertEquals(new ValueToken('foo', $update), $replacement->updateToken('foo', $options));
+    }
+
+    public function testResolvingFallbackValue()
+    {
+        $env = new Doubles\FakeRuntimeEnv();
+        $env->replacements()->add('fallback', new Doubles\FakeReplacement($env, null, 'fallback value'));
+
+        $replacement = new Doubles\FakeReplacement($env, 'fallback', null);
+        $this->assertEquals(new ValueToken('foo', 'fallback value'), $replacement->initialToken('foo', []));
     }
 
     public function inputOptions(): array

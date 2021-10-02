@@ -70,15 +70,9 @@ abstract class Replacement
         return $this->interactive($this->option($source, $options), $options);
     }
 
-    protected function fallbackValue(array $options): ?string
+    protected function fallbackValue(array $options): string
     {
-        if (!$this->fallback) { return null; }
-
-        $replacement = $this->env->replacements()->replacement($this->fallback);
-        if (!$replacement) { return null; }
-
-        $token = $replacement->initialToken($this->fallback, $options);
-        return $token ? $token->value() : null;
+        return $this->fallback ? $this->env->replacements()->valueOf($this->fallback, $options) : '';
     }
 
     private function option(Source $default, array $options): Source
