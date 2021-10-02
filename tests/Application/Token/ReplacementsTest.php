@@ -22,8 +22,8 @@ class ReplacementsTest extends TestCase
 {
     public function testReplacementMethod_ReturnsDefinedReplacementValue()
     {
-        $predefined = new FakeReplacement(new FakeRuntimeEnv(), 'predefinedTokenValue');
-        $added      = new FakeReplacement(new FakeRuntimeEnv(), 'addedTokenValue');
+        $predefined = new FakeReplacement(new FakeRuntimeEnv(), null, 'predefinedTokenValue');
+        $added      = new FakeReplacement(new FakeRuntimeEnv(), null, 'addedTokenValue');
 
         $replacements = new Replacements(['predefined' => $predefined]);
         $replacements->add('added', $added);
