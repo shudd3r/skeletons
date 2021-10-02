@@ -20,7 +20,7 @@ use Shudd3r\PackageFiles\Application\Exception;
 
 class ReplacementsTest extends TestCase
 {
-    public function testReplacementMethod_ReturnsDefinedReplacementValue()
+    public function testValueOfReplacement_ReturnsDefinedReplacementValue()
     {
         $predefined = new FakeReplacement(new FakeRuntimeEnv(), null, 'predefinedTokenValue');
         $added      = new FakeReplacement(new FakeRuntimeEnv(), null, 'addedTokenValue');
@@ -40,5 +40,29 @@ class ReplacementsTest extends TestCase
 
         $this->expectException(Exception\ReplacementOverwriteException::class);
         $replacements->add('defined', new FakeReplacement(new FakeRuntimeEnv()));
+    }
+
+    public function testFallbackFromReplacements_ReturnsReplacementValue()
+    {
+        $env          = new FakeRuntimeEnv();
+        $replacements = $env->replacements();
+
+        $replacements->add('first', new FakeReplacement($env, 'second', null));
+        $replacements->add('second', new FakeReplacement($env, 'third', null));
+        $replacements->add('third', new FakeReplacement($env, null, 'third value'));
+
+        $this->assertSame('third value', $replacements->valueOf('first', []));
+    }
+
+    public function testCircularFallbackFromReplacements_ReturnsEmptyString()
+    {
+        $env          = new FakeRuntimeEnv();
+        $replacements = $env->replacements();
+
+        $replacements->add('first', new FakeReplacement($env, 'second', null));
+        $replacements->add('second', new FakeReplacement($env, 'third', null));
+        $replacements->add('third', new FakeReplacement($env, 'first', null));
+
+        $this->assertSame('', $replacements->valueOf('first', []));
     }
 }
