@@ -42,7 +42,7 @@ class SrcNamespace extends Replacement
 
     protected function defaultSource(array $options): Source
     {
-        $callback = fn() => $this->namespaceFromComposer() ?? $this->namespaceFromPackageName($options);
+        $callback = fn() => $this->namespaceFromComposer() ?? $this->namespaceFromFallbackValue($options);
         return $this->userSource(new Source\CallbackSource($callback), $options);
     }
 
@@ -54,7 +54,7 @@ class SrcNamespace extends Replacement
         return $namespace ? rtrim($namespace, '\\') : null;
     }
 
-    private function namespaceFromPackageName(array $options): string
+    private function namespaceFromFallbackValue(array $options): string
     {
         [$vendor, $package] = explode('/', $this->fallbackValue($options)) + ['', ''];
         $namespace = $this->toPascalCase($vendor) . '\\' . $this->toPascalCase($package);
