@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Command;
 
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Source\Data\MetaData;
+use Shudd3r\PackageFiles\Application\Token\Data\MetaData;
 
 
 class SaveMetaData implements Command

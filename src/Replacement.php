@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
-use Shudd3r\PackageFiles\Application\Token\Source;
 
 
 abstract class Replacement
@@ -33,21 +32,25 @@ abstract class Replacement
         $this->fallback = $fallbackPlaceholder;
     }
 
-    public function initialToken(string $name, array $options): ?ValueToken
+    final public function initialToken(string $name, array $options): ?ValueToken
     {
-        return $this->initialToken ??= $this->token($name, $this->defaultSource($options)->value());
+        return $this->initialToken ??= $this->token($name, $this->initialValue($options));
     }
 
-    public function validationToken(string $name): ?ValueToken
+    final public function validationToken(string $name): ?ValueToken
     {
-        $value = $this->metaDataSource($name)->value();
+        return $this->token($name, $this->metaDataValue($name));
+    }
+
+    final public function updateToken(string $name, array $options): ?ValueToken
+    {
+        $value = $this->inputString($options, $this->commandLineOption($options) ?? $this->metaDataValue($name));
         return $this->token($name, $value);
     }
 
-    public function updateToken(string $name, array $options): ?ValueToken
+    final protected function initialValue(array $options): string
     {
-        $value = $this->userSource($this->metaDataSource($name), $options)->value();
-        return $this->token($name, $value);
+        return $this->inputString($options, $this->commandLineOption($options) ?? $this->defaultValue($options));
     }
 
     protected function token(string $name, string $value): ?ValueToken
@@ -57,37 +60,29 @@ abstract class Replacement
 
     abstract protected function isValid(string $value): bool;
 
-    abstract protected function defaultSource(array $options): Source;
+    abstract protected function defaultValue(array $options): string;
 
-    protected function metaDataSource(string $namespace): Source
+    protected function commandLineOption(array $options): ?string
     {
-        $callback = fn() => $this->env->metaData()->value($namespace) ?? '';
-        return new Source\CallbackSource($callback);
+        return isset($this->optionName) ? $options[$this->optionName] ?? null : null;
     }
 
-    protected function userSource(Source $source, array $options): Source
+    protected function inputString(array $options, string $default): string
     {
-        return $this->interactive($this->option($source, $options), $options);
+        $inputEnabled = isset($this->inputPrompt) && (isset($options['i']) || isset($options['interactive']));
+        if (!$inputEnabled) { return $default; }
+
+        $promptPostfix = $default ? ' [default: `' . $default . '`]:' : ':';
+        return $this->env->input()->value($this->inputPrompt . $promptPostfix) ?: $default;
+    }
+
+    protected function metaDataValue(string $namespace): string
+    {
+        return $this->env->metaData()->value($namespace) ?? '';
     }
 
     protected function fallbackValue(array $options): string
     {
         return $this->fallback ? $this->env->replacements()->valueOf($this->fallback, $options) : '';
-    }
-
-    private function option(Source $default, array $options): Source
-    {
-        $hasOption = isset($this->optionName) && isset($options[$this->optionName]);
-        return $hasOption
-            ? new Source\PredefinedValue($options[$this->optionName])
-            : $default;
-    }
-
-    private function interactive(Source $source, array $options): Source
-    {
-        $fromInput = isset($this->inputPrompt) && (isset($options['i']) || isset($options['interactive']));
-        return $fromInput
-            ? new Source\InteractiveInput($this->inputPrompt, $this->env->input(), $source)
-            : $source;
     }
 }

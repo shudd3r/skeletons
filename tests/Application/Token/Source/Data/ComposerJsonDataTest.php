@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Application\Token\Source\Data;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Token\Source\Data\ComposerJsonData;
+use Shudd3r\PackageFiles\Application\Token\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Tests\Doubles;
 use RuntimeException;
 

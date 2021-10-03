@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Token\Source;
 
 
 class FakeReplacement extends Replacement
@@ -40,9 +39,8 @@ class FakeReplacement extends Replacement
         return $this->isValid;
     }
 
-    protected function defaultSource(array $options): Source
+    protected function defaultValue(array $options): string
     {
-        $source = new Source\PredefinedValue($this->value ?: $this->fallbackValue($options));
-        return $this->userSource($source, $options);
+        return $this->value ?? $this->fallbackValue($options);
     }
 }

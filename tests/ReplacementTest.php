@@ -37,7 +37,7 @@ class ReplacementTest extends TestCase
         $options = [];
         $env     = new Doubles\FakeRuntimeEnv();
 
-        $env->metaDataFile()->write('{"foo": "metaData"}');
+        $env->metaDataFile()->write('{"foo": "meta data"}');
         if ($option) {
             $options['option'] = 'option value';
         }
@@ -50,7 +50,7 @@ class ReplacementTest extends TestCase
 
         $replacement = new Doubles\FakeReplacement($env);
         $this->assertEquals(new ValueToken('foo', $init), $replacement->initialToken('foo', $options));
-        $this->assertEquals(new ValueToken('foo', 'metaData'), $replacement->validationToken('foo'));
+        $this->assertEquals(new ValueToken('foo', 'meta data'), $replacement->validationToken('foo'));
         $this->assertEquals(new ValueToken('foo', $update), $replacement->updateToken('foo', $options));
     }
 
@@ -66,10 +66,10 @@ class ReplacementTest extends TestCase
     public function inputOptions(): array
     {
         return [
-            [false, false, 'default value', 'metaData'],
-            [true, false, 'option value', 'option value'],
-            [false, true, 'input value', 'input value'],
-            [true, true, 'input value', 'input value']
+            'no user values' => [false, false, 'default value', 'meta data'],
+            'option only'    => [true, false, 'option value', 'option value'],
+            'input only'     => [false, true, 'input value', 'input value'],
+            'input & option' => [true, true, 'input value', 'input value']
         ];
     }
 }

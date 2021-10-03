@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Replacement;
 
 use Shudd3r\PackageFiles\Replacement;
-use Shudd3r\PackageFiles\Application\Token\Source;
 
 
 class PackageDescription extends Replacement
@@ -25,10 +24,9 @@ class PackageDescription extends Replacement
         return !empty($value);
     }
 
-    protected function defaultSource(array $options): Source
+    protected function defaultValue(array $options): string
     {
-        $callback = fn() => $this->env->composer()->value('description') ?? $this->descriptionFromFallbackValue($options);
-        return $this->userSource(new Source\CallbackSource($callback), $options);
+        return $this->env->composer()->value('description') ?? $this->descriptionFromFallbackValue($options);
     }
 
     private function descriptionFromFallbackValue(array $options): string

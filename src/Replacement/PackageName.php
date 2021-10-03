@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
-use Shudd3r\PackageFiles\Application\Token\Source;
 
 
 class PackageName extends Replacement
@@ -35,10 +34,9 @@ class PackageName extends Replacement
         return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
     }
 
-    protected function defaultSource(array $options): Source
+    protected function defaultValue(array $options): string
     {
-        $callback = fn() => $this->env->composer()->value('name') ?? $this->directoryFallback();
-        return $this->userSource(new Source\CallbackSource($callback), $options);
+        return $this->env->composer()->value('name') ?? $this->directoryFallback();
     }
 
     private function directoryFallback(): string

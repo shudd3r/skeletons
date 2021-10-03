@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Replacement;
 
 use Shudd3r\PackageFiles\Replacement;
-use Shudd3r\PackageFiles\Application\Token\Source;
 
 
 class RepositoryName extends Replacement
@@ -25,10 +24,9 @@ class RepositoryName extends Replacement
         return (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
     }
 
-    protected function defaultSource(array $options): Source
+    protected function defaultValue(array $options): string
     {
-        $callback = fn() => $this->repositoryFromGitConfig() ?? $this->fallbackValue($options) ?? '';
-        return $this->userSource(new Source\CallbackSource($callback), $options);
+        return $this->repositoryFromGitConfig() ?? $this->fallbackValue($options);
     }
 
     private function repositoryFromGitConfig(): ?string

@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
-use Shudd3r\PackageFiles\Application\Token\Source;
 
 
 class SrcNamespace extends Replacement
@@ -40,10 +39,9 @@ class SrcNamespace extends Replacement
         return true;
     }
 
-    protected function defaultSource(array $options): Source
+    protected function defaultValue(array $options): string
     {
-        $callback = fn() => $this->namespaceFromComposer() ?? $this->namespaceFromFallbackValue($options);
-        return $this->userSource(new Source\CallbackSource($callback), $options);
+        return $this->namespaceFromComposer() ?? $this->namespaceFromFallbackValue($options);
     }
 
     private function namespaceFromComposer(): ?string
