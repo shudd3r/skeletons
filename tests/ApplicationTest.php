@@ -13,9 +13,8 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Replacement;
 
 
@@ -70,7 +69,7 @@ class ApplicationTest extends TestCase
         $app     = $this->app($package, true);
 
         $this->assertNotEquals(0, $app->run('init', $this->initOptions));
-        $this->assertSameFiles($package, 'package');
+        $this->assertSameFiles($package, 'package', true);
     }
 
     public function testInitializationOverwritingBackupFile_AbortsExecutionWithoutSideEffects()
@@ -133,9 +132,11 @@ class ApplicationTest extends TestCase
         $this->assertSameFiles($package, 'package-desynchronized');
     }
 
-    protected function assertSameFiles(Directory $package, string $fixturesDirectory): void
+    protected function assertSameFiles(Directory $package, string $fixturesDirectory, bool $addMetaFile = false): void
     {
-        $expected   = self::$files->directory($fixturesDirectory);
+        $expected = self::$files->directory($fixturesDirectory);
+        if ($addMetaFile) { $this->addMetaFile($expected); }
+
         $givenFiles = $package->files();
         $this->assertCount(count($expected->files()), $givenFiles, 'Different number of files');
 
@@ -147,33 +148,32 @@ class ApplicationTest extends TestCase
 
     protected function app(Directory $packageDir, ?bool $forceMetaFile = null, bool $backupExists = false): Application
     {
-        if (!is_null($forceMetaFile)) {
-            $metaFile = $forceMetaFile ? new Doubles\MockedFile() : new Doubles\MockedFile(null);
-        }
+        $app = new Application($packageDir, self::$skeleton);
 
-        $env = new RuntimeEnv(
-            $packageDir,
-            self::$skeleton,
-            new Doubles\MockedTerminal(),
-            $backupExists ? $this->backupFiles() : null,
-            $metaFile ?? null
-        );
+        $app->terminal(new Doubles\MockedTerminal());
+        if ($backupExists) { $this->setBackupFiles($app); }
+        if ($forceMetaFile) { $this->addMetaFile($packageDir); }
+        if (!is_null($forceMetaFile)) { $app->metaFile('forced/metaFile.json'); }
 
-        $app = new Application($env);
-        $app->replacement(self::PACKAGE_NAME, new Replacement\PackageName($env));
-        $app->replacement(self::REPO_NAME, new Replacement\RepositoryName($env, self::PACKAGE_NAME));
-        $app->replacement(self::PACKAGE_DESC, new Replacement\PackageDescription($env, self::PACKAGE_NAME));
-        $app->replacement(self::SRC_NAMESPACE, new Replacement\SrcNamespace($env, self::PACKAGE_NAME));
+        $app->replacement(self::PACKAGE_NAME, fn($env) => new Replacement\PackageName($env));
+        $app->replacement(self::REPO_NAME, fn($env) => new Replacement\RepositoryName($env, self::PACKAGE_NAME));
+        $app->replacement(self::PACKAGE_DESC, fn($env) => new Replacement\PackageDescription($env, self::PACKAGE_NAME));
+        $app->replacement(self::SRC_NAMESPACE, fn($env) => new Replacement\SrcNamespace($env, self::PACKAGE_NAME));
 
-        $app->template('composer.json', new Template\Factory\MergedJsonFactory($env));
+        $app->template('composer.json', fn($env) => new Template\Factory\MergedJsonFactory($env));
 
         return $app;
     }
 
-    private function backupFiles(): Doubles\FakeDirectory
+    private function setBackupFiles(Application $app): void
     {
         $backup = new Doubles\FakeDirectory();
         $backup->addFile('README.md', 'anything');
-        return $backup;
+        $app->backupDirectory($backup);
+    }
+
+    private function addMetaFile(Directory $directory): void
+    {
+        $directory->file('forced/metaFile.json')->write('something');
     }
 }

@@ -12,20 +12,26 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Command;
-use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Environment\Terminal;
 use Exception;
 
 
 class Application
 {
-    private RuntimeEnv $env;
-    private array      $templates    = [];
-    private array      $replacements = [];
+    private Directory $package;
+    private Directory $skeleton;
+    private Directory $backup;
+    private File      $metaData;
+    private Terminal  $terminal;
+    private array     $templates    = [];
+    private array     $replacements = [];
 
-    public function __construct(RuntimeEnv $env)
+    public function __construct(Directory $package, Directory $skeleton)
     {
-        $this->env = $env;
+        $this->package  = $package;
+        $this->skeleton = $skeleton;
     }
 
     /**
@@ -36,40 +42,57 @@ class Application
      */
     public function run(string $command, array $options = []): int
     {
-        $output = $this->env->output();
+        $env = new RuntimeEnv(
+            $this->package,
+            $this->skeleton,
+            $this->terminal ??= new Terminal(),
+            $this->backup   ??= $this->package->subdirectory('.skeleton-backup'),
+            $this->metaData ??= $this->package->file('.github/skeleton.json')
+        );
 
-        $replacements = $this->env->replacements();
+        $replacements = $env->replacements();
         foreach ($this->replacements as $placeholder => $replacement) {
-            $replacements->add($placeholder, $replacement);
+            $replacements->add($placeholder, $replacement($env));
         }
 
-        $templates = $this->env->templates();
+        $templates = $env->templates();
         foreach ($this->templates as $filename => $template) {
-            $templates->add($filename, $template);
+            $templates->add($filename, $template($env));
         }
 
         try {
-            $this->command($command, $options)->execute();
+            $factory = $this->factory($command, $env);
+            $factory->command($options)->execute();
         } catch (Exception $e) {
-            $output->send($e->getMessage(), 1);
+            $this->terminal->send($e->getMessage(), 1);
         }
 
-        return $output->exitCode();
+        return $this->terminal->exitCode();
     }
 
-    public function template(string $filename, Template\Factory $template): void
+    public function template(string $filename, callable $template): void
     {
         $this->templates[$filename] = $template;
     }
 
-    public function replacement(string $placeholder, Replacement $replacement): void
+    public function replacement(string $placeholder, callable $replacement): void
     {
         $this->replacements[$placeholder] = $replacement;
     }
 
-    private function command(string $command, array $options): Command
+    public function terminal(Terminal $terminal): void
     {
-        return $this->factory($command, $this->env)->command($options);
+        $this->terminal = $terminal;
+    }
+
+    public function backupDirectory(Directory $backup): void
+    {
+        $this->backup = $backup;
+    }
+
+    public function metaFile(string $filename): void
+    {
+        $this->metaData = $this->package->file($filename);
     }
 
     protected function factory(string $command, RuntimeEnv $env): Factory
