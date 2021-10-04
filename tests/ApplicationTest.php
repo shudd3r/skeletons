@@ -159,16 +159,15 @@ class ApplicationTest extends TestCase
             $metaFile ?? null
         );
 
-        $replacements = $env->replacements();
-        $replacements->add(self::PACKAGE_NAME, new Replacement\PackageName($env));
-        $replacements->add(self::REPO_NAME, new Replacement\RepositoryName($env, self::PACKAGE_NAME));
-        $replacements->add(self::PACKAGE_DESC, new Replacement\PackageDescription($env, self::PACKAGE_NAME));
-        $replacements->add(self::SRC_NAMESPACE, new Replacement\SrcNamespace($env, self::PACKAGE_NAME));
+        $app = new Application($env);
+        $app->replacement(self::PACKAGE_NAME, new Replacement\PackageName($env));
+        $app->replacement(self::REPO_NAME, new Replacement\RepositoryName($env, self::PACKAGE_NAME));
+        $app->replacement(self::PACKAGE_DESC, new Replacement\PackageDescription($env, self::PACKAGE_NAME));
+        $app->replacement(self::SRC_NAMESPACE, new Replacement\SrcNamespace($env, self::PACKAGE_NAME));
 
-        $templates = $env->templates();
-        $templates->add('composer.json', new Template\Factory\MergedJsonFactory($env));
+        $app->template('composer.json', new Template\Factory\MergedJsonFactory($env));
 
-        return new Application($env);
+        return $app;
     }
 
     private function backupFiles(): Doubles\FakeDirectory

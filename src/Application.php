@@ -13,12 +13,15 @@ namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Application\Template;
 use Exception;
 
 
 class Application
 {
     private RuntimeEnv $env;
+    private array      $templates    = [];
+    private array      $replacements = [];
 
     public function __construct(RuntimeEnv $env)
     {
@@ -35,6 +38,16 @@ class Application
     {
         $output = $this->env->output();
 
+        $replacements = $this->env->replacements();
+        foreach ($this->replacements as $placeholder => $replacement) {
+            $replacements->add($placeholder, $replacement);
+        }
+
+        $templates = $this->env->templates();
+        foreach ($this->templates as $filename => $template) {
+            $templates->add($filename, $template);
+        }
+
         try {
             $this->command($command, $options)->execute();
         } catch (Exception $e) {
@@ -42,6 +55,16 @@ class Application
         }
 
         return $output->exitCode();
+    }
+
+    public function template(string $filename, Template\Factory $template): void
+    {
+        $this->templates[$filename] = $template;
+    }
+
+    public function replacement(string $placeholder, Replacement $replacement): void
+    {
+        $this->replacements[$placeholder] = $replacement;
     }
 
     private function command(string $command, array $options): Command
