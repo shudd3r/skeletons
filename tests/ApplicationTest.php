@@ -13,9 +13,9 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Replacement;
 
 
@@ -51,104 +51,92 @@ class ApplicationTest extends TestCase
 
     public function testUnknownCommand_ReturnsErrorCode()
     {
-        $env = $this->envSetup('package');
-        $app = new Application($env);
-
+        $app = $this->app(self::$files->directory('package'));
         $this->assertNotEquals(0, $app->run('unknown', []));
     }
 
     public function testInitialization_GeneratesFilesFromTemplate()
     {
-        $env = $this->envSetup('package');
-        $app = new Application($env);
+        $package = self::$files->directory('package');
+        $app     = $this->app($package);
 
         $this->assertSame(0, $app->run('init', $this->initOptions));
-        $this->assertSameFiles($env, 'package-initialized');
+        $this->assertSameFiles($package, 'package-initialized');
     }
 
     public function testInitializationWithExistingMetaDataFile_AbortsExecutionWithoutSideEffects()
     {
-        $env = $this->envSetup('package', new Doubles\MockedFile());
-        $app = new Application($env);
+        $package = self::$files->directory('package');
+        $app     = $this->app($package, true);
 
         $this->assertNotEquals(0, $app->run('init', $this->initOptions));
-        $this->assertSameFiles($env, 'package');
+        $this->assertSameFiles($package, 'package');
     }
 
     public function testInitializationOverwritingBackupFile_AbortsExecutionWithoutSideEffects()
     {
-        $env = $this->envSetup('package', null, true);
-        $app = new Application($env);
+        $package = self::$files->directory('package');
+        $app     = $this->app($package, null, true);
 
         $this->assertNotEquals(0, $app->run('init', $this->initOptions));
-        $this->assertSameFiles($env, 'package');
+        $this->assertSameFiles($package, 'package');
     }
 
     public function testInitializedPackage_IsValid()
     {
-        $env = $this->envSetup('package-initialized');
-        $app = new Application($env);
-
+        $app = $this->app(self::$files->directory('package-initialized'));
         $this->assertSame(0, $app->run('check'));
     }
 
     public function testSynchronizedPackage_IsValid()
     {
-        $env = $this->envSetup('package-synchronized');
-        $app = new Application($env);
-
+        $app = $this->app(self::$files->directory('package-synchronized'));
         $this->assertSame(0, $app->run('check'));
     }
 
     public function testDesynchronizedPackage_IsInvalid()
     {
-        $env = $this->envSetup('package-desynchronized');
-        $app = new Application($env);
-
+        $app = $this->app(self::$files->directory('package-desynchronized'));
         $this->assertNotEquals(0, $app->run('check'));
     }
 
     public function testPackageWithoutMetaDataFile_IsInvalid()
     {
-        $env = $this->envSetup('package-synchronized', new Doubles\MockedFile(null));
-        $app = new Application($env);
-
+        $app = $this->app(self::$files->directory('package-synchronized'), false);
         $this->assertNotEquals(0, $app->run('check'));
     }
 
     public function testUpdatingSynchronizedPackage_GeneratesUpdatedPackageFiles()
     {
-        $env = $this->envSetup('package-synchronized');
-        $app = new Application($env);
+        $package = self::$files->directory('package-synchronized');
+        $app     = $this->app($package);
 
         $this->assertSame(0, $app->run('update', $this->updateOptions));
-        $this->assertSameFiles($env, 'package-updated');
+        $this->assertSameFiles($package, 'package-updated');
     }
 
     public function testUpdatingPackageWithoutMetaDataFile_AbortsExecutionWithoutSideEffects()
     {
-        $env = $this->envSetup('package-synchronized', new Doubles\MockedFile(null));
-        $app = new Application($env);
+        $package = self::$files->directory('package-synchronized');
+        $app     = $this->app($package, false);
 
         $this->assertNotEquals(0, $app->run('update', $this->updateOptions));
-        $this->assertSameFiles($env, 'package-synchronized');
+        $this->assertSameFiles($package, 'package-synchronized');
     }
 
     public function testUpdatingDesynchronizedPackage_AbortsExecutionWithoutSideEffects()
     {
-        $env = $this->envSetup('package-desynchronized');
-        $app = new Application($env);
+        $package = self::$files->directory('package-desynchronized');
+        $app     = $this->app($package);
 
         $this->assertNotEquals(0, $app->run('update', $this->updateOptions));
-        $this->assertSameFiles($env, 'package-desynchronized');
+        $this->assertSameFiles($package, 'package-desynchronized');
     }
 
-    protected function assertSameFiles(RuntimeEnv $env, string $fixturesDirectory): void
+    protected function assertSameFiles(Directory $package, string $fixturesDirectory): void
     {
-        $given    = $env->package();
-        $expected = self::$files->directory($fixturesDirectory);
-
-        $givenFiles = $given->files();
+        $expected   = self::$files->directory($fixturesDirectory);
+        $givenFiles = $package->files();
         $this->assertCount(count($expected->files()), $givenFiles, 'Different number of files');
 
         foreach ($givenFiles as $file) {
@@ -157,14 +145,18 @@ class ApplicationTest extends TestCase
         }
     }
 
-    protected function envSetup(string $packageDir, ?File $metaFile = null, bool $backupExists = false): RuntimeEnv
+    protected function app(Directory $packageDir, ?bool $forceMetaFile = null, bool $backupExists = false): Application
     {
+        if (!is_null($forceMetaFile)) {
+            $metaFile = $forceMetaFile ? new Doubles\MockedFile() : new Doubles\MockedFile(null);
+        }
+
         $env = new RuntimeEnv(
-            self::$files->directory($packageDir),
+            $packageDir,
             self::$skeleton,
             new Doubles\MockedTerminal(),
             $backupExists ? $this->backupFiles() : null,
-            $metaFile
+            $metaFile ?? null
         );
 
         $replacements = $env->replacements();
@@ -176,7 +168,7 @@ class ApplicationTest extends TestCase
         $templates = $env->templates();
         $templates->add('composer.json', new Template\Factory\MergedJsonFactory($env));
 
-        return $env;
+        return new Application($env);
     }
 
     private function backupFiles(): Doubles\FakeDirectory
