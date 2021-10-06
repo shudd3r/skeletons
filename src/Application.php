@@ -42,25 +42,10 @@ class Application
      */
     public function run(string $command, array $options = []): int
     {
-        $env = new RuntimeEnv(
-            $this->package,
-            $this->skeleton,
-            $this->terminal ??= new Terminal(),
-            $this->backup   ??= $this->package->subdirectory('.skeleton-backup'),
-            $this->metaData ??= $this->package->file('.github/skeleton.json')
-        );
-
-        $replacements = $env->replacements();
-        foreach ($this->replacements as $placeholder => $replacement) {
-            $replacements->add($placeholder, $replacement($env));
-        }
-
-        $templates = $env->templates();
-        foreach ($this->templates as $filename => $template) {
-            $templates->add($filename, $template($env));
-        }
+        $this->terminal ??= new Terminal();
 
         try {
+            $env     = $this->runtimeEnv();
             $factory = $this->factory($command, $env);
             $factory->command($options)->execute();
         } catch (Exception $e) {
@@ -104,5 +89,28 @@ class Application
         }
 
         throw new Exception("Unknown `{$command}` command");
+    }
+
+    private function runtimeEnv(): RuntimeEnv
+    {
+        $env = new RuntimeEnv(
+            $this->package,
+            $this->skeleton,
+            $this->terminal,
+            $this->backup   ??= $this->package->subdirectory('.skeleton-backup'),
+            $this->metaData ??= $this->package->file('.github/skeleton.json')
+        );
+
+        $replacements = $env->replacements();
+        foreach ($this->replacements as $placeholder => $replacement) {
+            $replacements->add($placeholder, $replacement($env));
+        }
+
+        $templates = $env->templates();
+        foreach ($this->templates as $filename => $template) {
+            $templates->add($filename, $template($env));
+        }
+
+        return $env;
     }
 }
