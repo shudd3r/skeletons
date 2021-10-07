@@ -12,27 +12,26 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Setup\EnvSetup;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Environment\Terminal;
 use Exception;
 
 
 class Application
 {
-    private Directory $package;
-    private Directory $skeleton;
-    private Directory $backup;
-    private File      $metaData;
+    private EnvSetup  $setup;
     private Terminal  $terminal;
-    private array     $templates    = [];
-    private array     $replacements = [];
 
     public function __construct(Directory $package, Directory $skeleton, Terminal $terminal = null)
     {
-        $this->package  = $package;
-        $this->skeleton = $skeleton;
+        $this->setup    = new EnvSetup($package, $skeleton);
         $this->terminal = $terminal ?? new Terminal();
+    }
+
+    public function setup(): EnvSetup
+    {
+        return $this->setup;
     }
 
     /**
@@ -44,7 +43,7 @@ class Application
     public function run(string $command, array $options = []): int
     {
         try {
-            $env     = $this->runtimeEnv();
+            $env     = $this->setup->runtimeEnv($this->terminal);
             $factory = $this->factory($command, $env);
             $factory->command($options)->execute();
         } catch (Exception $e) {
@@ -52,26 +51,6 @@ class Application
         }
 
         return $this->terminal->exitCode();
-    }
-
-    public function template(string $filename, callable $template): void
-    {
-        $this->templates[$filename] = $template;
-    }
-
-    public function replacement(string $placeholder, callable $replacement): void
-    {
-        $this->replacements[$placeholder] = $replacement;
-    }
-
-    public function backupDirectory(Directory $backup): void
-    {
-        $this->backup = $backup;
-    }
-
-    public function metaFile(string $filename): void
-    {
-        $this->metaData = $this->package->file($filename);
     }
 
     protected function factory(string $command, RuntimeEnv $env): Factory
@@ -83,28 +62,5 @@ class Application
         }
 
         throw new Exception("Unknown `{$command}` command");
-    }
-
-    private function runtimeEnv(): RuntimeEnv
-    {
-        $env = new RuntimeEnv(
-            $this->package,
-            $this->skeleton,
-            $this->terminal,
-            $this->backup   ??= $this->package->subdirectory('.skeleton-backup'),
-            $this->metaData ??= $this->package->file('.github/skeleton.json')
-        );
-
-        $replacements = $env->replacements();
-        foreach ($this->replacements as $placeholder => $replacement) {
-            $replacements->add($placeholder, $replacement($env));
-        }
-
-        $templates = $env->templates();
-        foreach ($this->templates as $filename => $template) {
-            $templates->add($filename, $template($env));
-        }
-
-        return $env;
     }
 }

@@ -150,25 +150,27 @@ class ApplicationTest extends TestCase
     {
         $app = new Application($packageDir, self::$skeleton, new Doubles\MockedTerminal());
 
-        if ($backupExists) { $this->setBackupFiles($app); }
+        $setup = $app->setup();
+
+        if ($backupExists) { $setup->setBackupDirectory($this->backupDirectory()); }
         if ($forceMetaFile) { $this->addMetaFile($packageDir); }
-        if (!is_null($forceMetaFile)) { $app->metaFile('forced/metaFile.json'); }
+        if (!is_null($forceMetaFile)) { $setup->setMetaFile('forced/metaFile.json'); }
 
-        $app->replacement(self::PACKAGE_NAME, fn($env) => new Replacement\PackageName($env));
-        $app->replacement(self::REPO_NAME, fn($env) => new Replacement\RepositoryName($env, self::PACKAGE_NAME));
-        $app->replacement(self::PACKAGE_DESC, fn($env) => new Replacement\PackageDescription($env, self::PACKAGE_NAME));
-        $app->replacement(self::SRC_NAMESPACE, fn($env) => new Replacement\SrcNamespace($env, self::PACKAGE_NAME));
+        $setup->addReplacement(self::PACKAGE_NAME, fn($env) => new Replacement\PackageName($env));
+        $setup->addReplacement(self::REPO_NAME, fn($env) => new Replacement\RepositoryName($env, self::PACKAGE_NAME));
+        $setup->addReplacement(self::PACKAGE_DESC, fn($env) => new Replacement\PackageDescription($env, self::PACKAGE_NAME));
+        $setup->addReplacement(self::SRC_NAMESPACE, fn($env) => new Replacement\SrcNamespace($env, self::PACKAGE_NAME));
 
-        $app->template('composer.json', fn($env) => new Template\Factory\MergedJsonFactory($env));
+        $setup->addTemplate('composer.json', fn($env) => new Template\Factory\MergedJsonFactory($env));
 
         return $app;
     }
 
-    private function setBackupFiles(Application $app): void
+    private function backupDirectory(): Directory
     {
         $backup = new Doubles\FakeDirectory();
         $backup->addFile('README.md', 'anything');
-        $app->backupDirectory($backup);
+        return $backup;
     }
 
     private function addMetaFile(Directory $directory): void
