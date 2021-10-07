@@ -28,10 +28,11 @@ class Application
     private array     $templates    = [];
     private array     $replacements = [];
 
-    public function __construct(Directory $package, Directory $skeleton)
+    public function __construct(Directory $package, Directory $skeleton, Terminal $terminal = null)
     {
         $this->package  = $package;
         $this->skeleton = $skeleton;
+        $this->terminal = $terminal ?? new Terminal();
     }
 
     /**
@@ -42,8 +43,6 @@ class Application
      */
     public function run(string $command, array $options = []): int
     {
-        $this->terminal ??= new Terminal();
-
         try {
             $env     = $this->runtimeEnv();
             $factory = $this->factory($command, $env);
@@ -63,11 +62,6 @@ class Application
     public function replacement(string $placeholder, callable $replacement): void
     {
         $this->replacements[$placeholder] = $replacement;
-    }
-
-    public function terminal(Terminal $terminal): void
-    {
-        $this->terminal = $terminal;
     }
 
     public function backupDirectory(Directory $backup): void

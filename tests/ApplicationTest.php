@@ -148,9 +148,8 @@ class ApplicationTest extends TestCase
 
     protected function app(Directory $packageDir, ?bool $forceMetaFile = null, bool $backupExists = false): Application
     {
-        $app = new Application($packageDir, self::$skeleton);
+        $app = new Application($packageDir, self::$skeleton, new Doubles\MockedTerminal());
 
-        $app->terminal(new Doubles\MockedTerminal());
         if ($backupExists) { $this->setBackupFiles($app); }
         if ($forceMetaFile) { $this->addMetaFile($packageDir); }
         if (!is_null($forceMetaFile)) { $app->metaFile('forced/metaFile.json'); }
