@@ -13,6 +13,8 @@ namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Setup\EnvSetup;
+use Shudd3r\PackageFiles\Application\Setup\ReplacementSetup;
+use Shudd3r\PackageFiles\Application\Setup\TemplateSetup;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\Terminal;
 use Exception;
@@ -29,9 +31,24 @@ class Application
         $this->terminal = $terminal ?? new Terminal();
     }
 
-    public function setup(): EnvSetup
+    public function backup(Directory $backup): void
     {
-        return $this->setup;
+        $this->setup->setBackupDirectory($backup);
+    }
+
+    public function metaFile(string $filename): void
+    {
+        $this->setup->setMetaFile($filename);
+    }
+
+    public function replacement(string $placeholder): ReplacementSetup
+    {
+        return new ReplacementSetup($this->setup, $placeholder);
+    }
+
+    public function template(string $filename): TemplateSetup
+    {
+        return new TemplateSetup($this->setup, $filename);
     }
 
     /**

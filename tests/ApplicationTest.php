@@ -150,18 +150,16 @@ class ApplicationTest extends TestCase
     {
         $app = new Application($packageDir, self::$skeleton, new Doubles\MockedTerminal());
 
-        $setup = $app->setup();
-
-        if ($backupExists) { $setup->setBackupDirectory($this->backupDirectory()); }
+        if ($backupExists) { $app->backup($this->backupDirectory()); }
         if ($forceMetaFile) { $this->addMetaFile($packageDir); }
-        if (!is_null($forceMetaFile)) { $setup->setMetaFile('forced/metaFile.json'); }
+        if (!is_null($forceMetaFile)) { $app->metaFile('forced/metaFile.json'); }
 
-        $setup->addReplacement(self::PACKAGE_NAME, fn($env) => new Replacement\PackageName($env));
-        $setup->addReplacement(self::REPO_NAME, fn($env) => new Replacement\RepositoryName($env, self::PACKAGE_NAME));
-        $setup->addReplacement(self::PACKAGE_DESC, fn($env) => new Replacement\PackageDescription($env, self::PACKAGE_NAME));
-        $setup->addReplacement(self::SRC_NAMESPACE, fn($env) => new Replacement\SrcNamespace($env, self::PACKAGE_NAME));
+        $app->replacement(self::PACKAGE_NAME)->add(fn($env) => new Replacement\PackageName($env));
+        $app->replacement(self::REPO_NAME)->add(fn($env) => new Replacement\RepositoryName($env, self::PACKAGE_NAME));
+        $app->replacement(self::PACKAGE_DESC)->add(fn($env) => new Replacement\PackageDescription($env, self::PACKAGE_NAME));
+        $app->replacement(self::SRC_NAMESPACE)->add(fn($env) => new Replacement\SrcNamespace($env, self::PACKAGE_NAME));
 
-        $setup->addTemplate('composer.json', fn($env) => new Template\Factory\MergedJsonFactory($env));
+        $app->template('composer.json')->add(fn($env) => new Template\Factory\MergedJsonFactory($env));
 
         return $app;
     }
