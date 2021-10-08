@@ -12,17 +12,43 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Application\Setup\EnvSetup;
+use Shudd3r\PackageFiles\Application\Setup\ReplacementSetup;
+use Shudd3r\PackageFiles\Application\Setup\TemplateSetup;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
+use Shudd3r\PackageFiles\Environment\Terminal;
 use Exception;
 
 
 class Application
 {
-    private RuntimeEnv $env;
+    private EnvSetup  $setup;
+    private Terminal  $terminal;
 
-    public function __construct(RuntimeEnv $env)
+    public function __construct(Directory $package, Directory $skeleton, Terminal $terminal = null)
     {
-        $this->env = $env;
+        $this->setup    = new EnvSetup($package, $skeleton);
+        $this->terminal = $terminal ?? new Terminal();
+    }
+
+    public function backup(Directory $backup): void
+    {
+        $this->setup->setBackupDirectory($backup);
+    }
+
+    public function metaFile(string $filename): void
+    {
+        $this->setup->setMetaFile($filename);
+    }
+
+    public function replacement(string $placeholder): ReplacementSetup
+    {
+        return new ReplacementSetup($this->setup, $placeholder);
+    }
+
+    public function template(string $filename): TemplateSetup
+    {
+        return new TemplateSetup($this->setup, $filename);
     }
 
     /**
@@ -33,20 +59,15 @@ class Application
      */
     public function run(string $command, array $options = []): int
     {
-        $output = $this->env->output();
-
         try {
-            $this->command($command, $options)->execute();
+            $env     = $this->setup->runtimeEnv($this->terminal);
+            $factory = $this->factory($command, $env);
+            $factory->command($options)->execute();
         } catch (Exception $e) {
-            $output->send($e->getMessage(), 1);
+            $this->terminal->send($e->getMessage(), 1);
         }
 
-        return $output->exitCode();
-    }
-
-    private function command(string $command, array $options): Command
-    {
-        return $this->factory($command, $this->env)->command($options);
+        return $this->terminal->exitCode();
     }
 
     protected function factory(string $command, RuntimeEnv $env): Factory
