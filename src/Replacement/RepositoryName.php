@@ -12,26 +12,47 @@
 namespace Shudd3r\PackageFiles\Replacement;
 
 use Shudd3r\PackageFiles\Replacement;
+use Shudd3r\PackageFiles\Application\Token\ValueToken;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-class RepositoryName extends Replacement
+class RepositoryName implements Replacement
 {
-    protected ?string $inputPrompt = 'Github repository name';
-    protected ?string $optionName  = 'repo';
+    private string $fallbackToken;
 
-    protected function isValid(string $value): bool
+    public function __construct(string $fallbackToken = '')
+    {
+        $this->fallbackToken = $fallbackToken;
+    }
+
+    public function optionName(): ?string
+    {
+        return 'repo';
+    }
+
+    public function inputPrompt(): ?string
+    {
+        return 'Github repository name';
+    }
+
+    public function defaultValue(RuntimeEnv $env, array $options): string
+    {
+        return $this->repositoryFromGitConfig($env) ?? $this->fallbackValue($env, $options);
+    }
+
+    public function isValid(string $value): bool
     {
         return (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
     }
 
-    protected function defaultValue(array $options): string
+    public function token(string $name, string $value): ?ValueToken
     {
-        return $this->repositoryFromGitConfig() ?? $this->fallbackValue($options);
+        return $this->isValid($value) ? new ValueToken($name, $value) : null;
     }
 
-    private function repositoryFromGitConfig(): ?string
+    private function repositoryFromGitConfig(RuntimeEnv $env): ?string
     {
-        $gitConfig = $this->env->package()->file('.git/config');
+        $gitConfig = $env->package()->file('.git/config');
         if (!$gitConfig->exists()) { return null; }
 
         $config = parse_ini_string($gitConfig->contents(), true);
@@ -52,5 +73,10 @@ class RepositoryName extends Replacement
         }
 
         return null;
+    }
+
+    private function fallbackValue(RuntimeEnv $env, array $options): string
+    {
+        return $this->fallbackToken ? $env->replacements()->valueOf($this->fallbackToken, $options) : '';
     }
 }

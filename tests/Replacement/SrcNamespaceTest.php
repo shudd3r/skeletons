@@ -15,39 +15,47 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Replacement\SrcNamespace;
 use Shudd3r\PackageFiles\Replacement\PackageName;
 use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\ReplacementReader;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class SrcNamespaceTest extends TestCase
 {
-    public function testWithSrcNamespaceInComposerJson_InitialTokenValue_IsReadFromComposerJson()
+    public function testInputNames()
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->package()->addFile('composer.json', $this->composerData());
-
-        $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('src.namespace', []), 'Composer\\Namespace');
+        $replacement = new SrcNamespace();
+        $this->assertSame('ns', $replacement->optionName());
+        $this->assertSame('Source files namespace', $replacement->inputPrompt());
     }
 
-    public function testWithoutSrcNamespaceInComposerJson_InitialTokenValue_IsResolvedFromPackageName()
+    public function testWithSrcNamespaceInComposerJson_DefaultValue_IsReadFromComposerJson()
     {
-        $env = new Doubles\FakeRuntimeEnv();
+        $replacement = new SrcNamespace();
+        $env         = new Doubles\FakeRuntimeEnv();
+        $env->package()->addFile('composer.json', $this->composerData());
+
+        $this->assertSame('Composer\\Namespace', $replacement->defaultValue($env, []));
+    }
+
+    public function testWithoutSrcNamespaceInComposerJson_DefaultValue_IsResolvedFromFallbackReplacement()
+    {
+        $replacement = new SrcNamespace('fallback.name');
+        $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', $this->composerData(false));
+        $env->replacements()->add('fallback.name', new ReplacementReader($env, new PackageName()));
 
-        $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('src.namespace', []), 'Package\\Name');
+        $this->assertSame('Package\\Name', $replacement->defaultValue($env, []));
     }
 
-    public function testTokenFactoryMethods_CreateCorrectToken()
+    public function testTokenMethodWithValidValue_ReturnsExpectedToken()
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->write(json_encode(['src.namespace' => 'Meta\\Namespace']));
-        $env->package()->addFile('composer.json', $this->composerData());
+        $replacement = new SrcNamespace();
 
-        $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('ns.placeholder', []), 'Composer\\Namespace', 'ns.placeholder');
-        $this->assertToken($replacement->validationToken('src.namespace'), 'Meta\\Namespace');
-        $this->assertToken($replacement->updateToken('src.namespace', []), 'Meta\\Namespace');
+        $subToken = new Token\ValueToken('src.namespace.esc', 'Source\\\\Namespace');
+        $expected = new Token\CompositeValueToken('src.namespace', 'Source\\Namespace', $subToken);
+
+        $this->assertEquals($expected, $replacement->token('src.namespace', 'Source\\Namespace'));
+        $this->assertTrue($replacement->isValid('Source\\Namespace'));
     }
 
     /**
@@ -58,23 +66,13 @@ class SrcNamespaceTest extends TestCase
      */
     public function testTokenFactoryMethod_ValidatesValue(string $invalid, string $valid)
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->write(json_encode(['ns.placeholder' => $invalid]));
-        $options = ['ns' => $invalid];
+        $replacement = new SrcNamespace();
 
-        $replacement = $this->replacement($env);
-        $this->assertNull($replacement->initialToken('ns.placeholder', $options));
-        $this->assertNull($replacement->validationToken('ns.placeholder'));
-        $this->assertNull($replacement->updateToken('ns.placeholder', $options));
+        $this->assertFalse($replacement->isValid($invalid));
+        $this->assertNull($replacement->token('package.name', $invalid));
 
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->write(json_encode(['ns.placeholder' => $valid]));
-        $options = ['ns' => $valid];
-
-        $replacement = $this->replacement($env);
-        $this->assertInstanceOf(Token::class, $replacement->initialToken('ns.placeholder', $options));
-        $this->assertInstanceOf(Token::class, $replacement->validationToken('ns.placeholder'));
-        $this->assertInstanceOf(Token::class, $replacement->updateToken('ns.placeholder', $options));
+        $this->assertTrue($replacement->isValid($valid));
+        $this->assertInstanceOf(Token::class, $replacement->token('package.name', $valid));
     }
 
     public function valueExamples(): array
@@ -84,19 +82,6 @@ class SrcNamespaceTest extends TestCase
             ['_Foo\1Bar\Baz', '_Foo\_1Bar\Baz'],
             ['Package:000\na_Me', 'Package000\na_Me']
         ];
-    }
-
-    private function assertToken(Token $token, string $value, string $name = 'src.namespace'): void
-    {
-        $subToken = new Token\ValueToken($name . '.esc', str_replace('\\', '\\\\', $value));
-        $expected = new Token\CompositeValueToken($name, $value, $subToken);
-        $this->assertEquals($expected, $token);
-    }
-
-    private function replacement(Doubles\FakeRuntimeEnv $env): SrcNamespace
-    {
-        $env->replacements()->add('fallback', new PackageName($env));
-        return new SrcNamespace($env, 'fallback');
     }
 
     private function composerData(bool $withAutoload = true): string

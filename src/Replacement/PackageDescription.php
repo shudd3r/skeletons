@@ -12,26 +12,48 @@
 namespace Shudd3r\PackageFiles\Replacement;
 
 use Shudd3r\PackageFiles\Replacement;
+use Shudd3r\PackageFiles\Application\Token\ValueToken;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-class PackageDescription extends Replacement
+class PackageDescription implements Replacement
 {
-    protected ?string $inputPrompt = 'Package description';
-    protected ?string $optionName  = 'desc';
+    private string $fallbackToken;
 
-    protected function isValid(string $value): bool
+    public function __construct(string $fallbackToken = '')
+    {
+        $this->fallbackToken = $fallbackToken;
+    }
+
+    public function optionName(): ?string
+    {
+        return 'desc';
+    }
+
+    public function inputPrompt(): ?string
+    {
+        return 'Package description';
+    }
+
+    public function token(string $name, string $value): ?ValueToken
+    {
+        return $this->isValid($value) ? new ValueToken($name, $value) : null;
+    }
+
+    public function isValid(string $value): bool
     {
         return !empty($value);
     }
 
-    protected function defaultValue(array $options): string
+    public function defaultValue(RuntimeEnv $env, array $options): string
     {
-        return $this->env->composer()->value('description') ?? $this->descriptionFromFallbackValue($options);
+        return $env->composer()->value('description') ?? $this->descriptionFromFallbackValue($env, $options);
     }
 
-    private function descriptionFromFallbackValue(array $options): string
+    private function descriptionFromFallbackValue(RuntimeEnv $env, array $options): string
     {
-        $package = $this->fallbackValue($options);
-        return $package ? $package . ' package' : '';
+        if (!$this->fallbackToken) { return ''; }
+        $fallbackValue = $env->replacements()->valueOf($this->fallbackToken, $options);
+        return $fallbackValue ? $fallbackValue . ' package' : '';
     }
 }

@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\Replacement;
+use Shudd3r\PackageFiles\ReplacementReader;
 
 
 class FakeReader extends Reader
@@ -36,7 +36,7 @@ class FakeReader extends Reader
         return $this->returnsToken ? ['placeholder' => 'foo'] : [];
     }
 
-    protected function tokenInstance(string $name, Replacement $replacement): ?Token
+    protected function tokenInstance(string $name, ReplacementReader $replacement): ?Token
     {
         return null;
     }

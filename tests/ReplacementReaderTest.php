@@ -12,14 +12,17 @@
 namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Shudd3r\PackageFiles\ReplacementReader;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
+use Shudd3r\PackageFiles\Tests\Doubles\FakeReplacement;
 
 
-class ReplacementTest extends TestCase
+class ReplacementReaderTest extends TestCase
 {
     public function testForInvalidValue_TokenMethods_ReturnNull()
     {
-        $replacement = new Doubles\FakeReplacement(new Doubles\FakeRuntimeEnv(), null, 'invalid value', false);
+        $replacement = new ReplacementReader(new Doubles\FakeRuntimeEnv(), new FakeReplacement(null));
+
         $this->assertNull($replacement->initialToken('foo', []));
         $this->assertNull($replacement->updateToken('foo', []));
         $this->assertNull($replacement->validationToken('foo'));
@@ -29,10 +32,10 @@ class ReplacementTest extends TestCase
      * @dataProvider inputOptions
      * @param bool $option
      * @param bool $input
-     * @param string $init
-     * @param string $update
+     * @param string $initValue
+     * @param string $updateValue
      */
-    public function testResolvingInputValues(bool $option, bool $input, string $init, string $update)
+    public function testResolvingInputValues(bool $option, bool $input, string $initValue, string $updateValue)
     {
         $options = [];
         $env     = new Doubles\FakeRuntimeEnv();
@@ -48,19 +51,18 @@ class ReplacementTest extends TestCase
             $env->input()->addInput('input value');
         }
 
-        $replacement = new Doubles\FakeReplacement($env);
-        $this->assertEquals(new ValueToken('foo', $init), $replacement->initialToken('foo', $options));
+        $replacement = new ReplacementReader($env, new FakeReplacement('default value'));
+        $this->assertEquals(new ValueToken('foo', $initValue), $replacement->initialToken('foo', $options));
         $this->assertEquals(new ValueToken('foo', 'meta data'), $replacement->validationToken('foo'));
-        $this->assertEquals(new ValueToken('foo', $update), $replacement->updateToken('foo', $options));
+        $this->assertEquals(new ValueToken('foo', $updateValue), $replacement->updateToken('foo', $options));
     }
 
-    public function testResolvingFallbackValue()
+    public function testInitialToken_IsCached()
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->replacements()->add('fallback', new Doubles\FakeReplacement($env, null, 'fallback value'));
+        $replacement = new ReplacementReader(new Doubles\FakeRuntimeEnv(), new FakeReplacement('default value'));
 
-        $replacement = new Doubles\FakeReplacement($env, 'fallback', null);
-        $this->assertEquals(new ValueToken('foo', 'fallback value'), $replacement->initialToken('foo', []));
+        $initialToken = $replacement->initialToken('token.name', []);
+        $this->assertSame($initialToken, $replacement->initialToken('another.name', []));
     }
 
     public function inputOptions(): array

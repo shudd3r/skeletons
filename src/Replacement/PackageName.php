@@ -14,14 +14,22 @@ namespace Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
-class PackageName extends Replacement
+class PackageName implements Replacement
 {
-    protected ?string $inputPrompt = 'Packagist package name';
-    protected ?string $optionName  = 'package';
+    public function optionName(): ?string
+    {
+        return 'package';
+    }
 
-    protected function token(string $name, string $value): ?ValueToken
+    public function inputPrompt(): ?string
+    {
+        return 'Packagist package name';
+    }
+
+    public function token(string $name, string $value): ?ValueToken
     {
         if (!$this->isValid($value)) { return null; }
 
@@ -29,19 +37,19 @@ class PackageName extends Replacement
         return new CompositeValueToken($name, $value, $subToken);
     }
 
-    protected function isValid(string $value): bool
+    public function isValid(string $value): bool
     {
         return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
     }
 
-    protected function defaultValue(array $options): string
+    public function defaultValue(RuntimeEnv $env, array $options): string
     {
-        return $this->env->composer()->value('name') ?? $this->directoryFallback();
+        return $env->composer()->value('name') ?? $this->directoryFallback($env);
     }
 
-    private function directoryFallback(): string
+    private function directoryFallback(RuntimeEnv $env): string
     {
-        $path = $this->env->package()->path();
+        $path = $env->package()->path();
         return $path ? basename(dirname($path)) . '/' . basename($path) : '';
     }
 

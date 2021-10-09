@@ -11,6 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Application\Setup;
 
+use Shudd3r\PackageFiles\Replacement;
+
 
 class ReplacementSetup
 {
@@ -23,7 +25,7 @@ class ReplacementSetup
         $this->placeholder = $placeholder;
     }
 
-    public function add(callable $replacement): void
+    public function add(Replacement $replacement): void
     {
         $this->setup->addReplacement($this->placeholder, $replacement);
     }

@@ -154,10 +154,10 @@ class ApplicationTest extends TestCase
         if ($forceMetaFile) { $this->addMetaFile($packageDir); }
         if (!is_null($forceMetaFile)) { $app->metaFile('forced/metaFile.json'); }
 
-        $app->replacement(self::PACKAGE_NAME)->add(fn($env) => new Replacement\PackageName($env));
-        $app->replacement(self::REPO_NAME)->add(fn($env) => new Replacement\RepositoryName($env, self::PACKAGE_NAME));
-        $app->replacement(self::PACKAGE_DESC)->add(fn($env) => new Replacement\PackageDescription($env, self::PACKAGE_NAME));
-        $app->replacement(self::SRC_NAMESPACE)->add(fn($env) => new Replacement\SrcNamespace($env, self::PACKAGE_NAME));
+        $app->replacement(self::PACKAGE_NAME)->add(new Replacement\PackageName());
+        $app->replacement(self::REPO_NAME)->add(new Replacement\RepositoryName(self::PACKAGE_NAME));
+        $app->replacement(self::PACKAGE_DESC)->add(new Replacement\PackageDescription(self::PACKAGE_NAME));
+        $app->replacement(self::SRC_NAMESPACE)->add(new Replacement\SrcNamespace(self::PACKAGE_NAME));
 
         $app->template('composer.json')->add(fn($env) => new Template\Factory\MergedJsonFactory($env));
 

@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\Replacement;
+use Shudd3r\PackageFiles\ReplacementReader;
 
 
 class InitialReader extends Reader
@@ -26,7 +26,7 @@ class InitialReader extends Reader
         parent::__construct($replacements);
     }
 
-    protected function tokenInstance(string $name, Replacement $replacement): ?Token
+    protected function tokenInstance(string $name, ReplacementReader $replacement): ?Token
     {
         return $replacement->initialToken($name, $this->options);
     }

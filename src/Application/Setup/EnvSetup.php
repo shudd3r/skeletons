@@ -15,6 +15,8 @@ use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Environment\Terminal;
+use Shudd3r\PackageFiles\Replacement;
+use Shudd3r\PackageFiles\ReplacementReader;
 
 
 class EnvSetup
@@ -70,8 +72,8 @@ class EnvSetup
         $this->templates[$filename] = $template;
     }
 
-    public function addReplacement(string $placeholder, callable $replacement): void
+    public function addReplacement(string $placeholder, Replacement $replacement): void
     {
-        $this->replacements[$placeholder] = $replacement;
+        $this->replacements[$placeholder] = fn($env) => new ReplacementReader($env, $replacement);
     }
 }

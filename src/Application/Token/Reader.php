@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Application\Token;
 
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\Replacement;
+use Shudd3r\PackageFiles\ReplacementReader;
 
 
 abstract class Reader
@@ -43,7 +43,7 @@ abstract class Reader
         return $values;
     }
 
-    abstract protected function tokenInstance(string $name, Replacement $replacement): ?Token;
+    abstract protected function tokenInstance(string $name, ReplacementReader $replacement): ?Token;
 
     private function readTokens(): array
     {

@@ -15,74 +15,15 @@ use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 
-abstract class Replacement
+interface Replacement
 {
-    private ?string $fallback;
+    public function optionName(): ?string;
 
-    protected RuntimeEnv $env;
+    public function inputPrompt(): ?string;
 
-    protected ?string $inputPrompt;
-    protected ?string $optionName;
+    public function defaultValue(RuntimeEnv $env, array $options): ?string;
 
-    private ?ValueToken $initialToken;
+    public function isValid(string $value): bool;
 
-    public function __construct(RuntimeEnv $env, ?string $fallbackPlaceholder = null)
-    {
-        $this->env      = $env;
-        $this->fallback = $fallbackPlaceholder;
-    }
-
-    final public function initialToken(string $name, array $options): ?ValueToken
-    {
-        return $this->initialToken ??= $this->token($name, $this->initialValue($options));
-    }
-
-    final public function validationToken(string $name): ?ValueToken
-    {
-        return $this->token($name, $this->metaDataValue($name));
-    }
-
-    final public function updateToken(string $name, array $options): ?ValueToken
-    {
-        $value = $this->inputString($options, $this->commandLineOption($options) ?? $this->metaDataValue($name));
-        return $this->token($name, $value);
-    }
-
-    final protected function initialValue(array $options): string
-    {
-        return $this->inputString($options, $this->commandLineOption($options) ?? $this->defaultValue($options));
-    }
-
-    protected function token(string $name, string $value): ?ValueToken
-    {
-        return $this->isValid($value) ? new ValueToken($name, $value) : null;
-    }
-
-    abstract protected function isValid(string $value): bool;
-
-    abstract protected function defaultValue(array $options): string;
-
-    protected function commandLineOption(array $options): ?string
-    {
-        return isset($this->optionName) ? $options[$this->optionName] ?? null : null;
-    }
-
-    protected function inputString(array $options, string $default): string
-    {
-        $inputEnabled = isset($this->inputPrompt) && (isset($options['i']) || isset($options['interactive']));
-        if (!$inputEnabled) { return $default; }
-
-        $promptPostfix = $default ? ' [default: `' . $default . '`]:' : ':';
-        return $this->env->input()->value($this->inputPrompt . $promptPostfix) ?: $default;
-    }
-
-    protected function metaDataValue(string $namespace): string
-    {
-        return $this->env->metaData()->value($namespace) ?? '';
-    }
-
-    protected function fallbackValue(array $options): string
-    {
-        return $this->fallback ? $this->env->replacements()->valueOf($this->fallback, $options) : '';
-    }
+    public function token(string $name, string $value): ?ValueToken;
 }

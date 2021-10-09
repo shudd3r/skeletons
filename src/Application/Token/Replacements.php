@@ -11,13 +11,13 @@
 
 namespace Shudd3r\PackageFiles\Application\Token;
 
-use Shudd3r\PackageFiles\Replacement;
+use Shudd3r\PackageFiles\ReplacementReader;
 use Shudd3r\PackageFiles\Application\Exception;
 
 
 class Replacements
 {
-    /** @var Replacement[] */
+    /** @var ReplacementReader[] */
     private array $replacements;
     private array $currentRefs;
 
@@ -26,7 +26,7 @@ class Replacements
         $this->replacements = $replacements;
     }
 
-    public function add(string $name, Replacement $replacement): void
+    public function add(string $name, ReplacementReader $replacement): void
     {
         if (isset($this->replacements[$name])) {
             throw new Exception\ReplacementOverwriteException();
