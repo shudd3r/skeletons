@@ -16,10 +16,10 @@ use Shudd3r\PackageFiles\Replacement;
 
 class ReplacementSetup
 {
-    private EnvSetup $setup;
+    private AppSetup $setup;
     private string   $placeholder;
 
-    public function __construct(EnvSetup $setup, string $placeholder)
+    public function __construct(AppSetup $setup, string $placeholder)
     {
         $this->setup       = $setup;
         $this->placeholder = $placeholder;

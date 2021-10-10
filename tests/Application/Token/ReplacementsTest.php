@@ -36,8 +36,8 @@ class ReplacementsTest extends TestCase
 
     public function testOverwritingDefinedReplacement_ThrowsException()
     {
+        $replacements = new Replacements();
         $env          = new Doubles\FakeRuntimeEnv();
-        $replacements = $env->replacements();
 
         $replacements->add('defined', $this->replacement($env, 'foo'));
 
@@ -47,8 +47,8 @@ class ReplacementsTest extends TestCase
 
     public function testFallbackFromReplacements_ReturnsReplacementValue()
     {
+        $replacements = new Replacements();
         $env          = new Doubles\FakeRuntimeEnv();
-        $replacements = $env->replacements();
 
         $replacements->add('first', $this->replacement($env, null, 'second'));
         $replacements->add('second', $this->replacement($env, null, 'third'));
@@ -59,8 +59,8 @@ class ReplacementsTest extends TestCase
 
     public function testCircularFallbackFromReplacements_ReturnsEmptyString()
     {
+        $replacements = new Replacements();
         $env          = new Doubles\FakeRuntimeEnv();
-        $replacements = $env->replacements();
 
         $replacements->add('first', $this->replacement($env, null, 'second'));
         $replacements->add('second', $this->replacement($env, null, 'third'));

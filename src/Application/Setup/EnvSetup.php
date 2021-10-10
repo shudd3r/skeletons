@@ -15,8 +15,6 @@ use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Environment\Terminal;
-use Shudd3r\PackageFiles\Replacement;
-use Shudd3r\PackageFiles\ReplacementReader;
 
 
 class EnvSetup
@@ -29,7 +27,6 @@ class EnvSetup
     private Directory $backup;
     private File      $metaFile;
     private array     $templates    = [];
-    private array     $replacements = [];
 
     public function __construct(Directory $package, Directory $skeleton)
     {
@@ -43,11 +40,6 @@ class EnvSetup
         $metaFile = $this->metaFile ?? $this->package->file(self::META_FILE);
 
         $env = new RuntimeEnv($this->package, $this->skeleton, $terminal, $backup, $metaFile);
-
-        $replacements = $env->replacements();
-        foreach ($this->replacements as $placeholder => $replacement) {
-            $replacements->add($placeholder, $replacement($env));
-        }
 
         $templates = $env->templates();
         foreach ($this->templates as $filename => $template) {
@@ -70,10 +62,5 @@ class EnvSetup
     public function addTemplate(string $filename, callable $template): void
     {
         $this->templates[$filename] = $template;
-    }
-
-    public function addReplacement(string $placeholder, Replacement $replacement): void
-    {
-        $this->replacements[$placeholder] = fn($env) => new ReplacementReader($env, $replacement);
     }
 }

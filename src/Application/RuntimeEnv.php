@@ -15,7 +15,6 @@ use Shudd3r\PackageFiles\Environment\Input;
 use Shudd3r\PackageFiles\Environment\Output;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Template\Factory\Templates;
 use Shudd3r\PackageFiles\Application\Token\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Application\Token\Data\MetaData;
@@ -33,8 +32,7 @@ class RuntimeEnv
 
     private ComposerJsonData $composer;
     private MetaData         $metaData;
-    private Replacements     $replacements;
-    private Templates              $templates;
+    private Templates        $templates;
 
     public function __construct(
         Directory $package,
@@ -48,11 +46,6 @@ class RuntimeEnv
         $this->terminal = $terminal ?? new Terminal();
         $this->backup   = $backup ?? $this->package->subdirectory('.skeleton-backup');
         $this->metaFile = $metaFile ?? $this->package->file('.github/skeleton.json');
-    }
-
-    public function replacements(): Replacements
-    {
-        return $this->replacements ??= new Replacements();
     }
 
     public function templates(): Templates

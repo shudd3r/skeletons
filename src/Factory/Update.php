@@ -14,23 +14,26 @@ namespace Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
 
 
 class Update implements Factory
 {
-    private RuntimeEnv $env;
+    private RuntimeEnv   $env;
+    private Replacements $replacements;
 
-    public function __construct(RuntimeEnv $env)
+    public function __construct(RuntimeEnv $env, Replacements $replacements)
     {
-        $this->env = $env;
+        $this->env          = $env;
+        $this->replacements = $replacements;
     }
 
     public function command(array $options): Command
     {
-        $tokenReader = $this->env->replacements()->update($options);
-        $validation  = new Validate($this->env);
+        $tokenReader = $this->replacements->update($options);
+        $validation  = new Validate($this->env, $this->replacements);
         $cache       = new TokenCache();
         $output      = $this->env->output();
 

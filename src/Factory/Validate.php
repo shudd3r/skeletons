@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
@@ -21,11 +22,13 @@ use Shudd3r\PackageFiles\Application\Processor;
 
 class Validate implements Factory
 {
-    private RuntimeEnv $env;
+    private RuntimeEnv   $env;
+    private Replacements $replacements;
 
-    public function __construct(RuntimeEnv $env)
+    public function __construct(RuntimeEnv $env, Replacements $replacements)
     {
-        $this->env = $env;
+        $this->env          = $env;
+        $this->replacements = $replacements;
     }
 
     public function command(array $options): Command
@@ -54,6 +57,6 @@ class Validate implements Factory
 
     private function tokenReader(): Reader
     {
-        return $this->env->replacements()->validate();
+        return $this->replacements->validate();
     }
 }
