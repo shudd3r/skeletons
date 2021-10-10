@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Tests\Replacement;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Replacement\RepositoryName;
-use Shudd3r\PackageFiles\Replacement\PackageName;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\ReplacementReader;
 use Shudd3r\PackageFiles\Tests\Doubles;
@@ -31,20 +30,24 @@ class RepositoryNameTest extends TestCase
     public function testWithoutGitConfigFile_DefaultValue_IsResolvedFromFallbackReplacement()
     {
         $replacement = new RepositoryName('fallback.name');
-        $env         = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('some/directory/package/name'));
-        $fallback    = new Token\Replacements(['fallback.name' => new ReplacementReader($env, new PackageName())]);
+        $env         = new Doubles\FakeRuntimeEnv();
 
-        $this->assertSame('package/name', $replacement->defaultValue($env, [], $fallback));
+        $fakeReplacement = new ReplacementReader($env, new Doubles\FakeReplacement('fallback/name'));
+        $fallback        = new Token\Replacements(['fallback.name' => $fakeReplacement]);
+
+        $this->assertSame('fallback/name', $replacement->defaultValue($env, [], $fallback));
     }
 
     public function testWithoutRemoteRepositoriesInGitConfig_DefaultValue_IsResolvedFromFallbackReplacement()
     {
         $replacement = new RepositoryName('fallback.name');
-        $env         = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('some/directory/package/name'));
-        $fallback    = new Token\Replacements(['fallback.name' => new ReplacementReader($env, new PackageName())]);
+        $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('.git/config', $this->config());
 
-        $this->assertSame('package/name', $replacement->defaultValue($env, [], $fallback));
+        $fakeReplacement = new ReplacementReader($env, new Doubles\FakeReplacement('fallback/name'));
+        $fallback        = new Token\Replacements(['fallback.name' => $fakeReplacement]);
+
+        $this->assertSame('fallback/name', $replacement->defaultValue($env, [], $fallback));
     }
 
     public function testWithRemoteRepositoriesInGitConfig_DefaultValue_IsReadWithCorrectPriority()

@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Tests\Replacement;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Replacement\SrcNamespace;
-use Shudd3r\PackageFiles\Replacement\PackageName;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\ReplacementReader;
 use Shudd3r\PackageFiles\Tests\Doubles;
@@ -41,10 +40,12 @@ class SrcNamespaceTest extends TestCase
     {
         $replacement = new SrcNamespace('fallback.name');
         $env         = new Doubles\FakeRuntimeEnv();
-        $fallback    = new Token\Replacements(['fallback.name' => new ReplacementReader($env, new PackageName())]);
         $env->package()->addFile('composer.json', $this->composerData(false));
 
-        $this->assertSame('Package\\Name', $replacement->defaultValue($env, [], $fallback));
+        $fakeReplacement = new ReplacementReader($env, new Doubles\FakeReplacement('fallback/name'));
+        $fallback        = new Token\Replacements(['fallback.name' => $fakeReplacement]);
+
+        $this->assertSame('Fallback\\Name', $replacement->defaultValue($env, [], $fallback));
     }
 
     public function testTokenMethodWithValidValue_ReturnsExpectedToken()

@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Tests\Replacement;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Replacement\PackageDescription;
-use Shudd3r\PackageFiles\Replacement\PackageName;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\ReplacementReader;
 use Shudd3r\PackageFiles\Tests\Doubles;
@@ -41,10 +40,12 @@ class PackageDescriptionTest extends TestCase
     {
         $replacement = new PackageDescription('fallback.token');
         $env         = new Doubles\FakeRuntimeEnv();
-        $fallback    = new Token\Replacements(['fallback.token' => new ReplacementReader($env, new PackageName())]);
         $env->package()->addFile('composer.json', '{"name": "composer/package"}');
 
-        $this->assertSame('composer/package package', $replacement->defaultValue($env, [], $fallback));
+        $fakeReplacement = new ReplacementReader($env, new Doubles\FakeReplacement('fallback value'));
+        $fallback        = new Token\Replacements(['fallback.token' => $fakeReplacement]);
+
+        $this->assertSame('fallback value package', $replacement->defaultValue($env, [], $fallback));
     }
 
     public function testTokenMethodWithValidValue_ReturnsExpectedToken()
