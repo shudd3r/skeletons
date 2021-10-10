@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 
@@ -21,7 +22,7 @@ interface Replacement
 
     public function inputPrompt(): ?string;
 
-    public function defaultValue(RuntimeEnv $env, array $options): ?string;
+    public function defaultValue(RuntimeEnv $env, array $options, Replacements $replacements): ?string;
 
     public function isValid(string $value): bool;
 

@@ -12,8 +12,9 @@
 namespace Shudd3r\PackageFiles\Replacement;
 
 use Shudd3r\PackageFiles\Replacement;
-use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 
 class RepositoryName implements Replacement
@@ -35,9 +36,9 @@ class RepositoryName implements Replacement
         return 'Github repository name';
     }
 
-    public function defaultValue(RuntimeEnv $env, array $options): string
+    public function defaultValue(RuntimeEnv $env, array $options, Replacements $replacements): string
     {
-        return $this->repositoryFromGitConfig($env) ?? $this->fallbackValue($env, $options);
+        return $this->repositoryFromGitConfig($env) ?? $this->fallbackValue($replacements, $options);
     }
 
     public function isValid(string $value): bool
@@ -75,8 +76,8 @@ class RepositoryName implements Replacement
         return null;
     }
 
-    private function fallbackValue(RuntimeEnv $env, array $options): string
+    private function fallbackValue(Replacements $replacements, array $options): string
     {
-        return $this->fallbackToken ? $env->replacements()->valueOf($this->fallbackToken, $options) : '';
+        return $this->fallbackToken ? $replacements->valueOf($this->fallbackToken, $options) : '';
     }
 }

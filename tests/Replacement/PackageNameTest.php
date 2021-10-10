@@ -32,14 +32,14 @@ class PackageNameTest extends TestCase
         $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"name": "composer/package"}');
 
-        $this->assertSame('composer/package', $replacement->defaultValue($env, []));
+        $this->assertSame('composer/package', $replacement->defaultValue($env, [], new Token\Replacements()));
     }
 
     public function testWithoutPackageNameInComposerJson_DefaultValue_IsResolvedFromDirectoryStructure()
     {
         $replacement = new PackageName();
         $env         = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('D:\dev\www\project\directory'));
-        $this->assertSame('project/directory', $replacement->defaultValue($env, []));
+        $this->assertSame('project/directory', $replacement->defaultValue($env, [], new Token\Replacements()));
     }
 
     public function testTokenMethodWithValidValue_ReturnsExpectedToken()

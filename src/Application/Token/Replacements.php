@@ -44,7 +44,7 @@ class Replacements
         if (!$replacement) { return ''; }
 
         $this->currentRefs[$replacementName] = true;
-        $token = $replacement->initialToken($replacementName, $options);
+        $token = $replacement->initialToken($replacementName, $options, $this);
         $this->currentRefs[$replacementName] = false;
 
         return $token ? $token->value() : '';
@@ -52,7 +52,7 @@ class Replacements
 
     public function init(array $options): Reader
     {
-        return new Reader\InitialReader($this->replacements, $options);
+        return new Reader\InitialReader($this->replacements, $options, $this);
     }
 
     public function validate(): Reader

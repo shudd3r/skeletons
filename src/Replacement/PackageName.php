@@ -12,9 +12,10 @@
 namespace Shudd3r\PackageFiles\Replacement;
 
 use Shudd3r\PackageFiles\Replacement;
-use Shudd3r\PackageFiles\Application\Token\ValueToken;
-use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
+use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 
 class PackageName implements Replacement
@@ -42,7 +43,7 @@ class PackageName implements Replacement
         return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
     }
 
-    public function defaultValue(RuntimeEnv $env, array $options): string
+    public function defaultValue(RuntimeEnv $env, array $options, Replacements $replacements): string
     {
         return $env->composer()->value('name') ?? $this->directoryFallback($env);
     }

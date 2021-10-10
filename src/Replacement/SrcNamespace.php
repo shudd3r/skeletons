@@ -12,9 +12,10 @@
 namespace Shudd3r\PackageFiles\Replacement;
 
 use Shudd3r\PackageFiles\Replacement;
-use Shudd3r\PackageFiles\Application\Token\ValueToken;
-use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
+use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 
 class SrcNamespace implements Replacement
@@ -36,9 +37,9 @@ class SrcNamespace implements Replacement
         return 'Source files namespace';
     }
 
-    public function defaultValue(RuntimeEnv $env, array $options): string
+    public function defaultValue(RuntimeEnv $env, array $options, Replacements $replacements): string
     {
-        return $this->namespaceFromComposer($env) ?? $this->namespaceFromFallbackValue($env, $options);
+        return $this->namespaceFromComposer($env) ?? $this->namespaceFromFallbackValue($replacements, $options);
     }
 
     public function isValid(string $value): bool
@@ -67,9 +68,9 @@ class SrcNamespace implements Replacement
         return $namespace ? rtrim($namespace, '\\') : null;
     }
 
-    private function namespaceFromFallbackValue(RuntimeEnv $env, array $options): string
+    private function namespaceFromFallbackValue(Replacements $replacements, array $options): string
     {
-        $fallbackValue = $this->fallbackToken ? $env->replacements()->valueOf($this->fallbackToken, $options) : '';
+        $fallbackValue = $this->fallbackToken ? $replacements->valueOf($this->fallbackToken, $options) : '';
         if (!$fallbackValue) { return ''; }
 
         [$vendor, $package] = explode('/', $fallbackValue) + ['', ''];

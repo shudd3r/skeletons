@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 
@@ -28,11 +29,11 @@ class ReplacementReader
         $this->replacement = $replacement;
     }
 
-    final public function initialToken(string $name, array $options): ?ValueToken
+    final public function initialToken(string $name, array $options, Replacements $replacements): ?ValueToken
     {
         if (isset($this->initialToken)) { return $this->initialToken; }
 
-        $default = $this->commandLineOption($options) ?? $this->replacement->defaultValue($this->env, $options);
+        $default = $this->commandLineOption($options) ?? $this->replacement->defaultValue($this->env, $options, $replacements);
         $initial = $this->inputString($options, $this->replacement->isValid($default) ? $default : '');
 
         return $this->initialToken = $this->replacement->token($name, $initial);

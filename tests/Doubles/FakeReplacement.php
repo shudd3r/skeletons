@@ -12,8 +12,9 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Replacement;
-use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 
 class FakeReplacement implements Replacement
@@ -45,9 +46,9 @@ class FakeReplacement implements Replacement
         return $this->prompt;
     }
 
-    public function defaultValue(RuntimeEnv $env, array $options): string
+    public function defaultValue(RuntimeEnv $env, array $options, Replacements $replacements): string
     {
-        return $this->default ?? $this->fallbackValue($env, $options);
+        return $this->default ?? $this->fallbackValue($options, $replacements);
     }
 
     public function isValid(string $value): bool
@@ -60,8 +61,8 @@ class FakeReplacement implements Replacement
         return $this->isValid($value) ? new ValueToken($name, $value) : null;
     }
 
-    private function fallbackValue(RuntimeEnv $env, array $options): string
+    private function fallbackValue(array $options, Replacements $replacements): string
     {
-        return $this->fallback ? $env->replacements()->valueOf($this->fallback, $options) : '';
+        return $this->fallback ? $replacements->valueOf($this->fallback, $options) : '';
     }
 }

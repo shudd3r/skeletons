@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\ReplacementReader;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeReplacement;
@@ -23,7 +24,7 @@ class ReplacementReaderTest extends TestCase
     {
         $replacement = new ReplacementReader(new Doubles\FakeRuntimeEnv(), new FakeReplacement(null));
 
-        $this->assertNull($replacement->initialToken('foo', []));
+        $this->assertNull($replacement->initialToken('foo', [], new Replacements()));
         $this->assertNull($replacement->updateToken('foo', []));
         $this->assertNull($replacement->validationToken('foo'));
     }
@@ -52,7 +53,7 @@ class ReplacementReaderTest extends TestCase
         }
 
         $replacement = new ReplacementReader($env, new FakeReplacement('default value'));
-        $this->assertEquals(new ValueToken('foo', $initValue), $replacement->initialToken('foo', $options));
+        $this->assertEquals(new ValueToken('foo', $initValue), $replacement->initialToken('foo', $options, new Replacements()));
         $this->assertEquals(new ValueToken('foo', 'meta data'), $replacement->validationToken('foo'));
         $this->assertEquals(new ValueToken('foo', $updateValue), $replacement->updateToken('foo', $options));
     }
@@ -61,8 +62,8 @@ class ReplacementReaderTest extends TestCase
     {
         $replacement = new ReplacementReader(new Doubles\FakeRuntimeEnv(), new FakeReplacement('default value'));
 
-        $initialToken = $replacement->initialToken('token.name', []);
-        $this->assertSame($initialToken, $replacement->initialToken('another.name', []));
+        $initialToken = $replacement->initialToken('token.name', [], new Replacements());
+        $this->assertSame($initialToken, $replacement->initialToken('another.name', [], new Replacements()));
     }
 
     public function inputOptions(): array
