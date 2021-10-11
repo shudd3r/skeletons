@@ -11,9 +11,9 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Setup\AppSetup;
 use Shudd3r\PackageFiles\Application\Setup\EnvSetup;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Setup\ReplacementSetup;
 use Shudd3r\PackageFiles\Application\Setup\TemplateSetup;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
@@ -64,8 +64,10 @@ class Application
     public function run(string $command, array $options = []): int
     {
         try {
-            $env     = $this->envSetup->runtimeEnv($this->terminal);
-            $factory = $this->factory($command, $env);
+            $env          = $this->envSetup->runtimeEnv($this->terminal);
+            $replacements = $this->appSetup->replacements($env, $options);
+            $factory      = $this->factory($command, $env, $replacements);
+
             $factory->command($options)->execute();
         } catch (Exception $e) {
             $this->terminal->send($e->getMessage(), 1);
@@ -74,10 +76,8 @@ class Application
         return $this->terminal->exitCode();
     }
 
-    protected function factory(string $command, RuntimeEnv $env): Factory
+    protected function factory(string $command, RuntimeEnv $env, Replacements $replacements): Factory
     {
-        $replacements = $this->appSetup->replacements($env);
-
         switch ($command) {
             case 'init':   return new Factory\Initialize($env, $replacements);
             case 'check':  return new Factory\Validate($env, $replacements);

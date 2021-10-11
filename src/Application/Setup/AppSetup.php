@@ -21,14 +21,14 @@ class AppSetup
 {
     private array $replacements = [];
 
-    public function replacements(RuntimeEnv $env): Replacements
+    public function replacements(RuntimeEnv $env, array $options): Replacements
     {
         $replacements = [];
         foreach ($this->replacements as $name => $replacement) {
             $replacements[$name] = new ReplacementReader($env, $replacement);
         }
 
-        return new Replacements($replacements);
+        return new Replacements($options, $replacements);
     }
 
     public function addReplacement(string $placeholder, Replacement $replacement): void

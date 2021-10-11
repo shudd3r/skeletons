@@ -16,16 +16,19 @@ use Shudd3r\PackageFiles\ReplacementReader;
 
 class Replacements
 {
+    private array $options;
+
     /** @var ReplacementReader[] */
     private array $replacements;
     private array $currentRefs;
 
-    public function __construct(array $replacements = [])
+    public function __construct(array $options, array $replacements = [])
     {
+        $this->options      = $options;
         $this->replacements = $replacements;
     }
 
-    public function valueOf(string $replacementName, array $options): string
+    public function valueOf(string $replacementName): string
     {
         $isCurrentRef = $this->currentRefs[$replacementName] ?? false;
         if ($isCurrentRef) { return ''; }
@@ -34,15 +37,15 @@ class Replacements
         if (!$replacement) { return ''; }
 
         $this->currentRefs[$replacementName] = true;
-        $token = $replacement->initialToken($replacementName, $options, $this);
+        $token = $replacement->initialToken($replacementName, $this->options, $this);
         $this->currentRefs[$replacementName] = false;
 
         return $token ? $token->value() : '';
     }
 
-    public function initialTokens(array $options): array
+    public function initialTokens(): array
     {
-        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->initialToken($name, $options, $this);
+        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->initialToken($name, $this->options, $this);
         return $this->readTokens($readMethod);
     }
 
@@ -52,9 +55,9 @@ class Replacements
         return $this->readTokens($readMethod);
     }
 
-    public function updateTokens(array $options): array
+    public function updateTokens(): array
     {
-        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->updateToken($name, $options);
+        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->updateToken($name, $this->options);
         return $this->readTokens($readMethod);
     }
 

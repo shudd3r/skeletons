@@ -33,11 +33,11 @@ abstract class Reader
 
     public function tokenValues(): array
     {
-        $this->tokens ??= $this->token();
+        $this->tokens ??= $this->tokens();
 
         $values = [];
         foreach ($this->tokens as $name => $token) {
-            $values[$name] = $token->value();
+            $values[$name] = $token ? $token->value() : null;
         }
 
         return $values;

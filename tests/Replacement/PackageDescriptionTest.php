@@ -33,7 +33,7 @@ class PackageDescriptionTest extends TestCase
         $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"description": "composer json description"}');
 
-        $this->assertSame('composer json description', $replacement->defaultValue($env, [], new Token\Replacements()));
+        $this->assertSame('composer json description', $replacement->defaultValue($env, [], new Token\Replacements([])));
     }
 
     public function testWithoutDescriptionInComposerJson_DefaultValue_IsResolvedFromFallbackReplacement()
@@ -43,7 +43,7 @@ class PackageDescriptionTest extends TestCase
         $env->package()->addFile('composer.json', '{"name": "composer/package"}');
 
         $fakeReplacement = new ReplacementReader($env, new Doubles\FakeReplacement('fallback value'));
-        $fallback        = new Token\Replacements(['fallback.token' => $fakeReplacement]);
+        $fallback        = new Token\Replacements([], ['fallback.token' => $fakeReplacement]);
 
         $this->assertSame('fallback value package', $replacement->defaultValue($env, [], $fallback));
     }

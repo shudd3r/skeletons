@@ -22,26 +22,26 @@ class ReplacementsTest extends TestCase
     public function testValueOfReplacement_ReturnsDefinedReplacementValue()
     {
         $env          = new Doubles\FakeRuntimeEnv();
-        $replacements = new Replacements([
+        $replacements = new Replacements([], [
             'foo' => $this->replacement($env, 'Foo value'),
             'bar' => $this->replacement($env, 'Bar value')
         ]);
 
-        $this->assertSame('', $replacements->valueOf('undefined', []));
-        $this->assertSame('Foo value', $replacements->valueOf('foo', []));
-        $this->assertSame('Bar value', $replacements->valueOf('bar', []));
+        $this->assertSame('', $replacements->valueOf('undefined'));
+        $this->assertSame('Foo value', $replacements->valueOf('foo'));
+        $this->assertSame('Bar value', $replacements->valueOf('bar'));
     }
 
     public function testFallbackFromReplacements_ReturnsReplacementValue()
     {
         $env          = new Doubles\FakeRuntimeEnv();
-        $replacements = new Replacements([
+        $replacements = new Replacements([], [
             'first'  => $this->replacement($env, null, 'second'),
             'second' => $this->replacement($env, null, 'third'),
             'third'  => $this->replacement($env, 'third value')
         ]);
 
-        $this->assertSame('third value', $replacements->valueOf('first', []));
+        $this->assertSame('third value', $replacements->valueOf('first'));
     }
 
     public function testCircularFallbackFromReplacements_ReturnsEmptyString()

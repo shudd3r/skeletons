@@ -33,7 +33,7 @@ class RepositoryNameTest extends TestCase
         $env         = new Doubles\FakeRuntimeEnv();
 
         $fakeReplacement = new ReplacementReader($env, new Doubles\FakeReplacement('fallback/name'));
-        $fallback        = new Token\Replacements(['fallback.name' => $fakeReplacement]);
+        $fallback        = new Token\Replacements([], ['fallback.name' => $fakeReplacement]);
 
         $this->assertSame('fallback/name', $replacement->defaultValue($env, [], $fallback));
     }
@@ -45,7 +45,7 @@ class RepositoryNameTest extends TestCase
         $env->package()->addFile('.git/config', $this->config());
 
         $fakeReplacement = new ReplacementReader($env, new Doubles\FakeReplacement('fallback/name'));
-        $fallback        = new Token\Replacements(['fallback.name' => $fakeReplacement]);
+        $fallback        = new Token\Replacements([], ['fallback.name' => $fakeReplacement]);
 
         $this->assertSame('fallback/name', $replacement->defaultValue($env, [], $fallback));
     }
@@ -54,7 +54,7 @@ class RepositoryNameTest extends TestCase
     {
         $replacement = new RepositoryName();
         $env         = new Doubles\FakeRuntimeEnv();
-        $fallback    = new Token\Replacements();
+        $fallback    = new Token\Replacements([]);
         $gitConfig   = $env->package()->file('.git/config');
 
         $remotes = ['foo' => 'git@github.com:some/repo.git'];

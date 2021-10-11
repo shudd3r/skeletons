@@ -22,7 +22,7 @@ class FakeReader extends Reader
     public function __construct(bool $returnsTokens = true)
     {
         $this->returnsTokens = $returnsTokens;
-        parent::__construct(new Token\Replacements());
+        parent::__construct(new Token\Replacements([]));
     }
 
     protected function tokens(): array
