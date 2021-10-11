@@ -43,7 +43,7 @@ class PackageName implements Replacement
         return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
     }
 
-    public function defaultValue(RuntimeEnv $env, array $options, Replacements $replacements): string
+    public function defaultValue(RuntimeEnv $env, Replacements $replacements): string
     {
         return $env->composer()->value('name') ?? $this->directoryFallback($env);
     }

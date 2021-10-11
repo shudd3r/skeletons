@@ -37,9 +37,9 @@ class SrcNamespace implements Replacement
         return 'Source files namespace';
     }
 
-    public function defaultValue(RuntimeEnv $env, array $options, Replacements $replacements): string
+    public function defaultValue(RuntimeEnv $env, Replacements $replacements): string
     {
-        return $this->namespaceFromComposer($env) ?? $this->namespaceFromFallbackValue($replacements, $options);
+        return $this->namespaceFromComposer($env) ?? $this->namespaceFromFallbackValue($replacements);
     }
 
     public function isValid(string $value): bool
@@ -68,9 +68,9 @@ class SrcNamespace implements Replacement
         return $namespace ? rtrim($namespace, '\\') : null;
     }
 
-    private function namespaceFromFallbackValue(Replacements $replacements, array $options): string
+    private function namespaceFromFallbackValue(Replacements $replacements): string
     {
-        $fallbackValue = $this->fallbackToken ? $replacements->valueOf($this->fallbackToken, $options) : '';
+        $fallbackValue = $this->fallbackToken ? $replacements->valueOf($this->fallbackToken) : '';
         if (!$fallbackValue) { return ''; }
 
         [$vendor, $package] = explode('/', $fallbackValue) + ['', ''];

@@ -33,7 +33,7 @@ class SrcNamespaceTest extends TestCase
         $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', $this->composerData());
 
-        $this->assertSame('Composer\\Namespace', $replacement->defaultValue($env, [], new Token\Replacements([])));
+        $this->assertSame('Composer\\Namespace', $replacement->defaultValue($env, new Token\Replacements([])));
     }
 
     public function testWithoutSrcNamespaceInComposerJson_DefaultValue_IsResolvedFromFallbackReplacement()
@@ -45,7 +45,7 @@ class SrcNamespaceTest extends TestCase
         $fakeReplacement = new ReplacementReader($env, new Doubles\FakeReplacement('fallback/name'));
         $fallback        = new Token\Replacements([], ['fallback.name' => $fakeReplacement]);
 
-        $this->assertSame('Fallback\\Name', $replacement->defaultValue($env, [], $fallback));
+        $this->assertSame('Fallback\\Name', $replacement->defaultValue($env, $fallback));
     }
 
     public function testTokenMethodWithValidValue_ReturnsExpectedToken()

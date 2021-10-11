@@ -22,7 +22,7 @@ interface Replacement
 
     public function inputPrompt(): ?string;
 
-    public function defaultValue(RuntimeEnv $env, array $options, Replacements $replacements): ?string;
+    public function defaultValue(RuntimeEnv $env, Replacements $replacements): ?string;
 
     public function isValid(string $value): bool;
 

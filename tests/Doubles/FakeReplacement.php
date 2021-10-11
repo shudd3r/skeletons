@@ -46,9 +46,9 @@ class FakeReplacement implements Replacement
         return $this->prompt;
     }
 
-    public function defaultValue(RuntimeEnv $env, array $options, Replacements $replacements): string
+    public function defaultValue(RuntimeEnv $env, Replacements $replacements): string
     {
-        return $this->default ?? $this->fallbackValue($options, $replacements);
+        return $this->default ?? $this->fallbackValue($replacements);
     }
 
     public function isValid(string $value): bool
@@ -61,8 +61,8 @@ class FakeReplacement implements Replacement
         return $this->isValid($value) ? new ValueToken($name, $value) : null;
     }
 
-    private function fallbackValue(array $options, Replacements $replacements): string
+    private function fallbackValue(Replacements $replacements): string
     {
-        return $this->fallback ? $replacements->valueOf($this->fallback, $options) : '';
+        return $this->fallback ? $replacements->valueOf($this->fallback) : '';
     }
 }

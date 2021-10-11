@@ -33,7 +33,7 @@ class ReplacementReader
     {
         if (isset($this->initialToken)) { return $this->initialToken; }
 
-        $default = $this->commandLineOption($options) ?? $this->replacement->defaultValue($this->env, $options, $replacements);
+        $default = $this->commandLineOption($options) ?? $this->replacement->defaultValue($this->env, $replacements);
         $initial = $this->inputString($options, $this->replacement->isValid($default) ? $default : '');
 
         return $this->initialToken = $this->replacement->token($name, $initial);

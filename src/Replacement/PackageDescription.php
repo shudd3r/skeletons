@@ -46,15 +46,15 @@ class PackageDescription implements Replacement
         return !empty($value);
     }
 
-    public function defaultValue(RuntimeEnv $env, array $options, Replacements $replacements): string
+    public function defaultValue(RuntimeEnv $env, Replacements $replacements): string
     {
-        return $env->composer()->value('description') ?? $this->descriptionFromFallbackValue($replacements, $options);
+        return $env->composer()->value('description') ?? $this->descriptionFromFallbackValue($replacements);
     }
 
-    private function descriptionFromFallbackValue(Replacements $replacements, array $options): string
+    private function descriptionFromFallbackValue(Replacements $replacements): string
     {
         if (!$this->fallbackToken) { return ''; }
-        $fallbackValue = $replacements->valueOf($this->fallbackToken, $options);
+        $fallbackValue = $replacements->valueOf($this->fallbackToken);
         return $fallbackValue ? $fallbackValue . ' package' : '';
     }
 }

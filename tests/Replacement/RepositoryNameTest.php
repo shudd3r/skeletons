@@ -35,7 +35,7 @@ class RepositoryNameTest extends TestCase
         $fakeReplacement = new ReplacementReader($env, new Doubles\FakeReplacement('fallback/name'));
         $fallback        = new Token\Replacements([], ['fallback.name' => $fakeReplacement]);
 
-        $this->assertSame('fallback/name', $replacement->defaultValue($env, [], $fallback));
+        $this->assertSame('fallback/name', $replacement->defaultValue($env, $fallback));
     }
 
     public function testWithoutRemoteRepositoriesInGitConfig_DefaultValue_IsResolvedFromFallbackReplacement()
@@ -47,7 +47,7 @@ class RepositoryNameTest extends TestCase
         $fakeReplacement = new ReplacementReader($env, new Doubles\FakeReplacement('fallback/name'));
         $fallback        = new Token\Replacements([], ['fallback.name' => $fakeReplacement]);
 
-        $this->assertSame('fallback/name', $replacement->defaultValue($env, [], $fallback));
+        $this->assertSame('fallback/name', $replacement->defaultValue($env, $fallback));
     }
 
     public function testWithRemoteRepositoriesInGitConfig_DefaultValue_IsReadWithCorrectPriority()
@@ -59,19 +59,19 @@ class RepositoryNameTest extends TestCase
 
         $remotes = ['foo' => 'git@github.com:some/repo.git'];
         $gitConfig->write($this->config($remotes));
-        $this->assertSame('some/repo', $replacement->defaultValue($env, [], $fallback));
+        $this->assertSame('some/repo', $replacement->defaultValue($env, $fallback));
 
         $remotes += ['second' => 'git@github.com:other/repo.git'];
         $gitConfig->write($this->config($remotes));
-        $this->assertSame('some/repo', $replacement->defaultValue($env, [], $fallback));
+        $this->assertSame('some/repo', $replacement->defaultValue($env, $fallback));
 
         $remotes += ['origin' => 'https://github.com/orig/repo.git'];
         $gitConfig->write($this->config($remotes));
-        $this->assertSame('orig/repo', $replacement->defaultValue($env, [], $fallback));
+        $this->assertSame('orig/repo', $replacement->defaultValue($env, $fallback));
 
         $remotes += ['upstream' => 'git@github.com:master/ssh-repo.git'];
         $gitConfig->write($this->config($remotes));
-        $this->assertSame('master/ssh-repo', $replacement->defaultValue($env, [], $fallback));
+        $this->assertSame('master/ssh-repo', $replacement->defaultValue($env, $fallback));
     }
 
     public function testTokenMethodWithValidValue_ReturnsExpectedToken()

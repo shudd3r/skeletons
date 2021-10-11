@@ -36,9 +36,9 @@ class RepositoryName implements Replacement
         return 'Github repository name';
     }
 
-    public function defaultValue(RuntimeEnv $env, array $options, Replacements $replacements): string
+    public function defaultValue(RuntimeEnv $env, Replacements $replacements): string
     {
-        return $this->repositoryFromGitConfig($env) ?? $this->fallbackValue($replacements, $options);
+        return $this->repositoryFromGitConfig($env) ?? $this->fallbackValue($replacements);
     }
 
     public function isValid(string $value): bool
@@ -76,8 +76,8 @@ class RepositoryName implements Replacement
         return null;
     }
 
-    private function fallbackValue(Replacements $replacements, array $options): string
+    private function fallbackValue(Replacements $replacements): string
     {
-        return $this->fallbackToken ? $replacements->valueOf($this->fallbackToken, $options) : '';
+        return $this->fallbackToken ? $replacements->valueOf($this->fallbackToken) : '';
     }
 }
