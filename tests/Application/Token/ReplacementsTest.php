@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Application\Token;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\ReplacementReader;
-use Shudd3r\PackageFiles\Application\Exception;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -22,49 +21,37 @@ class ReplacementsTest extends TestCase
 {
     public function testValueOfReplacement_ReturnsDefinedReplacementValue()
     {
-        $env        = new Doubles\FakeRuntimeEnv();
-        $predefined = $this->replacement($env, 'predefinedTokenValue');
-        $added      = $this->replacement($env, 'addedTokenValue');
-
-        $replacements = new Replacements(['predefined' => $predefined]);
-        $replacements->add('added', $added);
+        $env          = new Doubles\FakeRuntimeEnv();
+        $replacements = new Replacements([
+            'foo' => $this->replacement($env, 'Foo value'),
+            'bar' => $this->replacement($env, 'Bar value')
+        ]);
 
         $this->assertSame('', $replacements->valueOf('undefined', []));
-        $this->assertSame('predefinedTokenValue', $replacements->valueOf('predefined', []));
-        $this->assertSame('addedTokenValue', $replacements->valueOf('added', []));
-    }
-
-    public function testOverwritingDefinedReplacement_ThrowsException()
-    {
-        $replacements = new Replacements();
-        $env          = new Doubles\FakeRuntimeEnv();
-
-        $replacements->add('defined', $this->replacement($env, 'foo'));
-
-        $this->expectException(Exception\ReplacementOverwriteException::class);
-        $replacements->add('defined', $this->replacement($env, 'bar'));
+        $this->assertSame('Foo value', $replacements->valueOf('foo', []));
+        $this->assertSame('Bar value', $replacements->valueOf('bar', []));
     }
 
     public function testFallbackFromReplacements_ReturnsReplacementValue()
     {
-        $replacements = new Replacements();
         $env          = new Doubles\FakeRuntimeEnv();
-
-        $replacements->add('first', $this->replacement($env, null, 'second'));
-        $replacements->add('second', $this->replacement($env, null, 'third'));
-        $replacements->add('third', $this->replacement($env, 'third value'));
+        $replacements = new Replacements([
+            'first'  => $this->replacement($env, null, 'second'),
+            'second' => $this->replacement($env, null, 'third'),
+            'third'  => $this->replacement($env, 'third value')
+        ]);
 
         $this->assertSame('third value', $replacements->valueOf('first', []));
     }
 
     public function testCircularFallbackFromReplacements_ReturnsEmptyString()
     {
-        $replacements = new Replacements();
         $env          = new Doubles\FakeRuntimeEnv();
-
-        $replacements->add('first', $this->replacement($env, null, 'second'));
-        $replacements->add('second', $this->replacement($env, null, 'third'));
-        $replacements->add('third', $this->replacement($env, null, 'first'));
+        $replacements = new Replacements([
+            'first'  => $this->replacement($env, null, 'second'),
+            'second' => $this->replacement($env, null, 'third'),
+            'third'  => $this->replacement($env, null, 'first')
+        ]);
 
         $this->assertSame('', $replacements->valueOf('first', []));
     }

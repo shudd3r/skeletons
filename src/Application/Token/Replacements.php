@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Application\Token;
 
 use Shudd3r\PackageFiles\ReplacementReader;
-use Shudd3r\PackageFiles\Application\Exception;
 
 
 class Replacements
@@ -24,15 +23,6 @@ class Replacements
     public function __construct(array $replacements = [])
     {
         $this->replacements = $replacements;
-    }
-
-    public function add(string $name, ReplacementReader $replacement): void
-    {
-        if (isset($this->replacements[$name])) {
-            throw new Exception\ReplacementOverwriteException();
-        }
-
-        $this->replacements[$name] = $replacement;
     }
 
     public function valueOf(string $replacementName, array $options): string
