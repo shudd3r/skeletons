@@ -40,18 +40,31 @@ class Replacements
         return $token ? $token->value() : '';
     }
 
-    public function init(array $options): Reader
+    public function initialTokens(array $options): array
     {
-        return new Reader\InitialReader($this->replacements, $options, $this);
+        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->initialToken($name, $options, $this);
+        return $this->readTokens($readMethod);
     }
 
-    public function validate(): Reader
+    public function validationTokens(): array
     {
-        return new Reader\ValidationReader($this->replacements);
+        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->validationToken($name);
+        return $this->readTokens($readMethod);
     }
 
-    public function update(array $options): Reader
+    public function updateTokens(array $options): array
     {
-        return new Reader\UpdateReader($this->replacements, $options);
+        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->updateToken($name, $options);
+        return $this->readTokens($readMethod);
+    }
+
+    private function readTokens(callable $readMethod): array
+    {
+        $tokens = [];
+        foreach ($this->replacements as $name => $replacement) {
+            $tokens[$name] = $readMethod($name, $replacement);
+        }
+
+        return $tokens;
     }
 }

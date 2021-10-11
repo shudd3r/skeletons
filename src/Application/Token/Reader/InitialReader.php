@@ -13,23 +13,20 @@ namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\ReplacementReader;
 
 
 class InitialReader extends Reader
 {
-    private array              $options;
-    private Token\Replacements $replacements;
+    private array $options;
 
-    public function __construct(array $replacementsArray, array $options, Token\Replacements $replacements)
+    public function __construct(Token\Replacements $replacements, array $options)
     {
-        $this->options      = $options;
-        $this->replacements = $replacements;
-        parent::__construct($replacementsArray);
+        $this->options = $options;
+        parent::__construct($replacements);
     }
 
-    protected function tokenInstance(string $name, ReplacementReader $replacement): ?Token
+    protected function tokens(): array
     {
-        return $replacement->initialToken($name, $this->options, $this->replacements);
+        return $this->replacements->initialTokens($this->options);
     }
 }

@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\Processor;
@@ -32,7 +33,7 @@ class Initialize implements Factory
 
     public function command(array $options): Command
     {
-        $tokenReader     = $this->replacements->init($options);
+        $tokenReader     = new Reader\InitialReader($this->replacements, $options);
         $generatedFiles  = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupDirectory = $this->env->backup();
         $output          = $this->env->output();

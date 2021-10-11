@@ -57,6 +57,6 @@ class Validate implements Factory
 
     private function tokenReader(): Reader
     {
-        return $this->replacements->validate();
+        return new Reader\ValidationReader($this->replacements);
     }
 }

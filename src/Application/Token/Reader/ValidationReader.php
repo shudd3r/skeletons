@@ -12,14 +12,12 @@
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\ReplacementReader;
 
 
 class ValidationReader extends Reader
 {
-    protected function tokenInstance(string $name, ReplacementReader $replacement): ?Token
+    protected function tokens(): array
     {
-        return $replacement->validationToken($name);
+        return $this->replacements->validationTokens();
     }
 }

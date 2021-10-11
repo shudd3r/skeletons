@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
@@ -32,7 +33,7 @@ class Update implements Factory
 
     public function command(array $options): Command
     {
-        $tokenReader = $this->replacements->update($options);
+        $tokenReader = new Reader\UpdateReader($this->replacements, $options);
         $validation  = new Validate($this->env, $this->replacements);
         $cache       = new TokenCache();
         $output      = $this->env->output();

@@ -13,21 +13,20 @@ namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\ReplacementReader;
 
 
 class UpdateReader extends Reader
 {
     private array $options;
 
-    public function __construct(array $replacements, array $options)
+    public function __construct(Token\Replacements $replacements, array $options)
     {
         $this->options = $options;
         parent::__construct($replacements);
     }
 
-    protected function tokenInstance(string $name, ReplacementReader $replacement): ?Token
+    protected function tokens(): array
     {
-        return $replacement->updateToken($name, $this->options);
+        return $this->replacements->updateTokens($this->options);
     }
 }
