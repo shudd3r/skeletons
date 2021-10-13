@@ -11,9 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Application\Setup;
 
-use Shudd3r\PackageFiles\Application\Token\Replacements;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\ReplacementReader;
+use Shudd3r\PackageFiles\Application\Token\Reworked\Replacements;
 use Shudd3r\PackageFiles\Replacement;
 
 
@@ -21,14 +19,9 @@ class AppSetup
 {
     private array $replacements = [];
 
-    public function replacements(RuntimeEnv $env, array $options): Replacements
+    public function replacements(): Replacements
     {
-        $replacements = [];
-        foreach ($this->replacements as $name => $replacement) {
-            $replacements[$name] = new ReplacementReader($replacement, $env, $options);
-        }
-
-        return new Replacements($replacements);
+        return new Replacements($this->replacements);
     }
 
     public function addReplacement(string $placeholder, Replacement $replacement): void

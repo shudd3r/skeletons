@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Application\Command\Precondition;
 
 use Shudd3r\PackageFiles\Application\Command\Precondition;
-use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\Reworked\Reader;
 use Shudd3r\PackageFiles\Application\Processor;
 
 

@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Application\Setup\EnvSetup;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Setup\ReplacementSetup;
 use Shudd3r\PackageFiles\Application\Setup\TemplateSetup;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Token\Reworked\Replacements;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\Terminal;
 use Exception;
