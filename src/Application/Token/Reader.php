@@ -12,53 +12,36 @@
 namespace Shudd3r\PackageFiles\Application\Token;
 
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\Replacement;
 
 
 abstract class Reader
 {
-    private array $replacements;
+    protected Replacements $replacements;
+
     private array $tokens;
 
-    public function __construct(array $replacements)
+    public function __construct(Replacements $replacements)
     {
         $this->replacements = $replacements;
     }
 
     public function token(): ?Token
     {
-        $this->tokens ??= $this->readTokens();
-        return $this->validTokens() ? new Token\CompositeToken(...array_values($this->tokens)) : null;
+        $this->tokens ??= $this->tokens();
+        return !in_array(null, $this->tokens) ? new Token\CompositeToken(...array_values($this->tokens)) : null;
     }
 
     public function tokenValues(): array
     {
-        $this->tokens ??= $this->token();
+        $this->tokens ??= $this->tokens();
 
         $values = [];
         foreach ($this->tokens as $name => $token) {
-            $values[$name] = $token->value();
+            $values[$name] = $token ? $token->value() : null;
         }
 
         return $values;
     }
 
-    abstract protected function tokenInstance(string $name, Replacement $replacement): ?Token;
-
-    private function readTokens(): array
-    {
-        $tokens = [];
-        foreach ($this->replacements as $name => $replacement) {
-            $token = $this->tokenInstance($name, $replacement);
-            if (!$token) { continue; }
-            $tokens[$name] = $token;
-        }
-
-        return $tokens;
-    }
-
-    private function validTokens(): bool
-    {
-        return count($this->tokens) === count($this->replacements);
-    }
+    abstract protected function tokens(): array;
 }

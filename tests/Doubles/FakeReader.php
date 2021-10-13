@@ -13,31 +13,20 @@ namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\Replacement;
 
 
 class FakeReader extends Reader
 {
-    private bool $returnsToken;
+    private bool $returnsTokens;
 
-    public function __construct(bool $returnsToken = true)
+    public function __construct(bool $returnsTokens = true)
     {
-        $this->returnsToken = $returnsToken;
-        parent::__construct([]);
+        $this->returnsTokens = $returnsTokens;
+        parent::__construct(new Token\Replacements([]));
     }
 
-    public function token(string $namespace = ''): ?Token
+    protected function tokens(): array
     {
-        return $this->returnsToken ? new Token\ValueToken('placeholder', 'foo') : null;
-    }
-
-    public function tokenValues(): array
-    {
-        return $this->returnsToken ? ['placeholder' => 'foo'] : [];
-    }
-
-    protected function tokenInstance(string $name, Replacement $replacement): ?Token
-    {
-        return null;
+        return ['placeholder' => $this->returnsTokens ? new Token\ValueToken('placeholder', 'foo') : null];
     }
 }

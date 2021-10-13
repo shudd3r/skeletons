@@ -16,43 +16,41 @@ use Shudd3r\PackageFiles\Replacement\PackageName;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
+
 class PackageNameTest extends TestCase
 {
-    public function testWithPackageNameInComposerJson_InitialTokenValue_IsReadFromComposerJson()
+    public function testInputNames()
     {
-        $env = new Doubles\FakeRuntimeEnv();
+        $replacement = new PackageName();
+        $this->assertSame('package', $replacement->optionName());
+        $this->assertSame('Packagist package name', $replacement->inputPrompt());
+    }
+
+    public function testWithPackageNameInComposerJson_DefaultValue_IsReadFromComposerJson()
+    {
+        $replacement = new PackageName();
+        $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"name": "composer/package"}');
 
-        $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('package.name', []), 'composer/package', 'Composer/Package');
+        $this->assertSame('composer/package', $replacement->defaultValue($env, new Token\Replacements([])));
     }
 
-    public function testWithoutPackageNameInComposerJson_InitialTokenValue_IsResolvedFromDirectoryStructure()
+    public function testWithoutPackageNameInComposerJson_DefaultValue_IsResolvedFromDirectoryStructure()
     {
-        $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('D:\dev\www\project\directory'));
-
-        $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('package.name', []), 'project/directory', 'Project/Directory');
+        $replacement = new PackageName();
+        $env         = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('D:\dev\www\project\directory'));
+        $this->assertSame('project/directory', $replacement->defaultValue($env, new Token\Replacements([])));
     }
 
-    public function testInitialToken_IsCached()
+    public function testTokenMethodWithValidValue_ReturnsExpectedToken()
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->package()->addFile('composer.json', '{"name": "composer/package"}');
+        $replacement = new PackageName();
 
-        $replacement = $this->replacement($env);
-        $this->assertSame($replacement->initialToken('package.name', []), $replacement->initialToken('anything', []));
-    }
+        $subToken = new Token\ValueToken('package.name.title', 'Package/Name');
+        $expected = new Token\CompositeValueToken('package.name', 'package/name', $subToken);
 
-    public function testTokenFactoryMethods_ReturnCorrectToken()
-    {
-        $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('package-root\path'));
-        $env->metaDataFile()->write('{"package.name": "source/package"}');
-
-        $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('package.name', []), 'package-root/path', 'Package-root/Path');
-        $this->assertToken($replacement->validationToken('package.name'), 'source/package', 'Source/Package');
-        $this->assertToken($replacement->updateToken('package.name', []), 'source/package', 'Source/Package');
+        $this->assertEquals($expected, $replacement->token('package.name', 'package/name'));
+        $this->assertTrue($replacement->isValid('package/name'));
     }
 
     /**
@@ -63,23 +61,13 @@ class PackageNameTest extends TestCase
      */
     public function testTokenFactoryMethods_ValidatesValue(string $invalid, string $valid)
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->write('{"package.name": "'. $invalid .'"}');
-        $env->package()->addFile('composer.json', '{"name": "'. $invalid .'"}');
+        $replacement = new PackageName();
 
-        $replacement = $this->replacement($env);
-        $this->assertNull($replacement->initialToken('package.name', []));
-        $this->assertNull($replacement->validationToken('package.name'));
-        $this->assertNull($replacement->updateToken('package.name', []));
+        $this->assertFalse($replacement->isValid($invalid));
+        $this->assertNull($replacement->token('package.name', $invalid));
 
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->write('{"package.name": "'. $valid .'"}');
-        $env->package()->addFile('composer.json', '{"name": "'. $valid .'"}');
-
-        $replacement = $this->replacement($env);
-        $this->assertInstanceOf(Token::class, $replacement->initialToken('package.name', []));
-        $this->assertInstanceOf(Token::class, $replacement->validationToken('package.name'));
-        $this->assertInstanceOf(Token::class, $replacement->updateToken('package.name', []));
+        $this->assertTrue($replacement->isValid($valid));
+        $this->assertInstanceOf(Token::class, $replacement->token('package.name', $valid));
     }
 
     public function valueExamples(): array
@@ -88,17 +76,5 @@ class PackageNameTest extends TestCase
             ['-Packa-ge1/na.me', 'Packa-ge1/na.me'],
             ['1Package000_/na_Me', '1Package000/na_Me']
         ];
-    }
-
-    private function assertToken(Token $token, string $value, string $title): void
-    {
-        $subToken = new Token\ValueToken('package.name.title', $title);
-        $expected = new Token\CompositeValueToken('package.name', $value, $subToken);
-        $this->assertEquals($expected, $token);
-    }
-
-    private function replacement(Doubles\FakeRuntimeEnv $env): PackageName
-    {
-        return new PackageName($env);
     }
 }

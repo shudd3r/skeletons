@@ -11,13 +11,12 @@
 
 namespace Shudd3r\PackageFiles\Application\Token;
 
-use Shudd3r\PackageFiles\Replacement;
-use Shudd3r\PackageFiles\Application\Exception;
+use Shudd3r\PackageFiles\ReplacementReader;
 
 
 class Replacements
 {
-    /** @var Replacement[] */
+    /** @var ReplacementReader[] */
     private array $replacements;
     private array $currentRefs;
 
@@ -26,16 +25,7 @@ class Replacements
         $this->replacements = $replacements;
     }
 
-    public function add(string $name, Replacement $replacement): void
-    {
-        if (isset($this->replacements[$name])) {
-            throw new Exception\ReplacementOverwriteException();
-        }
-
-        $this->replacements[$name] = $replacement;
-    }
-
-    public function valueOf(string $replacementName, array $options): string
+    public function valueOf(string $replacementName): string
     {
         $isCurrentRef = $this->currentRefs[$replacementName] ?? false;
         if ($isCurrentRef) { return ''; }
@@ -44,24 +34,37 @@ class Replacements
         if (!$replacement) { return ''; }
 
         $this->currentRefs[$replacementName] = true;
-        $token = $replacement->initialToken($replacementName, $options);
+        $token = $replacement->initialToken($replacementName, $this);
         $this->currentRefs[$replacementName] = false;
 
         return $token ? $token->value() : '';
     }
 
-    public function init(array $options): Reader
+    public function initialTokens(): array
     {
-        return new Reader\InitialReader($this->replacements, $options);
+        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->initialToken($name, $this);
+        return $this->readTokens($readMethod);
     }
 
-    public function validate(): Reader
+    public function validationTokens(): array
     {
-        return new Reader\ValidationReader($this->replacements);
+        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->validationToken($name);
+        return $this->readTokens($readMethod);
     }
 
-    public function update(array $options): Reader
+    public function updateTokens(): array
     {
-        return new Reader\UpdateReader($this->replacements, $options);
+        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->updateToken($name);
+        return $this->readTokens($readMethod);
+    }
+
+    private function readTokens(callable $readMethod): array
+    {
+        $tokens = [];
+        foreach ($this->replacements as $name => $replacement) {
+            $tokens[$name] = $readMethod($name, $replacement);
+        }
+
+        return $tokens;
     }
 }

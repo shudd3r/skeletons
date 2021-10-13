@@ -11,19 +11,21 @@
 
 namespace Shudd3r\PackageFiles\Application\Setup;
 
+use Shudd3r\PackageFiles\Replacement;
+
 
 class ReplacementSetup
 {
-    private EnvSetup $setup;
+    private AppSetup $setup;
     private string   $placeholder;
 
-    public function __construct(EnvSetup $setup, string $placeholder)
+    public function __construct(AppSetup $setup, string $placeholder)
     {
         $this->setup       = $setup;
         $this->placeholder = $placeholder;
     }
 
-    public function add(callable $replacement): void
+    public function add(Replacement $replacement): void
     {
         $this->setup->addReplacement($this->placeholder, $replacement);
     }

@@ -11,10 +11,12 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Setup\AppSetup;
 use Shudd3r\PackageFiles\Application\Setup\EnvSetup;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Setup\ReplacementSetup;
 use Shudd3r\PackageFiles\Application\Setup\TemplateSetup;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\Terminal;
 use Exception;
@@ -22,33 +24,35 @@ use Exception;
 
 class Application
 {
-    private EnvSetup  $setup;
-    private Terminal  $terminal;
+    private EnvSetup $envSetup;
+    private AppSetup $appSetup;
+    private Terminal $terminal;
 
     public function __construct(Directory $package, Directory $skeleton, Terminal $terminal = null)
     {
-        $this->setup    = new EnvSetup($package, $skeleton);
+        $this->envSetup = new EnvSetup($package, $skeleton);
+        $this->appSetup = new AppSetup();
         $this->terminal = $terminal ?? new Terminal();
     }
 
     public function backup(Directory $backup): void
     {
-        $this->setup->setBackupDirectory($backup);
+        $this->envSetup->setBackupDirectory($backup);
     }
 
     public function metaFile(string $filename): void
     {
-        $this->setup->setMetaFile($filename);
+        $this->envSetup->setMetaFile($filename);
     }
 
     public function replacement(string $placeholder): ReplacementSetup
     {
-        return new ReplacementSetup($this->setup, $placeholder);
+        return new ReplacementSetup($this->appSetup, $placeholder);
     }
 
     public function template(string $filename): TemplateSetup
     {
-        return new TemplateSetup($this->setup, $filename);
+        return new TemplateSetup($this->envSetup, $filename);
     }
 
     /**
@@ -60,8 +64,10 @@ class Application
     public function run(string $command, array $options = []): int
     {
         try {
-            $env     = $this->setup->runtimeEnv($this->terminal);
-            $factory = $this->factory($command, $env);
+            $env          = $this->envSetup->runtimeEnv($this->terminal);
+            $replacements = $this->appSetup->replacements($env, $options);
+            $factory      = $this->factory($command, $env, $replacements);
+
             $factory->command($options)->execute();
         } catch (Exception $e) {
             $this->terminal->send($e->getMessage(), 1);
@@ -70,12 +76,12 @@ class Application
         return $this->terminal->exitCode();
     }
 
-    protected function factory(string $command, RuntimeEnv $env): Factory
+    protected function factory(string $command, RuntimeEnv $env, Replacements $replacements): Factory
     {
         switch ($command) {
-            case 'init':   return new Factory\Initialize($env);
-            case 'check':  return new Factory\Validate($env);
-            case 'update': return new Factory\Update($env);
+            case 'init':   return new Factory\Initialize($env, $replacements);
+            case 'check':  return new Factory\Validate($env, $replacements);
+            case 'update': return new Factory\Update($env, $replacements);
         }
 
         throw new Exception("Unknown `{$command}` command");

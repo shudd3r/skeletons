@@ -13,65 +13,73 @@ namespace Shudd3r\PackageFiles\Tests\Replacement;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Replacement\RepositoryName;
-use Shudd3r\PackageFiles\Replacement\PackageName;
 use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\ReplacementReader;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class RepositoryNameTest extends TestCase
 {
-    public function testWithoutGitConfigFile_InitialTokenValue_IsResolvedFromFallbackReplacement()
+    public function testInputNames()
     {
-        $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('some/directory/package/name'));
-
-        $replacement = $this->replacement($env, 'fallback');
-        $this->assertToken($replacement->initialToken('repo.placeholder', []), 'package/name', 'repo.placeholder');
+        $replacement = new RepositoryName();
+        $this->assertSame('repo', $replacement->optionName());
+        $this->assertSame('Github repository name', $replacement->inputPrompt());
     }
 
-    public function testWithoutRemoteRepositoriesInGitConfig_InitialTokenValue_IsResolvedFromFallbackReplacement()
+    public function testWithoutGitConfigFile_DefaultValue_IsResolvedFromFallbackReplacement()
     {
-        $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('some/directory/package/name'));
+        $replacement = new RepositoryName('fallback.name');
+        $env         = new Doubles\FakeRuntimeEnv();
+
+        $fakeReplacement = new ReplacementReader(new Doubles\FakeReplacement('fallback/name'), $env, []);
+        $fallback        = new Token\Replacements(['fallback.name' => $fakeReplacement]);
+
+        $this->assertSame('fallback/name', $replacement->defaultValue($env, $fallback));
+    }
+
+    public function testWithoutRemoteRepositoriesInGitConfig_DefaultValue_IsResolvedFromFallbackReplacement()
+    {
+        $replacement = new RepositoryName('fallback.name');
+        $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('.git/config', $this->config());
 
-        $replacement = $this->replacement($env, 'fallback');
-        $this->assertToken($replacement->initialToken('repo.placeholder', []), 'package/name', 'repo.placeholder');
+        $fakeReplacement = new ReplacementReader(new Doubles\FakeReplacement('fallback/name'), $env, []);
+        $fallback        = new Token\Replacements(['fallback.name' => $fakeReplacement]);
+
+        $this->assertSame('fallback/name', $replacement->defaultValue($env, $fallback));
     }
 
-    public function testWithRemoteRepositoriesInGitConfig_InitialTokenValue_IsReadWithCorrectPriority()
+    public function testWithRemoteRepositoriesInGitConfig_DefaultValue_IsReadWithCorrectPriority()
     {
-        $env       = new Doubles\FakeRuntimeEnv();
-        $gitConfig = $env->package()->file('.git/config');
+        $replacement = new RepositoryName();
+        $env         = new Doubles\FakeRuntimeEnv();
+        $fallback    = new Token\Replacements([]);
+        $gitConfig   = $env->package()->file('.git/config');
 
         $remotes = ['foo' => 'git@github.com:some/repo.git'];
         $gitConfig->write($this->config($remotes));
-        $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('repo.name', []), 'some/repo');
+        $this->assertSame('some/repo', $replacement->defaultValue($env, $fallback));
 
         $remotes += ['second' => 'git@github.com:other/repo.git'];
         $gitConfig->write($this->config($remotes));
-        $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('repo.name', []), 'some/repo');
+        $this->assertSame('some/repo', $replacement->defaultValue($env, $fallback));
 
         $remotes += ['origin' => 'https://github.com/orig/repo.git'];
         $gitConfig->write($this->config($remotes));
-        $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('repo.name', []), 'orig/repo');
+        $this->assertSame('orig/repo', $replacement->defaultValue($env, $fallback));
 
         $remotes += ['upstream' => 'git@github.com:master/ssh-repo.git'];
         $gitConfig->write($this->config($remotes));
-        $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('repo.name', []), 'master/ssh-repo');
+        $this->assertSame('master/ssh-repo', $replacement->defaultValue($env, $fallback));
     }
 
-    public function testTokenFactoryMethods_CreateCorrectToken()
+    public function testTokenMethodWithValidValue_ReturnsExpectedToken()
     {
-        $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('root/directory/init/name'));
-        $env->metaDataFile()->write('{"repo.name": "meta/name"}');
-
-        $replacement = $this->replacement($env, 'fallback');
-        $this->assertToken($replacement->initialToken('repo.name', []), 'init/name');
-        $this->assertToken($replacement->validationToken('repo.name'), 'meta/name');
-        $this->assertToken($replacement->updateToken('repo.name', []), 'meta/name');
+        $replacement = new RepositoryName();
+        $expected    = new Token\ValueToken('repo.name', 'repository/name');
+        $this->assertEquals($expected, $replacement->token('repo.name', 'repository/name'));
+        $this->assertTrue($replacement->isValid('repository/name'));
     }
 
     /**
@@ -80,25 +88,15 @@ class RepositoryNameTest extends TestCase
      * @param string $invalid
      * @param string $valid
      */
-    public function testTokenFactoryMethods_ValidateTokenValue(string $invalid, string $valid)
+    public function testTokenFactoryMethods_ValidatesValue(string $invalid, string $valid)
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->write('{"repo.name": "' . $invalid . '"}');
-        $options = ['repo' => $invalid];
+        $replacement = new RepositoryName();
 
-        $replacement = $this->replacement($env);
-        $this->assertNull($replacement->initialToken('repo.name', $options));
-        $this->assertNull($replacement->validationToken('repo.name'));
-        $this->assertNull($replacement->updateToken('repo.name', $options));
+        $this->assertFalse($replacement->isValid($invalid));
+        $this->assertNull($replacement->token('repo.name', $invalid));
 
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->metaDataFile()->write('{"repo.name": "' . $valid . '"}');
-        $options = ['repo' => $valid];
-
-        $replacement = $this->replacement($env);
-        $this->assertInstanceOf(Token::class, $replacement->initialToken('repo.name', $options));
-        $this->assertInstanceOf(Token::class, $replacement->validationToken('repo.name'));
-        $this->assertInstanceOf(Token::class, $replacement->updateToken('repo.name', $options));
+        $this->assertTrue($replacement->isValid($valid));
+        $this->assertInstanceOf(Token::class, $replacement->token('repo.name', $valid));
     }
 
     public function valueExamples(): array
@@ -118,20 +116,6 @@ class RepositoryNameTest extends TestCase
             [$longAccount, $shortAccount],
             [$longRepo, $shortRepo]
         ];
-    }
-
-    private function assertToken(Token $token, string $value, string $name = 'repo.name'): void
-    {
-        $expected = new Token\ValueToken($name, $value);
-        $this->assertEquals($expected, $token);
-    }
-
-    private function replacement(Doubles\FakeRuntimeEnv $env, ?string $fallback = null): RepositoryName
-    {
-        if ($fallback) {
-            $env->replacements()->add($fallback, new PackageName($env));
-        }
-        return new RepositoryName($env, $fallback);
     }
 
     private function config(array $remotes = []): string

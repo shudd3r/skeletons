@@ -13,34 +13,56 @@ namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 
-class FakeReplacement extends Replacement
+class FakeReplacement implements Replacement
 {
-    protected ?string $optionName  = 'option';
-    protected ?string $inputPrompt = 'Provide value';
-
-    private ?string $value;
-    private bool    $isValid;
+    private ?string $default;
+    private ?string $option;
+    private ?string $prompt;
+    private ?string $fallback;
 
     public function __construct(
-        RuntimeEnv $env,
-        ?string $fallback = null,
-        ?string $value = 'default value',
-        bool $isValid = true
+        ?string $default  = null,
+        ?string $option   = 'option',
+        ?string $prompt   = 'Provide value',
+        ?string $fallback = null
     ) {
-        $this->value   = $value;
-        $this->isValid = $isValid;
-        parent::__construct($env, $fallback);
+        $this->default  = $default;
+        $this->option   = $option;
+        $this->prompt   = $prompt;
+        $this->fallback = $fallback;
     }
 
-    protected function isValid(string $value): bool
+    public function optionName(): ?string
     {
-        return $this->isValid;
+        return $this->option;
     }
 
-    protected function defaultValue(array $options): string
+    public function inputPrompt(): ?string
     {
-        return $this->value ?? $this->fallbackValue($options);
+        return $this->prompt;
+    }
+
+    public function defaultValue(RuntimeEnv $env, Replacements $replacements): string
+    {
+        return $this->default ?? $this->fallbackValue($replacements);
+    }
+
+    public function isValid(string $value): bool
+    {
+        return isset($this->default) || isset($this->fallback);
+    }
+
+    public function token(string $name, string $value): ?ValueToken
+    {
+        return $this->isValid($value) ? new ValueToken($name, $value) : null;
+    }
+
+    private function fallbackValue(Replacements $replacements): string
+    {
+        return $this->fallback ? $replacements->valueOf($this->fallback) : '';
     }
 }

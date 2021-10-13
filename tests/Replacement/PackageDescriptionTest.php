@@ -13,63 +13,53 @@ namespace Shudd3r\PackageFiles\Tests\Replacement;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Replacement\PackageDescription;
-use Shudd3r\PackageFiles\Replacement\PackageName;
 use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\ReplacementReader;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class PackageDescriptionTest extends TestCase
 {
-    public function testWithDescriptionInComposerJson_InitialTokenValue_IsReadFromComposerJson()
+    public function testInputNames()
     {
-        $env = new Doubles\FakeRuntimeEnv();
+        $replacement = new PackageDescription();
+        $this->assertSame('desc', $replacement->optionName());
+        $this->assertSame('Package description', $replacement->inputPrompt());
+    }
+
+    public function testWithDescriptionInComposerJson_DefaultValue_IsReadFromComposerJson()
+    {
+        $replacement = new PackageDescription();
+        $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"description": "composer json description"}');
 
-        $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('package.desc', []), 'composer json description');
+        $this->assertSame('composer json description', $replacement->defaultValue($env, new Token\Replacements([])));
     }
 
-    public function testWithoutDescriptionInComposerJson_InitialTokenValue_IsResolvedFromFallbackReplacement()
+    public function testWithoutDescriptionInComposerJson_DefaultValue_IsResolvedFromFallbackReplacement()
     {
-        $env = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('root/package/path'));
+        $replacement = new PackageDescription('fallback.token');
+        $env         = new Doubles\FakeRuntimeEnv();
+        $env->package()->addFile('composer.json', '{"name": "composer/package"}');
 
-        $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('package.desc', []), 'package/path package');
+        $fakeReplacement = new ReplacementReader(new Doubles\FakeReplacement('fallback value'), $env, []);
+        $fallback        = new Token\Replacements(['fallback.token' => $fakeReplacement]);
+
+        $this->assertSame('fallback value package', $replacement->defaultValue($env, $fallback));
     }
 
-    public function testTokenFactoryMethods_CreateCorrectToken()
+    public function testTokenMethodWithValidValue_ReturnsExpectedToken()
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->package()->addFile('composer.json', '{"description": "composer desc"}');
-        $env->metaDataFile()->write('{"desc.placeholder": "meta desc"}');
-
-        $replacement = $this->replacement($env);
-        $this->assertToken($replacement->initialToken('desc.placeholder', []), 'composer desc', 'desc.placeholder');
-        $this->assertToken($replacement->validationToken('desc.placeholder'), 'meta desc', 'desc.placeholder');
-        $this->assertToken($replacement->updateToken('desc.placeholder', []), 'meta desc', 'desc.placeholder');
+        $replacement = new PackageDescription();
+        $expected    = new Token\ValueToken('token.name', 'package description');
+        $this->assertEquals($expected, $replacement->token('token.name', 'package description'));
+        $this->assertTrue($replacement->isValid('package description'));
     }
 
-    public function testForEmptyTokenValue_TokenFactoryMethods_ReturnNull()
+    public function testEmptyValue_IsInvalid()
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        $env->package()->addFile('composer.json', '{"description": ""}');
-        $env->metaDataFile()->write('{"desc.placeholder": ""}');
-
-        $replacement = $this->replacement($env);
-        $this->assertNull($replacement->initialToken('foo', []));
-        $this->assertNull($replacement->validationToken('desc.placeholder'));
-        $this->assertNull($replacement->updateToken('not.existing.data', []));
-    }
-
-    private function assertToken(Token $token, string $value, string $name = 'package.desc'): void
-    {
-        $expected = new Token\ValueToken($name, $value);
-        $this->assertEquals($expected, $token);
-    }
-
-    private function replacement(Doubles\FakeRuntimeEnv $env): PackageDescription
-    {
-        $env->replacements()->add('fallback', new PackageName($env));
-        return new PackageDescription($env, 'fallback');
+        $replacement = new PackageDescription();
+        $this->assertFalse($replacement->isValid(''));
+        $this->assertNull($replacement->token('token.name', ''));
     }
 }
