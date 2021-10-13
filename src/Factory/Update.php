@@ -33,7 +33,7 @@ class Update implements Factory
 
     public function command(array $options): Command
     {
-        $tokenReader = new Reader\UpdateReader($this->replacements, $options);
+        $tokenReader = new Reader\UpdateReader($this->replacements, $this->env, $options);
         $validation  = new Validate($this->env, $this->replacements);
         $cache       = new TokenCache();
         $output      = $this->env->output();

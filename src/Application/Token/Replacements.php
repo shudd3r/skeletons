@@ -11,60 +11,28 @@
 
 namespace Shudd3r\PackageFiles\Application\Token;
 
-use Shudd3r\PackageFiles\ReplacementReader;
+use Shudd3r\PackageFiles\Replacement;
 
 
 class Replacements
 {
-    /** @var ReplacementReader[] */
+    /** @var Replacement[] */
     private array $replacements;
-    private array $currentRefs;
 
-    public function __construct(array $replacements = [])
+    public function __construct(array $replacements)
     {
         $this->replacements = $replacements;
     }
 
-    public function valueOf(string $replacementName): string
+    public function replacement(string $replacementName): ?Replacement
     {
-        $isCurrentRef = $this->currentRefs[$replacementName] ?? false;
-        if ($isCurrentRef) { return ''; }
-
-        $replacement = $this->replacements[$replacementName] ?? null;
-        if (!$replacement) { return ''; }
-
-        $this->currentRefs[$replacementName] = true;
-        $token = $replacement->initialToken($replacementName, $this);
-        $this->currentRefs[$replacementName] = false;
-
-        return $token ? $token->value() : '';
+        return $this->replacements[$replacementName] ?? null;
     }
 
-    public function initialTokens(): array
+    public function tokens(Reader $reader): void
     {
-        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->initialToken($name, $this);
-        return $this->readTokens($readMethod);
-    }
-
-    public function validationTokens(): array
-    {
-        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->validationToken($name);
-        return $this->readTokens($readMethod);
-    }
-
-    public function updateTokens(): array
-    {
-        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->updateToken($name);
-        return $this->readTokens($readMethod);
-    }
-
-    private function readTokens(callable $readMethod): array
-    {
-        $tokens = [];
         foreach ($this->replacements as $name => $replacement) {
-            $tokens[$name] = $readMethod($name, $replacement);
+            $reader->readToken($name, $replacement);
         }
-
-        return $tokens;
     }
 }

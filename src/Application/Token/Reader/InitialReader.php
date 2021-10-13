@@ -12,12 +12,27 @@
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Replacement;
 
 
-class InitialReader extends Reader
+class InitialReader extends Reader implements FallbackReader
 {
-    protected function tokens(): array
+    public function readToken(string $name, Replacement $replacement): void
     {
-        return $this->replacements->initialTokens();
+        if (array_key_exists($name, $this->tokens)) { return; }
+        $this->tokens[$name] = null;
+
+        $default  = $this->commandLineOption($replacement) ?? $replacement->defaultValue($this->env, $this);
+        $initial  = $this->inputString($replacement, $replacement->isValid($default) ? $default : '');
+
+        $this->tokens[$name] = $replacement->token($name, $initial);
+    }
+
+    public function valueOf(string $name): string
+    {
+        $this->readToken($name, $this->replacements->replacement($name));
+
+        $token = $this->tokens[$name] ?? null;
+        return $token ? $token->value() : '';
     }
 }

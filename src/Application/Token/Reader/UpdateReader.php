@@ -12,12 +12,14 @@
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
 use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Replacement;
 
 
 class UpdateReader extends Reader
 {
-    protected function tokens(): array
+    public function readToken(string $name, Replacement $replacement): void
     {
-        return $this->replacements->updateTokens();
+        $value = $this->inputString($replacement, $this->commandLineOption($replacement) ?? $this->metaDataValue($name));
+        $this->tokens[$name] = $replacement->token($name, $value);
     }
 }

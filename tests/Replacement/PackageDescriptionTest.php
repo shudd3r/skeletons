@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Replacement;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Replacement\PackageDescription;
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\ReplacementReader;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -30,20 +29,19 @@ class PackageDescriptionTest extends TestCase
     public function testWithDescriptionInComposerJson_DefaultValue_IsReadFromComposerJson()
     {
         $replacement = new PackageDescription();
+        $fallback    = new Doubles\FakeFallbackReader();
         $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"description": "composer json description"}');
 
-        $this->assertSame('composer json description', $replacement->defaultValue($env, new Token\Replacements([])));
+        $this->assertSame('composer json description', $replacement->defaultValue($env, $fallback));
     }
 
     public function testWithoutDescriptionInComposerJson_DefaultValue_IsResolvedFromFallbackReplacement()
     {
         $replacement = new PackageDescription('fallback.token');
+        $fallback    = new Doubles\FakeFallbackReader(['fallback.token' => 'fallback value']);
         $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"name": "composer/package"}');
-
-        $fakeReplacement = new ReplacementReader(new Doubles\FakeReplacement('fallback value'), $env, []);
-        $fallback        = new Token\Replacements(['fallback.token' => $fakeReplacement]);
 
         $this->assertSame('fallback value package', $replacement->defaultValue($env, $fallback));
     }

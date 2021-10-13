@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Replacement;
 
 use Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Token\Reader\FallbackReader;
 use Shudd3r\PackageFiles\Application\Token\CompositeValueToken;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
@@ -37,9 +37,9 @@ class SrcNamespace implements Replacement
         return 'Source files namespace';
     }
 
-    public function defaultValue(RuntimeEnv $env, Replacements $replacements): string
+    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string
     {
-        return $this->namespaceFromComposer($env) ?? $this->namespaceFromFallbackValue($replacements);
+        return $this->namespaceFromComposer($env) ?? $this->namespaceFromFallbackValue($fallback);
     }
 
     public function isValid(string $value): bool
@@ -68,9 +68,9 @@ class SrcNamespace implements Replacement
         return $namespace ? rtrim($namespace, '\\') : null;
     }
 
-    private function namespaceFromFallbackValue(Replacements $replacements): string
+    private function namespaceFromFallbackValue(FallbackReader $fallback): string
     {
-        $fallbackValue = $this->fallbackToken ? $replacements->valueOf($this->fallbackToken) : '';
+        $fallbackValue = $this->fallbackToken ? $fallback->valueOf($this->fallbackToken) : '';
         if (!$fallbackValue) { return ''; }
 
         [$vendor, $package] = explode('/', $fallbackValue) + ['', ''];
