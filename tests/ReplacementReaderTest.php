@@ -12,17 +12,16 @@
 namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\ReplacementReader;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeReplacement;
 
 
 class ReplacementReaderTest extends TestCase
 {
     public function testForInvalidValue_TokenMethods_ReturnNull()
     {
-        $replacement = new ReplacementReader(new FakeReplacement(null), new Doubles\FakeRuntimeEnv(), []);
+        $replacement = new ReplacementReader(new Doubles\FakeReplacement(null), new Doubles\FakeRuntimeEnv(), []);
 
         $this->assertNull($replacement->initialToken('foo', new Replacements([])));
         $this->assertNull($replacement->updateToken('foo'));
@@ -52,7 +51,7 @@ class ReplacementReaderTest extends TestCase
             $env->input()->addInput('input value');
         }
 
-        $replacement = new ReplacementReader(new FakeReplacement('default value'), $env, $options);
+        $replacement = new ReplacementReader(new Doubles\FakeReplacement('default value'), $env, $options);
         $this->assertEquals(new ValueToken('foo', $initValue), $replacement->initialToken('foo', new Replacements($options)));
         $this->assertEquals(new ValueToken('foo', 'meta data'), $replacement->validationToken('foo'));
         $this->assertEquals(new ValueToken('foo', $updateValue), $replacement->updateToken('foo'));
@@ -60,7 +59,7 @@ class ReplacementReaderTest extends TestCase
 
     public function testInitialToken_IsCached()
     {
-        $replacement = new ReplacementReader(new FakeReplacement('default value'), new Doubles\FakeRuntimeEnv(), []);
+        $replacement = new ReplacementReader(new Doubles\FakeReplacement('default value'), new Doubles\FakeRuntimeEnv(), []);
 
         $initialToken = $replacement->initialToken('token.name', new Replacements([]));
         $this->assertSame($initialToken, $replacement->initialToken('another.name', new Replacements([])));

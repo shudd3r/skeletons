@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Replacement;
 
 use Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Token\Reader\FallbackReader;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 
@@ -46,15 +46,15 @@ class PackageDescription implements Replacement
         return !empty($value);
     }
 
-    public function defaultValue(RuntimeEnv $env, Replacements $replacements): string
+    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string
     {
-        return $env->composer()->value('description') ?? $this->descriptionFromFallbackValue($replacements);
+        return $env->composer()->value('description') ?? $this->descriptionFromFallbackValue($fallback);
     }
 
-    private function descriptionFromFallbackValue(Replacements $replacements): string
+    private function descriptionFromFallbackValue(FallbackReader $fallback): string
     {
         if (!$this->fallbackToken) { return ''; }
-        $fallbackValue = $replacements->valueOf($this->fallbackToken);
+        $fallbackValue = $fallback->valueOf($this->fallbackToken);
         return $fallbackValue ? $fallbackValue . ' package' : '';
     }
 }

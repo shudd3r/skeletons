@@ -58,6 +58,6 @@ class ReplacementsTest extends TestCase
 
     private function replacement(Doubles\FakeRuntimeEnv $env, ?string $value, string $fallback = null): ReplacementReader
     {
-        return new ReplacementReader(new Doubles\FakeReplacement($value, null, null, $fallback), $env, []);
+        return new ReplacementReader(new Doubles\FakeReplacement($value, $fallback), $env, []);
     }
 }

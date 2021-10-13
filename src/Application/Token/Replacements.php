@@ -11,10 +11,11 @@
 
 namespace Shudd3r\PackageFiles\Application\Token;
 
+use Shudd3r\PackageFiles\Application\Token\Reader\FallbackReader;
 use Shudd3r\PackageFiles\ReplacementReader;
 
 
-class Replacements
+class Replacements implements FallbackReader
 {
     /** @var ReplacementReader[] */
     private array $replacements;
@@ -25,17 +26,17 @@ class Replacements
         $this->replacements = $replacements;
     }
 
-    public function valueOf(string $replacementName): string
+    public function valueOf(string $name): string
     {
-        $isCurrentRef = $this->currentRefs[$replacementName] ?? false;
+        $isCurrentRef = $this->currentRefs[$name] ?? false;
         if ($isCurrentRef) { return ''; }
 
-        $replacement = $this->replacements[$replacementName] ?? null;
+        $replacement = $this->replacements[$name] ?? null;
         if (!$replacement) { return ''; }
 
-        $this->currentRefs[$replacementName] = true;
-        $token = $replacement->initialToken($replacementName, $this);
-        $this->currentRefs[$replacementName] = false;
+        $this->currentRefs[$name] = true;
+        $token = $replacement->initialToken($name, $this);
+        $this->currentRefs[$name] = false;
 
         return $token ? $token->value() : '';
     }

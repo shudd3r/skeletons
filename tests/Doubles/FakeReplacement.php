@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Replacement;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Token\Reader\FallbackReader;
 use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 
@@ -26,14 +26,14 @@ class FakeReplacement implements Replacement
 
     public function __construct(
         ?string $default  = null,
+        ?string $fallback = null,
         ?string $option   = 'option',
-        ?string $prompt   = 'Provide value',
-        ?string $fallback = null
+        ?string $prompt   = 'Provide value'
     ) {
         $this->default  = $default;
+        $this->fallback = $fallback;
         $this->option   = $option;
         $this->prompt   = $prompt;
-        $this->fallback = $fallback;
     }
 
     public function optionName(): ?string
@@ -46,9 +46,9 @@ class FakeReplacement implements Replacement
         return $this->prompt;
     }
 
-    public function defaultValue(RuntimeEnv $env, Replacements $replacements): string
+    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string
     {
-        return $this->default ?? $this->fallbackValue($replacements);
+        return $this->default ?? $this->fallbackValue($fallback);
     }
 
     public function isValid(string $value): bool
@@ -61,8 +61,8 @@ class FakeReplacement implements Replacement
         return $this->isValid($value) ? new ValueToken($name, $value) : null;
     }
 
-    private function fallbackValue(Replacements $replacements): string
+    private function fallbackValue(FallbackReader $fallback): string
     {
-        return $this->fallback ? $replacements->valueOf($this->fallback) : '';
+        return $this->fallback ? $fallback->valueOf($this->fallback) : '';
     }
 }
