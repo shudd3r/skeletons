@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Replacement;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Replacement\RepositoryName;
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\ReplacementReader;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -30,10 +29,8 @@ class RepositoryNameTest extends TestCase
     public function testWithoutGitConfigFile_DefaultValue_IsResolvedFromFallbackReplacement()
     {
         $replacement = new RepositoryName('fallback.name');
+        $fallback    = new Doubles\FakeFallbackReader(['fallback.name' => 'fallback/name']);
         $env         = new Doubles\FakeRuntimeEnv();
-
-        $fakeReplacement = new ReplacementReader(new Doubles\FakeReplacement('fallback/name'), $env, []);
-        $fallback        = new Token\Replacements(['fallback.name' => $fakeReplacement]);
 
         $this->assertSame('fallback/name', $replacement->defaultValue($env, $fallback));
     }
@@ -41,11 +38,9 @@ class RepositoryNameTest extends TestCase
     public function testWithoutRemoteRepositoriesInGitConfig_DefaultValue_IsResolvedFromFallbackReplacement()
     {
         $replacement = new RepositoryName('fallback.name');
+        $fallback    = new Doubles\FakeFallbackReader(['fallback.name' => 'fallback/name']);
         $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('.git/config', $this->config());
-
-        $fakeReplacement = new ReplacementReader(new Doubles\FakeReplacement('fallback/name'), $env, []);
-        $fallback        = new Token\Replacements(['fallback.name' => $fakeReplacement]);
 
         $this->assertSame('fallback/name', $replacement->defaultValue($env, $fallback));
     }
@@ -54,7 +49,7 @@ class RepositoryNameTest extends TestCase
     {
         $replacement = new RepositoryName();
         $env         = new Doubles\FakeRuntimeEnv();
-        $fallback    = new Token\Replacements([]);
+        $fallback    = new Doubles\FakeFallbackReader();
         $gitConfig   = $env->package()->file('.git/config');
 
         $remotes = ['foo' => 'git@github.com:some/repo.git'];

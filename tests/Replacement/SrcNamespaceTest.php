@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Tests\Replacement;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Replacement\SrcNamespace;
 use Shudd3r\PackageFiles\Application\Token;
-use Shudd3r\PackageFiles\ReplacementReader;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -30,20 +29,19 @@ class SrcNamespaceTest extends TestCase
     public function testWithSrcNamespaceInComposerJson_DefaultValue_IsReadFromComposerJson()
     {
         $replacement = new SrcNamespace();
+        $fallback    = new Doubles\FakeFallbackReader();
         $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', $this->composerData());
 
-        $this->assertSame('Composer\\Namespace', $replacement->defaultValue($env, new Token\Replacements([])));
+        $this->assertSame('Composer\\Namespace', $replacement->defaultValue($env, $fallback));
     }
 
     public function testWithoutSrcNamespaceInComposerJson_DefaultValue_IsResolvedFromFallbackReplacement()
     {
         $replacement = new SrcNamespace('fallback.name');
+        $fallback    = new Doubles\FakeFallbackReader(['fallback.name' => 'fallback/name']);
         $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', $this->composerData(false));
-
-        $fakeReplacement = new ReplacementReader(new Doubles\FakeReplacement('fallback/name'), $env, []);
-        $fallback        = new Token\Replacements(['fallback.name' => $fakeReplacement]);
 
         $this->assertSame('Fallback\\Name', $replacement->defaultValue($env, $fallback));
     }

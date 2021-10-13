@@ -29,17 +29,19 @@ class PackageNameTest extends TestCase
     public function testWithPackageNameInComposerJson_DefaultValue_IsReadFromComposerJson()
     {
         $replacement = new PackageName();
+        $fallback    = new Doubles\FakeFallbackReader();
         $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"name": "composer/package"}');
 
-        $this->assertSame('composer/package', $replacement->defaultValue($env, new Token\Replacements([])));
+        $this->assertSame('composer/package', $replacement->defaultValue($env, $fallback));
     }
 
     public function testWithoutPackageNameInComposerJson_DefaultValue_IsResolvedFromDirectoryStructure()
     {
         $replacement = new PackageName();
+        $fallback    = new Doubles\FakeFallbackReader();
         $env         = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('D:\dev\www\project\directory'));
-        $this->assertSame('project/directory', $replacement->defaultValue($env, new Token\Replacements([])));
+        $this->assertSame('project/directory', $replacement->defaultValue($env, $fallback));
     }
 
     public function testTokenMethodWithValidValue_ReturnsExpectedToken()
