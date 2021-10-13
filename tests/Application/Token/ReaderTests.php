@@ -9,14 +9,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\Token\Reworked;
+namespace Shudd3r\PackageFiles\Tests\Application\Token;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Token\Reworked\Reader;
-use Shudd3r\PackageFiles\Application\Token\Reworked\Replacements;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeReplacement;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeRuntimeEnv;
+use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 abstract class ReaderTests extends TestCase
@@ -61,15 +60,15 @@ abstract class ReaderTests extends TestCase
     {
         $override     = fn(string $name, string $default) => in_array($name, $removeDefaults) ? null : $default;
         $defaults     = array_map($override, array_keys(self::REPLACEMENT_DEFAULTS), self::REPLACEMENT_DEFAULTS);
-        $create       = fn (?string $default, array $params) => new FakeReplacement($default, ...$params);
+        $create       = fn (?string $default, array $params) => new Doubles\FakeReplacement($default, ...$params);
         $replacements = array_map($create, $defaults, self::REPLACEMENT_PARAMS);
 
         return new Replacements(array_combine(array_keys(self::REPLACEMENT_DEFAULTS), $replacements));
     }
 
-    protected function env(array $inputs = [], array $metaData = []): FakeRuntimeEnv
+    protected function env(array $inputs = [], array $metaData = []): Doubles\FakeRuntimeEnv
     {
-        $env = new FakeRuntimeEnv();
+        $env = new Doubles\FakeRuntimeEnv();
         array_walk($inputs, fn ($input) => $env->input()->addInput($input));
         if ($metaData) { $env->metaData()->save($metaData); }
 

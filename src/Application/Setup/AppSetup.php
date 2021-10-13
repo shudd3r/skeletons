@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Application\Setup;
 
-use Shudd3r\PackageFiles\Application\Token\Reworked\Replacements;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Replacement;
 
 

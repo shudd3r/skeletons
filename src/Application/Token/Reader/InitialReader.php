@@ -9,10 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Token\Reworked\Reader;
+namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
-use Shudd3r\PackageFiles\Application\Token\Reworked\Reader;
-use Shudd3r\PackageFiles\Application\Token\Reader\FallbackReader;
+use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Replacement;
 
 

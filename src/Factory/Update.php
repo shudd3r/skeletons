@@ -14,8 +14,8 @@ namespace Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Factory;
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Token\Reworked\Reader;
-use Shudd3r\PackageFiles\Application\Token\Reworked\Replacements;
+use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
 

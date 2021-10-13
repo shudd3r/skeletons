@@ -9,17 +9,16 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Token\Reworked\Reader;
+namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
-use Shudd3r\PackageFiles\Application\Token\Reworked\Reader;
+use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Replacement;
 
 
-class UpdateReader extends Reader
+class ValidationReader extends Reader
 {
     public function readToken(string $name, Replacement $replacement): void
     {
-        $value = $this->inputString($replacement, $this->commandLineOption($replacement) ?? $this->metaDataValue($name));
-        $this->tokens[$name] = $replacement->token($name, $value);
+        $this->tokens[$name] = $replacement->token($name, $this->metaDataValue($name));
     }
 }

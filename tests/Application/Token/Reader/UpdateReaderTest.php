@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\Token\Reworked\Reader;
+namespace Shudd3r\PackageFiles\Tests\Application\Token\Reader;
 
-use Shudd3r\PackageFiles\Tests\Application\Token\Reworked\ReaderTests;
-use Shudd3r\PackageFiles\Application\Token\Reworked\Reader;
+use Shudd3r\PackageFiles\Tests\Application\Token\ReaderTests;
+use Shudd3r\PackageFiles\Application\Token\Reader;
 
 
 class UpdateReaderTest extends ReaderTests

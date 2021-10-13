@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\Token\Reworked\Reader;
+use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Replacement;
 
@@ -20,7 +20,7 @@ class FakeReader extends Reader
 {
     public function __construct(bool $returnsTokens = true)
     {
-        parent::__construct(new Token\Reworked\Replacements([]), new FakeRuntimeEnv(), []);
+        parent::__construct(new Token\Replacements([]), new FakeRuntimeEnv(), []);
         $this->tokens['placeholder'] = $returnsTokens ? new Token\ValueToken('placeholder', 'foo') : null;
     }
 
