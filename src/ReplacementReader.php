@@ -18,23 +18,25 @@ use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 class ReplacementReader
 {
-    private RuntimeEnv  $env;
     private Replacement $replacement;
+    private RuntimeEnv  $env;
+    private array       $options;
 
     private ?ValueToken $initialToken;
 
-    public function __construct(RuntimeEnv $env, Replacement $replacement)
+    public function __construct(Replacement $replacement, RuntimeEnv $env, array $options)
     {
-        $this->env         = $env;
         $this->replacement = $replacement;
+        $this->env         = $env;
+        $this->options     = $options;
     }
 
-    final public function initialToken(string $name, array $options, Replacements $replacements): ?ValueToken
+    final public function initialToken(string $name, Replacements $replacements): ?ValueToken
     {
         if (isset($this->initialToken)) { return $this->initialToken; }
 
-        $default = $this->commandLineOption($options) ?? $this->replacement->defaultValue($this->env, $replacements);
-        $initial = $this->inputString($options, $this->replacement->isValid($default) ? $default : '');
+        $default = $this->commandLineOption() ?? $this->replacement->defaultValue($this->env, $replacements);
+        $initial = $this->inputString($this->replacement->isValid($default) ? $default : '');
 
         return $this->initialToken = $this->replacement->token($name, $initial);
     }
@@ -44,22 +46,22 @@ class ReplacementReader
         return $this->replacement->token($name, $this->metaDataValue($name));
     }
 
-    final public function updateToken(string $name, array $options): ?ValueToken
+    final public function updateToken(string $name): ?ValueToken
     {
-        $value = $this->inputString($options, $this->commandLineOption($options) ?? $this->metaDataValue($name));
+        $value = $this->inputString($this->commandLineOption() ?? $this->metaDataValue($name));
         return $this->replacement->token($name, $value);
     }
 
-    private function commandLineOption(array $options): ?string
+    private function commandLineOption(): ?string
     {
         $option = $this->replacement->optionName();
-        return $option ? $options[$option] ?? null : null;
+        return $option ? $this->options[$option] ?? null : null;
     }
 
-    private function inputString(array $options, string $default): string
+    private function inputString(string $default): string
     {
         $prompt = $this->replacement->inputPrompt();
-        $inputEnabled = $prompt && (isset($options['i']) || isset($options['interactive']));
+        $inputEnabled = $prompt && (isset($this->options['i']) || isset($this->options['interactive']));
         if (!$inputEnabled) { return $default; }
 
         $promptPostfix = $default ? ' [default: `' . $default . '`]:' : ':';

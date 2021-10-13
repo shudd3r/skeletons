@@ -25,10 +25,10 @@ class AppSetup
     {
         $replacements = [];
         foreach ($this->replacements as $name => $replacement) {
-            $replacements[$name] = new ReplacementReader($env, $replacement);
+            $replacements[$name] = new ReplacementReader($replacement, $env, $options);
         }
 
-        return new Replacements($options, $replacements);
+        return new Replacements($replacements);
     }
 
     public function addReplacement(string $placeholder, Replacement $replacement): void

@@ -42,8 +42,8 @@ class SrcNamespaceTest extends TestCase
         $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', $this->composerData(false));
 
-        $fakeReplacement = new ReplacementReader($env, new Doubles\FakeReplacement('fallback/name'));
-        $fallback        = new Token\Replacements([], ['fallback.name' => $fakeReplacement]);
+        $fakeReplacement = new ReplacementReader(new Doubles\FakeReplacement('fallback/name'), $env, []);
+        $fallback        = new Token\Replacements(['fallback.name' => $fakeReplacement]);
 
         $this->assertSame('Fallback\\Name', $replacement->defaultValue($env, $fallback));
     }

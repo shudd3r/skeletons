@@ -22,10 +22,10 @@ class ReplacementReaderTest extends TestCase
 {
     public function testForInvalidValue_TokenMethods_ReturnNull()
     {
-        $replacement = new ReplacementReader(new Doubles\FakeRuntimeEnv(), new FakeReplacement(null));
+        $replacement = new ReplacementReader(new FakeReplacement(null), new Doubles\FakeRuntimeEnv(), []);
 
-        $this->assertNull($replacement->initialToken('foo', [], new Replacements([])));
-        $this->assertNull($replacement->updateToken('foo', []));
+        $this->assertNull($replacement->initialToken('foo', new Replacements([])));
+        $this->assertNull($replacement->updateToken('foo'));
         $this->assertNull($replacement->validationToken('foo'));
     }
 
@@ -52,18 +52,18 @@ class ReplacementReaderTest extends TestCase
             $env->input()->addInput('input value');
         }
 
-        $replacement = new ReplacementReader($env, new FakeReplacement('default value'));
-        $this->assertEquals(new ValueToken('foo', $initValue), $replacement->initialToken('foo', $options, new Replacements($options)));
+        $replacement = new ReplacementReader(new FakeReplacement('default value'), $env, $options);
+        $this->assertEquals(new ValueToken('foo', $initValue), $replacement->initialToken('foo', new Replacements($options)));
         $this->assertEquals(new ValueToken('foo', 'meta data'), $replacement->validationToken('foo'));
-        $this->assertEquals(new ValueToken('foo', $updateValue), $replacement->updateToken('foo', $options));
+        $this->assertEquals(new ValueToken('foo', $updateValue), $replacement->updateToken('foo'));
     }
 
     public function testInitialToken_IsCached()
     {
-        $replacement = new ReplacementReader(new Doubles\FakeRuntimeEnv(), new FakeReplacement('default value'));
+        $replacement = new ReplacementReader(new FakeReplacement('default value'), new Doubles\FakeRuntimeEnv(), []);
 
-        $initialToken = $replacement->initialToken('token.name', [], new Replacements([]));
-        $this->assertSame($initialToken, $replacement->initialToken('another.name', [], new Replacements([])));
+        $initialToken = $replacement->initialToken('token.name', new Replacements([]));
+        $this->assertSame($initialToken, $replacement->initialToken('another.name', new Replacements([])));
     }
 
     public function inputOptions(): array

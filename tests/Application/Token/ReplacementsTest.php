@@ -22,7 +22,7 @@ class ReplacementsTest extends TestCase
     public function testValueOfReplacement_ReturnsDefinedReplacementValue()
     {
         $env          = new Doubles\FakeRuntimeEnv();
-        $replacements = new Replacements([], [
+        $replacements = new Replacements([
             'foo' => $this->replacement($env, 'Foo value'),
             'bar' => $this->replacement($env, 'Bar value')
         ]);
@@ -35,7 +35,7 @@ class ReplacementsTest extends TestCase
     public function testFallbackFromReplacements_ReturnsReplacementValue()
     {
         $env          = new Doubles\FakeRuntimeEnv();
-        $replacements = new Replacements([], [
+        $replacements = new Replacements([
             'first'  => $this->replacement($env, null, 'second'),
             'second' => $this->replacement($env, null, 'third'),
             'third'  => $this->replacement($env, 'third value')
@@ -53,11 +53,11 @@ class ReplacementsTest extends TestCase
             'third'  => $this->replacement($env, null, 'first')
         ]);
 
-        $this->assertSame('', $replacements->valueOf('first', []));
+        $this->assertSame('', $replacements->valueOf('first'));
     }
 
     private function replacement(Doubles\FakeRuntimeEnv $env, ?string $value, string $fallback = null): ReplacementReader
     {
-        return new ReplacementReader($env, new Doubles\FakeReplacement($value, null, null, $fallback));
+        return new ReplacementReader(new Doubles\FakeReplacement($value, null, null, $fallback), $env, []);
     }
 }

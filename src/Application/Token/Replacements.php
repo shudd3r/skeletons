@@ -16,15 +16,12 @@ use Shudd3r\PackageFiles\ReplacementReader;
 
 class Replacements
 {
-    private array $options;
-
     /** @var ReplacementReader[] */
     private array $replacements;
     private array $currentRefs;
 
-    public function __construct(array $options, array $replacements = [])
+    public function __construct(array $replacements = [])
     {
-        $this->options      = $options;
         $this->replacements = $replacements;
     }
 
@@ -37,7 +34,7 @@ class Replacements
         if (!$replacement) { return ''; }
 
         $this->currentRefs[$replacementName] = true;
-        $token = $replacement->initialToken($replacementName, $this->options, $this);
+        $token = $replacement->initialToken($replacementName, $this);
         $this->currentRefs[$replacementName] = false;
 
         return $token ? $token->value() : '';
@@ -45,7 +42,7 @@ class Replacements
 
     public function initialTokens(): array
     {
-        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->initialToken($name, $this->options, $this);
+        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->initialToken($name, $this);
         return $this->readTokens($readMethod);
     }
 
@@ -57,7 +54,7 @@ class Replacements
 
     public function updateTokens(): array
     {
-        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->updateToken($name, $this->options);
+        $readMethod = fn(string $name, ReplacementReader $replacement) => $replacement->updateToken($name);
         return $this->readTokens($readMethod);
     }
 

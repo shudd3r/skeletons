@@ -42,8 +42,8 @@ class PackageDescriptionTest extends TestCase
         $env         = new Doubles\FakeRuntimeEnv();
         $env->package()->addFile('composer.json', '{"name": "composer/package"}');
 
-        $fakeReplacement = new ReplacementReader($env, new Doubles\FakeReplacement('fallback value'));
-        $fallback        = new Token\Replacements([], ['fallback.token' => $fakeReplacement]);
+        $fakeReplacement = new ReplacementReader(new Doubles\FakeReplacement('fallback value'), $env, []);
+        $fallback        = new Token\Replacements(['fallback.token' => $fakeReplacement]);
 
         $this->assertSame('fallback value package', $replacement->defaultValue($env, $fallback));
     }
