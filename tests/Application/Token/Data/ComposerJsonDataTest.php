@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\Token\Source\Data;
+namespace Shudd3r\PackageFiles\Tests\Application\Token\Data;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Token\Data\ComposerJsonData;
