@@ -11,8 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Application\Command\Precondition;
 
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Command\Precondition;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 
 class CheckFileExists implements Precondition

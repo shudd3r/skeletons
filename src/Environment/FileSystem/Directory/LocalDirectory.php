@@ -46,10 +46,10 @@ class LocalDirectory implements Directory
 
     public function files(): array
     {
-        return $this->exists() ? $this->readDirectory() : [];
+        return $this->exists() ? $this->directoryTreeFiles() : [];
     }
 
-    private function readDirectory(string $subdirectory = ''): array
+    private function directoryTreeFiles(string $subdirectory = ''): array
     {
         $absolutePath = $subdirectory ? $this->path . DIRECTORY_SEPARATOR . $subdirectory : $this->path;
         $names        = array_diff(scandir($absolutePath), ['.', '..']);
@@ -67,7 +67,7 @@ class LocalDirectory implements Directory
         }
 
         foreach ($directories as $directory) {
-            $files = array_merge($files, $this->readDirectory($directory));
+            $files = array_merge($files, $this->directoryTreeFiles($directory));
         }
 
         return $files;

@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Application\Token\Reader;
 
+
 interface FallbackReader
 {
     public function valueOf(string $name): string;

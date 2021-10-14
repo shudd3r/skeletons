@@ -19,11 +19,11 @@ use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 class RepositoryName implements Replacement
 {
-    private string $fallbackToken;
+    private string $fallbackName;
 
-    public function __construct(string $fallbackToken = '')
+    public function __construct(string $fallbackName = '')
     {
-        $this->fallbackToken = $fallbackToken;
+        $this->fallbackName = $fallbackName;
     }
 
     public function optionName(): ?string
@@ -78,6 +78,6 @@ class RepositoryName implements Replacement
 
     private function fallbackValue(FallbackReader $fallback): string
     {
-        return $this->fallbackToken ? $fallback->valueOf($this->fallbackToken) : '';
+        return $this->fallbackName ? $fallback->valueOf($this->fallbackName) : '';
     }
 }

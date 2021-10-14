@@ -11,12 +11,13 @@
 
 namespace Shudd3r\PackageFiles\Application\Template\Factory;
 
-use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Application\Template\Factory;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Application\Template;
 
 
-class MergedJsonFactory implements Template\Factory
+class MergedJsonFactory implements Factory
 {
     private RuntimeEnv $env;
 

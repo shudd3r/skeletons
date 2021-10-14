@@ -19,11 +19,11 @@ use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 class PackageDescription implements Replacement
 {
-    private string $fallbackToken;
+    private string $fallbackName;
 
-    public function __construct(string $fallbackToken = '')
+    public function __construct(string $fallbackName = '')
     {
-        $this->fallbackToken = $fallbackToken;
+        $this->fallbackName = $fallbackName;
     }
 
     public function optionName(): ?string
@@ -53,8 +53,8 @@ class PackageDescription implements Replacement
 
     private function descriptionFromFallbackValue(FallbackReader $fallback): string
     {
-        if (!$this->fallbackToken) { return ''; }
-        $fallbackValue = $fallback->valueOf($this->fallbackToken);
+        if (!$this->fallbackName) { return ''; }
+        $fallbackValue = $fallback->valueOf($this->fallbackName);
         return $fallbackValue ? $fallbackValue . ' package' : '';
     }
 }

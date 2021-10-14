@@ -20,11 +20,11 @@ use Shudd3r\PackageFiles\Application\Token\ValueToken;
 
 class SrcNamespace implements Replacement
 {
-    private string $fallbackToken;
+    private string $fallbackName;
 
-    public function __construct(string $fallbackToken = '')
+    public function __construct(string $fallbackName = '')
     {
-        $this->fallbackToken = $fallbackToken;
+        $this->fallbackName = $fallbackName;
     }
 
     public function optionName(): ?string
@@ -70,7 +70,7 @@ class SrcNamespace implements Replacement
 
     private function namespaceFromFallbackValue(FallbackReader $fallback): string
     {
-        $fallbackValue = $this->fallbackToken ? $fallback->valueOf($this->fallbackToken) : '';
+        $fallbackValue = $this->fallbackName ? $fallback->valueOf($this->fallbackName) : '';
         if (!$fallbackValue) { return ''; }
 
         [$vendor, $package] = explode('/', $fallbackValue) + ['', ''];
