@@ -54,6 +54,5 @@ class CachedDirectoryTest extends TestCase
 
         $cached = new CachedDirectory(new FakeDirectory('origin/path', false));
         $this->assertFalse($cached->exists());
-
     }
 }
