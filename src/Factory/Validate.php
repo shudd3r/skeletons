@@ -16,7 +16,6 @@ use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
-use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
 
 
@@ -40,14 +39,6 @@ class Validate implements Factory
         $processTokens  = new Command\TokenProcessor($this->tokenReader(), $tokenProcessor, $output);
 
         return new Command\ProtectedCommand($processTokens, $metaDataExists, $output);
-    }
-
-    public function synchronizedSkeleton(TokenCache $cache): Command\Precondition
-    {
-        $fileValidators = new Processor\FileProcessors\CachingFileValidators($this->env->package(), $this->env->templates(), $cache);
-        $tokenProcessor = $this->processor($fileValidators);
-
-        return new Command\Precondition\SkeletonSynchronization($this->tokenReader(), $tokenProcessor);
     }
 
     protected function processor(Processor\FileProcessors $fileValidators): Processor

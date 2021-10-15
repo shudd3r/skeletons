@@ -33,27 +33,31 @@ class Update implements Factory
 
     public function command(array $options): Command
     {
-        $tokenReader = new Reader\UpdateReader($this->replacements, $this->env, $options);
-        $validation  = new Validate($this->env, $this->replacements);
-        $cache       = new TokenCache();
-        $output      = $this->env->output();
+        $cache = new TokenCache();
 
-        $processTokens = new Command\TokenProcessor($tokenReader, $this->processor($cache), $output);
-        $saveMetaData  = new Command\SaveMetaData($tokenReader, $this->env->metaData());
+        $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
+        $preconditions  = new Command\Precondition\Preconditions($metaDataExists, $this->synchronizedSkeleton($cache));
 
-        $metaDataExists    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $synchronizedFiles = $validation->synchronizedSkeleton($cache);
+        $reader        = new Reader\UpdateReader($this->replacements, $this->env, $options);
+        $processTokens = new Command\TokenProcessor($reader, $this->processor($cache), $this->env->output());
+        $saveMetaData  = new Command\SaveMetaData($reader, $this->env->metaData());
+        $command       = new Command\CommandSequence($processTokens, $saveMetaData);
 
-        return new Command\ProtectedCommand(
-            new Command\CommandSequence($processTokens, $saveMetaData),
-            new Command\Precondition\Preconditions($metaDataExists, $synchronizedFiles),
-            $output
-        );
+        return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
     }
 
     protected function processor(TokenCache $cache): Processor
     {
         $generatorFactory = new Processor\FileProcessors\UpdatedFileGenerators($this->env->package(), $this->env->templates(), $cache);
         return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
+    }
+
+    public function synchronizedSkeleton(TokenCache $cache): Command\Precondition
+    {
+        $reader         = new Reader\ValidationReader($this->replacements, $this->env, []);
+        $fileValidators = new Processor\FileProcessors\CachingFileValidators($this->env->package(), $this->env->templates(), $cache);
+        $tokenProcessor = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $fileValidators);
+
+        return new Command\Precondition\SkeletonSynchronization($reader, $tokenProcessor);
     }
 }
