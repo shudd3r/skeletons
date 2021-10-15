@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Setup;
 
 use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Replacement;
+use Shudd3r\PackageFiles\Application\Exception;
 
 
 class AppSetup
@@ -26,6 +27,9 @@ class AppSetup
 
     public function addReplacement(string $placeholder, Replacement $replacement): void
     {
+        if (isset($this->replacements[$placeholder])) {
+            throw new Exception\ReplacementOverwriteException();
+        }
         $this->replacements[$placeholder] = $replacement;
     }
 }
