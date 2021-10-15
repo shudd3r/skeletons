@@ -22,42 +22,41 @@ use Shudd3r\PackageFiles\Application\Processor;
 
 class Update implements Factory
 {
-    private RuntimeEnv   $env;
-    private Replacements $replacements;
+    private RuntimeEnv $env;
+    private array      $options;
 
-    public function __construct(RuntimeEnv $env, Replacements $replacements)
+    public function __construct(RuntimeEnv $env, array $options)
     {
-        $this->env          = $env;
-        $this->replacements = $replacements;
+        $this->env     = $env;
+        $this->options = $options;
     }
 
-    public function command(array $options): Command
+    public function command(Replacements $replacements): Command
     {
-        $cache = new TokenCache();
+        $validationReader = new Reader\ValidationReader($replacements, $this->env, $this->options);
+        $updateReader     = new Reader\UpdateReader($replacements, $this->env, $this->options);
+        $cache            = new TokenCache();
 
-        $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $preconditions  = new Command\Precondition\Preconditions($metaDataExists, $this->synchronizedSkeleton($cache));
+        $metaDataExists      = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
+        $packageSynchronized = new Command\Precondition\SkeletonSynchronization($validationReader, $this->fileValidator($cache));
+        $preconditions       = new Command\Precondition\Preconditions($metaDataExists, $packageSynchronized);
 
-        $reader        = new Reader\UpdateReader($this->replacements, $this->env, $options);
-        $processTokens = new Command\TokenProcessor($reader, $this->processor($cache), $this->env->output());
-        $saveMetaData  = new Command\SaveMetaData($reader, $this->env->metaData());
+        $processTokens = new Command\TokenProcessor($updateReader, $this->fileGenerator($cache), $this->env->output());
+        $saveMetaData  = new Command\SaveMetaData($updateReader, $this->env->metaData());
         $command       = new Command\CommandSequence($processTokens, $saveMetaData);
 
         return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
     }
 
-    protected function processor(TokenCache $cache): Processor
+    private function fileGenerator(TokenCache $cache): Processor
     {
         $generatorFactory = new Processor\FileProcessors\UpdatedFileGenerators($this->env->package(), $this->env->templates(), $cache);
         return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
     }
 
-    public function synchronizedSkeleton(TokenCache $cache): Command\Precondition
+    private function fileValidator(TokenCache $cache): Processor
     {
-        $reader         = new Reader\ValidationReader($this->replacements, $this->env, []);
         $fileValidators = new Processor\FileProcessors\CachingFileValidators($this->env->package(), $this->env->templates(), $cache);
-        $tokenProcessor = new Processor\SkeletonFilesProcessor($this->env->skeleton(), $fileValidators);
-
-        return new Command\Precondition\SkeletonSynchronization($reader, $tokenProcessor);
+        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $fileValidators);
     }
 }

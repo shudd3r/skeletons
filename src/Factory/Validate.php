@@ -21,33 +21,28 @@ use Shudd3r\PackageFiles\Application\Processor;
 
 class Validate implements Factory
 {
-    private RuntimeEnv   $env;
-    private Replacements $replacements;
+    private RuntimeEnv $env;
+    private array      $options;
 
-    public function __construct(RuntimeEnv $env, Replacements $replacements)
+    public function __construct(RuntimeEnv $env, array $options)
     {
-        $this->env          = $env;
-        $this->replacements = $replacements;
+        $this->env     = $env;
+        $this->options = $options;
     }
 
-    public function command(array $options): Command
+    public function command(Replacements $replacements): Command
     {
-        $output         = $this->env->output();
+        $validationReader = new Reader\ValidationReader($replacements, $this->env, $this->options);
+
         $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
+        $processTokens  = new Command\TokenProcessor($validationReader, $this->fileValidator(), $this->env->output());
+
+        return new Command\ProtectedCommand($processTokens, $metaDataExists, $this->env->output());
+    }
+
+    protected function fileValidator(): Processor
+    {
         $fileValidators = new Processor\FileProcessors\FileValidators($this->env->package(), $this->env->templates());
-        $tokenProcessor = $this->processor($fileValidators);
-        $processTokens  = new Command\TokenProcessor($this->tokenReader(), $tokenProcessor, $output);
-
-        return new Command\ProtectedCommand($processTokens, $metaDataExists, $output);
-    }
-
-    protected function processor(Processor\FileProcessors $fileValidators): Processor
-    {
         return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $fileValidators);
-    }
-
-    private function tokenReader(): Reader
-    {
-        return new Reader\ValidationReader($this->replacements, $this->env, []);
     }
 }

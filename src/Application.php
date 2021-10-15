@@ -11,12 +11,10 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Setup\EnvSetup;
 use Shudd3r\PackageFiles\Application\Setup\AppSetup;
 use Shudd3r\PackageFiles\Application\Setup\ReplacementSetup;
 use Shudd3r\PackageFiles\Application\Setup\TemplateSetup;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\Terminal;
 use Exception;
@@ -64,11 +62,11 @@ class Application
     public function run(string $command, array $options = []): int
     {
         try {
-            $env          = $this->envSetup->runtimeEnv($this->terminal);
+            $factory      = $this->factory($command, $options);
             $replacements = $this->appSetup->replacements();
-            $factory      = $this->factory($command, $env, $replacements);
+            $command      = $factory->command($replacements);
 
-            $factory->command($options)->execute();
+            $command->execute();
         } catch (Exception $e) {
             $this->terminal->send($e->getMessage(), 1);
         }
@@ -76,12 +74,14 @@ class Application
         return $this->terminal->exitCode();
     }
 
-    protected function factory(string $command, RuntimeEnv $env, Replacements $replacements): Factory
+    protected function factory(string $command, array $options): Factory
     {
+        $env = $this->envSetup->runtimeEnv($this->terminal);
+
         switch ($command) {
-            case 'init':   return new Factory\Initialize($env, $replacements);
-            case 'check':  return new Factory\Validate($env, $replacements);
-            case 'update': return new Factory\Update($env, $replacements);
+            case 'init':   return new Factory\Initialize($env, $options);
+            case 'check':  return new Factory\Validate($env, $options);
+            case 'update': return new Factory\Update($env, $options);
         }
 
         throw new Exception("Unknown `{$command}` command");
