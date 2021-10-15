@@ -11,8 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Application\Command\Precondition;
 
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\Command\Precondition;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
 class CheckFilesOverwrite implements Precondition

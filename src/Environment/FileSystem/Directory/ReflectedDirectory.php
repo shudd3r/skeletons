@@ -17,42 +17,42 @@ use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 class ReflectedDirectory implements Directory
 {
-    private Directory $root;
+    private Directory $target;
     private Directory $origin;
 
-    public function __construct(Directory $root, Directory $origin)
+    public function __construct(Directory $target, Directory $origin)
     {
-        $this->root   = $root;
+        $this->target = $target;
         $this->origin = $origin;
     }
 
     public function path(): string
     {
-        return $this->root->path();
+        return $this->target->path();
     }
 
     public function exists(): bool
     {
-        return $this->root->exists();
+        return $this->target->exists();
     }
 
     public function subdirectory(string $name): Directory
     {
-        return new self($this->root->subdirectory($name), $this->origin->subdirectory($name));
+        return new self($this->target->subdirectory($name), $this->origin->subdirectory($name));
     }
 
     public function file(string $filename): File
     {
-        return $this->root->file($filename);
+        return $this->target->file($filename);
     }
 
     public function files(): array
     {
-        $files = [];
-        foreach ($this->origin->files() as $file) {
-            $files[] = $this->root->file($file->name());
+        $targetFiles = [];
+        foreach ($this->origin->files() as $originFile) {
+            $targetFiles[] = $this->target->file($originFile->name());
         }
 
-        return $files;
+        return $targetFiles;
     }
 }

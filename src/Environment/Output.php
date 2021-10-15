@@ -15,7 +15,7 @@ namespace Shudd3r\PackageFiles\Environment;
 interface Output
 {
     /**
-     * Sends message to external stream resource with optional error code.
+     * Sends message with optional error code.
      *
      * @param string $message
      * @param int    $errorCode

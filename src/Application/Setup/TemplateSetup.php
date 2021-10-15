@@ -23,8 +23,11 @@ class TemplateSetup
         $this->filename = $filename;
     }
 
-    public function add(callable $replacement): void
+    /**
+     * @param callable $template fn(RuntimeEnv $env) => Shudd3r\PackageFiles\Application\Template\Factory
+     */
+    public function add(callable $template): void
     {
-        $this->setup->addTemplate($this->filename, $replacement);
+        $this->setup->addTemplate($this->filename, $template);
     }
 }

@@ -11,9 +11,9 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Application\Setup\AppSetup;
-use Shudd3r\PackageFiles\Application\Setup\EnvSetup;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Setup\EnvSetup;
+use Shudd3r\PackageFiles\Application\Setup\AppSetup;
 use Shudd3r\PackageFiles\Application\Setup\ReplacementSetup;
 use Shudd3r\PackageFiles\Application\Setup\TemplateSetup;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
@@ -65,7 +65,7 @@ class Application
     {
         try {
             $env          = $this->envSetup->runtimeEnv($this->terminal);
-            $replacements = $this->appSetup->replacements($env, $options);
+            $replacements = $this->appSetup->replacements();
             $factory      = $this->factory($command, $env, $replacements);
 
             $factory->command($options)->execute();

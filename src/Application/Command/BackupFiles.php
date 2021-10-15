@@ -18,26 +18,25 @@ use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 class BackupFiles implements Command
 {
-    private Directory $package;
+    private Directory $expected;
     private Directory $backup;
 
-    public function __construct(Directory $package, Directory $backup)
+    public function __construct(Directory $expected, Directory $backup)
     {
-        $this->package = $package;
-        $this->backup  = $backup;
+        $this->expected = $expected;
+        $this->backup   = $backup;
     }
 
     public function execute(): void
     {
-        foreach ($this->package->files() as $packageFile) {
-            if (!$packageFile->exists()) { continue; }
-            $this->copyToBackupDirectory($packageFile);
+        foreach ($this->expected->files() as $expectedFile) {
+            if (!$expectedFile->exists()) { continue; }
+            $this->copyToBackupDirectory($expectedFile);
         }
     }
 
     private function copyToBackupDirectory(File $packageFile): void
     {
-        $backupFile = $this->backup->file($packageFile->name());
-        $backupFile->write($packageFile->contents());
+        $this->backup->file($packageFile->name())->write($packageFile->contents());
     }
 }

@@ -30,7 +30,7 @@ class ValueListToken implements Token
     {
         $templateParts = explode('{' . $this->placeholder . '}', $template);
         if (count($templateParts) !== count($this->values) + 1) {
-            throw new RuntimeException();
+            throw new RuntimeException('Cannot match replacements list to placeholders');
         }
 
         $generated = array_shift($templateParts);

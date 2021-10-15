@@ -14,12 +14,5 @@ namespace Shudd3r\PackageFiles\Environment;
 
 interface Input
 {
-    /**
-     * Returns value provided from external resource.
-     *
-     * @param string $prompt
-     *
-     * @return string
-     */
     public function value(string $prompt = ''): string;
 }
