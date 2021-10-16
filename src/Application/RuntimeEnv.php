@@ -15,7 +15,7 @@ use Shudd3r\PackageFiles\Environment\Input;
 use Shudd3r\PackageFiles\Environment\Output;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Application\Template\Factory\Templates;
+use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Application\Token\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Application\Token\Data\MetaData;
 use Shudd3r\PackageFiles\Application\Exception;

@@ -14,16 +14,16 @@ namespace Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Application\Template\Factory;
 use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Application\Template\Templates;
 
 
 abstract class FileProcessors
 {
     private Directory $package;
-    private Factory   $templates;
+    private Templates $templates;
 
-    public function __construct(Directory $package, Factory $templates)
+    public function __construct(Directory $package, Templates $templates)
     {
         $this->package   = $package;
         $this->templates = $templates;

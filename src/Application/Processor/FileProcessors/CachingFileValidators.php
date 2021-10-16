@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Application\Processor\FileProcessors;
 
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
-use Shudd3r\PackageFiles\Application\Template\Factory\Templates;
+use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Token;

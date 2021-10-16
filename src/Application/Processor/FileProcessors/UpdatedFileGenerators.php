@@ -15,6 +15,7 @@ use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 
@@ -23,7 +24,7 @@ class UpdatedFileGenerators extends Processor\FileProcessors
 {
     private TokenCache $cache;
 
-    public function __construct(Directory $package, Template\Factory $templates, TokenCache $cache)
+    public function __construct(Directory $package, Templates $templates, TokenCache $cache)
     {
         $this->cache = $cache;
         parent::__construct($package, $templates);

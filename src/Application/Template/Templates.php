@@ -9,15 +9,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Template\Factory;
+namespace Shudd3r\PackageFiles\Application\Template;
 
-use Shudd3r\PackageFiles\Application\Template\Factory;
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Exception;
 
 
-class Templates implements Factory
+class Templates
 {
     private array $factories;
 

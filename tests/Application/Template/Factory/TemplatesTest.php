@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\Template\Factory;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Exception\TemplateOverwriteException;
 use Shudd3r\PackageFiles\Application\Template\BasicTemplate;
-use Shudd3r\PackageFiles\Application\Template\Factory\Templates;
+use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeTemplateFactory;
 
 
