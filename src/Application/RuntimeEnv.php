@@ -50,7 +50,7 @@ class RuntimeEnv
 
     public function templates(): Templates
     {
-        return $this->templates ??= new Templates();
+        return $this->templates ??= new Templates($this);
     }
 
     public function input(): Input

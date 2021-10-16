@@ -12,6 +12,7 @@
 namespace Shudd3r\PackageFiles\Application\Setup;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Application\Template\Factory;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Environment\Terminal;
@@ -43,7 +44,7 @@ class EnvSetup
 
         $templates = $env->templates();
         foreach ($this->templates as $filename => $template) {
-            $templates->add($filename, $template($env));
+            $templates->add($filename, $template);
         }
 
         return $env;
@@ -59,7 +60,7 @@ class EnvSetup
         $this->metaFile = $this->package->file($filename);
     }
 
-    public function addTemplate(string $filename, callable $template): void
+    public function addTemplate(string $filename, Factory $template): void
     {
         $this->templates[$filename] = $template;
     }

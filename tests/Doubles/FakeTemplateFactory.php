@@ -13,6 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 
 
 class FakeTemplateFactory implements Template\Factory
@@ -24,7 +25,7 @@ class FakeTemplateFactory implements Template\Factory
         $this->template = $template;
     }
 
-    public function template(File $skeletonFile): Template
+    public function template(File $skeletonFile, RuntimeEnv $env): Template
     {
         return $this->template;
     }

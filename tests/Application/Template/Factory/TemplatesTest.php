@@ -15,17 +15,17 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Exception\TemplateOverwriteException;
 use Shudd3r\PackageFiles\Application\Template\BasicTemplate;
 use Shudd3r\PackageFiles\Application\Template\Templates;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeTemplateFactory;
+use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class TemplatesTest extends TestCase
 {
     public function testOverwritingTemplateForDefinedFile_ThrowsException()
     {
-        $templates = new Templates();
-        $templates->add('file.txt', new FakeTemplateFactory(new BasicTemplate('')));
+        $templates = new Templates(new Doubles\FakeRuntimeEnv());
+        $templates->add('file.txt', new Doubles\FakeTemplateFactory(new BasicTemplate('')));
 
         $this->expectException(TemplateOverwriteException::class);
-        $templates->add('file.txt', new FakeTemplateFactory(new BasicTemplate('')));
+        $templates->add('file.txt', new Doubles\FakeTemplateFactory(new BasicTemplate('')));
     }
 }

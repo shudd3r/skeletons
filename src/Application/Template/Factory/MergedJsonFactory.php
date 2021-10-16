@@ -19,19 +19,12 @@ use Shudd3r\PackageFiles\Application\Template;
 
 class MergedJsonFactory implements Factory
 {
-    private RuntimeEnv $env;
-
-    public function __construct(RuntimeEnv $env)
-    {
-        $this->env = $env;
-    }
-
-    public function template(File $skeletonFile): Template
+    public function template(File $skeletonFile, RuntimeEnv $env): Template
     {
         return new Template\MergedJsonTemplate(
             new Template\BasicTemplate($skeletonFile->contents()),
-            $this->env->package()->file($skeletonFile->name())->contents(),
-            $this->env->metaDataFile()->exists()
+            $env->package()->file($skeletonFile->name())->contents(),
+            $env->metaDataFile()->exists()
         );
     }
 }

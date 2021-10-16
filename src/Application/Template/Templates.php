@@ -12,16 +12,19 @@
 namespace Shudd3r\PackageFiles\Application\Template;
 
 use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Exception;
 
 
 class Templates
 {
-    private array $factories;
+    private RuntimeEnv $env;
+    private array      $factories;
 
-    public function __construct(array $factories = [])
+    public function __construct(RuntimeEnv $env, array $factories = [])
     {
+        $this->env       = $env;
         $this->factories = $factories;
     }
 
@@ -37,7 +40,9 @@ class Templates
     public function template(File $skeletonFile): Template
     {
         $factory = $this->factory($skeletonFile->name());
-        return $factory ? $factory->template($skeletonFile) : new Template\BasicTemplate($skeletonFile->contents());
+        return $factory
+            ? $factory->template($skeletonFile, $this->env)
+            : new Template\BasicTemplate($skeletonFile->contents());
     }
 
     private function factory(string $filename): ?Factory
