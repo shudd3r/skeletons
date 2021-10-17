@@ -16,7 +16,6 @@ use Shudd3r\PackageFiles\Application\Setup\EnvSetup;
 use Shudd3r\PackageFiles\Application\Setup\AppSetup;
 use Shudd3r\PackageFiles\Application\Setup\ReplacementSetup;
 use Shudd3r\PackageFiles\Application\Setup\TemplateSetup;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\Terminal;
 use Exception;
@@ -52,7 +51,7 @@ class Application
 
     public function template(string $filename): TemplateSetup
     {
-        return new TemplateSetup($this->envSetup, $filename);
+        return new TemplateSetup($this->appSetup, $filename);
     }
 
     /**
@@ -65,10 +64,12 @@ class Application
     {
         try {
             $env          = $this->envSetup->runtimeEnv($this->terminal);
+            $factory      = $this->factory($command, $env, $options);
             $replacements = $this->appSetup->replacements();
-            $factory      = $this->factory($command, $env, $replacements);
+            $templates    = $this->appSetup->templates($env);
+            $command      = $factory->command($replacements, $templates);
 
-            $factory->command($options)->execute();
+            $command->execute();
         } catch (Exception $e) {
             $this->terminal->send($e->getMessage(), 1);
         }
@@ -76,12 +77,12 @@ class Application
         return $this->terminal->exitCode();
     }
 
-    protected function factory(string $command, RuntimeEnv $env, Replacements $replacements): Factory
+    protected function factory(string $command, RuntimeEnv $env, array $options): Factory
     {
         switch ($command) {
-            case 'init':   return new Factory\Initialize($env, $replacements);
-            case 'check':  return new Factory\Validate($env, $replacements);
-            case 'update': return new Factory\Update($env, $replacements);
+            case 'init':   return new Factory\Initialize($env, $options);
+            case 'check':  return new Factory\Validate($env, $options);
+            case 'update': return new Factory\Update($env, $options);
         }
 
         throw new Exception("Unknown `{$command}` command");

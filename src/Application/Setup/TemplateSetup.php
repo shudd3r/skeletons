@@ -11,22 +11,21 @@
 
 namespace Shudd3r\PackageFiles\Application\Setup;
 
+use Shudd3r\PackageFiles\Application\Template\Factory;
+
 
 class TemplateSetup
 {
-    private EnvSetup $setup;
+    private AppSetup $setup;
     private string   $filename;
 
-    public function __construct(EnvSetup $setup, string $filename)
+    public function __construct(AppSetup $setup, string $filename)
     {
         $this->setup    = $setup;
         $this->filename = $filename;
     }
 
-    /**
-     * @param callable $template fn(RuntimeEnv $env) => Shudd3r\PackageFiles\Application\Template\Factory
-     */
-    public function add(callable $template): void
+    public function add(Factory $template): void
     {
         $this->setup->addTemplate($this->filename, $template);
     }

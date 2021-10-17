@@ -16,45 +16,43 @@ use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\Processor;
 
 
 class Initialize implements Factory
 {
-    private RuntimeEnv   $env;
-    private Replacements $replacements;
+    private RuntimeEnv $env;
+    private array      $options;
 
-    public function __construct(RuntimeEnv $env, Replacements $replacements)
+    public function __construct(RuntimeEnv $env, array $options)
     {
-        $this->env          = $env;
-        $this->replacements = $replacements;
+        $this->env     = $env;
+        $this->options = $options;
     }
 
-    public function command(array $options): Command
+    public function command(Replacements $replacements, Templates $templates): Command
     {
-        $tokenReader     = new Reader\InitialReader($this->replacements, $this->env, $options);
-        $generatedFiles  = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
-        $backupDirectory = $this->env->backup();
-        $output          = $this->env->output();
-
-        $backupFiles   = new Command\BackupFiles($generatedFiles, $backupDirectory);
-        $processTokens = new Command\TokenProcessor($tokenReader, $this->processor(), $output);
-        $saveMetaData  = new Command\SaveMetaData($tokenReader, $this->env->metaData());
+        $initialReader  = new Reader\InitialReader($replacements, $this->env, $this->options);
+        $generatedFiles = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
 
         $noMetaDataFile    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), false);
-        $noBackupOverwrite = new Command\Precondition\CheckFilesOverwrite($generatedFiles, $backupDirectory);
+        $noBackupOverwrite = new Command\Precondition\CheckFilesOverwrite($generatedFiles, $this->env->backup());
+        $preconditions     = new Command\Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite);
 
-        return new Command\ProtectedCommand(
-            new Command\CommandSequence($backupFiles, $processTokens, $saveMetaData),
-            new Command\Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite),
-            $output
-        );
+        $backupFiles   = new Command\BackupFiles($generatedFiles, $this->env->backup());
+        $fileGenerator = $this->fileGenerator($templates);
+        $processTokens = new Command\TokenProcessor($initialReader, $fileGenerator, $this->env->output());
+        $saveMetaData  = new Command\SaveMetaData($initialReader, $this->env->metaData());
+        $command       = new Command\CommandSequence($backupFiles, $processTokens, $saveMetaData);
+
+        return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
     }
 
-    protected function processor(): Processor
+    private function fileGenerator(Templates $templates): Processor
     {
-        $generatorFactory = new Processor\FileProcessors\NewFileGenerators($this->env->package(), $this->env->templates());
-        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
+        $generators = new Processor\FileProcessors\NewFileGenerators($this->env->package(), $templates);
+        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generators);
     }
 }
