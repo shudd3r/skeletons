@@ -16,6 +16,7 @@ use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\Processor;
 
@@ -31,7 +32,7 @@ class Initialize implements Factory
         $this->options = $options;
     }
 
-    public function command(Replacements $replacements): Command
+    public function command(Replacements $replacements, Templates $templates): Command
     {
         $initialReader  = new Reader\InitialReader($replacements, $this->env, $this->options);
         $generatedFiles = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
@@ -41,16 +42,16 @@ class Initialize implements Factory
         $preconditions     = new Command\Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite);
 
         $backupFiles   = new Command\BackupFiles($generatedFiles, $this->env->backup());
-        $processTokens = new Command\TokenProcessor($initialReader, $this->fileGenerator(), $this->env->output());
+        $processTokens = new Command\TokenProcessor($initialReader, $this->fileGenerator($templates), $this->env->output());
         $saveMetaData  = new Command\SaveMetaData($initialReader, $this->env->metaData());
         $command       = new Command\CommandSequence($backupFiles, $processTokens, $saveMetaData);
 
         return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
     }
 
-    private function fileGenerator(): Processor
+    private function fileGenerator(Templates $templates): Processor
     {
-        $generatorFactory = new Processor\FileProcessors\NewFileGenerators($this->env->package(), $this->env->templates());
+        $generatorFactory = new Processor\FileProcessors\NewFileGenerators($this->env->package(), $templates);
         return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
     }
 }

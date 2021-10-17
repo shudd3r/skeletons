@@ -13,9 +13,10 @@ namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Template\Templates;
 
 
 interface Factory
 {
-    public function command(Replacements $replacements): Command;
+    public function command(Replacements $replacements, Templates $templates): Command;
 }

@@ -13,9 +13,10 @@ namespace Shudd3r\PackageFiles\Tests\Application\Setup;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Setup\AppSetup;
+use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
-use Shudd3r\PackageFiles\Tests\Doubles\FakeReplacement;
 use Shudd3r\PackageFiles\Application\Exception;
+use Shudd3r\PackageFiles\Tests\Doubles;
 
 
 class AppSetupTest extends TestCase
@@ -23,12 +24,12 @@ class AppSetupTest extends TestCase
     public function testCreatingReplacementsClassWithGivenReplacementInstances()
     {
         $setup = new AppSetup();
-        $setup->addReplacement('foo', new FakeReplacement('foo-value'));
-        $setup->addReplacement('bar', new FakeReplacement('bar-value'));
+        $setup->addReplacement('foo', new Doubles\FakeReplacement('foo-value'));
+        $setup->addReplacement('bar', new Doubles\FakeReplacement('bar-value'));
 
         $expected = new Replacements([
-            'foo' => new FakeReplacement('foo-value'),
-            'bar' => new FakeReplacement('bar-value'),
+            'foo' => new Doubles\FakeReplacement('foo-value'),
+            'bar' => new Doubles\FakeReplacement('bar-value'),
         ]);
         $this->assertEquals($expected, $setup->replacements());
     }
@@ -36,9 +37,33 @@ class AppSetupTest extends TestCase
     public function testOverwritingDefinedReplacement_ThrowsException()
     {
         $setup = new AppSetup();
-        $setup->addReplacement('foo', new FakeReplacement());
+        $setup->addReplacement('foo', new Doubles\FakeReplacement());
 
         $this->expectException(Exception\ReplacementOverwriteException::class);
-        $setup->addReplacement('foo', new FakeReplacement());
+        $setup->addReplacement('foo', new Doubles\FakeReplacement());
+    }
+
+    public function testCreatingTemplatesClassWithGivenTemplateFactoryInstances()
+    {
+        $setup = new AppSetup();
+        $setup->addTemplate('file1.txt', new Doubles\FakeTemplateFactory());
+        $setup->addTemplate('file2.txt', new Doubles\FakeTemplateFactory());
+
+
+        $env      = new Doubles\FakeRuntimeEnv();
+        $expected = new Templates($env, [
+            'file1.txt' => new Doubles\FakeTemplateFactory(),
+            'file2.txt' => new Doubles\FakeTemplateFactory(),
+        ]);
+        $this->assertEquals($expected, $setup->templates($env));
+    }
+
+    public function testOverwritingTemplateForDefinedFile_ThrowsException()
+    {
+        $setup = new AppSetup();
+        $setup->addTemplate('file.txt', new Doubles\FakeTemplateFactory());
+
+        $this->expectException(Exception\TemplateOverwriteException::class);
+        $setup->addTemplate('file.txt', new Doubles\FakeTemplateFactory());
     }
 }

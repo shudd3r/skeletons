@@ -11,6 +11,7 @@
 
 namespace Shudd3r\PackageFiles;
 
+use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Setup\EnvSetup;
 use Shudd3r\PackageFiles\Application\Setup\AppSetup;
 use Shudd3r\PackageFiles\Application\Setup\ReplacementSetup;
@@ -50,7 +51,7 @@ class Application
 
     public function template(string $filename): TemplateSetup
     {
-        return new TemplateSetup($this->envSetup, $filename);
+        return new TemplateSetup($this->appSetup, $filename);
     }
 
     /**
@@ -62,9 +63,11 @@ class Application
     public function run(string $command, array $options = []): int
     {
         try {
-            $factory      = $this->factory($command, $options);
+            $env          = $this->envSetup->runtimeEnv($this->terminal);
+            $factory      = $this->factory($command, $env, $options);
             $replacements = $this->appSetup->replacements();
-            $command      = $factory->command($replacements);
+            $templates    = $this->appSetup->templates($env);
+            $command      = $factory->command($replacements, $templates);
 
             $command->execute();
         } catch (Exception $e) {
@@ -74,10 +77,8 @@ class Application
         return $this->terminal->exitCode();
     }
 
-    protected function factory(string $command, array $options): Factory
+    protected function factory(string $command, RuntimeEnv $env, array $options): Factory
     {
-        $env = $this->envSetup->runtimeEnv($this->terminal);
-
         switch ($command) {
             case 'init':   return new Factory\Initialize($env, $options);
             case 'check':  return new Factory\Validate($env, $options);

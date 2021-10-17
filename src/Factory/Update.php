@@ -16,6 +16,7 @@ use Shudd3r\PackageFiles\Application\Command;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
 
@@ -31,32 +32,32 @@ class Update implements Factory
         $this->options = $options;
     }
 
-    public function command(Replacements $replacements): Command
+    public function command(Replacements $replacements, Templates $templates): Command
     {
         $validationReader = new Reader\ValidationReader($replacements, $this->env, $this->options);
         $updateReader     = new Reader\UpdateReader($replacements, $this->env, $this->options);
         $cache            = new TokenCache();
 
         $metaDataExists      = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $packageSynchronized = new Command\Precondition\SkeletonSynchronization($validationReader, $this->fileValidator($cache));
+        $packageSynchronized = new Command\Precondition\SkeletonSynchronization($validationReader, $this->fileValidator($templates, $cache));
         $preconditions       = new Command\Precondition\Preconditions($metaDataExists, $packageSynchronized);
 
-        $processTokens = new Command\TokenProcessor($updateReader, $this->fileGenerator($cache), $this->env->output());
+        $processTokens = new Command\TokenProcessor($updateReader, $this->fileGenerator($templates, $cache), $this->env->output());
         $saveMetaData  = new Command\SaveMetaData($updateReader, $this->env->metaData());
         $command       = new Command\CommandSequence($processTokens, $saveMetaData);
 
         return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
     }
 
-    private function fileGenerator(TokenCache $cache): Processor
+    private function fileGenerator(Templates $templates, TokenCache $cache): Processor
     {
-        $generatorFactory = new Processor\FileProcessors\UpdatedFileGenerators($this->env->package(), $this->env->templates(), $cache);
+        $generatorFactory = new Processor\FileProcessors\UpdatedFileGenerators($this->env->package(), $templates, $cache);
         return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
     }
 
-    private function fileValidator(TokenCache $cache): Processor
+    private function fileValidator(Templates $templates, TokenCache $cache): Processor
     {
-        $fileValidators = new Processor\FileProcessors\CachingFileValidators($this->env->package(), $this->env->templates(), $cache);
+        $fileValidators = new Processor\FileProcessors\CachingFileValidators($this->env->package(), $templates, $cache);
         return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $fileValidators);
     }
 }

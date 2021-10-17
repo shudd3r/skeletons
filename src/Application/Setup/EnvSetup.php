@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Application\Setup;
 
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Template\Factory;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Environment\Terminal;
@@ -27,7 +26,6 @@ class EnvSetup
     private Directory $skeleton;
     private Directory $backup;
     private File      $metaFile;
-    private array     $templates    = [];
 
     public function __construct(Directory $package, Directory $skeleton)
     {
@@ -40,14 +38,7 @@ class EnvSetup
         $backup   = $this->backup ?? $this->package->subdirectory(self::BACKUP_DIR);
         $metaFile = $this->metaFile ?? $this->package->file(self::META_FILE);
 
-        $env = new RuntimeEnv($this->package, $this->skeleton, $terminal, $backup, $metaFile);
-
-        $templates = $env->templates();
-        foreach ($this->templates as $filename => $template) {
-            $templates->add($filename, $template);
-        }
-
-        return $env;
+        return new RuntimeEnv($this->package, $this->skeleton, $terminal, $backup, $metaFile);
     }
 
     public function setBackupDirectory(Directory $backup): void
@@ -58,10 +49,5 @@ class EnvSetup
     public function setMetaFile(string $filename): void
     {
         $this->metaFile = $this->package->file($filename);
-    }
-
-    public function addTemplate(string $filename, Factory $template): void
-    {
-        $this->templates[$filename] = $template;
     }
 }

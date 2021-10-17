@@ -14,7 +14,6 @@ namespace Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Application\Exception;
 
 
 class Templates
@@ -26,15 +25,6 @@ class Templates
     {
         $this->env       = $env;
         $this->factories = $factories;
-    }
-
-    public function add(string $filename, Factory $factory): void
-    {
-        if (isset($this->factories[$filename])) {
-            throw new Exception\TemplateOverwriteException();
-        }
-
-        $this->factories[$filename] = $factory;
     }
 
     public function template(File $skeletonFile): Template

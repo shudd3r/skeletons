@@ -20,9 +20,9 @@ class FakeTemplateFactory implements Template\Factory
 {
     private Template $template;
 
-    public function __construct(Template $template)
+    public function __construct(Template $template = null)
     {
-        $this->template = $template;
+        $this->template = $template ?? new Template\BasicTemplate('foo');
     }
 
     public function template(File $skeletonFile, RuntimeEnv $env): Template
