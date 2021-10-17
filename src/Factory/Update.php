@@ -39,10 +39,12 @@ class Update implements Factory
         $cache            = new TokenCache();
 
         $metaDataExists      = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $packageSynchronized = new Command\Precondition\SkeletonSynchronization($validationReader, $this->fileValidator($templates, $cache));
+        $fileValidator       = $this->fileValidator($templates, $cache);
+        $packageSynchronized = new Command\Precondition\SkeletonSynchronization($validationReader, $fileValidator);
         $preconditions       = new Command\Precondition\Preconditions($metaDataExists, $packageSynchronized);
 
-        $processTokens = new Command\TokenProcessor($updateReader, $this->fileGenerator($templates, $cache), $this->env->output());
+        $fileGenerator = $this->fileGenerator($templates, $cache);
+        $processTokens = new Command\TokenProcessor($updateReader, $fileGenerator, $this->env->output());
         $saveMetaData  = new Command\SaveMetaData($updateReader, $this->env->metaData());
         $command       = new Command\CommandSequence($processTokens, $saveMetaData);
 
@@ -51,13 +53,13 @@ class Update implements Factory
 
     private function fileGenerator(Templates $templates, TokenCache $cache): Processor
     {
-        $generatorFactory = new Processor\FileProcessors\UpdatedFileGenerators($this->env->package(), $templates, $cache);
-        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generatorFactory);
+        $generators = new Processor\FileProcessors\UpdatedFileGenerators($this->env->package(), $templates, $cache);
+        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generators);
     }
 
     private function fileValidator(Templates $templates, TokenCache $cache): Processor
     {
-        $fileValidators = new Processor\FileProcessors\CachingFileValidators($this->env->package(), $templates, $cache);
-        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $fileValidators);
+        $validators = new Processor\FileProcessors\CachingFileValidators($this->env->package(), $templates, $cache);
+        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $validators);
     }
 }

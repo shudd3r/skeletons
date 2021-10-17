@@ -36,14 +36,15 @@ class Validate implements Factory
         $validationReader = new Reader\ValidationReader($replacements, $this->env, $this->options);
 
         $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $processTokens  = new Command\TokenProcessor($validationReader, $this->fileValidator($templates), $this->env->output());
+        $fileValidator  = $this->fileValidator($templates);
+        $processTokens  = new Command\TokenProcessor($validationReader, $fileValidator, $this->env->output());
 
         return new Command\ProtectedCommand($processTokens, $metaDataExists, $this->env->output());
     }
 
     protected function fileValidator(Templates $templates): Processor
     {
-        $fileValidators = new Processor\FileProcessors\FileValidators($this->env->package(), $templates);
-        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $fileValidators);
+        $validators = new Processor\FileProcessors\FileValidators($this->env->package(), $templates);
+        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $validators);
     }
 }
