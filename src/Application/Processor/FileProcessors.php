@@ -31,7 +31,7 @@ abstract class FileProcessors
 
     public function processor(File $skeletonFile): Processor
     {
-        $template    = $this->templates->template($skeletonFile);
+        $template    = $this->templates->template($skeletonFile->name());
         $packageFile = $this->package->file($skeletonFile->name());
 
         return $this->newProcessorInstance($template, $packageFile);
