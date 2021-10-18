@@ -36,7 +36,7 @@ class Initialize implements Factory
     {
         $initialReader  = new Reader\InitialReader($replacements, $this->env, $this->options);
         $generatedFiles = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
-        $fileGenerator  = $this->fileGenerator($generatedFiles, $templates);
+        $fileGenerator  = new Processor\FileProcessors\NewFileGenerators($generatedFiles, $templates);
 
         $noMetaDataFile    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), false);
         $noBackupOverwrite = new Command\Precondition\CheckFilesOverwrite($generatedFiles, $this->env->backup());
@@ -48,11 +48,5 @@ class Initialize implements Factory
         $command       = new Command\CommandSequence($backupFiles, $processTokens, $saveMetaData);
 
         return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
-    }
-
-    private function fileGenerator(Directory $generatedFiles, Templates $templates): Processor
-    {
-        $generators = new Processor\FileProcessors\NewFileGenerators($templates);
-        return new Processor\SkeletonFilesProcessor($generatedFiles, $generators);
     }
 }

@@ -35,18 +35,12 @@ class Validate implements Factory
     public function command(Replacements $replacements, Templates $templates): Command
     {
         $generatedFiles   = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
-        $fileValidator    = $this->fileValidator($generatedFiles, $templates);
+        $fileValidator    = new Processor\FileProcessors\FileValidators($generatedFiles, $templates);
         $validationReader = new Reader\ValidationReader($replacements, $this->env, $this->options);
 
         $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $processTokens  = new Command\TokenProcessor($validationReader, $fileValidator, $this->env->output());
 
         return new Command\ProtectedCommand($processTokens, $metaDataExists, $this->env->output());
-    }
-
-    protected function fileValidator(Directory $generatedFiles, Templates $templates): Processor
-    {
-        $validators = new Processor\FileProcessors\FileValidators($templates);
-        return new Processor\SkeletonFilesProcessor($generatedFiles, $validators);
     }
 }

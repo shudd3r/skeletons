@@ -12,21 +12,35 @@
 namespace Shudd3r\PackageFiles\Application\Processor;
 
 use Shudd3r\PackageFiles\Application\Processor;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
+use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Template;
-use Shudd3r\PackageFiles\Application\Template\Templates;
+use Shudd3r\PackageFiles\Application\Token;
 
 
-abstract class FileProcessors
+abstract class FileProcessors implements Processor
 {
     private Templates $templates;
+    private Directory $generated;
 
-    public function __construct(Templates $templates)
+    public function __construct(Directory $generatedFiles, Templates $templates)
     {
         $this->templates = $templates;
+        $this->generated = $generatedFiles;
     }
 
-    public function processor(File $packageFile): Processor
+    public function process(Token $token): bool
+    {
+        $status = true;
+        foreach ($this->generated->files() as $packageFile) {
+            $status = $this->processor($packageFile)->process($token) && $status;
+        }
+
+        return $status;
+    }
+
+    private function processor(File $packageFile): Processor
     {
         $template  = $this->templates->template($packageFile->name());
         return $this->newProcessorInstance($template, $packageFile);
