@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Processor\FileProcessors;
+namespace Shudd3r\PackageFiles\Application\Processor\FilesProcessor;
 
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
@@ -20,7 +20,7 @@ use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class UpdatedFileGenerators extends Processor\FileProcessors
+class UpdatedFilesGenerator extends Processor\FilesProcessor
 {
     private TokenCache $cache;
 

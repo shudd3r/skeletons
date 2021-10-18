@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Processor\FileProcessors;
+namespace Shudd3r\PackageFiles\Application\Processor\FilesProcessor;
 
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
@@ -17,7 +17,7 @@ use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class FileValidators extends Processor\FileProcessors
+class FilesValidator extends Processor\FilesProcessor
 {
     protected function newProcessorInstance(Template $template, File $packageFile): Processor
     {

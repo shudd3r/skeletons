@@ -16,7 +16,7 @@ use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 
-class MockedFileProcessors extends Processor\FileProcessors
+class MockedFilesProcessor extends Processor\FilesProcessor
 {
     private array $usedTemplates = [];
 

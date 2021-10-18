@@ -19,7 +19,7 @@ use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-abstract class FileProcessors implements Processor
+abstract class FilesProcessor implements Processor
 {
     private Templates $templates;
     private Directory $generated;

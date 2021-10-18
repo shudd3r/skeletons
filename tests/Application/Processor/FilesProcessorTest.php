@@ -17,12 +17,12 @@ use Shudd3r\PackageFiles\Application\Token\ValueToken;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class FileProcessorsTest extends TestCase
+class FilesProcessorTest extends TestCase
 {
     public function testWithoutDefinedCustomTemplate_ProcessorUsesGenericTemplate()
     {
         $env       = $this->env();
-        $processor = new Doubles\MockedFileProcessors($env->package(), new Template\Templates($env, []));
+        $processor = new Doubles\MockedFilesProcessor($env->package(), new Template\Templates($env, []));
         $processor->process(new valueToken('placeholder', 'value'));
 
         $expected = ['myFile.txt' => new Template\BasicTemplate($env->skeleton()->file('myFile.txt')->contents())];
@@ -36,7 +36,7 @@ class FileProcessorsTest extends TestCase
         $factories  = ['myFile.txt' => new Doubles\FakeTemplateFactory($template)];
         $templates  = new Template\Templates($env, $factories);
 
-        $processor = new Doubles\MockedFileProcessors($env->package(), $templates);
+        $processor = new Doubles\MockedFilesProcessor($env->package(), $templates);
         $processor->process(new valueToken('placeholder', 'value'));
 
         $expected = ['myFile.txt' => $template];

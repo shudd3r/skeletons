@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Processor\FileProcessors;
+namespace Shudd3r\PackageFiles\Application\Processor\FilesProcessor;
 
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Template\Templates;
@@ -18,7 +18,7 @@ use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class CachingFileValidators extends FileValidators
+class CachingFilesValidator extends FilesValidator
 {
     private TokenCache $cache;
 
