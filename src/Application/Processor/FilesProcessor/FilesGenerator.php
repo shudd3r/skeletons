@@ -12,8 +12,8 @@
 namespace Shudd3r\PackageFiles\Application\Processor\FilesProcessor;
 
 use Shudd3r\PackageFiles\Application\Processor;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Token;
 
 
@@ -22,13 +22,18 @@ class FilesGenerator extends Processor\FilesProcessor
     protected function processor(Template $template, File $packageFile): Processor
     {
         $processor = new Processor\GenerateFile($template, $packageFile);
-        $token     = $this->initialContentsToken();
-        return new Processor\ExpandedTokenProcessor($token, $processor);
+        $token     = $this->originalContentsToken($packageFile->name());
+        return $token ? new Processor\ExpandedTokenProcessor($token, $processor) : $processor;
     }
 
-    private function initialContentsToken(): Token
+    private function originalContentsToken(string $filename): ?Token
     {
-        $originalContentsToken = new Token\ValueToken(Token\OriginalContents::PLACEHOLDER, '');
-        return new Token\CompositeToken($originalContentsToken, new Token\InitialContents());
+        if (!$this->cache) {
+            $originalContentsToken = new Token\ValueToken(Token\OriginalContents::PLACEHOLDER, '');
+            return new Token\CompositeToken($originalContentsToken, new Token\InitialContents());
+        }
+
+        $token = $this->cache->token($filename);
+        return $token ? new Token\CompositeToken(new Token\InitialContents(false), $token) : null;
     }
 }

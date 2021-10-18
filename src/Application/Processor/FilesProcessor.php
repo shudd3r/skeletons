@@ -14,8 +14,8 @@ namespace Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\Template\Templates;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Token;
 
 
@@ -24,10 +24,13 @@ abstract class FilesProcessor implements Processor
     private Templates $templates;
     private Directory $generated;
 
-    public function __construct(Directory $generatedFiles, Templates $templates)
+    protected ?Token\TokenCache $cache;
+
+    public function __construct(Directory $generatedFiles, Templates $templates, Token\TokenCache $cache = null)
     {
         $this->templates = $templates;
         $this->generated = $generatedFiles;
+        $this->cache     = $cache;
     }
 
     public function process(Token $token): bool
