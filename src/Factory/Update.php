@@ -37,7 +37,7 @@ class Update implements Factory
     {
         $cache            = new TokenCache();
         $generatedFiles   = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
-        $fileValidator    = new Processor\FilesProcessor\CachingFilesValidator($generatedFiles, $templates, $cache);
+        $fileValidator    = new Processor\FilesProcessor\FilesValidator($generatedFiles, $templates, $cache);
         $fileGenerator    = new Processor\FilesProcessor\UpdatedFilesGenerator($generatedFiles, $templates, $cache);
         $validationReader = new Reader\ValidationReader($replacements, $this->env, $this->options);
         $updateReader     = new Reader\UpdateReader($replacements, $this->env, $this->options);
