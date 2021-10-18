@@ -21,10 +21,10 @@ class SkeletonFilesProcessor implements Processor
     private Directory      $skeleton;
     private FileProcessors $processors;
 
-    public function __construct(Directory $skeleton, FileProcessors $processors)
+    public function __construct(Directory $generatedFiles, FileProcessors $processors)
     {
         $this->processors = $processors;
-        $this->skeleton   = $skeleton;
+        $this->skeleton   = $generatedFiles;
     }
 
     public function process(Token $token): bool

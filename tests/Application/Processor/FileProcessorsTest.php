@@ -23,7 +23,7 @@ class FileProcessorsTest extends TestCase
         $custom     = new Template\BasicTemplate('render');
         $factories  = ['myFile.txt' => new Doubles\FakeTemplateFactory($custom)];
         $templates  = new Template\Templates(new Doubles\FakeRuntimeEnv(), $factories);
-        $processors = new Doubles\MockedFileProcessors(new Doubles\FakeDirectory(), $templates);
+        $processors = new Doubles\MockedFileProcessors($templates);
 
         $file = new Doubles\MockedFile('', 'differentFile.txt');
         $processors->processor($file);
@@ -36,7 +36,7 @@ class FileProcessorsTest extends TestCase
         $custom     = new Template\BasicTemplate('render');
         $factories  = ['myFile.txt' => new Doubles\FakeTemplateFactory($custom)];
         $templates  = new Template\Templates(new Doubles\FakeRuntimeEnv(), $factories);
-        $processors = new Doubles\MockedFileProcessors(new Doubles\FakeDirectory(), $templates);
+        $processors = new Doubles\MockedFileProcessors($templates);
 
         $file = new Doubles\MockedFile('', 'myFile.txt');
         $processors->processor($file);
