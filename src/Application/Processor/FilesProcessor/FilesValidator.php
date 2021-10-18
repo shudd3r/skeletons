@@ -19,7 +19,7 @@ use Shudd3r\PackageFiles\Application\Token;
 
 class FilesValidator extends Processor\FilesProcessor
 {
-    protected function newProcessorInstance(Template $template, File $packageFile): Processor
+    protected function processor(Template $template, File $packageFile): Processor
     {
         $compareFiles  = new Processor\CompareFile($template, $packageFile);
         $contentsToken = new Token\CompositeToken(

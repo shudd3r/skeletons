@@ -30,7 +30,7 @@ class UpdatedFilesGenerator extends Processor\FilesProcessor
         parent::__construct($generatedFiles, $templates);
     }
 
-    protected function newProcessorInstance(Template $template, File $packageFile): Processor
+    protected function processor(Template $template, File $packageFile): Processor
     {
         $processor = new Processor\GenerateFile($template, $packageFile);
         $token     = $this->cache->token($packageFile->name());

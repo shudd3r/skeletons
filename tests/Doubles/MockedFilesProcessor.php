@@ -25,7 +25,7 @@ class MockedFilesProcessor extends Processor\FilesProcessor
         return $this->usedTemplates;
     }
 
-    protected function newProcessorInstance(Template $template, File $packageFile): Processor
+    protected function processor(Template $template, File $packageFile): Processor
     {
         $this->usedTemplates[$packageFile->name()] = $template;
         return new MockedProcessor();

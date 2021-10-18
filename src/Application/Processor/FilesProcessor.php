@@ -34,17 +34,13 @@ abstract class FilesProcessor implements Processor
     {
         $status = true;
         foreach ($this->generated->files() as $packageFile) {
-            $status = $this->processor($packageFile)->process($token) && $status;
+            $template  = $this->templates->template($packageFile->name());
+            $processor = $this->processor($template, $packageFile);
+            $status    = $processor->process($token) && $status;
         }
 
         return $status;
     }
 
-    private function processor(File $packageFile): Processor
-    {
-        $template  = $this->templates->template($packageFile->name());
-        return $this->newProcessorInstance($template, $packageFile);
-    }
-
-    abstract protected function newProcessorInstance(Template $template, File $packageFile): Processor;
+    abstract protected function processor(Template $template, File $packageFile): Processor;
 }

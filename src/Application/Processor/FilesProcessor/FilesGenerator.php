@@ -19,7 +19,7 @@ use Shudd3r\PackageFiles\Application\Token;
 
 class FilesGenerator extends Processor\FilesProcessor
 {
-    protected function newProcessorInstance(Template $template, File $packageFile): Processor
+    protected function processor(Template $template, File $packageFile): Processor
     {
         $processor = new Processor\GenerateFile($template, $packageFile);
         $token     = $this->initialContentsToken();
