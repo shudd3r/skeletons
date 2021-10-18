@@ -31,7 +31,7 @@ class Templates
     {
         $factory = $this->factory($skeletonFile->name());
         return $factory
-            ? $factory->template($skeletonFile, $this->env)
+            ? $factory->template($skeletonFile->name(), $this->env)
             : new Template\BasicTemplate($skeletonFile->contents());
     }
 
