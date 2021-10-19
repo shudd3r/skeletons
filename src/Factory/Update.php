@@ -19,6 +19,7 @@ use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
 class Update implements Factory
@@ -34,32 +35,21 @@ class Update implements Factory
 
     public function command(Replacements $replacements, Templates $templates): Command
     {
+        $cache            = new TokenCache();
+        $generatedFiles   = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
+        $fileValidator    = new Processor\FilesProcessor\FilesValidator($generatedFiles, $templates, $cache);
+        $fileGenerator    = new Processor\FilesProcessor\FilesGenerator($generatedFiles, $templates, $cache);
         $validationReader = new Reader\ValidationReader($replacements, $this->env, $this->options);
         $updateReader     = new Reader\UpdateReader($replacements, $this->env, $this->options);
-        $cache            = new TokenCache();
 
         $metaDataExists      = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $fileValidator       = $this->fileValidator($templates, $cache);
         $packageSynchronized = new Command\Precondition\SkeletonSynchronization($validationReader, $fileValidator);
         $preconditions       = new Command\Precondition\Preconditions($metaDataExists, $packageSynchronized);
 
-        $fileGenerator = $this->fileGenerator($templates, $cache);
         $processTokens = new Command\TokenProcessor($updateReader, $fileGenerator, $this->env->output());
         $saveMetaData  = new Command\SaveMetaData($updateReader, $this->env->metaData());
         $command       = new Command\CommandSequence($processTokens, $saveMetaData);
 
         return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
-    }
-
-    private function fileGenerator(Templates $templates, TokenCache $cache): Processor
-    {
-        $generators = new Processor\FileProcessors\UpdatedFileGenerators($this->env->package(), $templates, $cache);
-        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generators);
-    }
-
-    private function fileValidator(Templates $templates, TokenCache $cache): Processor
-    {
-        $validators = new Processor\FileProcessors\CachingFileValidators($this->env->package(), $templates, $cache);
-        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $validators);
     }
 }

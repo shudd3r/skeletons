@@ -17,8 +17,8 @@ use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Template\Templates;
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Application\Processor;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
 class Initialize implements Factory
@@ -36,23 +36,17 @@ class Initialize implements Factory
     {
         $initialReader  = new Reader\InitialReader($replacements, $this->env, $this->options);
         $generatedFiles = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
+        $fileGenerator  = new Processor\FilesProcessor\FilesGenerator($generatedFiles, $templates);
 
         $noMetaDataFile    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), false);
         $noBackupOverwrite = new Command\Precondition\CheckFilesOverwrite($generatedFiles, $this->env->backup());
         $preconditions     = new Command\Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite);
 
         $backupFiles   = new Command\BackupFiles($generatedFiles, $this->env->backup());
-        $fileGenerator = $this->fileGenerator($templates);
         $processTokens = new Command\TokenProcessor($initialReader, $fileGenerator, $this->env->output());
         $saveMetaData  = new Command\SaveMetaData($initialReader, $this->env->metaData());
         $command       = new Command\CommandSequence($backupFiles, $processTokens, $saveMetaData);
 
         return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
-    }
-
-    private function fileGenerator(Templates $templates): Processor
-    {
-        $generators = new Processor\FileProcessors\NewFileGenerators($this->env->package(), $templates);
-        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $generators);
     }
 }

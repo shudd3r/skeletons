@@ -18,6 +18,7 @@ use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Application\Processor;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
 class Validate implements Factory
@@ -33,18 +34,13 @@ class Validate implements Factory
 
     public function command(Replacements $replacements, Templates $templates): Command
     {
+        $generatedFiles   = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
+        $fileValidator    = new Processor\FilesProcessor\FilesValidator($generatedFiles, $templates);
         $validationReader = new Reader\ValidationReader($replacements, $this->env, $this->options);
 
         $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $fileValidator  = $this->fileValidator($templates);
         $processTokens  = new Command\TokenProcessor($validationReader, $fileValidator, $this->env->output());
 
         return new Command\ProtectedCommand($processTokens, $metaDataExists, $this->env->output());
-    }
-
-    protected function fileValidator(Templates $templates): Processor
-    {
-        $validators = new Processor\FileProcessors\FileValidators($this->env->package(), $templates);
-        return new Processor\SkeletonFilesProcessor($this->env->skeleton(), $validators);
     }
 }

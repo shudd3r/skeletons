@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Application\Template;
 
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 
 class Templates
@@ -27,16 +26,20 @@ class Templates
         $this->factories = $factories;
     }
 
-    public function template(File $skeletonFile): Template
+    public function template(string $filename): Template
     {
-        $factory = $this->factory($skeletonFile->name());
-        return $factory
-            ? $factory->template($skeletonFile, $this->env)
-            : new Template\BasicTemplate($skeletonFile->contents());
+        $factory = $this->factory($filename);
+        return $factory ? $factory->template($filename, $this->env) : $this->basicTemplate($filename);
     }
 
     private function factory(string $filename): ?Factory
     {
         return $this->factories[$filename] ?? null;
+    }
+
+    private function basicTemplate(string $filename): Template
+    {
+        $contents = $this->env->skeleton()->file($filename)->contents();
+        return new BasicTemplate($contents);
     }
 }

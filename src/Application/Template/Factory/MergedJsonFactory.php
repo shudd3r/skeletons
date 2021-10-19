@@ -13,17 +13,16 @@ namespace Shudd3r\PackageFiles\Application\Template\Factory;
 
 use Shudd3r\PackageFiles\Application\Template\Factory;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Template;
 
 
 class MergedJsonFactory implements Factory
 {
-    public function template(File $skeletonFile, RuntimeEnv $env): Template
+    public function template(string $filename, RuntimeEnv $env): Template
     {
         return new Template\MergedJsonTemplate(
-            new Template\BasicTemplate($skeletonFile->contents()),
-            $env->package()->file($skeletonFile->name())->contents(),
+            new Template\BasicTemplate($env->skeleton()->file($filename)->contents()),
+            $env->package()->file($filename)->contents(),
             $env->metaDataFile()->exists()
         );
     }

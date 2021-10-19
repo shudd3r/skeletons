@@ -9,17 +9,17 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Processor\FileProcessors;
+namespace Shudd3r\PackageFiles\Application\Processor\FilesProcessor;
 
 use Shudd3r\PackageFiles\Application\Processor;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Application\Token;
 
 
-class FileValidators extends Processor\FileProcessors
+class FilesValidator extends Processor\FilesProcessor
 {
-    protected function newProcessorInstance(Template $template, File $packageFile): Processor
+    protected function processor(Template $template, File $packageFile): Processor
     {
         $compareFiles  = new Processor\CompareFile($template, $packageFile);
         $contentsToken = new Token\CompositeToken(
@@ -32,6 +32,8 @@ class FileValidators extends Processor\FileProcessors
 
     protected function originalContentsToken(File $packageFile): Token
     {
-        return new Token\OriginalContents($packageFile->contents());
+        return $this->cache
+            ? new Token\CachedOriginalContents($packageFile->contents(), $packageFile->name(), $this->cache)
+            : new Token\OriginalContents($packageFile->contents());
     }
 }
