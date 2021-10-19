@@ -17,22 +17,19 @@ use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 class CheckFilesOverwrite implements Precondition
 {
-    private Directory $source;
     private Directory $destination;
     private bool      $expected;
 
-    public function __construct(Directory $source, Directory $destination, bool $expected = false)
+    public function __construct(Directory $destination, bool $expected = false)
     {
-        $this->source      = $source;
         $this->destination = $destination;
         $this->expected    = $expected;
     }
 
     public function isFulfilled(): bool
     {
-        foreach ($this->source->files() as $sourceFile) {
-            $overwrite = $sourceFile->exists() && $this->destination->file($sourceFile->name())->exists();
-            if ($overwrite !== $this->expected) { return false; }
+        foreach ($this->destination->files() as $file) {
+            if ($file->exists() !== $this->expected) { return false; }
         }
 
         return true;

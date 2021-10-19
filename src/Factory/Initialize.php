@@ -36,10 +36,11 @@ class Initialize implements Factory
     {
         $initialReader  = new Reader\InitialReader($replacements, $this->env, $this->options);
         $generatedFiles = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
+        $backupFiles    = new Directory\ReflectedDirectory($this->env->backup(), $generatedFiles);
         $fileGenerator  = new Processor\FilesProcessor\FilesGenerator($generatedFiles, $templates);
 
         $noMetaDataFile    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), false);
-        $noBackupOverwrite = new Command\Precondition\CheckFilesOverwrite($generatedFiles, $this->env->backup());
+        $noBackupOverwrite = new Command\Precondition\CheckFilesOverwrite($backupFiles);
         $preconditions     = new Command\Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite);
 
         $backupFiles   = new Command\BackupFiles($generatedFiles, $this->env->backup());
