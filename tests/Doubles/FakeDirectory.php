@@ -69,7 +69,7 @@ class FakeDirectory implements Directory
         return $files;
     }
 
-    public function addFile(string $name, string $contents = ''): void
+    public function addFile(string $name, ?string $contents = ''): void
     {
         if (isset($this->files[$name])) {
             throw new Exception('File already added');

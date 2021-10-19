@@ -14,6 +14,7 @@ namespace Shudd3r\PackageFiles\Tests\Environment\FileSystem\Directory;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory\ReflectedDirectory;
 use Shudd3r\PackageFiles\Tests\Doubles\FakeDirectory;
+use Shudd3r\PackageFiles\Tests\Doubles\MockedFile;
 
 
 class ReflectedDirectoryTest extends TestCase
@@ -65,5 +66,21 @@ class ReflectedDirectoryTest extends TestCase
 
         $root->addFile('foo.txt');
         $this->assertSame($root->file('foo.txt'), $reflected->file('foo.txt'));
+    }
+
+    public function testVirtualFiles_AreNotReflected()
+    {
+        $source = new FakeDirectory();
+        $source->addFile('foo.txt', 'source');
+        $source->addFile('bar.txt', null);
+        $source->addFile('baz.txt', 'source');
+
+        $root = new FakeDirectory();
+        $root->addFile('bar.txt', 'root');
+        $root->addFile('baz.txt', 'root');
+
+        $newSource = new ReflectedDirectory($root, $source);
+        $expected  = [new MockedFile(null, 'foo.txt', $root), new MockedFile('root', 'baz.txt', $root)];
+        $this->assertEquals($expected, $newSource->files());
     }
 }
