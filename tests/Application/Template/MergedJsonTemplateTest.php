@@ -29,9 +29,9 @@ class MergedJsonTemplateTest extends TestCase
     }
 
     /**
-     * @dataProvider possibleContents
+     * @dataProvider nonStructuralContents
      */
-    public function testWithoutContentsToMerge_ReturnsOriginalRender(string $contents)
+    public function testWithoutContentsToMerge_ReturnsOriginalTemplateRender(string $contents)
     {
         $this->assertSame($contents, $this->template($contents, '')->render(self::$token));
         $this->assertSame('not json', $this->template('not json', $contents)->render(self::$token));
@@ -77,12 +77,45 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
-    public function testForTemplateArraysInNestedLists_ReturnsUniqueElementsListWithFirstArrayAsTemplate()
+    public function testFirstArrayInTemplateList_IsUsedAsStructureTemplateForAllItems()
     {
         $template = json_encode(['list' => [['a' => 1, 'b' => 1]]]);
         $package  = json_encode(['list' => [['b' => 2, 'a' => 2, 'c' => 2], ['c' => 3, 'a' => 3], ['b' => 1, 'a' => 1]]]);
         $expected = ['list' => [['a' => 1, 'b' => 1], ['a' => 2, 'b' => 2, 'c' => 2], ['a' => 3, 'c' => 3]]];
         $this->assertJsonData($expected, $this->template($template, $package));
+    }
+
+    public function testFirstArrayInTemplateListWithNullValues_IsCombinedWithItemsWithoutNullValues()
+    {
+        $template = json_encode([['a' => null, 'b' => 1, 'c' => null]]);
+        $package  = json_encode([['b' => 2, 'a' => 2, 'c' => 2], ['c' => 3, 'a' => 3], ['b' => 1]]);
+        $expected = [['b' => 1], ['a' => 2, 'b' => 2, 'c' => 2], ['a' => 3, 'c' => 3]];
+        $this->assertJsonData($expected, $this->template($template, $package));
+    }
+
+    public function testFirstArrayInListWithNullValuesOnly_IsUsedOnlyAsTemplateAndNotMergedIntoList()
+    {
+        $template = json_encode([['a' => null, 'b' => null]]);
+        $package  = json_encode([['b' => 1, 'a' => 1, 'c' => 1], ['c' => 2, 'a' => 2]]);
+        $expected = [['a' => 1, 'b' => 1, 'c' => 1], ['a' => 2, 'c' => 2]];
+        $this->assertJsonData($expected, $this->template($template, $package));
+    }
+
+    public function testEmptyTemplateListAfterMerge_IsFiltered()
+    {
+        $template = json_encode(['foo' => 'foo-value', 'list' => [['a' => null, 'b' => null]]]);
+        $package  = json_encode(['bar' => 'bar-value']);
+        $expected = ['foo' => 'foo-value', 'bar' => 'bar-value'];
+        $this->assertJsonData($expected, $this->template($template, $package));
+    }
+
+    public function testTypeOfEmptyStructureAfterMerge_IsBasedOnTemplateType()
+    {
+        $template = json_encode(['first' => null, 'bar' => null]);
+        $this->assertSame('{}', trim($this->template($template, '[]')->render(self::$token)));
+
+        $template = json_encode([['a' => null, 'b' => null]]);
+        $this->assertSame('[]', trim($this->template($template, '{}')->render(self::$token)));
     }
 
     public function testUpdatedKeysInSynchronizedStructures_AreMerged()
@@ -124,12 +157,12 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertSame($expected, $template->render($token));
     }
 
-    public function possibleContents(): array
+    public function nonStructuralContents(): array
     {
         return [
-            'empty string' => [''],
-            'non-json string' => ['some non-json contents'],
-            'simple json' => [json_encode(['test' => 'json', 'foo' => 'bar'])]
+            'empty string'     => [''],
+            'non-json string'  => ['some non-json contents'],
+            'simple type json' => ['123']
         ];
     }
 

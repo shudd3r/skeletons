@@ -34,13 +34,20 @@ class MergedJsonTemplate implements Template
         $templateData = json_decode($rendered, true);
         $packageData  = json_decode($this->jsonString, true);
 
-        if (!$templateData || !$packageData) { return $rendered; }
+        if (!$templateData || !is_array($packageData)) { return $rendered; }
 
-        $mergedData = $this->mergedDataStructure($templateData, $packageData);
+        return $this->jsonString($templateData, $packageData);
+    }
+
+    private function jsonString(array $template, array $package): string
+    {
+        $mergedData = $this->mergedDataStructure($template, $package) ?? [];
+        if (!$mergedData && !$this->isList($template)) { return "{}\n"; }
+
         return json_encode($mergedData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
     }
 
-    private function mergedDataStructure(array $template, array $package): array
+    private function mergedDataStructure(array $template, array $package): ?array
     {
         return $this->isList($template)
             ? $this->mergedListItems($template, $package)
@@ -52,7 +59,7 @@ class MergedJsonTemplate implements Template
         return is_int(array_key_first($data));
     }
 
-    private function mergedAssocStructure(array $template, array $package): array
+    private function mergedAssocStructure(array $template, array $package): ?array
     {
         $merged = [];
         foreach ($template as $key => $value) {
@@ -70,10 +77,10 @@ class MergedJsonTemplate implements Template
             $merged[$key] = $value;
         }
 
-        return $merged;
+        return $merged ?: null;
     }
 
-    private function mergedListItems(array $items, array $package): array
+    private function mergedListItems(array $items, array $package): ?array
     {
         $template = $this->extractedFirstItemTemplate($items);
         foreach ($package as $value) {
@@ -81,7 +88,7 @@ class MergedJsonTemplate implements Template
             $items[] = $template ? $this->mergedAssocStructure($template, $value) : $value;
         }
 
-        return $items;
+        return $items ?: null;
     }
 
     private function extractedFirstItemTemplate(array &$items): ?array
@@ -91,6 +98,8 @@ class MergedJsonTemplate implements Template
 
         $template = array_fill_keys(array_keys($items[0]), null);
         $items[0] = array_filter($items[0], fn($value) => !is_null($value));
+
+        if (!$items[0]) { array_shift($items); }
 
         return $template;
     }
