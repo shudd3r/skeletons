@@ -41,7 +41,8 @@ class Initialize implements Factory
 
         $noMetaDataFile    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), false);
         $noBackupOverwrite = new Command\Precondition\CheckFilesOverwrite($backupFiles);
-        $preconditions     = new Command\Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite);
+        $validReplacements = new Command\Precondition\ValidReplacements($initialReader);
+        $preconditions     = new Command\Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite, $validReplacements);
 
         $backupFiles   = new Command\BackupFiles($generatedFiles, $this->env->backup());
         $processTokens = new Command\TokenProcessor($initialReader, $fileGenerator, $this->env->output());

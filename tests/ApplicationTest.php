@@ -81,6 +81,15 @@ class ApplicationTest extends TestCase
         $this->assertSameFiles($package, 'package');
     }
 
+    public function testInitializeWithInvalidReplacements_AbortsExecutionWithoutSideEffects()
+    {
+        $package = self::$files->directory('package');
+        $app     = $this->app($package);
+
+        $this->assertNotEquals(0, $app->run('init', ['package' => 'invalid-package-name'] + $this->initOptions));
+        $this->assertSameFiles($package, 'package');
+    }
+
     public function testInitializedPackage_IsValid()
     {
         $app = $this->app(self::$files->directory('package-initialized'));
@@ -130,6 +139,15 @@ class ApplicationTest extends TestCase
 
         $this->assertNotEquals(0, $app->run('update', $this->updateOptions));
         $this->assertSameFiles($package, 'package-desynchronized');
+    }
+
+    public function testUpdatingWithInvalidReplacements_AbortsExecutionWithoutSideEffects()
+    {
+        $package = self::$files->directory('package-synchronized');
+        $app     = $this->app($package);
+
+        $this->assertNotEquals(0, $app->run('update', ['package' => 'invalid-package-name'] + $this->updateOptions));
+        $this->assertSameFiles($package, 'package-synchronized');
     }
 
     protected function assertSameFiles(Directory $package, string $fixturesDirectory, bool $addMetaFile = false): void

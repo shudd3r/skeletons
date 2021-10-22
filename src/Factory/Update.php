@@ -44,7 +44,8 @@ class Update implements Factory
 
         $metaDataExists      = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $packageSynchronized = new Command\Precondition\SkeletonSynchronization($validationReader, $fileValidator);
-        $preconditions       = new Command\Precondition\Preconditions($metaDataExists, $packageSynchronized);
+        $validReplacements   = new Command\Precondition\ValidReplacements($updateReader);
+        $preconditions       = new Command\Precondition\Preconditions($metaDataExists, $packageSynchronized, $validReplacements);
 
         $processTokens = new Command\TokenProcessor($updateReader, $fileGenerator, $this->env->output());
         $saveMetaData  = new Command\SaveMetaData($updateReader, $this->env->metaData());
