@@ -9,10 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Factory;
+namespace Shudd3r\PackageFiles\Application\Commands;
 
-use Shudd3r\PackageFiles\Factory;
-use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Application\Commands;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
@@ -22,7 +21,7 @@ use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
-class Update implements Factory
+class Update implements Commands
 {
     private RuntimeEnv $env;
     private array      $options;
@@ -42,10 +41,10 @@ class Update implements Factory
         $validationReader = new Reader\ValidationReader($replacements, $this->env, $this->options);
         $updateReader     = new Reader\UpdateReader($replacements, $this->env, $this->options);
 
-        $metaDataExists      = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $packageSynchronized = new Command\Precondition\SkeletonSynchronization($validationReader, $fileValidator);
-        $validReplacements   = new Command\Precondition\ValidReplacements($updateReader);
-        $preconditions       = new Command\Precondition\Preconditions($metaDataExists, $packageSynchronized, $validReplacements);
+        $metaDataExists      = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
+        $packageSynchronized = new Precondition\SkeletonSynchronization($validationReader, $fileValidator);
+        $validReplacements   = new Precondition\ValidReplacements($updateReader);
+        $preconditions       = new Precondition\Preconditions($metaDataExists, $packageSynchronized, $validReplacements);
 
         $processTokens = new Command\TokenProcessor($updateReader, $fileGenerator, $this->env->output());
         $saveMetaData  = new Command\SaveMetaData($updateReader, $this->env->metaData());

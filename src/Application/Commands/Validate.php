@@ -9,10 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Factory;
+namespace Shudd3r\PackageFiles\Application\Commands;
 
-use Shudd3r\PackageFiles\Factory;
-use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Application\Commands;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
@@ -21,7 +20,7 @@ use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
-class Validate implements Factory
+class Validate implements Commands
 {
     private RuntimeEnv $env;
     private array      $options;
@@ -38,7 +37,7 @@ class Validate implements Factory
         $fileValidator    = new Processor\FilesProcessor\FilesValidator($generatedFiles, $templates);
         $validationReader = new Reader\ValidationReader($replacements, $this->env, $this->options);
 
-        $metaDataExists = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), true);
+        $metaDataExists = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $processTokens  = new Command\TokenProcessor($validationReader, $fileValidator, $this->env->output());
 
         return new Command\ProtectedCommand($processTokens, $metaDataExists, $this->env->output());

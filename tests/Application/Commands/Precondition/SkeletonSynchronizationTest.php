@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Application\Command\Precondition;
+namespace Shudd3r\PackageFiles\Tests\Application\Commands\Precondition;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Application\Command\Precondition\SkeletonSynchronization;
+use Shudd3r\PackageFiles\Application\Commands\Precondition\SkeletonSynchronization;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 

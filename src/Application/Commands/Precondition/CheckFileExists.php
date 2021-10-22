@@ -9,9 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Command\Precondition;
+namespace Shudd3r\PackageFiles\Application\Commands\Precondition;
 
-use Shudd3r\PackageFiles\Application\Command\Precondition;
+use Shudd3r\PackageFiles\Application\Commands\Precondition;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 

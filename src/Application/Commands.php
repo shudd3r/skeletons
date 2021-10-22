@@ -9,14 +9,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles;
+namespace Shudd3r\PackageFiles\Application;
 
-use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Application\Commands\Command;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Template\Templates;
 
 
-interface Factory
+interface Commands
 {
     public function command(Replacements $replacements, Templates $templates): Command;
 }

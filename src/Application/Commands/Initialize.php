@@ -9,10 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Factory;
+namespace Shudd3r\PackageFiles\Application\Commands;
 
-use Shudd3r\PackageFiles\Factory;
-use Shudd3r\PackageFiles\Application\Command;
+use Shudd3r\PackageFiles\Application\Commands;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Token\Reader;
 use Shudd3r\PackageFiles\Application\Token\Replacements;
@@ -21,7 +20,7 @@ use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
-class Initialize implements Factory
+class Initialize implements Commands
 {
     private RuntimeEnv $env;
     private array      $options;
@@ -39,10 +38,10 @@ class Initialize implements Factory
         $backupFiles    = new Directory\ReflectedDirectory($this->env->backup(), $generatedFiles);
         $fileGenerator  = new Processor\FilesProcessor\FilesGenerator($generatedFiles, $templates);
 
-        $noMetaDataFile    = new Command\Precondition\CheckFileExists($this->env->metaDataFile(), false);
-        $noBackupOverwrite = new Command\Precondition\CheckFilesOverwrite($backupFiles);
-        $validReplacements = new Command\Precondition\ValidReplacements($initialReader);
-        $preconditions     = new Command\Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite, $validReplacements);
+        $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);
+        $noBackupOverwrite = new Precondition\CheckFilesOverwrite($backupFiles);
+        $validReplacements = new Precondition\ValidReplacements($initialReader);
+        $preconditions     = new Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite, $validReplacements);
 
         $backupFiles   = new Command\BackupFiles($generatedFiles, $this->env->backup());
         $processTokens = new Command\TokenProcessor($initialReader, $fileGenerator, $this->env->output());

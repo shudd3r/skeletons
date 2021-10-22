@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Application\Command;
+namespace Shudd3r\PackageFiles\Application\Commands;
 
 
 interface Precondition
