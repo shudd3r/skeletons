@@ -18,7 +18,6 @@ use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Replacements\Data\ComposerJsonData;
 use Shudd3r\PackageFiles\Replacements\Data\MetaData;
-use Shudd3r\PackageFiles\Exception;
 
 
 class RuntimeEnv
@@ -32,18 +31,13 @@ class RuntimeEnv
     private ComposerJsonData $composer;
     private MetaData         $metaData;
 
-    public function __construct(
-        Directory $package,
-        Directory $skeleton,
-        ?Terminal $terminal = null,
-        ?Directory $backup = null,
-        ?File $metaFile = null
-    ) {
-        $this->package  = $this->validDirectory($package);
-        $this->skeleton = $this->validDirectory($skeleton);
-        $this->terminal = $terminal ?? new Terminal();
-        $this->backup   = $backup ?? $this->package->subdirectory('.skeleton-backup');
-        $this->metaFile = $metaFile ?? $this->package->file('.github/skeleton.json');
+    public function __construct(Directory $package, Directory $skeleton, Terminal $terminal, Directory $backup, File $metaFile)
+    {
+        $this->package  = $package;
+        $this->skeleton = $skeleton;
+        $this->terminal = $terminal;
+        $this->backup   = $backup;
+        $this->metaFile = $metaFile;
     }
 
     public function input(): Input
@@ -84,15 +78,5 @@ class RuntimeEnv
     public function metaData(): MetaData
     {
         return $this->metaData ??= new MetaData($this->metaDataFile());
-    }
-
-    private function validDirectory(Directory $directory): Directory
-    {
-        if (!$directory->exists()) {
-            $message = "Cannot reach provided directory `{$directory->path()}`";
-            throw new Exception\InvalidDirectoryException($message);
-        }
-
-        return $directory;
     }
 }

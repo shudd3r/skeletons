@@ -15,6 +15,7 @@ use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Environment\Terminal;
+use Shudd3r\PackageFiles\Exception;
 
 
 class EnvSetup
@@ -35,6 +36,9 @@ class EnvSetup
 
     public function runtimeEnv(Terminal $terminal): RuntimeEnv
     {
+        $this->validateDirectory($this->package, 'package');
+        $this->validateDirectory($this->skeleton, 'skeleton');
+
         $backup   = $this->backup ?? $this->package->subdirectory(self::BACKUP_DIR);
         $metaFile = $this->metaFile ?? $this->package->file(self::META_FILE);
 
@@ -49,5 +53,13 @@ class EnvSetup
     public function setMetaFile(string $filename): void
     {
         $this->metaFile = $this->package->file($filename);
+    }
+
+    private function validateDirectory(Directory $directory, string $name): void
+    {
+        if ($directory->exists()) { return; }
+
+        $message = "Cannot reach provided $name directory `{$directory->path()}`";
+        throw new Exception\InvalidDirectoryException($message);
     }
 }

@@ -29,7 +29,7 @@ class FakeRuntimeEnv extends RuntimeEnv
         $this->bkp = new FakeDirectory();
         $this->met = new MockedFile(null);
 
-        parent::__construct($this->pkg, $this->tpl, $this->cli);
+        parent::__construct($this->pkg, $this->tpl, $this->cli, $this->bkp, $this->met);
     }
 
     public function input(): MockedTerminal
