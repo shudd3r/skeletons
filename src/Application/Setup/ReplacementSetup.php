@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Application\Setup;
 
-use Shudd3r\PackageFiles\Replacement;
+use Shudd3r\PackageFiles\Application\Replacements\Replacement;
 
 
 class ReplacementSetup

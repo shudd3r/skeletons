@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Application\Processor\FilesProcessor;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Application\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Application\Replacements\Token;
 
 
 class FilesValidator extends Processor\FilesProcessor

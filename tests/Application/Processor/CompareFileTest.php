@@ -13,8 +13,8 @@ namespace Shudd3r\PackageFiles\Tests\Application\Processor;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Processor\CompareFile;
+use Shudd3r\PackageFiles\Application\Replacements\Token;
 use Shudd3r\PackageFiles\Application\Template;
-use Shudd3r\PackageFiles\Application\Token;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 

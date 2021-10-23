@@ -13,8 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Commands;
 
 use Shudd3r\PackageFiles\Application\Commands;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Replacements;
 use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
@@ -35,7 +34,7 @@ class Validate implements Commands
     {
         $generatedFiles   = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $fileValidator    = new Processor\FilesProcessor\FilesValidator($generatedFiles, $templates);
-        $validationReader = new Reader\ValidationReader($replacements, $this->env, $this->options);
+        $validationReader = new Replacements\Reader\ValidationReader($replacements, $this->env, $this->options);
 
         $metaDataExists = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $processTokens  = new Command\TokenProcessor($validationReader, $fileValidator, $this->env->output());

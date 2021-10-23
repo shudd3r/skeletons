@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Application\Commands\Precondition;
 
 use Shudd3r\PackageFiles\Application\Commands\Precondition;
-use Shudd3r\PackageFiles\Application\Token\Reader;
+use Shudd3r\PackageFiles\Application\Replacements\Reader;
 
 
 class ValidReplacements implements Precondition

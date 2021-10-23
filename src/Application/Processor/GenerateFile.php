@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Processor;
 
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Application\Replacements\Token;
 use Shudd3r\PackageFiles\Application\Template;
 
 

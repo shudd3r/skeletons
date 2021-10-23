@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\Template;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Template\BasicTemplate;
-use Shudd3r\PackageFiles\Application\Token\ValueToken;
+use Shudd3r\PackageFiles\Application\Replacements\Token\ValueToken;
 
 
 class BasicTemplateTest extends TestCase

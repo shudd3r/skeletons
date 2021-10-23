@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles\Application;
 
 use Shudd3r\PackageFiles\Application\Commands\Command;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Template\Templates;
 
 

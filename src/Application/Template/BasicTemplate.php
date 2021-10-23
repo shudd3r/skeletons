@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Application\Template;
 
 use Shudd3r\PackageFiles\Application\Template;
-use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Application\Replacements\Token;
 
 
 class BasicTemplate implements Template

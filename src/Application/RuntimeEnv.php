@@ -16,8 +16,8 @@ use Shudd3r\PackageFiles\Environment\Output;
 use Shudd3r\PackageFiles\Environment\Terminal;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Application\Token\Data\ComposerJsonData;
-use Shudd3r\PackageFiles\Application\Token\Data\MetaData;
+use Shudd3r\PackageFiles\Application\Replacements\Data\ComposerJsonData;
+use Shudd3r\PackageFiles\Application\Replacements\Data\MetaData;
 use Shudd3r\PackageFiles\Application\Exception;
 
 

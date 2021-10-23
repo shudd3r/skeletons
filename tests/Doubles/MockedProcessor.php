@@ -12,7 +12,7 @@
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
 use Shudd3r\PackageFiles\Application\Processor;
-use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Application\Replacements\Token;
 
 
 class MockedProcessor implements Processor

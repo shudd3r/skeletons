@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\Template;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Template;
-use Shudd3r\PackageFiles\Application\Token;
+use Shudd3r\PackageFiles\Application\Replacements\Token;
 use Shudd3r\PackageFiles\Tests\Fixtures;
 
 

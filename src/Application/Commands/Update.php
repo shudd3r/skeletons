@@ -13,10 +13,8 @@ namespace Shudd3r\PackageFiles\Application\Commands;
 
 use Shudd3r\PackageFiles\Application\Commands;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Replacements;
 use Shudd3r\PackageFiles\Application\Template\Templates;
-use Shudd3r\PackageFiles\Application\Token\TokenCache;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
@@ -34,12 +32,12 @@ class Update implements Commands
 
     public function command(Replacements $replacements, Templates $templates): Command
     {
-        $cache            = new TokenCache();
+        $cache            = new Replacements\TokenCache();
         $generatedFiles   = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $fileValidator    = new Processor\FilesProcessor\FilesValidator($generatedFiles, $templates, $cache);
         $fileGenerator    = new Processor\FilesProcessor\FilesGenerator($generatedFiles, $templates, $cache);
-        $validationReader = new Reader\ValidationReader($replacements, $this->env, $this->options);
-        $updateReader     = new Reader\UpdateReader($replacements, $this->env, $this->options);
+        $validationReader = new Replacements\Reader\ValidationReader($replacements, $this->env, $this->options);
+        $updateReader     = new Replacements\Reader\UpdateReader($replacements, $this->env, $this->options);
 
         $metaDataExists      = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $packageSynchronized = new Precondition\SkeletonSynchronization($validationReader, $fileValidator);

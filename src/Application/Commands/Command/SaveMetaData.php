@@ -12,8 +12,8 @@
 namespace Shudd3r\PackageFiles\Application\Commands\Command;
 
 use Shudd3r\PackageFiles\Application\Commands\Command;
-use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Data\MetaData;
+use Shudd3r\PackageFiles\Application\Replacements\Reader;
+use Shudd3r\PackageFiles\Application\Replacements\Data\MetaData;
 
 
 class SaveMetaData implements Command

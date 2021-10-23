@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Tests\Application\Setup;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application\Setup\AppSetup;
 use Shudd3r\PackageFiles\Application\Template\Templates;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Replacements;
 use Shudd3r\PackageFiles\Application\Exception;
 use Shudd3r\PackageFiles\Tests\Doubles;
 

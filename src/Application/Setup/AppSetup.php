@@ -11,9 +11,9 @@
 
 namespace Shudd3r\PackageFiles\Application\Setup;
 
-use Shudd3r\PackageFiles\Replacement;
+use Shudd3r\PackageFiles\Application\Replacements;
+use Shudd3r\PackageFiles\Application\Replacements\Replacement;
 use Shudd3r\PackageFiles\Application\Template\Factory;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
 use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
 use Shudd3r\PackageFiles\Application\Exception;

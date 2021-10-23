@@ -11,6 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Application;
 
+use Shudd3r\PackageFiles\Application\Replacements\Token;
+
 
 interface Processor
 {

@@ -13,8 +13,7 @@ namespace Shudd3r\PackageFiles\Application\Commands;
 
 use Shudd3r\PackageFiles\Application\Commands;
 use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Token\Reader;
-use Shudd3r\PackageFiles\Application\Token\Replacements;
+use Shudd3r\PackageFiles\Application\Replacements;
 use Shudd3r\PackageFiles\Application\Template\Templates;
 use Shudd3r\PackageFiles\Application\Processor;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
@@ -33,7 +32,7 @@ class Initialize implements Commands
 
     public function command(Replacements $replacements, Templates $templates): Command
     {
-        $initialReader  = new Reader\InitialReader($replacements, $this->env, $this->options);
+        $initialReader  = new Replacements\Reader\InitialReader($replacements, $this->env, $this->options);
         $generatedFiles = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupFiles    = new Directory\ReflectedDirectory($this->env->backup(), $generatedFiles);
         $fileGenerator  = new Processor\FilesProcessor\FilesGenerator($generatedFiles, $templates);
