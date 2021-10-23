@@ -11,11 +11,10 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Setup\EnvSetup;
-use Shudd3r\PackageFiles\Application\Setup\AppSetup;
-use Shudd3r\PackageFiles\Application\Setup\ReplacementSetup;
-use Shudd3r\PackageFiles\Application\Setup\TemplateSetup;
+use Shudd3r\PackageFiles\Setup\EnvSetup;
+use Shudd3r\PackageFiles\Setup\AppSetup;
+use Shudd3r\PackageFiles\Setup\ReplacementSetup;
+use Shudd3r\PackageFiles\Setup\TemplateSetup;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\Terminal;
 use Exception;
@@ -77,12 +76,12 @@ class Application
         return $this->terminal->exitCode();
     }
 
-    protected function factory(string $command, RuntimeEnv $env, array $options): Factory
+    protected function factory(string $command, RuntimeEnv $env, array $options): Commands
     {
         switch ($command) {
-            case 'init':   return new Factory\Initialize($env, $options);
-            case 'check':  return new Factory\Validate($env, $options);
-            case 'update': return new Factory\Update($env, $options);
+            case 'init':   return new Commands\Initialize($env, $options);
+            case 'check':  return new Commands\Validate($env, $options);
+            case 'update': return new Commands\Update($env, $options);
         }
 
         throw new Exception("Unknown `{$command}` command");

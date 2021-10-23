@@ -13,9 +13,9 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application;
+use Shudd3r\PackageFiles\Replacements\Replacement;
+use Shudd3r\PackageFiles\Templates\Factory\MergedJsonFactory;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
-use Shudd3r\PackageFiles\Application\Template;
-use Shudd3r\PackageFiles\Replacement;
 
 
 class ApplicationTest extends TestCase
@@ -177,7 +177,7 @@ class ApplicationTest extends TestCase
         $app->replacement(self::PACKAGE_DESC)->add(new Replacement\PackageDescription(self::PACKAGE_NAME));
         $app->replacement(self::SRC_NAMESPACE)->add(new Replacement\SrcNamespace(self::PACKAGE_NAME));
 
-        $app->template('composer.json')->add(new Template\Factory\MergedJsonFactory());
+        $app->template('composer.json')->add(new MergedJsonFactory());
 
         return $app;
     }
