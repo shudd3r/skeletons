@@ -9,9 +9,8 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Template;
+namespace Shudd3r\PackageFiles\Templates;
 
-use Shudd3r\PackageFiles\Template;
 use Shudd3r\PackageFiles\RuntimeEnv;
 
 

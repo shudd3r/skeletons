@@ -12,7 +12,8 @@
 namespace Shudd3r\PackageFiles\Tests\Processor;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Template;
+use Shudd3r\PackageFiles\Templates;
+use Shudd3r\PackageFiles\Templates\Template\BasicTemplate;
 use Shudd3r\PackageFiles\Replacements\Token\ValueToken;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
@@ -22,19 +23,19 @@ class FilesProcessorTest extends TestCase
     public function testWithoutDefinedCustomTemplate_ProcessorUsesGenericTemplate()
     {
         $env       = $this->env();
-        $processor = new Doubles\MockedFilesProcessor($env->package(), new Template\Templates($env, []));
+        $processor = new Doubles\MockedFilesProcessor($env->package(), new Templates($env, []));
         $processor->process(new valueToken('placeholder', 'value'));
 
-        $expected = ['myFile.txt' => new Template\BasicTemplate($env->skeleton()->file('myFile.txt')->contents())];
+        $expected = ['myFile.txt' => new BasicTemplate($env->skeleton()->file('myFile.txt')->contents())];
         $this->assertEquals($expected, $processor->usedTemplates());
     }
 
     public function testWithDefinedCustomTemplate_ProcessorUsesThisTemplate()
     {
         $env        = $this->env();
-        $template   = new Template\BasicTemplate('render');
+        $template   = new BasicTemplate('render');
         $factories  = ['myFile.txt' => new Doubles\FakeTemplateFactory($template)];
-        $templates  = new Template\Templates($env, $factories);
+        $templates  = new Templates($env, $factories);
 
         $processor = new Doubles\MockedFilesProcessor($env->package(), $templates);
         $processor->process(new valueToken('placeholder', 'value'));

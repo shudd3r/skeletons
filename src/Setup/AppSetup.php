@@ -13,8 +13,7 @@ namespace Shudd3r\PackageFiles\Setup;
 
 use Shudd3r\PackageFiles\Replacements;
 use Shudd3r\PackageFiles\Replacements\Replacement;
-use Shudd3r\PackageFiles\Template\Factory;
-use Shudd3r\PackageFiles\Template\Templates;
+use Shudd3r\PackageFiles\Templates;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Exception;
 
@@ -42,7 +41,7 @@ class AppSetup
         $this->replacements[$placeholder] = $replacement;
     }
 
-    public function addTemplate(string $filename, Factory $template): void
+    public function addTemplate(string $filename, Templates\Factory $template): void
     {
         if (isset($this->templates[$filename])) {
             throw new Exception\TemplateOverwriteException();

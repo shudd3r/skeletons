@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Template;
+namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Template;
-use Shudd3r\PackageFiles\RuntimeEnv;
+use Shudd3r\PackageFiles\Templates\Template;
+use Shudd3r\PackageFiles\Templates\Factory;
 
 
 class Templates
@@ -40,6 +40,6 @@ class Templates
     private function basicTemplate(string $filename): Template
     {
         $contents = $this->env->skeleton()->file($filename)->contents();
-        return new BasicTemplate($contents);
+        return new Template\BasicTemplate($contents);
     }
 }

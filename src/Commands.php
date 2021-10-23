@@ -12,7 +12,6 @@
 namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Commands\Command;
-use Shudd3r\PackageFiles\Template\Templates;
 
 
 interface Commands

@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Setup;
 
-use Shudd3r\PackageFiles\Template\Factory;
+use Shudd3r\PackageFiles\Templates\Factory;
 
 
 class TemplateSetup

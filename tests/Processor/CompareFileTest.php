@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Tests\Processor;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Processor\CompareFile;
 use Shudd3r\PackageFiles\Replacements\Token;
-use Shudd3r\PackageFiles\Template;
+use Shudd3r\PackageFiles\Templates\Template;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 

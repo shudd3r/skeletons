@@ -12,8 +12,7 @@
 namespace Shudd3r\PackageFiles\Processor;
 
 use Shudd3r\PackageFiles\Processor;
-use Shudd3r\PackageFiles\Template;
-use Shudd3r\PackageFiles\Template\Templates;
+use Shudd3r\PackageFiles\Templates;
 use Shudd3r\PackageFiles\Replacements\TokenCache;
 use Shudd3r\PackageFiles\Replacements\Token;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
@@ -46,5 +45,5 @@ abstract class FilesProcessor implements Processor
         return $status;
     }
 
-    abstract protected function processor(Template $template, File $packageFile): Processor;
+    abstract protected function processor(Templates\Template $template, File $packageFile): Processor;
 }

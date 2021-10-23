@@ -9,11 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Template\Factory;
+namespace Shudd3r\PackageFiles\Templates\Factory;
 
-use Shudd3r\PackageFiles\Template\Factory;
+use Shudd3r\PackageFiles\Templates\Factory;
+use Shudd3r\PackageFiles\Templates\Template;
 use Shudd3r\PackageFiles\RuntimeEnv;
-use Shudd3r\PackageFiles\Template;
 
 
 class MergedJsonFactory implements Factory

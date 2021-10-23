@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Commands;
 use Shudd3r\PackageFiles\Commands;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Replacements;
-use Shudd3r\PackageFiles\Template\Templates;
+use Shudd3r\PackageFiles\Templates;
 use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 

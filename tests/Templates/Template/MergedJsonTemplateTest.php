@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Template;
+namespace Shudd3r\PackageFiles\Tests\Templates\Template;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Template;
+use Shudd3r\PackageFiles\Templates\Template;
 use Shudd3r\PackageFiles\Replacements\Token;
 use Shudd3r\PackageFiles\Tests\Fixtures;
 

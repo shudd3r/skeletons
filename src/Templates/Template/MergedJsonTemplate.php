@@ -9,9 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Template;
+namespace Shudd3r\PackageFiles\Templates\Template;
 
-use Shudd3r\PackageFiles\Template;
+use Shudd3r\PackageFiles\Templates\Template;
 use Shudd3r\PackageFiles\Replacements\Token;
 
 
