@@ -11,12 +11,10 @@
 
 namespace Shudd3r\PackageFiles;
 
-use Shudd3r\PackageFiles\Application\Commands;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
-use Shudd3r\PackageFiles\Application\Setup\EnvSetup;
-use Shudd3r\PackageFiles\Application\Setup\AppSetup;
-use Shudd3r\PackageFiles\Application\Setup\ReplacementSetup;
-use Shudd3r\PackageFiles\Application\Setup\TemplateSetup;
+use Shudd3r\PackageFiles\Setup\EnvSetup;
+use Shudd3r\PackageFiles\Setup\AppSetup;
+use Shudd3r\PackageFiles\Setup\ReplacementSetup;
+use Shudd3r\PackageFiles\Setup\TemplateSetup;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 use Shudd3r\PackageFiles\Environment\Terminal;
 use Exception;

@@ -9,30 +9,26 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Doubles;
+namespace Shudd3r\PackageFiles\Processor;
 
 use Shudd3r\PackageFiles\Processor;
 use Shudd3r\PackageFiles\Replacements\Token;
 
 
-class MockedProcessor implements Processor
+class ExpandedTokenProcessor implements Processor
 {
-    private ?Token $passedToken = null;
-    private bool   $status;
+    private Token     $token;
+    private Processor $processor;
 
-    public function __construct(bool $status = true)
+    public function __construct(Token $token, Processor $processor)
     {
-        $this->status = $status;
+        $this->token     = $token;
+        $this->processor = $processor;
     }
 
     public function process(Token $token): bool
     {
-        $this->passedToken = $token;
-        return $this->status;
-    }
-
-    public function passedToken(): ?Token
-    {
-        return $this->passedToken;
+        $token = new Token\CompositeToken($token, $this->token);
+        return $this->processor->process($token);
     }
 }

@@ -11,10 +11,10 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\Replacements\Replacement;
-use Shudd3r\PackageFiles\Application\Replacements\Reader\FallbackReader;
-use Shudd3r\PackageFiles\Application\Replacements\Token\ValueToken;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Replacements\Replacement;
+use Shudd3r\PackageFiles\Replacements\Reader\FallbackReader;
+use Shudd3r\PackageFiles\Replacements\Token\ValueToken;
+use Shudd3r\PackageFiles\RuntimeEnv;
 
 
 class FakeReplacement implements Replacement

@@ -13,8 +13,8 @@ namespace Shudd3r\PackageFiles\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\PackageFiles\Application;
-use Shudd3r\PackageFiles\Application\Replacements\Replacement;
-use Shudd3r\PackageFiles\Application\Template;
+use Shudd3r\PackageFiles\Replacements\Replacement;
+use Shudd3r\PackageFiles\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 

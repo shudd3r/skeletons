@@ -11,7 +11,7 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\Replacements\Reader\FallbackReader;
+use Shudd3r\PackageFiles\Replacements\Reader\FallbackReader;
 
 
 class FakeFallbackReader implements FallbackReader

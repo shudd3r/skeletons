@@ -9,23 +9,16 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Doubles;
+namespace Shudd3r\PackageFiles\Replacements\Reader;
 
-use Shudd3r\PackageFiles\Replacements;
 use Shudd3r\PackageFiles\Replacements\Reader;
 use Shudd3r\PackageFiles\Replacements\Replacement;
-use Shudd3r\PackageFiles\Replacements\Token;
 
 
-class FakeReader extends Reader
+class ValidationReader extends Reader
 {
-    public function __construct(bool $returnsTokens = true)
-    {
-        parent::__construct(new Replacements([]), new FakeRuntimeEnv(), []);
-        $this->tokens['placeholder'] = $returnsTokens ? new Token\ValueToken('placeholder', 'foo') : null;
-    }
-
     public function readToken(string $name, Replacement $replacement): void
     {
+        $this->tokens[$name] = $replacement->token($name, $this->metaDataValue($name));
     }
 }

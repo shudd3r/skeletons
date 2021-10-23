@@ -11,8 +11,8 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Application\Template;
-use Shudd3r\PackageFiles\Application\RuntimeEnv;
+use Shudd3r\PackageFiles\Template;
+use Shudd3r\PackageFiles\RuntimeEnv;
 
 
 class FakeTemplateFactory implements Template\Factory
