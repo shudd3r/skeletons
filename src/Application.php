@@ -22,6 +22,8 @@ use Exception;
 
 class Application
 {
+    private const VERSION = '0.1.0-alpha';
+
     private EnvSetup $envSetup;
     private AppSetup $appSetup;
     private Terminal $terminal;
@@ -94,7 +96,7 @@ class Application
     {
         $this->terminal->send(PHP_EOL);
         $this->terminal->send('------------------------------------------------------------' . PHP_EOL);
-        $this->terminal->send('Shudd3r/Package-Files (0.1.0-alpha)' . PHP_EOL);
+        $this->terminal->send('Shudd3r/Package-Files (' . self::VERSION . ')' . PHP_EOL);
         $this->terminal->send('Package skeleton template & validation system' . PHP_EOL);
         $isInteractive &&
         $this->terminal->send('Interactive input mode (press ctrl-c to abort)' . PHP_EOL);
