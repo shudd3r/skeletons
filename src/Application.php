@@ -75,10 +75,14 @@ class Application
 
             $command->execute();
         } catch (Exception $e) {
-            $this->terminal->send($e->getMessage(), 1);
+            $this->terminal->send($e->getMessage() . PHP_EOL, 1);
         }
 
-        return $this->terminal->exitCode();
+        $exitCode = $this->terminal->exitCode();
+        $summary  = $exitCode ? 'Aborted (ERRORS)' : 'Done (OK)';
+        $this->terminal->send(PHP_EOL . $summary . PHP_EOL);
+
+        return $exitCode;
     }
 
     protected function factory(string $command, RuntimeEnv $env, array $options): Commands
