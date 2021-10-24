@@ -32,7 +32,8 @@ class ApplicationTest extends TestCase
         'repo'    => 'initial/repo',
         'package' => 'initial/package-name',
         'desc'    => 'Initial package description',
-        'ns'      => 'Package\Initial'
+        'ns'      => 'Package\Initial',
+        'i'       => true
     ];
 
     private array $updateOptions = [

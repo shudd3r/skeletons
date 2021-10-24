@@ -61,6 +61,9 @@ class Application
      */
     public function run(string $command, array $options = []): int
     {
+        $interactive = isset($options['i']) || isset($options['interactive']);
+        $this->displayHeader($interactive && in_array($command, ['init', 'update']));
+
         try {
             $env          = $this->envSetup->runtimeEnv($this->terminal);
             $factory      = $this->factory($command, $env, $options);
@@ -85,5 +88,16 @@ class Application
         }
 
         throw new Exception("Unknown `{$command}` command");
+    }
+
+    private function displayHeader(bool $isInteractive): void
+    {
+        $this->terminal->send(PHP_EOL);
+        $this->terminal->send('------------------------------------------------------------' . PHP_EOL);
+        $this->terminal->send('Shudd3r/Package-Files (0.1.0-alpha)' . PHP_EOL);
+        $this->terminal->send('Package skeleton template & validation system' . PHP_EOL);
+        $isInteractive &&
+        $this->terminal->send('Interactive input mode (press ctrl-c to abort)' . PHP_EOL);
+        $this->terminal->send('------------------------------------------------------------' . PHP_EOL);
     }
 }
