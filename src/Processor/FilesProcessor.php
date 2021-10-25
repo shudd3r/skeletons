@@ -12,25 +12,22 @@
 namespace Shudd3r\PackageFiles\Processor;
 
 use Shudd3r\PackageFiles\Processor;
-use Shudd3r\PackageFiles\Templates;
-use Shudd3r\PackageFiles\Replacements\TokenCache;
-use Shudd3r\PackageFiles\Replacements\Token;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Templates;
+use Shudd3r\PackageFiles\Replacements\Token;
 
 
-abstract class FilesProcessor implements Processor
+class FilesProcessor implements Processor
 {
-    private Templates $templates;
-    private Directory $generated;
+    private Directory  $generated;
+    private Templates  $templates;
+    private Processors $processors;
 
-    protected ?TokenCache $cache;
-
-    public function __construct(Directory $generatedFiles, Templates $templates, TokenCache $cache = null)
+    public function __construct(Directory $generatedFiles, Templates $templates, Processors $processors)
     {
-        $this->templates = $templates;
-        $this->generated = $generatedFiles;
-        $this->cache     = $cache;
+        $this->templates  = $templates;
+        $this->generated  = $generatedFiles;
+        $this->processors = $processors;
     }
 
     public function process(Token $token): bool
@@ -38,12 +35,10 @@ abstract class FilesProcessor implements Processor
         $status = true;
         foreach ($this->generated->files() as $packageFile) {
             $template  = $this->templates->template($packageFile->name());
-            $processor = $this->processor($template, $packageFile);
+            $processor = $this->processors->processor($template, $packageFile);
             $status    = $processor->process($token) && $status;
         }
 
         return $status;
     }
-
-    abstract protected function processor(Templates\Template $template, File $packageFile): Processor;
 }

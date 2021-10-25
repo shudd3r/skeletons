@@ -12,9 +12,9 @@
 namespace Shudd3r\PackageFiles\Tests\Processor;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Templates;
-use Shudd3r\PackageFiles\Templates\Template\BasicTemplate;
+use Shudd3r\PackageFiles\Processor\FilesProcessor;
 use Shudd3r\PackageFiles\Replacements\Token\ValueToken;
+use Shudd3r\PackageFiles\Templates;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
@@ -22,26 +22,28 @@ class FilesProcessorTest extends TestCase
 {
     public function testWithoutDefinedCustomTemplate_ProcessorUsesGenericTemplate()
     {
-        $env       = $this->env();
-        $processor = new Doubles\MockedFilesProcessor($env->package(), new Templates($env, []));
+        $env        = $this->env();
+        $processors = new Doubles\MockedProcessors();
+
+        $processor  = new FilesProcessor($env->package(), new Templates($env, []), $processors);
         $processor->process(new valueToken('placeholder', 'value'));
 
-        $expected = ['myFile.txt' => new BasicTemplate($env->skeleton()->file('myFile.txt')->contents())];
-        $this->assertEquals($expected, $processor->usedTemplates());
+        $expectedTemplate = $this->template($env->skeleton()->file('myFile.txt')->contents());
+        $this->assertEquals(['myFile.txt' => $expectedTemplate], $processors->usedTemplates());
     }
 
     public function testWithDefinedCustomTemplate_ProcessorUsesThisTemplate()
     {
         $env        = $this->env();
-        $template   = new BasicTemplate('render');
+        $template   = $this->template('render');
         $factories  = ['myFile.txt' => new Doubles\FakeTemplateFactory($template)];
         $templates  = new Templates($env, $factories);
+        $processors = new Doubles\MockedProcessors();
 
-        $processor = new Doubles\MockedFilesProcessor($env->package(), $templates);
+        $processor = new FilesProcessor($env->package(), $templates, $processors);
         $processor->process(new valueToken('placeholder', 'value'));
 
-        $expected = ['myFile.txt' => $template];
-        $this->assertSame($expected, $processor->usedTemplates());
+        $this->assertSame(['myFile.txt' => $template], $processors->usedTemplates());
     }
 
     private function env(): Doubles\FakeRuntimeEnv
@@ -52,5 +54,10 @@ class FilesProcessorTest extends TestCase
         $env->skeleton()->addFile('myFile.txt', 'template contents');
 
         return $env;
+    }
+
+    private function template(string $contents): Templates\Template\BasicTemplate
+    {
+        return new Templates\Template\BasicTemplate($contents);
     }
 }

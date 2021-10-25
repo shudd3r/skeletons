@@ -36,8 +36,10 @@ class Update implements Commands
     {
         $cache            = new Replacements\TokenCache();
         $generatedFiles   = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
-        $fileValidator    = new Processor\FilesProcessor\FilesValidator($generatedFiles, $templates, $cache);
-        $fileGenerator    = new Processor\FilesProcessor\FilesGenerator($generatedFiles, $templates, $cache);
+        $validators       = new Processor\Processors\FileValidators($cache);
+        $fileValidator    = new Processor\FilesProcessor($generatedFiles, $templates, $validators);
+        $generators       = new Processor\Processors\FileGenerators($cache);
+        $fileGenerator    = new Processor\FilesProcessor($generatedFiles, $templates, $generators);
         $validationReader = new Replacements\Reader\ValidationReader($replacements, $this->env, $this->options);
         $updateReader     = new Replacements\Reader\UpdateReader($replacements, $this->env, $this->options);
 

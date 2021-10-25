@@ -35,7 +35,8 @@ class Validate implements Commands
     public function command(Replacements $replacements, Templates $templates): Command
     {
         $generatedFiles   = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
-        $fileValidator    = new Processor\FilesProcessor\FilesValidator($generatedFiles, $templates);
+        $validators       = new Processor\Processors\FileValidators();
+        $fileValidator    = new Processor\FilesProcessor($generatedFiles, $templates, $validators);
         $validationReader = new Replacements\Reader\ValidationReader($replacements, $this->env, $this->options);
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile(), true);

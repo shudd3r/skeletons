@@ -37,7 +37,8 @@ class Initialize implements Commands
         $initialReader  = new Replacements\Reader\InitialReader($replacements, $this->env, $this->options);
         $generatedFiles = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupFiles    = new Directory\ReflectedDirectory($this->env->backup(), $generatedFiles);
-        $fileGenerator  = new Processor\FilesProcessor\FilesGenerator($generatedFiles, $templates);
+        $processors     = new Processor\Processors\FileGenerators();
+        $fileGenerator  = new Processor\FilesProcessor($generatedFiles, $templates, $processors);
 
         $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);
         $noBackupOverwrite = new Precondition\CheckFilesOverwrite($backupFiles);
