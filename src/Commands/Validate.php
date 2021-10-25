@@ -38,12 +38,15 @@ class Validate implements Commands
         $fileValidator    = new Processor\FilesProcessor\FilesValidator($generatedFiles, $templates);
         $validationReader = new Replacements\Reader\ValidationReader($replacements, $this->env, $this->options);
 
-        $metaDataExists = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $processTokens  = new Command\TokenProcessor($validationReader, $fileValidator, $this->env->output());
+        $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
+        $validReplacements = new Precondition\ValidReplacements($validationReader);
+        $checkMetaData     = new Precondition\Preconditions($metaDataExists, $validReplacements);
+
+        $processTokens     = new Command\TokenProcessor($validationReader, $fileValidator, $this->env->output());
 
         return new Command\ProtectedCommand(
             $this->commandInfo('Checking skeleton synchronization', $processTokens),
-            $this->checkInfo('Checking meta data status', $metaDataExists),
+            $this->checkInfo('Checking meta data status', $checkMetaData),
             $this->env->output()
         );
     }
