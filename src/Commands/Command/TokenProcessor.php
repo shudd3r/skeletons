@@ -13,7 +13,7 @@ namespace Shudd3r\PackageFiles\Commands\Command;
 
 use Shudd3r\PackageFiles\Commands\Command;
 use Shudd3r\PackageFiles\Replacements\Reader;
-use Shudd3r\PackageFiles\Processor;
+use Shudd3r\PackageFiles\Processors\Processor;
 use Shudd3r\PackageFiles\Environment\Output;
 
 

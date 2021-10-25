@@ -9,15 +9,15 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Processor;
+namespace Shudd3r\PackageFiles\Processors\Processor;
 
-use Shudd3r\PackageFiles\Processor;
+use Shudd3r\PackageFiles\Processors\Processor;
+use Shudd3r\PackageFiles\Templates\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Replacements\Token;
-use Shudd3r\PackageFiles\Templates\Template;
 
 
-class GenerateFile implements Processor
+class CompareFile implements Processor
 {
     private Template $template;
     private File     $file;
@@ -30,8 +30,6 @@ class GenerateFile implements Processor
 
     public function process(Token $token): bool
     {
-        $contents = $this->template->render($token);
-        $this->file->write($contents);
-        return true;
+        return $this->template->render($token) === $this->file->contents();
     }
 }

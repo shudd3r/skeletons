@@ -9,17 +9,25 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Processor\FilesProcessor;
+namespace Shudd3r\PackageFiles\Processors;
 
-use Shudd3r\PackageFiles\Processor;
+use Shudd3r\PackageFiles\Processors;
 use Shudd3r\PackageFiles\Templates\Template;
-use Shudd3r\PackageFiles\Replacements\Token;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
+use Shudd3r\PackageFiles\Replacements\TokenCache;
+use Shudd3r\PackageFiles\Replacements\Token;
 
 
-class FilesGenerator extends Processor\FilesProcessor
+class FileGenerators implements Processors
 {
-    protected function processor(Template $template, File $packageFile): Processor
+    private ?TokenCache $cache;
+
+    public function __construct(TokenCache $cache = null)
+    {
+        $this->cache = $cache;
+    }
+
+    public function processor(Template $template, File $packageFile): Processor
     {
         $processor = new Processor\GenerateFile($template, $packageFile);
         $token     = $this->originalContentsToken($packageFile->name());

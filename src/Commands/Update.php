@@ -15,7 +15,7 @@ use Shudd3r\PackageFiles\Commands;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Replacements;
 use Shudd3r\PackageFiles\Templates;
-use Shudd3r\PackageFiles\Processor;
+use Shudd3r\PackageFiles\Processors;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
@@ -36,8 +36,10 @@ class Update implements Commands
     {
         $cache            = new Replacements\TokenCache();
         $generatedFiles   = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
-        $fileValidator    = new Processor\FilesProcessor\FilesValidator($generatedFiles, $templates, $cache);
-        $fileGenerator    = new Processor\FilesProcessor\FilesGenerator($generatedFiles, $templates, $cache);
+        $validators       = new Processors\FileValidators($cache);
+        $fileValidator    = new Processors\Processor\FilesProcessor($generatedFiles, $templates, $validators);
+        $generators       = new Processors\FileGenerators($cache);
+        $fileGenerator    = new Processors\Processor\FilesProcessor($generatedFiles, $templates, $generators);
         $validationReader = new Replacements\Reader\ValidationReader($replacements, $this->env, $this->options);
         $updateReader     = new Replacements\Reader\UpdateReader($replacements, $this->env, $this->options);
 
