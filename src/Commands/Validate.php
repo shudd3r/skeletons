@@ -21,6 +21,8 @@ use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 class Validate implements Commands
 {
+    use DefineOutputMethods;
+
     private RuntimeEnv $env;
     private array      $options;
 
@@ -39,6 +41,10 @@ class Validate implements Commands
         $metaDataExists = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $processTokens  = new Command\TokenProcessor($validationReader, $fileValidator, $this->env->output());
 
-        return new Command\ProtectedCommand($processTokens, $metaDataExists, $this->env->output());
+        return new Command\ProtectedCommand(
+            $this->commandInfo('Checking skeleton synchronization', $processTokens),
+            $this->checkInfo('Checking meta data status', $metaDataExists),
+            $this->env->output()
+        );
     }
 }
