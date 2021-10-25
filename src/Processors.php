@@ -9,11 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Processor;
+namespace Shudd3r\PackageFiles;
 
 use Shudd3r\PackageFiles\Templates\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Processor;
+use Shudd3r\PackageFiles\Processors\Processor;
 
 
 interface Processors

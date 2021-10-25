@@ -15,7 +15,7 @@ use Shudd3r\PackageFiles\Commands;
 use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Replacements;
 use Shudd3r\PackageFiles\Templates;
-use Shudd3r\PackageFiles\Processor;
+use Shudd3r\PackageFiles\Processors;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
@@ -37,8 +37,8 @@ class Initialize implements Commands
         $initialReader  = new Replacements\Reader\InitialReader($replacements, $this->env, $this->options);
         $generatedFiles = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupFiles    = new Directory\ReflectedDirectory($this->env->backup(), $generatedFiles);
-        $processors     = new Processor\Processors\FileGenerators();
-        $fileGenerator  = new Processor\FilesProcessor($generatedFiles, $templates, $processors);
+        $processors     = new Processors\FileGenerators();
+        $fileGenerator  = new Processors\Processor\FilesProcessor($generatedFiles, $templates, $processors);
 
         $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);
         $noBackupOverwrite = new Precondition\CheckFilesOverwrite($backupFiles);

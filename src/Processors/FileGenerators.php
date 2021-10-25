@@ -9,14 +9,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Processor\Processors;
+namespace Shudd3r\PackageFiles\Processors;
 
-use Shudd3r\PackageFiles\Processor\Processors;
+use Shudd3r\PackageFiles\Processors;
 use Shudd3r\PackageFiles\Templates\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Replacements\TokenCache;
 use Shudd3r\PackageFiles\Replacements\Token;
-use Shudd3r\PackageFiles\Processor;
 
 
 class FileGenerators implements Processors

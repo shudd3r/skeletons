@@ -11,16 +11,16 @@
 
 namespace Shudd3r\PackageFiles\Tests\Doubles;
 
-use Shudd3r\PackageFiles\Processor;
+use Shudd3r\PackageFiles\Processors;
 use Shudd3r\PackageFiles\Templates\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 
 
-class MockedProcessors implements Processor\Processors
+class MockedProcessors implements Processors
 {
     private array $usedTemplates = [];
 
-    public function processor(Template $template, File $packageFile): Processor
+    public function processor(Template $template, File $packageFile): Processors\Processor
     {
         $this->usedTemplates[$packageFile->name()] = $template;
         return new MockedProcessor();
