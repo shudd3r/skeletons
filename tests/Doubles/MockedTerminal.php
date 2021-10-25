@@ -47,6 +47,8 @@ class MockedTerminal extends Terminal
 
     public function messagesSent(): array
     {
-        return $this->messagesSent;
+        $messages = $this->messagesSent;
+        $this->messagesSent = [];
+        return $messages;
     }
 }

@@ -21,6 +21,8 @@ use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 class Update implements Commands
 {
+    use DefineOutputMethods;
+
     private RuntimeEnv $env;
     private array      $options;
 
@@ -42,11 +44,18 @@ class Update implements Commands
         $metaDataExists      = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $packageSynchronized = new Precondition\SkeletonSynchronization($validationReader, $fileValidator);
         $validReplacements   = new Precondition\ValidReplacements($updateReader);
-        $preconditions       = new Precondition\Preconditions($metaDataExists, $packageSynchronized, $validReplacements);
+        $preconditions       = new Precondition\Preconditions(
+            $this->checkInfo('Checking meta data status', $metaDataExists),
+            $this->checkInfo('Checking skeleton synchronization', $packageSynchronized),
+            $this->checkInfo('Gathering replacement values', $validReplacements, false)
+        );
 
         $processTokens = new Command\TokenProcessor($updateReader, $fileGenerator, $this->env->output());
         $saveMetaData  = new Command\SaveMetaData($updateReader, $this->env->metaData());
-        $command       = new Command\CommandSequence($processTokens, $saveMetaData);
+        $command       = new Command\CommandSequence(
+            $this->commandInfo('Generating skeleton files', $processTokens),
+            $this->commandInfo('Generating meta data file', $saveMetaData)
+        );
 
         return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
     }

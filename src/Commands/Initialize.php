@@ -21,6 +21,8 @@ use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 class Initialize implements Commands
 {
+    use DefineOutputMethods;
+
     private RuntimeEnv $env;
     private array      $options;
 
@@ -40,12 +42,20 @@ class Initialize implements Commands
         $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);
         $noBackupOverwrite = new Precondition\CheckFilesOverwrite($backupFiles);
         $validReplacements = new Precondition\ValidReplacements($initialReader);
-        $preconditions     = new Precondition\Preconditions($noMetaDataFile, $noBackupOverwrite, $validReplacements);
+        $preconditions     = new Precondition\Preconditions(
+            $this->checkInfo('Checking meta data status', $noMetaDataFile),
+            $this->checkInfo('Checking backup overwrite', $noBackupOverwrite),
+            $this->checkInfo('Gathering replacement values', $validReplacements, false)
+        );
 
         $backupFiles   = new Command\BackupFiles($generatedFiles, $this->env->backup());
         $processTokens = new Command\TokenProcessor($initialReader, $fileGenerator, $this->env->output());
         $saveMetaData  = new Command\SaveMetaData($initialReader, $this->env->metaData());
-        $command       = new Command\CommandSequence($backupFiles, $processTokens, $saveMetaData);
+        $command       = new Command\CommandSequence(
+            $this->commandInfo('Moving skeleton files from package to backup directory', $backupFiles),
+            $this->commandInfo('Generating skeleton files', $processTokens),
+            $this->commandInfo('Generating meta data file', $saveMetaData)
+        );
 
         return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
     }
