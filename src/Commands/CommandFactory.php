@@ -43,11 +43,6 @@ abstract class CommandFactory implements Commands
 
     abstract public function command(array $options): Command;
 
-    protected function templates(): Templates
-    {
-        return $this->templates ??= $this->setup->templates($this->env);
-    }
-
     protected function replacements(): Replacements
     {
         return $this->replacements ??= $this->setup->replacements();
@@ -81,5 +76,10 @@ abstract class CommandFactory implements Commands
     protected function checkInfo(string $message, Precondition $precondition, bool $status = true): Precondition
     {
         return new DescribedPrecondition($precondition, $this->env->output(), $message, $status);
+    }
+
+    private function templates(): Templates
+    {
+        return $this->templates ??= $this->setup->templates($this->env);
     }
 }
