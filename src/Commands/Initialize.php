@@ -13,8 +13,8 @@ namespace Shudd3r\PackageFiles\Commands;
 
 use Shudd3r\PackageFiles\Commands;
 use Shudd3r\PackageFiles\RuntimeEnv;
+use Shudd3r\PackageFiles\Setup\AppSetup;
 use Shudd3r\PackageFiles\Replacements;
-use Shudd3r\PackageFiles\Templates;
 use Shudd3r\PackageFiles\Processors;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
@@ -24,17 +24,20 @@ class Initialize implements Commands
     use DefineOutputMethods;
 
     private RuntimeEnv $env;
-    private array      $options;
+    private AppSetup   $setup;
 
-    public function __construct(RuntimeEnv $env, array $options)
+    public function __construct(RuntimeEnv $env, AppSetup $setup)
     {
-        $this->env     = $env;
-        $this->options = $options;
+        $this->env   = $env;
+        $this->setup = $setup;
     }
 
-    public function command(Replacements $replacements, Templates $templates): Command
+    public function command(array $options): Command
     {
-        $initialReader  = new Replacements\Reader\InitialReader($replacements, $this->env, $this->options);
+        $replacements = $this->setup->replacements();
+        $templates    = $this->setup->templates($this->env);
+
+        $initialReader  = new Replacements\Reader\InitialReader($replacements, $this->env, $options);
         $generatedFiles = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
         $backupFiles    = new Directory\ReflectedDirectory($this->env->backup(), $generatedFiles);
         $processors     = new Processors\FileGenerators();
