@@ -65,14 +65,12 @@ abstract class CommandFactory implements Commands
 
     protected function filesValidator(TokenCache $tokenCache = null): Processor
     {
-        $validators = $tokenCache ? new FileValidators($tokenCache) : new FileValidators();
-        return new Processor\FilesProcessor($this->files(), $this->templates(), $validators);
+        return new Processor\FilesProcessor($this->files(), $this->templates(), new FileValidators($tokenCache));
     }
 
     protected function filesGenerator(TokenCache $tokenCache = null): Processor
     {
-        $generators = $tokenCache ? new FileGenerators($tokenCache) : new FileGenerators();
-        return new Processor\FilesProcessor($this->files(), $this->templates(), $generators);
+        return new Processor\FilesProcessor($this->files(), $this->templates(), new FileGenerators($tokenCache));
     }
 
     protected function commandInfo(string $message, Command $command): Command
