@@ -33,7 +33,7 @@ class Update extends CommandFactory
         );
 
         $saveMetaData  = new Command\SaveMetaData($updateTokens, $this->env->metaData());
-        $generateFiles = new Command\TokenProcessor($updateTokens, $this->filesGenerator($cache), $this->env->output());
+        $generateFiles = new Command\ProcessTokens($updateTokens, $this->filesGenerator($cache), $this->env->output());
         $command       = new Command\CommandSequence(
             $this->commandInfo('Generating skeleton files', $generateFiles),
             $this->commandInfo('Generating meta data file', $saveMetaData)

@@ -30,7 +30,7 @@ class Initialize extends CommandFactory
         );
 
         $backupFiles   = new Command\BackupFiles($this->files(), $this->env->backup());
-        $generateFiles = new Command\TokenProcessor($initialTokens, $this->filesGenerator(), $this->env->output());
+        $generateFiles = new Command\ProcessTokens($initialTokens, $this->filesGenerator(), $this->env->output());
         $saveMetaData  = new Command\SaveMetaData($initialTokens, $this->env->metaData());
         $command       = new Command\CommandSequence(
             $this->commandInfo('Moving skeleton files from package to backup directory', $backupFiles),

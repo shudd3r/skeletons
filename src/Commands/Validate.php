@@ -24,7 +24,7 @@ class Validate extends CommandFactory
         $validReplacements = new Precondition\ValidReplacements($validationTokens);
         $checkMetaData     = new Precondition\Preconditions($metaDataExists, $validReplacements);
 
-        $processTokens = new Command\TokenProcessor($validationTokens, $this->filesValidator(), $this->env->output());
+        $processTokens = new Command\ProcessTokens($validationTokens, $this->filesValidator(), $this->env->output());
 
         return new Command\ProtectedCommand(
             $this->commandInfo('Checking skeleton synchronization', $processTokens),
