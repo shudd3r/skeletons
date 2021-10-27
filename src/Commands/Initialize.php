@@ -12,16 +12,18 @@
 namespace Shudd3r\PackageFiles\Commands;
 
 use Shudd3r\PackageFiles\Replacements\Reader\InitialReader;
+use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
 class Initialize extends CommandFactory
 {
     public function command(array $options): Command
     {
-        $initialTokens = new InitialReader($this->replacements, $this->env, $options);
+        $initialTokens  = new InitialReader($this->replacements, $this->env, $options);
+        $expectedBackup = new Directory\ReflectedDirectory($this->env->backup(), $this->generatedFiles);
 
         $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);
-        $noBackupOverwrite = new Precondition\CheckFilesOverwrite($this->backup());
+        $noBackupOverwrite = new Precondition\CheckFilesOverwrite($expectedBackup);
         $validReplacements = new Precondition\ValidReplacements($initialTokens);
         $preconditions     = new Precondition\Preconditions(
             $this->checkInfo('Checking meta data status', $noMetaDataFile),
@@ -29,7 +31,7 @@ class Initialize extends CommandFactory
             $this->checkInfo('Gathering replacement values', $validReplacements, false)
         );
 
-        $backupFiles   = new Command\BackupFiles($this->files(), $this->env->backup());
+        $backupFiles   = new Command\BackupFiles($this->generatedFiles, $this->env->backup());
         $generateFiles = new Command\ProcessTokens($initialTokens, $this->filesGenerator(), $this->env->output());
         $saveMetaData  = new Command\SaveMetaData($initialTokens, $this->env->metaData());
         $command       = new Command\CommandSequence(

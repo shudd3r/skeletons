@@ -20,7 +20,7 @@ class Validate extends CommandFactory
     {
         $validationTokens = new Replacements\Reader\ValidationReader($this->replacements, $this->env, $options);
 
-        $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
+        $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
         $validReplacements = new Precondition\ValidReplacements($validationTokens);
         $checkMetaData     = new Precondition\Preconditions($metaDataExists, $validReplacements);
 

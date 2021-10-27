@@ -23,7 +23,7 @@ class Update extends CommandFactory
         $updateTokens     = new Reader\UpdateReader($this->replacements, $this->env, $options);
         $validationTokens = new Reader\ValidationReader($this->replacements, $this->env, $options);
 
-        $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
+        $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
         $validateFiles     = new Precondition\SkeletonSynchronization($validationTokens, $this->filesValidator($cache));
         $validReplacements = new Precondition\ValidReplacements($updateTokens);
         $preconditions     = new Precondition\Preconditions(
