@@ -23,7 +23,7 @@ use Shudd3r\PackageFiles\Commands\Precondition\DescribedPrecondition;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
-abstract class CommandFactory implements Commands
+abstract class Factory implements Commands
 {
     protected RuntimeEnv   $env;
     protected Replacements $replacements;

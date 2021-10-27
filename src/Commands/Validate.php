@@ -14,7 +14,7 @@ namespace Shudd3r\PackageFiles\Commands;
 use Shudd3r\PackageFiles\Replacements;
 
 
-class Validate extends CommandFactory
+class Validate extends Factory
 {
     public function command(array $options): Command
     {

@@ -15,7 +15,7 @@ use Shudd3r\PackageFiles\Replacements\Reader;
 use Shudd3r\PackageFiles\Replacements\TokenCache;
 
 
-class Update extends CommandFactory
+class Update extends Factory
 {
     public function command(array $options): Command
     {

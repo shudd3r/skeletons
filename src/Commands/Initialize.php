@@ -15,7 +15,7 @@ use Shudd3r\PackageFiles\Replacements\Reader\InitialReader;
 use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
-class Initialize extends CommandFactory
+class Initialize extends Factory
 {
     public function command(array $options): Command
     {
