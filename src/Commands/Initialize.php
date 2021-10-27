@@ -18,7 +18,7 @@ class Initialize extends CommandFactory
 {
     public function command(array $options): Command
     {
-        $initialTokens = new InitialReader($this->replacements(), $this->env, $options);
+        $initialTokens = new InitialReader($this->replacements, $this->env, $options);
 
         $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);
         $noBackupOverwrite = new Precondition\CheckFilesOverwrite($this->backup());

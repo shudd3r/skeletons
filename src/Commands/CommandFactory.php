@@ -13,7 +13,6 @@ namespace Shudd3r\PackageFiles\Commands;
 
 use Shudd3r\PackageFiles\Commands;
 use Shudd3r\PackageFiles\RuntimeEnv;
-use Shudd3r\PackageFiles\Setup\AppSetup;
 use Shudd3r\PackageFiles\Templates;
 use Shudd3r\PackageFiles\Replacements;
 use Shudd3r\PackageFiles\Replacements\TokenCache;
@@ -27,26 +26,21 @@ use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 abstract class CommandFactory implements Commands
 {
-    protected RuntimeEnv $env;
+    protected RuntimeEnv   $env;
+    protected Replacements $replacements;
 
-    private AppSetup     $setup;
-    private Templates    $templates;
-    private Replacements $replacements;
-    private Directory    $files;
-    private Directory    $backup;
+    private Templates $templates;
+    private Directory $files;
+    private Directory $backup;
 
-    public function __construct(RuntimeEnv $env, AppSetup $setup)
+    public function __construct(RuntimeEnv $env, Replacements $replacements, Templates $templates)
     {
-        $this->env   = $env;
-        $this->setup = $setup;
+        $this->env          = $env;
+        $this->replacements = $replacements;
+        $this->templates    = $templates;
     }
 
     abstract public function command(array $options): Command;
-
-    protected function replacements(): Replacements
-    {
-        return $this->replacements ??= $this->setup->replacements();
-    }
 
     protected function files(): Directory
     {
@@ -60,12 +54,12 @@ abstract class CommandFactory implements Commands
 
     protected function filesValidator(TokenCache $tokenCache = null): Processor
     {
-        return new Processor\FilesProcessor($this->files(), $this->templates(), new FileValidators($tokenCache));
+        return new Processor\FilesProcessor($this->files(), $this->templates, new FileValidators($tokenCache));
     }
 
     protected function filesGenerator(TokenCache $tokenCache = null): Processor
     {
-        return new Processor\FilesProcessor($this->files(), $this->templates(), new FileGenerators($tokenCache));
+        return new Processor\FilesProcessor($this->files(), $this->templates, new FileGenerators($tokenCache));
     }
 
     protected function commandInfo(string $message, Command $command): Command
@@ -76,10 +70,5 @@ abstract class CommandFactory implements Commands
     protected function checkInfo(string $message, Precondition $precondition, bool $status = true): Precondition
     {
         return new DescribedPrecondition($precondition, $this->env->output(), $message, $status);
-    }
-
-    private function templates(): Templates
-    {
-        return $this->templates ??= $this->setup->templates($this->env);
     }
 }

@@ -86,12 +86,22 @@ class Application
     protected function factory(string $command, RuntimeEnv $env): Commands
     {
         switch ($command) {
-            case 'init':   return new Commands\Initialize($env, $this->appSetup);
-            case 'check':  return new Commands\Validate($env, $this->appSetup);
-            case 'update': return new Commands\Update($env, $this->appSetup);
+            case 'init':   return new Commands\Initialize($env, $this->replacements(), $this->templates($env));
+            case 'check':  return new Commands\Validate($env, $this->replacements(), $this->templates($env));
+            case 'update': return new Commands\Update($env, $this->replacements(), $this->templates($env));
         }
 
         throw new Exception("Unknown `{$command}` command");
+    }
+
+    private function replacements(): Replacements
+    {
+        return $this->appSetup->replacements();
+    }
+
+    private function templates(RuntimeEnv $env): Templates
+    {
+        return $this->appSetup->templates($env);
     }
 
     private function displayHeader(bool $isInteractive): void

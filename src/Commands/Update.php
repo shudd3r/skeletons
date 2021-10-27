@@ -20,8 +20,8 @@ class Update extends CommandFactory
     public function command(array $options): Command
     {
         $cache            = new TokenCache();
-        $updateTokens     = new Reader\UpdateReader($this->replacements(), $this->env, $options);
-        $validationTokens = new Reader\ValidationReader($this->replacements(), $this->env, $options);
+        $updateTokens     = new Reader\UpdateReader($this->replacements, $this->env, $options);
+        $validationTokens = new Reader\ValidationReader($this->replacements, $this->env, $options);
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $validateFiles     = new Precondition\SkeletonSynchronization($validationTokens, $this->filesValidator($cache));

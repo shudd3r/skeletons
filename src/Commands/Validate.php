@@ -18,7 +18,7 @@ class Validate extends CommandFactory
 {
     public function command(array $options): Command
     {
-        $validationTokens = new Replacements\Reader\ValidationReader($this->replacements(), $this->env, $options);
+        $validationTokens = new Replacements\Reader\ValidationReader($this->replacements, $this->env, $options);
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
         $validReplacements = new Precondition\ValidReplacements($validationTokens);
