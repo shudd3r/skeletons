@@ -19,6 +19,9 @@ class Initialize extends Factory
 {
     public function command(array $options): Command
     {
+        $isInteractive = isset($options['i']) || isset($options['interactive']);
+        $metaFilename  = $this->env->metaDataFile()->name();
+
         $initialTokens  = new InitialReader($this->replacements, $this->env, $options);
         $expectedBackup = new Directory\ReflectedDirectory($this->env->backup(), $this->generatedFiles);
 
@@ -26,18 +29,18 @@ class Initialize extends Factory
         $noBackupOverwrite = new Precondition\CheckFilesOverwrite($expectedBackup);
         $validReplacements = new Precondition\ValidReplacements($initialTokens);
         $preconditions     = new Precondition\Preconditions(
-            $this->checkInfo('Checking meta data status', $noMetaDataFile),
+            $this->checkInfo('Checking meta data status (`' . $metaFilename . '` should not exist)', $noMetaDataFile),
             $this->checkInfo('Checking backup overwrite', $noBackupOverwrite),
-            $this->checkInfo('Gathering replacement values', $validReplacements, false)
+            $this->checkInfo('Gathering replacement values', $validReplacements, !$isInteractive)
         );
 
         $backupFiles   = new Command\BackupFiles($this->generatedFiles, $this->env->backup());
         $generateFiles = new Command\ProcessTokens($initialTokens, $this->filesGenerator(), $this->env->output());
         $saveMetaData  = new Command\SaveMetaData($initialTokens, $this->env->metaData());
         $command       = new Command\CommandSequence(
-            $this->commandInfo('Moving skeleton files from package to backup directory', $backupFiles),
-            $this->commandInfo('Generating skeleton files', $generateFiles),
-            $this->commandInfo('Generating meta data file', $saveMetaData)
+            $this->commandInfo('Moving existing skeleton files to backup directory', $backupFiles),
+            $this->commandInfo('Generating skeleton files:', $generateFiles),
+            $this->commandInfo('Generating meta data file (`' . $metaFilename . '`)', $saveMetaData)
         );
 
         return new Command\ProtectedCommand($command, $preconditions, $this->env->output());

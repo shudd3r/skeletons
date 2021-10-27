@@ -18,18 +18,19 @@ class Validate extends Factory
 {
     public function command(array $options): Command
     {
+        $metaFilename     = $this->env->metaDataFile()->name();
         $validationTokens = new Replacements\Reader\ValidationReader($this->replacements, $this->env, $options);
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
         $validReplacements = new Precondition\ValidReplacements($validationTokens);
-        $checkMetaData     = new Precondition\Preconditions($metaDataExists, $validReplacements);
+        $precondition      = new Precondition\Preconditions(
+            $this->checkInfo('Checking meta data status (`' . $metaFilename . '` should exist)', $metaDataExists),
+            $this->checkInfo('Validating meta data replacements', $validReplacements)
+        );
 
         $processTokens = new Command\ProcessTokens($validationTokens, $this->filesValidator(), $this->env->output());
+        $command       = $this->commandInfo('Checking skeleton files synchronization:', $processTokens);
 
-        return new Command\ProtectedCommand(
-            $this->commandInfo('Checking skeleton synchronization', $processTokens),
-            $this->checkInfo('Checking meta data status', $checkMetaData),
-            $this->env->output()
-        );
+        return new Command\ProtectedCommand($command, $precondition, $this->env->output());
     }
 }

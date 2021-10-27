@@ -16,20 +16,23 @@ use Shudd3r\PackageFiles\Replacements\Token;
 use Shudd3r\PackageFiles\Templates\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Replacements\TokenCache;
+use Shudd3r\PackageFiles\Environment\Output;
 
 
 class FileValidators implements Processors
 {
+    private Output      $output;
     private ?TokenCache $cache;
 
-    public function __construct(?TokenCache $cache = null)
+    public function __construct(Output $output, ?TokenCache $cache = null)
     {
-        $this->cache = $cache;
+        $this->output = $output;
+        $this->cache  = $cache;
     }
 
     public function processor(Template $template, File $packageFile): Processor
     {
-        $compareFiles  = new Processor\CompareFile($template, $packageFile);
+        $compareFiles  = $this->processorInfo(new Processor\CompareFile($template, $packageFile), $packageFile->name());
         $contentsToken = new Token\CompositeToken(
             new Token\InitialContents(false),
             $this->originalContentsToken($packageFile)
@@ -38,10 +41,15 @@ class FileValidators implements Processors
         return new Processor\ExpandedTokenProcessor($contentsToken, $compareFiles);
     }
 
-    protected function originalContentsToken(File $packageFile): Token
+    private function originalContentsToken(File $packageFile): Token
     {
         return $this->cache
             ? new Token\CachedOriginalContents($packageFile->contents(), $packageFile->name(), $this->cache)
             : new Token\OriginalContents($packageFile->contents());
+    }
+
+    private function processorInfo(Processor $processor, string $filename): Processor
+    {
+        return new Processors\Processor\DescribedProcessor($processor, $this->output, $filename, true);
     }
 }

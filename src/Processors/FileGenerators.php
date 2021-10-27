@@ -12,24 +12,27 @@
 namespace Shudd3r\PackageFiles\Processors;
 
 use Shudd3r\PackageFiles\Processors;
+use Shudd3r\PackageFiles\Replacements\Token;
 use Shudd3r\PackageFiles\Templates\Template;
 use Shudd3r\PackageFiles\Environment\FileSystem\File;
 use Shudd3r\PackageFiles\Replacements\TokenCache;
-use Shudd3r\PackageFiles\Replacements\Token;
+use Shudd3r\PackageFiles\Environment\Output;
 
 
 class FileGenerators implements Processors
 {
+    private Output      $output;
     private ?TokenCache $cache;
 
-    public function __construct(?TokenCache $cache = null)
+    public function __construct(Output $output, ?TokenCache $cache = null)
     {
-        $this->cache = $cache;
+        $this->output = $output;
+        $this->cache  = $cache;
     }
 
     public function processor(Template $template, File $packageFile): Processor
     {
-        $processor = new Processor\GenerateFile($template, $packageFile);
+        $processor = $this->processorInfo(new Processor\GenerateFile($template, $packageFile), $packageFile->name());
         $token     = $this->originalContentsToken($packageFile->name());
         return $token ? new Processor\ExpandedTokenProcessor($token, $processor) : $processor;
     }
@@ -43,5 +46,10 @@ class FileGenerators implements Processors
 
         $token = $this->cache->token($filename);
         return $token ? new Token\CompositeToken(new Token\InitialContents(false), $token) : null;
+    }
+
+    private function processorInfo(Processor $processor, string $filename): Processor
+    {
+        return new Processors\Processor\DescribedProcessor($processor, $this->output, $filename);
     }
 }
