@@ -32,25 +32,25 @@ class DescribedProcessorTest extends TestCase
     {
         $described = $this->described(true, 'Checking foo');
         $this->assertTrue($described->process(self::$token));
-        $this->assertMessageLine('  Checking foo... OK');
+        $this->assertMessageLine('    Checking foo... OK');
     }
 
     public function testForFailedProcess_DisplaysFAILStatus()
     {
         $described = $this->described(false, 'Checking bar');
         $this->assertFalse($described->process(self::$token));
-        $this->assertMessageLine('  Checking bar... FAIL');
+        $this->assertMessageLine('    Checking bar... FAIL');
     }
 
     public function testWithoutStatus_DisplaysDescriptionOnly()
     {
         $described = $this->described(true, 'Checking foo', false);
         $this->assertTrue($described->process(self::$token));
-        $this->assertMessageLine('  Checking foo');
+        $this->assertMessageLine('    Checking foo');
 
         $described = $this->described(false, 'Checking bar', false);
         $this->assertFalse($described->process(self::$token));
-        $this->assertMessageLine('  Checking bar');
+        $this->assertMessageLine('    Checking bar');
     }
 
     private function assertMessageLine(string $message): void

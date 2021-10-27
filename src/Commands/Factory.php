@@ -43,12 +43,12 @@ abstract class Factory implements Commands
 
     protected function filesValidator(TokenCache $tokenCache = null): Processor
     {
-        return $this->fileProcessor(new Processors\FileValidators($tokenCache));
+        return $this->fileProcessor(new Processors\FileValidators($this->env->output(), $tokenCache));
     }
 
     protected function filesGenerator(TokenCache $tokenCache = null): Processor
     {
-        return $this->fileProcessor(new Processors\FileGenerators($tokenCache));
+        return $this->fileProcessor(new Processors\FileGenerators($this->env->output(), $tokenCache));
     }
 
     protected function commandInfo(string $message, Command $command): Command

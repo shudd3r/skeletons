@@ -34,7 +34,7 @@ class DescribedProcessor implements Processor
     public function process(Token $token): bool
     {
         $postfix = $this->withStatus ? '' : PHP_EOL;
-        $this->output->send('  ' . $this->message . $postfix);
+        $this->output->send('    ' . $this->message . $postfix);
 
         $status = $this->processor->process($token);
 

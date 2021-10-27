@@ -28,7 +28,7 @@ class Update extends Factory
         $validReplacements = new Precondition\ValidReplacements($updateTokens);
         $preconditions     = new Precondition\Preconditions(
             $this->checkInfo('Checking meta data status', $metaDataExists),
-            $this->checkInfo('Checking skeleton synchronization', $validateFiles),
+            $this->checkInfo('Checking skeleton synchronization', $validateFiles, false),
             $this->checkInfo('Gathering replacement values', $validReplacements, false)
         );
 
