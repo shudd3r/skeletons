@@ -22,7 +22,7 @@ class FileGenerators implements Processors
 {
     private ?TokenCache $cache;
 
-    public function __construct(TokenCache $cache = null)
+    public function __construct(?TokenCache $cache = null)
     {
         $this->cache = $cache;
     }

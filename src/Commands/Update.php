@@ -11,51 +11,31 @@
 
 namespace Shudd3r\PackageFiles\Commands;
 
-use Shudd3r\PackageFiles\Commands;
-use Shudd3r\PackageFiles\RuntimeEnv;
-use Shudd3r\PackageFiles\Replacements;
-use Shudd3r\PackageFiles\Templates;
-use Shudd3r\PackageFiles\Processors;
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
+use Shudd3r\PackageFiles\Replacements\Reader;
+use Shudd3r\PackageFiles\Replacements\TokenCache;
 
 
-class Update implements Commands
+class Update extends Factory
 {
-    use DefineOutputMethods;
-
-    private RuntimeEnv $env;
-    private array      $options;
-
-    public function __construct(RuntimeEnv $env, array $options)
+    public function command(array $options): Command
     {
-        $this->env     = $env;
-        $this->options = $options;
-    }
+        $cache            = new TokenCache();
+        $updateTokens     = new Reader\UpdateReader($this->replacements, $this->env, $options);
+        $validationTokens = new Reader\ValidationReader($this->replacements, $this->env, $options);
 
-    public function command(Replacements $replacements, Templates $templates): Command
-    {
-        $cache            = new Replacements\TokenCache();
-        $generatedFiles   = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
-        $validators       = new Processors\FileValidators($cache);
-        $fileValidator    = new Processors\Processor\FilesProcessor($generatedFiles, $templates, $validators);
-        $generators       = new Processors\FileGenerators($cache);
-        $fileGenerator    = new Processors\Processor\FilesProcessor($generatedFiles, $templates, $generators);
-        $validationReader = new Replacements\Reader\ValidationReader($replacements, $this->env, $this->options);
-        $updateReader     = new Replacements\Reader\UpdateReader($replacements, $this->env, $this->options);
-
-        $metaDataExists      = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $packageSynchronized = new Precondition\SkeletonSynchronization($validationReader, $fileValidator);
-        $validReplacements   = new Precondition\ValidReplacements($updateReader);
-        $preconditions       = new Precondition\Preconditions(
+        $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
+        $validateFiles     = new Precondition\SkeletonSynchronization($validationTokens, $this->filesValidator($cache));
+        $validReplacements = new Precondition\ValidReplacements($updateTokens);
+        $preconditions     = new Precondition\Preconditions(
             $this->checkInfo('Checking meta data status', $metaDataExists),
-            $this->checkInfo('Checking skeleton synchronization', $packageSynchronized),
+            $this->checkInfo('Checking skeleton synchronization', $validateFiles),
             $this->checkInfo('Gathering replacement values', $validReplacements, false)
         );
 
-        $processTokens = new Command\TokenProcessor($updateReader, $fileGenerator, $this->env->output());
-        $saveMetaData  = new Command\SaveMetaData($updateReader, $this->env->metaData());
+        $saveMetaData  = new Command\SaveMetaData($updateTokens, $this->env->metaData());
+        $generateFiles = new Command\ProcessTokens($updateTokens, $this->filesGenerator($cache), $this->env->output());
         $command       = new Command\CommandSequence(
-            $this->commandInfo('Generating skeleton files', $processTokens),
+            $this->commandInfo('Generating skeleton files', $generateFiles),
             $this->commandInfo('Generating meta data file', $saveMetaData)
         );
 

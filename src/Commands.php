@@ -16,5 +16,5 @@ use Shudd3r\PackageFiles\Commands\Command;
 
 interface Commands
 {
-    public function command(Replacements $replacements, Templates $templates): Command;
+    public function command(array $options): Command;
 }

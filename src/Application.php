@@ -67,11 +67,9 @@ class Application
         $this->displayHeader($interactive && in_array($command, ['init', 'update']));
 
         try {
-            $env          = $this->envSetup->runtimeEnv($this->terminal);
-            $factory      = $this->factory($command, $env, $options);
-            $replacements = $this->appSetup->replacements();
-            $templates    = $this->appSetup->templates($env);
-            $command      = $factory->command($replacements, $templates);
+            $env     = $this->envSetup->runtimeEnv($this->terminal);
+            $factory = $this->factory($command, $env);
+            $command = $factory->command($options);
 
             $command->execute();
         } catch (Exception $e) {
@@ -85,15 +83,25 @@ class Application
         return $exitCode;
     }
 
-    protected function factory(string $command, RuntimeEnv $env, array $options): Commands
+    protected function factory(string $command, RuntimeEnv $env): Commands
     {
         switch ($command) {
-            case 'init':   return new Commands\Initialize($env, $options);
-            case 'check':  return new Commands\Validate($env, $options);
-            case 'update': return new Commands\Update($env, $options);
+            case 'init':   return new Commands\Initialize($env, $this->replacements(), $this->templates($env));
+            case 'check':  return new Commands\Validate($env, $this->replacements(), $this->templates($env));
+            case 'update': return new Commands\Update($env, $this->replacements(), $this->templates($env));
         }
 
         throw new Exception("Unknown `{$command}` command");
+    }
+
+    private function replacements(): Replacements
+    {
+        return $this->appSetup->replacements();
+    }
+
+    private function templates(RuntimeEnv $env): Templates
+    {
+        return $this->appSetup->templates($env);
     }
 
     private function displayHeader(bool $isInteractive): void

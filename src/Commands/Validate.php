@@ -11,39 +11,20 @@
 
 namespace Shudd3r\PackageFiles\Commands;
 
-use Shudd3r\PackageFiles\Commands;
-use Shudd3r\PackageFiles\RuntimeEnv;
 use Shudd3r\PackageFiles\Replacements;
-use Shudd3r\PackageFiles\Templates;
-use Shudd3r\PackageFiles\Processors;
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
 
 
-class Validate implements Commands
+class Validate extends Factory
 {
-    use DefineOutputMethods;
-
-    private RuntimeEnv $env;
-    private array      $options;
-
-    public function __construct(RuntimeEnv $env, array $options)
+    public function command(array $options): Command
     {
-        $this->env     = $env;
-        $this->options = $options;
-    }
+        $validationTokens = new Replacements\Reader\ValidationReader($this->replacements, $this->env, $options);
 
-    public function command(Replacements $replacements, Templates $templates): Command
-    {
-        $generatedFiles   = new Directory\ReflectedDirectory($this->env->package(), $this->env->skeleton());
-        $validators       = new Processors\FileValidators();
-        $fileValidator    = new Processors\Processor\FilesProcessor($generatedFiles, $templates, $validators);
-        $validationReader = new Replacements\Reader\ValidationReader($replacements, $this->env, $this->options);
-
-        $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile(), true);
-        $validReplacements = new Precondition\ValidReplacements($validationReader);
+        $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
+        $validReplacements = new Precondition\ValidReplacements($validationTokens);
         $checkMetaData     = new Precondition\Preconditions($metaDataExists, $validReplacements);
 
-        $processTokens     = new Command\TokenProcessor($validationReader, $fileValidator, $this->env->output());
+        $processTokens = new Command\ProcessTokens($validationTokens, $this->filesValidator(), $this->env->output());
 
         return new Command\ProtectedCommand(
             $this->commandInfo('Checking skeleton synchronization', $processTokens),

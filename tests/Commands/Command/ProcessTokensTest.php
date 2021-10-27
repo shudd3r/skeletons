@@ -12,18 +12,18 @@
 namespace Shudd3r\PackageFiles\Tests\Commands\Command;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Commands\Command\TokenProcessor;
+use Shudd3r\PackageFiles\Commands\Command\ProcessTokens;
 use Shudd3r\PackageFiles\Tests\Doubles;
 
 
-class TokenProcessorTest extends TestCase
+class ProcessTokensTest extends TestCase
 {
     public function testResolvedTokens_ArePassedToProcessor()
     {
         $reader    = new Doubles\FakeReader(true);
         $processor = new Doubles\MockedProcessor();
         $terminal  = new Doubles\MockedTerminal();
-        $command   = new TokenProcessor($reader, $processor, $terminal);
+        $command   = new ProcessTokens($reader, $processor, $terminal);
 
         $command->execute();
         $this->assertEquals($reader->token(), $processor->passedToken());
@@ -34,7 +34,7 @@ class TokenProcessorTest extends TestCase
         $reader    = new Doubles\FakeReader(false);
         $processor = new Doubles\MockedProcessor();
         $terminal  = new Doubles\MockedTerminal();
-        $command   = new TokenProcessor($reader, $processor, $terminal);
+        $command   = new ProcessTokens($reader, $processor, $terminal);
 
         $command->execute();
         $this->assertNull($processor->passedToken());
