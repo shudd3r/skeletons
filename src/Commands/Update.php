@@ -19,6 +19,9 @@ class Update extends Factory
 {
     public function command(array $options): Command
     {
+        $isInteractive = isset($options['i']) || isset($options['interactive']);
+        $metaFilename  = $this->env->metaDataFile()->name();
+
         $cache            = new TokenCache();
         $updateTokens     = new Reader\UpdateReader($this->replacements, $this->env, $options);
         $validationTokens = new Reader\ValidationReader($this->replacements, $this->env, $options);
@@ -27,16 +30,16 @@ class Update extends Factory
         $validateFiles     = new Precondition\SkeletonSynchronization($validationTokens, $this->filesValidator($cache));
         $validReplacements = new Precondition\ValidReplacements($updateTokens);
         $preconditions     = new Precondition\Preconditions(
-            $this->checkInfo('Checking meta data status', $metaDataExists),
-            $this->checkInfo('Checking skeleton synchronization', $validateFiles, false),
-            $this->checkInfo('Gathering replacement values', $validReplacements, false)
+            $this->checkInfo('Checking meta data status (`' . $metaFilename . '` should exist)', $metaDataExists),
+            $this->checkInfo('Checking skeleton files synchronization:', $validateFiles, false),
+            $this->checkInfo('Gathering replacement values', $validReplacements, !$isInteractive)
         );
 
         $saveMetaData  = new Command\SaveMetaData($updateTokens, $this->env->metaData());
         $generateFiles = new Command\ProcessTokens($updateTokens, $this->filesGenerator($cache), $this->env->output());
         $command       = new Command\CommandSequence(
-            $this->commandInfo('Generating skeleton files', $generateFiles),
-            $this->commandInfo('Generating meta data file', $saveMetaData)
+            $this->commandInfo('Updating skeleton files:', $generateFiles),
+            $this->commandInfo('Updating meta data file (`' . $metaFilename . '`)', $saveMetaData)
         );
 
         return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
