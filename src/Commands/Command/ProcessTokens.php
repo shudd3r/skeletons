@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /*
- * This file is part of Shudd3r/Package-Files package.
+ * This file is part of Shudd3r/Skeletons package.
  *
  * (c) Shudd3r <q3.shudder@gmail.com>
  *
@@ -9,12 +9,12 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Commands\Command;
+namespace Shudd3r\Skeletons\Commands\Command;
 
-use Shudd3r\PackageFiles\Commands\Command;
-use Shudd3r\PackageFiles\Replacements\Reader;
-use Shudd3r\PackageFiles\Processors\Processor;
-use Shudd3r\PackageFiles\Environment\Output;
+use Shudd3r\Skeletons\Commands\Command;
+use Shudd3r\Skeletons\Replacements\Reader;
+use Shudd3r\Skeletons\Processors\Processor;
+use Shudd3r\Skeletons\Environment\Output;
 
 
 class ProcessTokens implements Command

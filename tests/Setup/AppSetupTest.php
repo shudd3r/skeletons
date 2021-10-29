@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /*
- * This file is part of Shudd3r/Package-Files package.
+ * This file is part of Shudd3r/Skeletons package.
  *
  * (c) Shudd3r <q3.shudder@gmail.com>
  *
@@ -9,14 +9,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Setup;
+namespace Shudd3r\Skeletons\Tests\Setup;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Setup\AppSetup;
-use Shudd3r\PackageFiles\Templates;
-use Shudd3r\PackageFiles\Replacements;
-use Shudd3r\PackageFiles\Exception;
-use Shudd3r\PackageFiles\Tests\Doubles;
+use Shudd3r\Skeletons\Setup\AppSetup;
+use Shudd3r\Skeletons\Templates;
+use Shudd3r\Skeletons\Replacements;
+use Shudd3r\Skeletons\Exception;
+use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class AppSetupTest extends TestCase

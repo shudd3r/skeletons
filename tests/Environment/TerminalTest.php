@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /*
- * This file is part of Shudd3r/Package-Files package.
+ * This file is part of Shudd3r/Skeletons package.
  *
  * (c) Shudd3r <q3.shudder@gmail.com>
  *
@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles\Tests\Environment;
+namespace Shudd3r\Skeletons\Tests\Environment;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\PackageFiles\Environment;
+use Shudd3r\Skeletons\Environment;
 
 
 class TerminalTest extends TestCase

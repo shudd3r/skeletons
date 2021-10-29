@@ -11,7 +11,7 @@
     </php>
 
     <testsuites>
-        <testsuite name="Shudd3r Package-Files tests">
+        <testsuite name="Shudd3r Skeletons tests">
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>

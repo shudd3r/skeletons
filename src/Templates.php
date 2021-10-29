@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /*
- * This file is part of Shudd3r/Package-Files package.
+ * This file is part of Shudd3r/Skeletons package.
  *
  * (c) Shudd3r <q3.shudder@gmail.com>
  *
@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles;
+namespace Shudd3r\Skeletons;
 
-use Shudd3r\PackageFiles\Templates\Template;
-use Shudd3r\PackageFiles\Templates\Factory;
+use Shudd3r\Skeletons\Templates\Template;
+use Shudd3r\Skeletons\Templates\Factory;
 
 
 class Templates

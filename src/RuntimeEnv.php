@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /*
- * This file is part of Shudd3r/Package-Files package.
+ * This file is part of Shudd3r/Skeletons package.
  *
  * (c) Shudd3r <q3.shudder@gmail.com>
  *
@@ -9,15 +9,15 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles;
+namespace Shudd3r\Skeletons;
 
-use Shudd3r\PackageFiles\Environment\Input;
-use Shudd3r\PackageFiles\Environment\Output;
-use Shudd3r\PackageFiles\Environment\Terminal;
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
-use Shudd3r\PackageFiles\Environment\FileSystem\File;
-use Shudd3r\PackageFiles\Replacements\Data\ComposerJsonData;
-use Shudd3r\PackageFiles\Replacements\Data\MetaData;
+use Shudd3r\Skeletons\Environment\Input;
+use Shudd3r\Skeletons\Environment\Output;
+use Shudd3r\Skeletons\Environment\Terminal;
+use Shudd3r\Skeletons\Environment\FileSystem\Directory;
+use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Replacements\Data\ComposerJsonData;
+use Shudd3r\Skeletons\Replacements\Data\MetaData;
 
 
 class RuntimeEnv

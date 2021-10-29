@@ -1,5 +1,5 @@
 {
-    "name": "shudd3r/package-files",
+    "name": "shudd3r/skeletons",
     "description": "Skeleton template generation & synchronization for package files",
     "type": "library",
     "license": "MIT",
@@ -11,12 +11,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Shudd3r\\PackageFiles\\": "src/"
+            "Shudd3r\\Skeletons\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Shudd3r\\PackageFiles\\Tests\\": "tests/"
+            "Shudd3r\\Skeletons\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "stable",

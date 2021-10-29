@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /*
- * This file is part of Shudd3r/Package-Files package.
+ * This file is part of Shudd3r/Skeletons package.
  *
  * (c) Shudd3r <q3.shudder@gmail.com>
  *
@@ -9,14 +9,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\PackageFiles;
+namespace Shudd3r\Skeletons;
 
-use Shudd3r\PackageFiles\Setup\EnvSetup;
-use Shudd3r\PackageFiles\Setup\AppSetup;
-use Shudd3r\PackageFiles\Setup\ReplacementSetup;
-use Shudd3r\PackageFiles\Setup\TemplateSetup;
-use Shudd3r\PackageFiles\Environment\FileSystem\Directory;
-use Shudd3r\PackageFiles\Environment\Terminal;
+use Shudd3r\Skeletons\Setup\EnvSetup;
+use Shudd3r\Skeletons\Setup\AppSetup;
+use Shudd3r\Skeletons\Setup\ReplacementSetup;
+use Shudd3r\Skeletons\Setup\TemplateSetup;
+use Shudd3r\Skeletons\Environment\FileSystem\Directory;
+use Shudd3r\Skeletons\Environment\Terminal;
 use Exception;
 
 
@@ -108,7 +108,7 @@ class Application
     {
         $this->terminal->send(PHP_EOL);
         $this->terminal->send('------------------------------------------------------------' . PHP_EOL);
-        $this->terminal->send('Shudd3r/Package-Files (' . self::VERSION . ')' . PHP_EOL);
+        $this->terminal->send('Shudd3r/Skeletons (' . self::VERSION . ')' . PHP_EOL);
         $this->terminal->send('Package skeleton template & validation system' . PHP_EOL);
         $isInteractive &&
         $this->terminal->send('Interactive input mode (press ctrl-c to abort)' . PHP_EOL);
