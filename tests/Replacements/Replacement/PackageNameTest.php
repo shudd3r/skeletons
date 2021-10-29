@@ -40,7 +40,7 @@ class PackageNameTest extends TestCase
     {
         $replacement = new PackageName();
         $fallback    = new Doubles\FakeFallbackReader();
-        $env         = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('D:\dev\www\project\directory'));
+        $env         = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('www/dev/project/directory'));
         $this->assertSame('project/directory', $replacement->defaultValue($env, $fallback));
     }
 

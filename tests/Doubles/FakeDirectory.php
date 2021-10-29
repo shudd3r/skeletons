@@ -30,7 +30,7 @@ class FakeDirectory implements Directory
     public function __construct(string $path = '/fake/directory', bool $exists = true)
     {
         $this->exists = $exists;
-        $this->path   = $path;
+        $this->path   = $this->normalizedPath($path);
     }
 
     public function path(): string
@@ -83,5 +83,11 @@ class FakeDirectory implements Directory
         $filename = $file->name();
         if (isset($this->files[$filename])) { return; }
         $this->files[$filename] = $file;
+    }
+
+    private function normalizedPath(string $path): string
+    {
+        $relativePath = trim(str_replace(['\\','/'], DIRECTORY_SEPARATOR, __DIR__ . $path), DIRECTORY_SEPARATOR);
+        return dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $relativePath;
     }
 }
