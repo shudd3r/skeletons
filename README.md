@@ -19,8 +19,18 @@ standalone package that doesn't use any production dependencies,
 and php version compatibility is the only limitation.
 
 ### Installation
-You can install this package using [Composer](https://getcomposer.org/)
+Within your skeleton package use [Composer](https://getcomposer.org/)
 command:
 ``` bash
 composer require shudd3r/skeletons
 ```
+
+### Creating skeleton package example
+- Add directory with your skeleton template files structure (see: [example](tests/Fixtures/example-files/template))
+- Add CLI executable script like [docs/script-example](docs/script-example)
+- Add `"bin"` directive to composer.json pointing to that script
+  ``` json
+  {
+    "bin": ["path/to/my-skeleton"]
+  }
+  ```
