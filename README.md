@@ -6,11 +6,14 @@
 [![LICENSE](https://img.shields.io/github/license/shudd3r/skeletons.svg?color=blue)](LICENSE)
 ### Template engine for package skeletons
 
-This library allows building skeleton package scripts with
-following features:
+Skeleton packages are used to maintain **consistent structure**
+of document (license, readme etc.) and dev environment files
+**across multiple packages**. This library allows building
+skeleton package scripts with following features:
 - Generating package skeleton from template
-- Updating placeholders in existing project
-- Verifying synchronization of existing project with template
+- Verifying synchronization of existing project with chosen
+  template (as a part of [_CI_](https://en.wikipedia.org/wiki/Continuous_integration) process)
+- Updating template placeholders in existing project
 
 Neither applications nor libraries will use this package directly,
 but as a command line tool of the skeleton package they were built
