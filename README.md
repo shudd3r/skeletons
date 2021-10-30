@@ -5,3 +5,22 @@
 [![PHP version](https://img.shields.io/packagist/php-v/shudd3r/skeletons.svg)](https://packagist.org/packages/shudd3r/skeletons)
 [![LICENSE](https://img.shields.io/github/license/shudd3r/skeletons.svg?color=blue)](LICENSE)
 ### Template engine for package skeletons
+
+This library allows building skeleton package scripts with
+following features:
+- Generating package skeleton from template
+- Updating placeholders in existing project
+- Verifying synchronization of existing project with template
+
+Neither applications nor libraries will use this package directly,
+but as a command line tool of the skeleton package they were built
+with (dev dependency). To avoid conflicts this is released as a
+standalone package that doesn't use any production dependencies,
+and php version compatibility is the only limitation.
+
+### Installation
+You can install this package using [Composer](https://getcomposer.org/)
+command:
+``` bash
+composer require shudd3r/skeletons
+```
