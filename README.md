@@ -18,19 +18,21 @@ with (dev dependency). To avoid conflicts this is released as a
 standalone package that doesn't use any production dependencies,
 and php version compatibility is the only limitation.
 
-### Installation
-Within your skeleton package use [Composer](https://getcomposer.org/)
-command:
-``` bash
-composer require shudd3r/skeletons
-```
-
-### Creating skeleton package example
-- Add directory with your skeleton template files structure (see: [example](tests/Fixtures/example-files/template))
-- Add CLI executable script like [docs/script-example](docs/script-example)
+### Creating skeleton package - Basics
+Simplified steps with example script and arbitrary chosen names.
+Following sections will cover template & script files in more details.
+- Install this library as a dependency of your skeleton package
+  using [Composer](https://getcomposer.org/) command:
+  ``` bash
+  composer require shudd3r/skeletons
+  ```
+- Add `template` directory with your skeleton template files structure (see: [example](tests/Fixtures/example-files/template))
+- Add CLI executable `my-skeleton` script that might look like
+  attached [docs/script-example](docs/script-example) file
 - Add `"bin"` directive to composer.json pointing to that script
   ``` json
   {
-    "bin": ["path/to/my-skeleton"]
+    "bin": ["my-skeleton"]
   }
   ```
+- Publish skeleton package
