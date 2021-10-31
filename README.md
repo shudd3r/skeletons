@@ -43,3 +43,17 @@ Following sections will cover template & script files in more details.
   }
   ```
 - Publish skeleton package
+
+### Building projects using skeleton
+Usage of skeleton package should be explained individually in
+its README, because commands may depend on how its executable
+script was built.
+Scripts of different skeletons may vary significantly as
+they're highly customizable. The differences may come from
+command & options remapping, using only a subset of built-in
+replacements, adding custom ones or introducing custom template
+behavior for certain files.
+
+To try out **"default example"** of skeleton with built-in features only
+and straight forward command parsing check out [shudd3r/skeleton-example](https://github.com/shudd3r/skeleton-example)
+repository and follow its README instructions.
