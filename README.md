@@ -54,5 +54,46 @@ script was built.
 Scripts of different skeletons may vary significantly as
 they're highly customizable. The differences may come from
 command & options remapping, using only a subset of built-in
-replacements, adding custom ones or introducing custom template
-behavior for certain files.
+replacements, adding custom replacements or introducing
+different template behavior for certain skeleton files.
+
+### Executable script file
+Entire script that uses this library might look like
+attached [docs/script-example](docs/script-example) file.
+
+#### Setup steps
+Instantiate application:
+```php
+namespace Shudd3r\Skeletons;
+
+use Shudd3r\Skeletons\Environment\FileSystem\Directory\LocalDirectory;
+
+$package  = new LocalDirectory(get_cwd());
+$template = new LocalDirectory(__DIR__ . '/template');
+$app      = new Application($package, $template);
+```
+
+Add [`Replacement`](src/Replacements/Replacement.php) definitions
+for placeholders used in templates:
+```php
+use Shudd3r\Skeletons\Replacements\Replacement;
+
+$app->replacement('package.name')->add(new Replacement\PackageName());
+$app->replacement('repository.name')->add(new Replacement\RepositoryName('package.name'));
+$app->replacement('package.description')->add(new Replacement\PackageDescription('package.name'));
+$app->replacement('namespace.src')->add(new Replacement\SrcNamespace('package.name'));
+```
+
+Define custom [`Templates\Factory`](src/Templates/Factory.php)
+objects for selected template files:
+```php
+use Shudd3r\Skeletons\Templates\Factory;
+
+$app->template('composer.json')->add(new Factory\MergedJsonFactory());
+```
+Parse command `$args` into main `$command` and `$options` array
+and execute application:
+```php
+$exitCode = $app->run($command, $options);
+exit($exitCode);
+```
