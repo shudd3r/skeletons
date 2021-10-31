@@ -32,13 +32,13 @@ Simplified steps with example script and arbitrary chosen names.
 Following sections will cover template & script files in more details.
 - Install this library as a dependency of your skeleton package
   using [Composer](https://getcomposer.org/) command:
-  ``` bash
+  ```bash
   composer require shudd3r/skeletons
   ```
 - Add `template` directory with your skeleton [template files](#template-files)
 - Add CLI executable `my-skeleton` [script file](#executable-script-file)
 - Add `"bin"` directive to composer.json pointing to that script
-  ``` json
+  ```json
   {
     "bin": ["my-skeleton"]
   }
