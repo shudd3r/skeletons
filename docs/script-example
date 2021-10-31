@@ -1,0 +1,52 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+/*
+ * This file is part of Shudd3r/Skeletons package.
+ *
+ * (c) Shudd3r <q3.shudder@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+namespace Shudd3r\Skeletons;
+
+use Shudd3r\Skeletons\Environment\FileSystem\Directory\LocalDirectory;
+use Shudd3r\Skeletons\Replacements\Replacement;
+use Shudd3r\Skeletons\Templates\Factory;
+
+// This script should be executed from package root directory
+$rootDirectory = getcwd();
+if (!file_exists($rootDirectory . '/vendor/autoload.php')) {
+    fwrite(STDERR, 'Cannot find vendor/autoload.php file in package root directory');
+    die(1);
+}
+
+if (!file_exists($rootDirectory . '/composer.json')) {
+    fwrite(STDERR, 'Cannot find composer.json file in package root directory');
+    die(1);
+}
+
+require_once $rootDirectory . '/vendor/autoload.php';
+
+// Instantiate skeletons Application
+$skeleton = new LocalDirectory(__DIR__ . '/template');
+$package  = new LocalDirectory($rootDirectory);
+$app      = new Application($package, $skeleton);
+
+// Defining placeholder replacements
+$app->replacement('package.name')->add(new Replacement\PackageName());
+$app->replacement('repository.name')->add(new Replacement\RepositoryName('package.name'));
+$app->replacement('package.description')->add(new Replacement\PackageDescription('package.name'));
+$app->replacement('namespace.src')->add(new Replacement\SrcNamespace('package.name'));
+
+// Defining custom template factories for selected files
+$app->template('composer.json')->add(new Factory\MergedJsonFactory());
+
+// Simplified command line parsing
+$options = getopt('i', ['package:', 'repo:', 'desc:', 'ns:', 'interactive'], $commandIdx);
+$command = $argv[$commandIdx] ?? 'init';
+
+$exitCode = $app->run($command, $options);
+exit($exitCode);

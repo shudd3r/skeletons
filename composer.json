@@ -1,6 +1,6 @@
 {
     "name": "shudd3r/skeletons",
-    "description": "Skeleton template generation & synchronization for package files",
+    "description": "Template engine for package skeletons",
     "type": "library",
     "license": "MIT",
     "authors": [
