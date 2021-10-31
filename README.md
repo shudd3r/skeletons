@@ -176,3 +176,10 @@ This custom template can handle normalization of `.json` files
 like `composer.json`. The way it works cannot be briefly described,
 so check out [`MergedJsonTemplateTest`](tests/Templates/Template/MergedJsonTemplateTest.php)
 for details.
+
+### TODO features
+- [ ] `help` command
+- [ ] Handling empty directories - allow removing `.gitkeep` when files added
+- [ ] Initial "example files" - removed later, so ignored by validation
+- [ ] Initialization with untracked "dev files" (like git hooks, IDE setup)
+- [ ] Forced update - backup not synchronized files & initialize
