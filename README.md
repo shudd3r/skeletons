@@ -15,6 +15,10 @@ skeleton package scripts with following features:
   template (as a part of [_CI_](https://en.wikipedia.org/wiki/Continuous_integration) process)
 - Updating template placeholders in existing project
 
+> :warning: See [shudd3r/skeleton-example](https://github.com/shudd3r/skeleton-example)
+> repository if you got the general idea and prefer learning
+> basics from "default example".
+
 Neither applications nor libraries will use this package directly,
 but as a command line tool of the skeleton package they were built
 with (dev dependency). To avoid conflicts this is released as a
