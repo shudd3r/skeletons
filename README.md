@@ -97,3 +97,27 @@ and execute application:
 $exitCode = $app->run($command, $options);
 exit($exitCode);
 ```
+
+#### Default CLI parameters
+Available `$command` values:
+- `init`: generate file structure from skeleton template
+- `check`: verify project synchronization with used skeleton
+- `update`: change current placeholder values (synchronized package required)
+
+Application `$options`:
+- `-i`, `--interactive`: allows providing (init/update) placeholder values
+  via interactive shell
+
+Built-in placeholder value options:
+- `--package=...`: package name (Packagist)
+- `--repo=...`: remote (GitHub) repository name
+- `--desc=...`: package description
+- `--ns=...`: project's main namespace
+
+For example following command for [script-example](docs/script-example)
+would update package description:
+```bash
+vendor/bin/script-example --desc="New package description" update
+```
+With both `--interactive` and placeholder options,
+command values will become default for empty input.
