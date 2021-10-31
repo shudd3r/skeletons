@@ -35,9 +35,8 @@ Following sections will cover template & script files in more details.
   ``` bash
   composer require shudd3r/skeletons
   ```
-- Add `template` directory with your skeleton template files structure (see: [example](tests/Fixtures/example-files/template))
-- Add CLI executable `my-skeleton` script that might look like
-  attached [docs/script-example](docs/script-example) file
+- Add `template` directory with your skeleton [template files](#template-files)
+- Add CLI executable `my-skeleton` [script file](#executable-script-file)
 - Add `"bin"` directive to composer.json pointing to that script
   ``` json
   {
