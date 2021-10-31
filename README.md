@@ -121,3 +121,48 @@ vendor/bin/script-example --desc="New package description" update
 ```
 With both `--interactive` and placeholder options,
 command values will become default for empty input.
+
+### Template files
+Project file structure controlled by skeleton will
+reflect template directory, and placeholders within
+its files will be replaced.
+Template directory example can be found [here](tests/Fixtures/example-files/template)
+
+##### Placeholders
+Placeholder consists of its name surrounded by curly braces.
+Script defines what kind of replacement given placeholder
+represents:
+```php
+$app->replacement('namespace.src')->add(new Replacement\SrcNamespace());
+```
+Application will replace `{namespace.src}` with given namespace value.
+
+##### Placeholder subtypes
+Replacement, beside direct value may define its subtypes.
+For example [`SrcNamespace`](src/Replacements/Replacement/SrcNamespace.php)
+replacement defined above will also replace `{namespace.src.esc}`
+with escaped backslashes (needed for `composer.json` file),
+and [`PackageName`](src/Replacements/Replacement/PackageName.php)
+covers `{placeholder.title}` subtype, that gives package name
+with capitalized segments.
+
+##### Original Content placeholder
+`{original.content}` is a special built-in placeholder that
+represents places where project specific text might appear.
+It's useful especially for README files, where skeleton cannot
+dictate its entire content.
+Template can also define **initial "prompt" value** for it, and
+single template file can use this placeholder multiple times.
+For example README file that is expected to contain concrete
+sections might be defined as follows:
+```markdown
+![{package.name} logo]({original.content>>>https://www.example.com/images/default-logo.png<<<original.content})
+# {package.name.title}
+### {package.desc}
+{original.content>>>...Extended description here...<<<original.content}
+### Installation
+    composer require {package.name}
+{original.content}
+### Basic Usage
+{original.content>>>...<<<original.content}
+```
