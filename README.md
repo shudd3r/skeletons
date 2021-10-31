@@ -165,3 +165,14 @@ sections might be defined as follows:
 ### Basic Usage
 {original.content>>>...<<<original.content}
 ```
+
+### Custom Template processing
+Some files that change dynamically throughout project lifetime
+cannot be handled in a generic way (like README).
+This is where custom templates might be used.
+
+##### Merged Json Template
+This custom template can handle normalization of `.json` files
+like `composer.json`. The way it works cannot be briefly described,
+so check out [`MergedJsonTemplateTest`](tests/Templates/Template/MergedJsonTemplateTest.php)
+for details.
