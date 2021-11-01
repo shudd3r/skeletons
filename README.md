@@ -179,7 +179,8 @@ for details.
 
 ### TODO features
 - [ ] `help` command
-- [ ] Handling empty directories - allow removing `.gitkeep` when files added
+- [*] Handling empty directories - allow removing `.gitkeep` when files added
+- [ ] Handling `.gitattributes` in templates (blocking package import)
 - [ ] Initial "example files" - removed later, so ignored by validation
 - [ ] Initialization with untracked "dev files" (like git hooks, IDE setup)
 - [ ] Forced update - backup not synchronized files & initialize
