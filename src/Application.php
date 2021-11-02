@@ -92,7 +92,7 @@ class Application
                 $env = $this->runtimeEnv(isset($options['remote']) ? ['local', 'init'] : ['init']);
                 return new Commands\Validate($env, $this->replacements(), $this->templates($env));
             case 'update':
-                $env = $this->runtimeEnv(['init', 'local']);
+                $env = $this->runtimeEnv(['init']);
                 return new Commands\Update($env, $this->replacements(), $this->templates($env));
         }
 
