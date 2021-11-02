@@ -160,8 +160,9 @@ class ApplicationTest extends TestCase
         $this->assertCount(count($expected->files()), $givenFiles, 'Different number of files');
 
         foreach ($givenFiles as $file) {
+            $filename = str_replace('.sk_dir', '', $file->name());
             $message = 'Contents mismatch for file: ' . $file->name();
-            $this->assertSame($expected->file($file->name())->contents(), $file->contents(), $message);
+            $this->assertSame($expected->file($filename)->contents(), $file->contents(), $message);
         }
     }
 

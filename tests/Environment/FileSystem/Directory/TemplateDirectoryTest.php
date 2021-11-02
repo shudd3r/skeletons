@@ -32,6 +32,15 @@ class TemplateDirectoryTest extends TestCase
         $this->assertSame('contents', $file->contents());
     }
 
+    public function testProtectedPathsAreUnlocked()
+    {
+        $wrapped = new FakeDirectory();
+        $wrapped->addFile($this->path('.git.sk_dir/hooks/pre-commit.sk_local'), 'contents');
+
+        $files = $this->directory($wrapped)->files();
+        $this->assertFilename($this->path('.git/hooks/pre-commit'), $files[0]);
+    }
+
     public function testFilesMethod_ReturnsFilesWithoutTemplateExtensionsFromWrappedDirectory()
     {
         $directory = $this->directory($this->filesystemSetup());
@@ -87,5 +96,10 @@ class TemplateDirectoryTest extends TestCase
         $subdirectory->addFile('baz.txt.sk_local');
 
         return $directory;
+    }
+
+    private function path(string $path)
+    {
+        return str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path);
     }
 }

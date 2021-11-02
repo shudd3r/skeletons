@@ -82,11 +82,18 @@ class TemplateDirectory implements Directory
         if (!in_array($directive, $this->directives)) { return $file; }
         if (in_array($directive, $ignored)) { return null; }
 
-        return new File\RenamedFile($file, substr($filename, 0, -strlen($directive)));
+        $packageFilename = $this->unlockedPath(substr($filename, 0, -strlen($directive)));
+        return new File\RenamedFile($file, $packageFilename);
     }
 
     private function prefixedList(array $list): array
     {
         return $list ? explode(',', self::EXT . implode(',' . self::EXT, $list)) : [];
+    }
+
+    private function unlockedPath(string $filename): string
+    {
+        $protectedSuffix = self::EXT . 'dir';
+        return str_replace($protectedSuffix, '', $filename);
     }
 }
