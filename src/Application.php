@@ -22,7 +22,7 @@ use Exception;
 
 class Application
 {
-    private const VERSION = '0.1.0-alpha';
+    private const VERSION = '0.1';
 
     private EnvSetup $envSetup;
     private AppSetup $appSetup;
@@ -67,8 +67,7 @@ class Application
         $this->displayHeader($interactive && in_array($command, ['init', 'update']));
 
         try {
-            $env     = $this->envSetup->runtimeEnv($this->terminal);
-            $factory = $this->factory($command, $env);
+            $factory = $this->factory($command, $options);
             $command = $factory->command($options);
 
             $command->execute();
@@ -83,12 +82,18 @@ class Application
         return $exitCode;
     }
 
-    protected function factory(string $command, RuntimeEnv $env): Commands
+    protected function factory(string $command, array $options): Commands
     {
         switch ($command) {
-            case 'init':   return new Commands\Initialize($env, $this->replacements(), $this->templates($env));
-            case 'check':  return new Commands\Validate($env, $this->replacements(), $this->templates($env));
-            case 'update': return new Commands\Update($env, $this->replacements(), $this->templates($env));
+            case 'init':
+                $env = $this->runtimeEnv();
+                return new Commands\Initialize($env, $this->replacements(), $this->templates($env));
+            case 'check':
+                $env = $this->runtimeEnv(isset($options['remote']) ? ['local', 'init'] : ['init']);
+                return new Commands\Validate($env, $this->replacements(), $this->templates($env));
+            case 'update':
+                $env = $this->runtimeEnv(['init', 'local']);
+                return new Commands\Update($env, $this->replacements(), $this->templates($env));
         }
 
         throw new Exception("Unknown `{$command}` command");
@@ -97,6 +102,11 @@ class Application
     private function replacements(): Replacements
     {
         return $this->appSetup->replacements();
+    }
+
+    private function runtimeEnv(array $ignoreTemplates = []): RuntimeEnv
+    {
+        return $this->envSetup->runtimeEnv($this->terminal, $ignoreTemplates);
     }
 
     private function templates(RuntimeEnv $env): Templates
