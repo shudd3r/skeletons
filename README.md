@@ -106,6 +106,9 @@ Available `$command` values:
 Application `$options`:
 - `-i`, `--interactive`: allows providing (init/update) placeholder values
   via interactive shell
+- `--remote`: should be used with `check` command to validate skeleton
+  synchronization of deployed package, where not all generated files are
+  deployed.
 
 Built-in placeholder value options:
 - `--package=...`: package name (Packagist)
@@ -126,6 +129,20 @@ Project file structure controlled by skeleton will
 reflect template directory, and placeholders within
 its files will be replaced.
 Template directory example can be found [here](tests/Fixtures/example-files/template)
+
+##### Directive suffixes
+Behavior of some template files can be modified by adding
+a suffix to their names:
+- `.sk_init` - files generated at initialization only, not verified.
+  Usually used for example files.
+- `.sk_local` - untracked, local dev environment files. Generated &
+  updated, but not verified on remote environments.
+- `.sk_file` - deactivates files processed by remote workflows.
+  For example `.gitignore` file cannot be safely deployed as a part
+  of skeleton, because it could make other skeleton files untracked. 
+- `.sk_dir` - similar to `.sk_file` in context of directories.
+  For example `.git` directory cannot be deployed. Such directory
+  is expected to contain `.sk_local` or `.sk_init` files.
 
 ##### Placeholders
 Placeholder consists of its name surrounded by curly braces.
@@ -179,8 +196,9 @@ for details.
 
 ### TODO features
 - [ ] `help` command
-- [*] Handling empty directories - allow removing `.gitkeep` when files added
-- [ ] Handling `.gitattributes` in templates (blocking package import)
-- [ ] Initial "example files" - removed later, so ignored by validation
-- [ ] Initialization with untracked "dev files" (like git hooks, IDE setup)
-- [ ] Forced update - backup not synchronized files & initialize
+- [x] Handling empty directories - allow removing `.gitkeep` when files added
+- [x] Handling `.gitattributes` in templates (blocking package import)
+- [x] Initial "example files" - removed later, so ignored by validation
+- [x] Handling untracked "dev files" like git hooks, IDE setup, etc.
+- [ ] Re-initialization regenerating missing (local) files with meta-data.
+- [ ] Forced update - backup & generate not synchronized or missing files

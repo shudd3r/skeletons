@@ -34,15 +34,16 @@ class EnvSetup
         $this->skeleton = $skeleton;
     }
 
-    public function runtimeEnv(Terminal $terminal): RuntimeEnv
+    public function runtimeEnv(Terminal $terminal, array $ignoredTemplates = []): RuntimeEnv
     {
         $this->validateDirectory($this->package, 'package');
         $this->validateDirectory($this->skeleton, 'skeleton');
 
+        $skeleton = new Directory\TemplateDirectory($this->skeleton, $ignoredTemplates);
         $backup   = $this->backup ?? $this->package->subdirectory(self::BACKUP_DIR);
         $metaFile = $this->metaFile ?? $this->package->file(self::META_FILE);
 
-        return new RuntimeEnv($this->package, $this->skeleton, $terminal, $backup, $metaFile);
+        return new RuntimeEnv($this->package, $skeleton, $terminal, $backup, $metaFile);
     }
 
     public function setBackupDirectory(Directory $backup): void

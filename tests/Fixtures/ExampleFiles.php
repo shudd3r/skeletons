@@ -28,7 +28,7 @@ class ExampleFiles
     {
         $fakeDirectory = new FakeDirectory('/' . $name);
         foreach ($this->directory->subdirectory($name)->files() as $file) {
-            $fakeDirectory->addFile(str_replace('\\', '/', $file->name()), $file->contents());
+            $fakeDirectory->addFile($this->normalizedName($file->name()), $file->contents());
         }
 
         return $fakeDirectory;
@@ -37,5 +37,10 @@ class ExampleFiles
     public function contentsOf(string $filename): string
     {
         return $this->directory->file($filename)->contents();
+    }
+
+    private function normalizedName(string $name): string
+    {
+        return str_replace(['\\', '.sk_tests'], ['/', ''], $name);
     }
 }

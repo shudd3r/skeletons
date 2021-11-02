@@ -1,5 +1,3 @@
 /.idea/
 /vendor/
 /build/
-/temp/
-/composer.lock

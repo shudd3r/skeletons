@@ -13,6 +13,7 @@
     <testsuites>
         <testsuite name="Shudd3r Skeletons tests">
             <directory>./tests/</directory>
+            <exclude>./tests/Fixtures</exclude>
         </testsuite>
     </testsuites>
     <coverage>

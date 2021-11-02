@@ -91,16 +91,16 @@ class ApplicationTest extends TestCase
         $this->assertSameFiles($package, 'package');
     }
 
-    public function testInitializedPackage_IsValid()
+    public function testInitializedPackageWithLocalFiles_IsValidForLocalCheck()
     {
         $app = $this->app(self::$files->directory('package-initialized'));
         $this->assertSame(0, $app->run('check'));
     }
 
-    public function testSynchronizedPackage_IsValid()
+    public function testSynchronizedPackageWithoutLocalFiles_IsValidForRemoteCheck()
     {
         $app = $this->app(self::$files->directory('package-synchronized'));
-        $this->assertSame(0, $app->run('check'));
+        $this->assertSame(0, $app->run('check', ['remote' => true]));
     }
 
     public function testDesynchronizedPackage_IsInvalid()
@@ -160,8 +160,9 @@ class ApplicationTest extends TestCase
         $this->assertCount(count($expected->files()), $givenFiles, 'Different number of files');
 
         foreach ($givenFiles as $file) {
+            $filename = str_replace('.sk_dir', '', $file->name());
             $message = 'Contents mismatch for file: ' . $file->name();
-            $this->assertSame($expected->file($file->name())->contents(), $file->contents(), $message);
+            $this->assertSame($expected->file($filename)->contents(), $file->contents(), $message);
         }
     }
 
