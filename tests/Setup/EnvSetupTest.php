@@ -14,6 +14,7 @@ namespace Shudd3r\Skeletons\Tests\Setup;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Setup\EnvSetup;
 use Shudd3r\Skeletons\Replacements\Data;
+use Shudd3r\Skeletons\Environment\FileSystem\Directory;
 use Shudd3r\Skeletons\Exception;
 use Shudd3r\Skeletons\Tests\Doubles;
 
@@ -32,9 +33,9 @@ class EnvSetupTest extends TestCase
         $setup->setMetaFile($filename);
         $setup->setBackupDirectory($backup);
 
-        $env = $setup->runtimeEnv($terminal);
+        $env = $setup->runtimeEnv($terminal, ['local']);
         $this->assertSame($package, $env->package());
-        $this->assertSame($skeleton, $env->skeleton());
+        $this->assertEquals(new Directory\TemplateDirectory($skeleton, ['local']), $env->skeleton());
         $this->assertSame($terminal, $env->output());
         $this->assertSame($terminal, $env->input());
         $this->assertSame($backup, $env->backup());
