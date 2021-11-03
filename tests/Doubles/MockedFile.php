@@ -12,17 +12,20 @@
 namespace Shudd3r\Skeletons\Tests\Doubles;
 
 use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\FileSystem\Paths;
 
 
 class MockedFile implements File
 {
+    use Paths;
+
     private string        $name;
     private FakeDirectory $root;
     private ?string       $contents;
 
     public function __construct(?string $contents = '', string $name = 'file.txt', FakeDirectory $root = null)
     {
-        $this->name     = $name;
+        $this->name     = $this->normalized($name);
         $this->root     = $root ?? new FakeDirectory();
         $this->contents = $contents;
     }

@@ -21,14 +21,14 @@ class ExampleFiles
 
     public function __construct(string $directory)
     {
-        $this->directory = new Directory\LocalDirectory(__DIR__ . DIRECTORY_SEPARATOR . $directory);
+        $this->directory = new Directory\LocalDirectory(__DIR__ . '/' . $directory);
     }
 
     public function directory(string $name): FakeDirectory
     {
-        $fakeDirectory = new FakeDirectory('/' . $name);
+        $fakeDirectory = new FakeDirectory('/root/directory/' . $name);
         foreach ($this->directory->subdirectory($name)->files() as $file) {
-            $fakeDirectory->addFile($this->normalizedName($file->name()), $file->contents());
+            $fakeDirectory->addFile($this->productionName($file->name()), $file->contents());
         }
 
         return $fakeDirectory;
@@ -39,8 +39,8 @@ class ExampleFiles
         return $this->directory->file($filename)->contents();
     }
 
-    private function normalizedName(string $name): string
+    private function productionName(string $name): string
     {
-        return str_replace(['\\', '.sk_tests'], ['/', ''], $name);
+        return str_replace('.sk_tests', '', $name);
     }
 }

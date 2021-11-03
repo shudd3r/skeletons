@@ -12,17 +12,20 @@
 namespace Shudd3r\Skeletons\Environment\FileSystem\File;
 
 use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\FileSystem\Paths;
 
 
 class RenamedFile implements File
 {
+    use Paths;
+
     private File   $file;
     private string $name;
 
     public function __construct(File $file, string $name)
     {
         $this->file = $file;
-        $this->name = $name;
+        $this->name = $this->normalized($name);
     }
 
     public function name(): string

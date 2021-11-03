@@ -15,7 +15,8 @@ namespace Shudd3r\Skeletons\Environment\FileSystem;
 interface File
 {
     /**
-     * @return string filename path relative to root directory
+     * @return string filename path relative to instance root directory
+     *                normalized to forward slash "/" separator
      */
     public function name(): string;
 

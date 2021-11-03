@@ -106,13 +106,12 @@ class LocalFileTest extends LocalFileSystemTests
 
     public function pathNormalizations(): array
     {
-        $ds = DIRECTORY_SEPARATOR;
         return [
             ['file\\', "file"],
             ['file.tmp/', "file.tmp"],
-            ['\\\\Foo.tmp/file/', "Foo.tmp{$ds}file"],
-            ['/Foo/Bar\\baz.tmp\\', "Foo{$ds}Bar{$ds}baz.tmp"],
-            ['/Foo\\Bar/file.tmp', "Foo{$ds}Bar{$ds}file.tmp"]
+            ['\\\\Foo.tmp/file/', "Foo.tmp/file"],
+            ['/Foo/Bar\\baz.tmp\\', "Foo/Bar/baz.tmp"],
+            ['/Foo\\Bar/file.tmp', "Foo/Bar/file.tmp"]
         ];
     }
 }

@@ -13,11 +13,14 @@ namespace Shudd3r\Skeletons\Tests\Doubles;
 
 use Shudd3r\Skeletons\Environment\FileSystem\Directory;
 use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\FileSystem\Paths;
 use Exception;
 
 
 class FakeDirectory implements Directory
 {
+    use Paths;
+
     private string $path;
     private bool   $exists;
 
@@ -30,7 +33,7 @@ class FakeDirectory implements Directory
     public function __construct(string $path = '/fake/directory', bool $exists = true)
     {
         $this->exists = $exists;
-        $this->path   = $this->normalizedPath($path);
+        $this->path   = $this->normalized($path, DIRECTORY_SEPARATOR, true);
     }
 
     public function path(): string
@@ -71,6 +74,8 @@ class FakeDirectory implements Directory
 
     public function addFile(string $name, ?string $contents = ''): void
     {
+        $name = $this->normalized($name);
+
         if (isset($this->files[$name])) {
             throw new Exception('File already added');
         }
@@ -83,11 +88,5 @@ class FakeDirectory implements Directory
         $filename = $file->name();
         if (isset($this->files[$filename])) { return; }
         $this->files[$filename] = $file;
-    }
-
-    private function normalizedPath(string $path): string
-    {
-        $relativePath = trim(str_replace(['\\','/'], DIRECTORY_SEPARATOR, __DIR__ . $path), DIRECTORY_SEPARATOR);
-        return dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $relativePath;
     }
 }

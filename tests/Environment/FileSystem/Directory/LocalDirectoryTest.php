@@ -12,18 +12,10 @@
 namespace Shudd3r\Skeletons\Tests\Environment\FileSystem\Directory;
 
 use Shudd3r\Skeletons\Tests\Environment\FileSystem\LocalFileSystemTests;
-use Shudd3r\Skeletons\Environment\FileSystem;
 
 
 class LocalDirectoryTest extends LocalFileSystemTests
 {
-    public function testInstantiation()
-    {
-        $directory = new FileSystem\Directory\LocalDirectory(self::$root . DIRECTORY_SEPARATOR . 'test');
-        $this->assertEquals(self::directory('test'), $directory);
-        $this->assertInstanceOf(FileSystem\Directory::class, $directory);
-    }
-
     public function testPathMethod_ReturnsPathProperty()
     {
         $this->assertSame(self::$root . DIRECTORY_SEPARATOR . 'test', self::directory('test')->path());

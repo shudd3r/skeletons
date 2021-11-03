@@ -13,17 +13,20 @@ namespace Shudd3r\Skeletons\Environment\FileSystem\File;
 
 use Shudd3r\Skeletons\Environment\FileSystem\File;
 use Shudd3r\Skeletons\Environment\FileSystem\Directory;
+use Shudd3r\Skeletons\Environment\FileSystem\Paths;
 
 
 class LocalFile implements File
 {
+    use Paths;
+
     private string $name;
     private string $path;
 
     public function __construct(Directory $rootDir, string $name)
     {
-        $this->name = trim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $name), DIRECTORY_SEPARATOR);
-        $this->path = $rootDir->path() . DIRECTORY_SEPARATOR . $this->name;
+        $this->name = $this->normalized($name);
+        $this->path = $rootDir->path() . DIRECTORY_SEPARATOR . $this->normalized($name, DIRECTORY_SEPARATOR);
     }
 
     public function name(): string

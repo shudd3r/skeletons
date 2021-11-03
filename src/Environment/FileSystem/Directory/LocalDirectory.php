@@ -13,15 +13,18 @@ namespace Shudd3r\Skeletons\Environment\FileSystem\Directory;
 
 use Shudd3r\Skeletons\Environment\FileSystem\Directory;
 use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\FileSystem\Paths;
 
 
 class LocalDirectory implements Directory
 {
+    use Paths;
+
     private string $path;
 
     public function __construct(string $path)
     {
-        $this->path = rtrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
+        $this->path = $this->normalized($path, DIRECTORY_SEPARATOR, true);
     }
 
     public function path(): string
