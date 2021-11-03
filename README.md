@@ -130,7 +130,7 @@ reflect template directory, and placeholders within
 its files will be replaced.
 Template directory example can be found [here](tests/Fixtures/example-files/template)
 
-##### Directive suffixes
+#### Directive suffixes
 Behavior of some template files can be modified by adding
 a suffix to their names:
 - `.sk_init` - files generated at initialization only, not verified.
@@ -144,7 +144,7 @@ a suffix to their names:
   For example `.git` directory cannot be deployed. Such directory
   is expected to contain `.sk_local` or `.sk_init` files.
 
-##### Placeholders
+#### Placeholders
 Placeholder consists of its name surrounded by curly braces.
 Script defines what kind of replacement given placeholder
 represents:
@@ -162,7 +162,7 @@ and [`PackageName`](src/Replacements/Replacement/PackageName.php)
 covers `{placeholder.title}` subtype, that gives package name
 with capitalized segments.
 
-##### Original Content placeholder
+###### Original Content placeholder
 `{original.content}` is a special built-in placeholder that
 represents places where project specific text might appear.
 It's useful especially for README files, where skeleton cannot
@@ -183,7 +183,7 @@ sections might be defined as follows:
 {original.content>>>...<<<original.content}
 ```
 
-### Custom Template processing
+#### Custom Template processing
 Some files that change dynamically throughout project lifetime
 cannot be handled in a generic way (like README).
 This is where custom templates might be used.
