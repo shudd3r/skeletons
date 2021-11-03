@@ -43,6 +43,14 @@ class AppSetupTest extends TestCase
         $setup->addReplacement('foo', new Doubles\FakeReplacement());
     }
 
+    public function testOverwritingBuiltInReplacement_ThrowsException()
+    {
+        $setup = new AppSetup();
+
+        $this->expectException(Exception\ReplacementOverwriteException::class);
+        $setup->addReplacement('original.content', new Doubles\FakeReplacement());
+    }
+
     public function testCreatingTemplatesClassWithGivenTemplateFactoryInstances()
     {
         $setup = new AppSetup();

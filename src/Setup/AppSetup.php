@@ -35,8 +35,14 @@ class AppSetup
 
     public function addReplacement(string $placeholder, Replacement $replacement): void
     {
+        if ($placeholder === Replacements\Token\OriginalContents::PLACEHOLDER) {
+            $message = "Overwritten built-in `$placeholder` placeholder replacement - use different name";
+            throw new Exception\ReplacementOverwriteException($message);
+        }
+
         if (isset($this->replacements[$placeholder])) {
-            throw new Exception\ReplacementOverwriteException();
+            $message = "Duplicated definition for `$placeholder` placeholder replacement";
+            throw new Exception\ReplacementOverwriteException($message);
         }
         $this->replacements[$placeholder] = $replacement;
     }
@@ -44,7 +50,8 @@ class AppSetup
     public function addTemplate(string $filename, Templates\Factory $template): void
     {
         if (isset($this->templates[$filename])) {
-            throw new Exception\TemplateOverwriteException();
+            $message = "Duplicated definition of `$filename` template";
+            throw new Exception\TemplateOverwriteException($message);
         }
         $this->templates[$filename] = $template;
     }
