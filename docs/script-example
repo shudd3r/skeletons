@@ -45,7 +45,7 @@ $app->replacement('namespace.src')->add(new Replacement\SrcNamespace('package.na
 $app->template('composer.json')->add(new Factory\MergedJsonFactory());
 
 // Simplified command line parsing
-$options = getopt('i', ['package:', 'repo:', 'desc:', 'ns:', 'interactive'], $commandIdx);
+$options = getopt('i', ['package:', 'repo:', 'desc:', 'ns:', 'interactive', 'remote'], $commandIdx);
 $command = $argv[$commandIdx] ?? 'init';
 
 $exitCode = $app->run($command, $options);
