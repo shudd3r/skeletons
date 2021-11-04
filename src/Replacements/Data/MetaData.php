@@ -11,7 +11,7 @@
 
 namespace Shudd3r\Skeletons\Replacements\Data;
 
-use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\Files\File;
 
 
 class MetaData

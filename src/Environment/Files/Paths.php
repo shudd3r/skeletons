@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Environment\FileSystem;
+namespace Shudd3r\Skeletons\Environment\Files;
 
 
 trait Paths

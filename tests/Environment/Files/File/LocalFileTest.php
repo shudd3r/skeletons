@@ -9,19 +9,19 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Tests\Environment\FileSystem\File;
+namespace Shudd3r\Skeletons\Tests\Environment\Files\File;
 
-use Shudd3r\Skeletons\Tests\Environment\FileSystem\LocalFileSystemTests;
-use Shudd3r\Skeletons\Environment\FileSystem;
+use Shudd3r\Skeletons\Tests\Environment\Files\LocalFileSystemTests;
+use Shudd3r\Skeletons\Environment\Files;
 
 
 class LocalFileTest extends LocalFileSystemTests
 {
     public function testInstantiation()
     {
-        $file = new FileSystem\File\LocalFile(self::directory(), 'test.tmp');
+        $file = new Files\File\LocalFile(self::directory(), 'test.tmp');
         $this->assertEquals(self::file('test.tmp'), $file);
-        $this->assertInstanceOf(FileSystem\File::class, $file);
+        $this->assertInstanceOf(Files\File::class, $file);
     }
 
     public function testPathMethod_ReturnsPathProperty()

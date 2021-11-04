@@ -12,7 +12,7 @@
 
 namespace Shudd3r\Skeletons;
 
-use Shudd3r\Skeletons\Environment\FileSystem\Directory\LocalDirectory;
+use Shudd3r\Skeletons\Environment\Files\Directory\LocalDirectory;
 use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Templates\Factory;
 

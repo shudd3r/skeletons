@@ -12,7 +12,7 @@
 namespace Shudd3r\Skeletons\Commands\Precondition;
 
 use Shudd3r\Skeletons\Commands\Precondition;
-use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\Files\File;
 
 
 class CheckFileExists implements Precondition

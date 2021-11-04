@@ -12,7 +12,7 @@
 namespace Shudd3r\Skeletons\Commands\Precondition;
 
 use Shudd3r\Skeletons\Commands\Precondition;
-use Shudd3r\Skeletons\Environment\FileSystem\Directory;
+use Shudd3r\Skeletons\Environment\Files\Directory;
 
 
 class CheckFilesOverwrite implements Precondition

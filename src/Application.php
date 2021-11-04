@@ -15,7 +15,7 @@ use Shudd3r\Skeletons\Setup\EnvSetup;
 use Shudd3r\Skeletons\Setup\AppSetup;
 use Shudd3r\Skeletons\Setup\ReplacementSetup;
 use Shudd3r\Skeletons\Setup\TemplateSetup;
-use Shudd3r\Skeletons\Environment\FileSystem\Directory;
+use Shudd3r\Skeletons\Environment\Files\Directory;
 use Shudd3r\Skeletons\Environment\Terminal;
 use Exception;
 

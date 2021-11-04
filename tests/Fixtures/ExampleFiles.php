@@ -11,7 +11,7 @@
 
 namespace Shudd3r\Skeletons\Tests\Fixtures;
 
-use Shudd3r\Skeletons\Environment\FileSystem\Directory;
+use Shudd3r\Skeletons\Environment\Files\Directory;
 use Shudd3r\Skeletons\Tests\Doubles\FakeDirectory;
 
 

@@ -12,7 +12,7 @@
 namespace Shudd3r\Skeletons\Commands;
 
 use Shudd3r\Skeletons\Replacements\Reader\InitialReader;
-use Shudd3r\Skeletons\Environment\FileSystem\Directory;
+use Shudd3r\Skeletons\Environment\Files\Directory;
 
 
 class Initialize extends Factory

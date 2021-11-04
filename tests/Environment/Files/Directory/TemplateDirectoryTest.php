@@ -9,11 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Tests\Environment\FileSystem\Directory;
+namespace Shudd3r\Skeletons\Tests\Environment\Files\Directory;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\Skeletons\Environment\FileSystem\Directory\TemplateDirectory;
-use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\Files\Directory\TemplateDirectory;
+use Shudd3r\Skeletons\Environment\Files\File;
 use Shudd3r\Skeletons\Tests\Doubles\FakeDirectory;
 
 

@@ -14,8 +14,8 @@ namespace Shudd3r\Skeletons;
 use Shudd3r\Skeletons\Environment\Input;
 use Shudd3r\Skeletons\Environment\Output;
 use Shudd3r\Skeletons\Environment\Terminal;
-use Shudd3r\Skeletons\Environment\FileSystem\Directory;
-use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\Files\Directory;
+use Shudd3r\Skeletons\Environment\Files\File;
 use Shudd3r\Skeletons\Replacements\Data\ComposerJsonData;
 use Shudd3r\Skeletons\Replacements\Data\MetaData;
 

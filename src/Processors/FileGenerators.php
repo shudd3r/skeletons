@@ -14,7 +14,7 @@ namespace Shudd3r\Skeletons\Processors;
 use Shudd3r\Skeletons\Processors;
 use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\Templates\Template;
-use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\Files\File;
 use Shudd3r\Skeletons\Replacements\TokenCache;
 use Shudd3r\Skeletons\Environment\Output;
 

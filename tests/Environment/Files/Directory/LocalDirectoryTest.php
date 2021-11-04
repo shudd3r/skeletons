@@ -9,9 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Tests\Environment\FileSystem\Directory;
+namespace Shudd3r\Skeletons\Tests\Environment\Files\Directory;
 
-use Shudd3r\Skeletons\Tests\Environment\FileSystem\LocalFileSystemTests;
+use Shudd3r\Skeletons\Tests\Environment\Files\LocalFileSystemTests;
 
 
 class LocalDirectoryTest extends LocalFileSystemTests

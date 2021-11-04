@@ -9,11 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Environment\FileSystem\Directory;
+namespace Shudd3r\Skeletons\Environment\Files\Directory;
 
-use Shudd3r\Skeletons\Environment\FileSystem\Directory;
-use Shudd3r\Skeletons\Environment\FileSystem\File;
-use Shudd3r\Skeletons\Environment\FileSystem\Paths;
+use Shudd3r\Skeletons\Environment\Files\Directory;
+use Shudd3r\Skeletons\Environment\Files\File;
+use Shudd3r\Skeletons\Environment\Files\Paths;
 
 
 class LocalDirectory implements Directory
