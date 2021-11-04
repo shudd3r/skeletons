@@ -29,7 +29,7 @@ class BackupFiles implements Command
 
     public function execute(): void
     {
-        foreach ($this->expected->files() as $expectedFile) {
+        foreach ($this->expected->fileList() as $expectedFile) {
             if (!$expectedFile->exists()) { continue; }
             $this->copyToBackupDirectory($expectedFile);
         }

@@ -54,7 +54,7 @@ class TemplateDirectory implements Directory
         return $this->templateFiles[$filename] ?? $this->skeleton->file($filename);
     }
 
-    public function files(): array
+    public function fileList(): array
     {
         return array_values($this->templateFiles ??= $this->templateFiles());
     }
@@ -64,7 +64,7 @@ class TemplateDirectory implements Directory
         $ignored = $this->prefixedList($this->ignored);
 
         $files = [];
-        foreach ($this->skeleton->files() as $originalFile) {
+        foreach ($this->skeleton->fileList() as $originalFile) {
             if (!$file = $this->templateFile($originalFile, $ignored)) { continue; }
             $files[$file->name()] = $file;
         }

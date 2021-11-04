@@ -46,10 +46,10 @@ class ReflectedDirectory implements Directory
         return $this->target->file($filename);
     }
 
-    public function files(): array
+    public function fileList(): array
     {
         $targetFiles = [];
-        foreach ($this->origin->files() as $originFile) {
+        foreach ($this->origin->fileList() as $originFile) {
             if (!$originFile->exists()) { continue; }
             $targetFiles[] = $this->target->file($originFile->name());
         }

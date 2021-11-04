@@ -34,7 +34,7 @@ class FilesProcessor implements Processor
     public function process(Token $token): bool
     {
         $status = true;
-        foreach ($this->generated->files() as $packageFile) {
+        foreach ($this->generated->fileList() as $packageFile) {
             $template  = $this->templates->template($packageFile->name());
             $processor = $this->processors->processor($template, $packageFile);
             $status    = $processor->process($token) && $status;

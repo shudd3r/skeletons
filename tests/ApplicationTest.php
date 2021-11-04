@@ -156,8 +156,8 @@ class ApplicationTest extends TestCase
         $expected = self::$files->directory($fixturesDirectory);
         if ($addMetaFile) { $this->addMetaFile($expected); }
 
-        $givenFiles = $package->files();
-        $this->assertCount(count($expected->files()), $givenFiles, 'Different number of files');
+        $givenFiles = $package->fileList();
+        $this->assertCount(count($expected->fileList()), $givenFiles, 'Different number of files');
 
         foreach ($givenFiles as $file) {
             $filename = str_replace('.sk_dir', '', $file->name());

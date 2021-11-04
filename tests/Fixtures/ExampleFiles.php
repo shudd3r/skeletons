@@ -27,7 +27,7 @@ class ExampleFiles
     public function directory(string $name): FakeDirectory
     {
         $fakeDirectory = new FakeDirectory('/root/directory/' . $name);
-        foreach ($this->directory->subdirectory($name)->files() as $file) {
+        foreach ($this->directory->subdirectory($name)->fileList() as $file) {
             $fakeDirectory->addFile($this->productionName($file->name()), $file->contents());
         }
 

@@ -28,8 +28,8 @@ class ReflectedDirectoryTest extends TestCase
         $origin->addFile('foo.txt');
         $origin->addFile('foo/bar.txt');
 
-        $this->assertEquals([], $root->files());
-        $this->assertEquals([$root->file('foo.txt'), $root->file('foo/bar.txt')], $reflected->files());
+        $this->assertEquals([], $root->fileList());
+        $this->assertEquals([$root->file('foo.txt'), $root->file('foo/bar.txt')], $reflected->fileList());
     }
 
     public function testPath_ReturnsRootPath()
@@ -81,6 +81,6 @@ class ReflectedDirectoryTest extends TestCase
 
         $newSource = new ReflectedDirectory($root, $source);
         $expected  = [new MockedFile(null, 'foo.txt', $root), new MockedFile('root', 'baz.txt', $root)];
-        $this->assertEquals($expected, $newSource->files());
+        $this->assertEquals($expected, $newSource->fileList());
     }
 }

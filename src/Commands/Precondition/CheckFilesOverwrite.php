@@ -28,7 +28,7 @@ class CheckFilesOverwrite implements Precondition
 
     public function isFulfilled(): bool
     {
-        foreach ($this->destination->files() as $file) {
+        foreach ($this->destination->fileList() as $file) {
             if ($file->exists() !== $this->expected) { return false; }
         }
 

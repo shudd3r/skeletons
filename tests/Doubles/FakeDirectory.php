@@ -56,10 +56,10 @@ class FakeDirectory implements Directory
         return $this->files[$filename] ?? new MockedFile(null, $filename, $this);
     }
 
-    public function files(): array
+    public function fileList(): array
     {
         foreach ($this->subdirectories as $dirname => $directory) {
-            foreach ($directory->files() as $file) {
+            foreach ($directory->fileList() as $file) {
                 $this->addFile($dirname . '/' . $file->name(), $file->contents());
             }
         }

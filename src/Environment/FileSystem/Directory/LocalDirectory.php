@@ -47,7 +47,7 @@ class LocalDirectory implements Directory
         return new File\LocalFile($this, $filename);
     }
 
-    public function files(): array
+    public function fileList(): array
     {
         return $this->exists() ? $this->directoryTreeFiles() : [];
     }

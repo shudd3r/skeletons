@@ -11,8 +11,10 @@
 
 namespace Shudd3r\Skeletons\Environment\FileSystem;
 
+use Shudd3r\Skeletons\Environment\Files;
 
-interface Directory
+
+interface Directory extends Files
 {
     /**
      * @return string absolute path to directory
@@ -28,15 +30,4 @@ interface Directory
      */
     public function subdirectory(string $name): Directory;
 
-    /**
-     * @param string $filename file basename or relative file path
-     *
-     * @return File
-     */
-    public function file(string $filename): File;
-
-    /**
-     * @return File[]
-     */
-    public function files(): array;
 }
