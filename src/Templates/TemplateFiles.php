@@ -17,25 +17,18 @@ use Shudd3r\Skeletons\Environment\Files\File;
 
 class TemplateFiles implements Files
 {
-    private const EXT = '.sk_';
-
     private Files $skeleton;
     private array $files;
-    private array $directives;
-
-    private array $typeIndex = [
-        'file'  => [],
-        'local' => [],
-        'init'  => []
-    ];
+    private array $typeIndex;
 
     private array $filter    = [];
     private bool  $inclusive = false;
 
-    public function __construct(Files $skeleton)
+    public function __construct(Files $skeleton, array $files, array $typeIndex)
     {
-        $this->skeleton   = $skeleton;
-        $this->directives = $this->directives();
+        $this->skeleton  = $skeleton;
+        $this->files     = $files;
+        $this->typeIndex = $typeIndex;
     }
 
     public function withFilter(array $types, bool $inclusive): self
@@ -50,8 +43,7 @@ class TemplateFiles implements Files
 
     public function file(string $filename): File
     {
-        $files = $this->files ??= $this->templateFiles();
-        return $files[$filename] ?? $this->skeleton->file($filename);
+        return $this->files[$filename] ?? $this->skeleton->file($filename);
     }
 
     public function fileList(): array
@@ -61,7 +53,6 @@ class TemplateFiles implements Files
 
     private function filteredFiles(): array
     {
-        $this->files ??= $this->templateFiles();
         if (!$this->filter) { return $this->files; }
 
         $filenames = [];
@@ -71,44 +62,5 @@ class TemplateFiles implements Files
 
         $index = array_flip($filenames);
         return $this->inclusive ? array_intersect_key($this->files, $index) : array_diff_key($this->files, $index);
-    }
-
-    private function templateFiles(): array
-    {
-        $files = [];
-        foreach ($this->skeleton->fileList() as $originalFile) {
-            $originalName = $originalFile->name();
-            $filename     = $this->targetPath($originalName);
-            $direct       = $originalName === $filename;
-            $files[$filename] = $direct ? $originalFile : new Files\File\RenamedFile($originalFile, $filename);
-        }
-
-        return $files;
-    }
-
-    private function targetPath(string $filename): string
-    {
-        $extFound = strrpos($filename, self::EXT);
-        if (!$extFound) { return $filename; }
-
-        $directive = substr($filename, $extFound);
-        if (!in_array($directive, $this->directives)) { return $filename; }
-        $filename = $this->unlockedPath(substr($filename, 0, -strlen($directive)));
-
-        $type = substr($directive, strlen(self::EXT));
-        $this->typeIndex[$type][] = $filename;
-
-        return $filename;
-    }
-
-    private function directives(): array
-    {
-        return explode(',', self::EXT . implode(',' . self::EXT, array_keys($this->typeIndex)));
-    }
-
-    private function unlockedPath(string $filename): string
-    {
-        $protectedSuffix = self::EXT . 'dir';
-        return str_replace($protectedSuffix, '', $filename);
     }
 }
