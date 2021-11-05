@@ -13,7 +13,7 @@ namespace Shudd3r\Skeletons\Tests\Doubles;
 
 use Shudd3r\Skeletons\Processors;
 use Shudd3r\Skeletons\Templates\Template;
-use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\Files\File;
 
 
 class MockedProcessors implements Processors

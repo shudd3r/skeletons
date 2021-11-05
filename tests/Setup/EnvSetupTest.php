@@ -14,7 +14,7 @@ namespace Shudd3r\Skeletons\Tests\Setup;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Setup\EnvSetup;
 use Shudd3r\Skeletons\Replacements\Data;
-use Shudd3r\Skeletons\Environment\FileSystem\Directory;
+use Shudd3r\Skeletons\Environment\Files\Directory;
 use Shudd3r\Skeletons\Exception;
 use Shudd3r\Skeletons\Tests\Doubles;
 

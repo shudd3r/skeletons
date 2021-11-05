@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Tests\Environment\FileSystem;
+namespace Shudd3r\Skeletons\Tests\Environment\Files;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\Skeletons\Environment\FileSystem;
+use Shudd3r\Skeletons\Environment\Files;
 
 
 class LocalFileSystemTests extends TestCase
@@ -40,15 +40,15 @@ class LocalFileSystemTests extends TestCase
         return array_map(fn($dirname) => self::directory($dirname), $names);
     }
 
-    protected static function file(string $filename, string $subdirectory = ''): FileSystem\File
+    protected static function file(string $filename, string $subdirectory = ''): Files\File
     {
-        return new FileSystem\File\LocalFile(self::directory($subdirectory), $filename);
+        return new Files\File\LocalFile(self::directory($subdirectory), $filename);
     }
 
-    protected static function directory(string $dirname = '', bool $absolute = false): FileSystem\Directory
+    protected static function directory(string $dirname = '', bool $absolute = false): Files\Directory
     {
         $path = $absolute ? $dirname : self::$root . DIRECTORY_SEPARATOR . $dirname;
-        return new FileSystem\Directory\LocalDirectory($path);
+        return new Files\Directory\LocalDirectory($path);
     }
 
     protected static function create(string $path, string $contents = 'x'): void

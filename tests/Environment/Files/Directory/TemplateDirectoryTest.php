@@ -9,11 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Tests\Environment\FileSystem\Directory;
+namespace Shudd3r\Skeletons\Tests\Environment\Files\Directory;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\Skeletons\Environment\FileSystem\Directory\TemplateDirectory;
-use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\Files\Directory\TemplateDirectory;
+use Shudd3r\Skeletons\Environment\Files\File;
 use Shudd3r\Skeletons\Tests\Doubles\FakeDirectory;
 
 
@@ -37,7 +37,7 @@ class TemplateDirectoryTest extends TestCase
         $wrapped = new FakeDirectory();
         $wrapped->addFile('.git.sk_dir/hooks/pre-commit.sk_local', 'contents');
 
-        $files = $this->directory($wrapped)->files();
+        $files = $this->directory($wrapped)->fileList();
         $this->assertFilename('.git/hooks/pre-commit', $files[0]);
     }
 
@@ -46,7 +46,7 @@ class TemplateDirectoryTest extends TestCase
         $directory = $this->directory($this->filesystemSetup());
 
         $expectedFilenames = ['foo.txt', 'bar.txt', 'other.sk_undefined', 'untracked/baz.txt'];
-        foreach($directory->files() as $idx => $file) {
+        foreach($directory->fileList() as $idx => $file) {
             $this->assertFilename($expectedFilenames[$idx], $file);
             $this->assertSame($directory->file($expectedFilenames[$idx]), $file);
         }
@@ -57,7 +57,7 @@ class TemplateDirectoryTest extends TestCase
         $directory = $this->directory($this->filesystemSetup(), ['local', 'init']);
 
         $expectedFilenames = ['foo.txt', 'other.sk_undefined'];
-        foreach($directory->files() as $idx => $file) {
+        foreach($directory->fileList() as $idx => $file) {
             $this->assertFilename($expectedFilenames[$idx], $file);
             $this->assertSame($directory->file($expectedFilenames[$idx]), $file);
         }

@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Environment\FileSystem\Directory;
+namespace Shudd3r\Skeletons\Environment\Files\Directory;
 
-use Shudd3r\Skeletons\Environment\FileSystem\Directory;
-use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\Files\Directory;
+use Shudd3r\Skeletons\Environment\Files\File;
 
 
 class ReflectedDirectory implements Directory
@@ -46,10 +46,10 @@ class ReflectedDirectory implements Directory
         return $this->target->file($filename);
     }
 
-    public function files(): array
+    public function fileList(): array
     {
         $targetFiles = [];
-        foreach ($this->origin->files() as $originFile) {
+        foreach ($this->origin->fileList() as $originFile) {
             if (!$originFile->exists()) { continue; }
             $targetFiles[] = $this->target->file($originFile->name());
         }

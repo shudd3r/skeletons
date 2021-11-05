@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Tests\Environment\FileSystem\File;
+namespace Shudd3r\Skeletons\Tests\Environment\Files\File;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\Skeletons\Environment\FileSystem\File\RenamedFile;
+use Shudd3r\Skeletons\Environment\Files\File\RenamedFile;
 use Shudd3r\Skeletons\Tests\Doubles\MockedFile;
 
 

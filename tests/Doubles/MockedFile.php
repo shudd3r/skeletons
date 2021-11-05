@@ -11,8 +11,8 @@
 
 namespace Shudd3r\Skeletons\Tests\Doubles;
 
-use Shudd3r\Skeletons\Environment\FileSystem\File;
-use Shudd3r\Skeletons\Environment\FileSystem\Paths;
+use Shudd3r\Skeletons\Environment\Files\File;
+use Shudd3r\Skeletons\Environment\Files\Paths;
 
 
 class MockedFile implements File

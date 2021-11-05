@@ -9,9 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Tests\Environment\FileSystem\Directory;
+namespace Shudd3r\Skeletons\Tests\Environment\Files\Directory;
 
-use Shudd3r\Skeletons\Tests\Environment\FileSystem\LocalFileSystemTests;
+use Shudd3r\Skeletons\Tests\Environment\Files\LocalFileSystemTests;
 
 
 class LocalDirectoryTest extends LocalFileSystemTests
@@ -70,7 +70,7 @@ class LocalDirectoryTest extends LocalFileSystemTests
         $files     = ['a.tmp', 'b.tmp', 'c.tmp'];
         array_walk($files, fn($file) => self::create($file));
 
-        $this->assertEquals(self::files($files), $directory->files());
+        $this->assertEquals(self::files($files), $directory->fileList());
         self::clear();
     }
 
@@ -81,13 +81,13 @@ class LocalDirectoryTest extends LocalFileSystemTests
         array_walk($files, fn($file) => self::create($file));
 
         $expected = self::files(['a.tmp', 'b.tmp', 'bar/e.tmp', 'foo/c.tmp', 'foo/d.tmp', 'foo/baz/f.tmp']);
-        $this->assertEquals($expected, $directory->files());
+        $this->assertEquals($expected, $directory->fileList());
 
         $expected = self::files(['c.tmp', 'd.tmp', 'baz/f.tmp'], 'foo');
-        $this->assertEquals($expected, $directory->subdirectory('foo')->files());
+        $this->assertEquals($expected, $directory->subdirectory('foo')->fileList());
 
-        $this->assertEquals(self::files(['e.tmp'], 'bar'), $directory->subdirectory('bar')->files());
-        $this->assertEquals(self::files(['f.tmp'], 'foo/baz'), $directory->subdirectory('foo/baz')->files());
+        $this->assertEquals(self::files(['e.tmp'], 'bar'), $directory->subdirectory('bar')->fileList());
+        $this->assertEquals(self::files(['f.tmp'], 'foo/baz'), $directory->subdirectory('foo/baz')->fileList());
         self::clear();
     }
 

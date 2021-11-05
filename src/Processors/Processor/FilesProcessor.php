@@ -12,7 +12,7 @@
 namespace Shudd3r\Skeletons\Processors\Processor;
 
 use Shudd3r\Skeletons\Processors\Processor;
-use Shudd3r\Skeletons\Environment\FileSystem\Directory;
+use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Templates;
 use Shudd3r\Skeletons\Processors;
 use Shudd3r\Skeletons\Replacements\Token;
@@ -20,11 +20,11 @@ use Shudd3r\Skeletons\Replacements\Token;
 
 class FilesProcessor implements Processor
 {
-    private Directory  $generated;
+    private Files      $generated;
     private Templates  $templates;
     private Processors $processors;
 
-    public function __construct(Directory $generatedFiles, Templates $templates, Processors $processors)
+    public function __construct(Files $generatedFiles, Templates $templates, Processors $processors)
     {
         $this->templates  = $templates;
         $this->generated  = $generatedFiles;
@@ -34,7 +34,7 @@ class FilesProcessor implements Processor
     public function process(Token $token): bool
     {
         $status = true;
-        foreach ($this->generated->files() as $packageFile) {
+        foreach ($this->generated->fileList() as $packageFile) {
             $template  = $this->templates->template($packageFile->name());
             $processor = $this->processors->processor($template, $packageFile);
             $status    = $processor->process($token) && $status;

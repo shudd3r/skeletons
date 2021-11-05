@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Tests\Environment\FileSystem\Directory;
+namespace Shudd3r\Skeletons\Tests\Environment\Files\Directory;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\Skeletons\Environment\FileSystem\Directory\ReflectedDirectory;
+use Shudd3r\Skeletons\Environment\Files\Directory\ReflectedDirectory;
 use Shudd3r\Skeletons\Tests\Doubles\FakeDirectory;
 use Shudd3r\Skeletons\Tests\Doubles\MockedFile;
 
@@ -28,8 +28,8 @@ class ReflectedDirectoryTest extends TestCase
         $origin->addFile('foo.txt');
         $origin->addFile('foo/bar.txt');
 
-        $this->assertEquals([], $root->files());
-        $this->assertEquals([$root->file('foo.txt'), $root->file('foo/bar.txt')], $reflected->files());
+        $this->assertEquals([], $root->fileList());
+        $this->assertEquals([$root->file('foo.txt'), $root->file('foo/bar.txt')], $reflected->fileList());
     }
 
     public function testPath_ReturnsRootPath()
@@ -81,6 +81,6 @@ class ReflectedDirectoryTest extends TestCase
 
         $newSource = new ReflectedDirectory($root, $source);
         $expected  = [new MockedFile(null, 'foo.txt', $root), new MockedFile('root', 'baz.txt', $root)];
-        $this->assertEquals($expected, $newSource->files());
+        $this->assertEquals($expected, $newSource->fileList());
     }
 }

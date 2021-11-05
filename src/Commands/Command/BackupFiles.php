@@ -12,16 +12,15 @@
 namespace Shudd3r\Skeletons\Commands\Command;
 
 use Shudd3r\Skeletons\Commands\Command;
-use Shudd3r\Skeletons\Environment\FileSystem\Directory;
-use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\Files;
 
 
 class BackupFiles implements Command
 {
-    private Directory $expected;
-    private Directory $backup;
+    private Files $expected;
+    private Files $backup;
 
-    public function __construct(Directory $expected, Directory $backup)
+    public function __construct(Files $expected, Files $backup)
     {
         $this->expected = $expected;
         $this->backup   = $backup;
@@ -29,14 +28,9 @@ class BackupFiles implements Command
 
     public function execute(): void
     {
-        foreach ($this->expected->files() as $expectedFile) {
-            if (!$expectedFile->exists()) { continue; }
-            $this->copyToBackupDirectory($expectedFile);
+        foreach ($this->expected->fileList() as $file) {
+            if (!$contents = $file->contents()) { continue; }
+            $this->backup->file($file->name())->write($contents);
         }
-    }
-
-    private function copyToBackupDirectory(File $packageFile): void
-    {
-        $this->backup->file($packageFile->name())->write($packageFile->contents());
     }
 }

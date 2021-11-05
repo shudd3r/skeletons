@@ -11,9 +11,9 @@
 
 namespace Shudd3r\Skeletons\Tests\Doubles;
 
-use Shudd3r\Skeletons\Environment\FileSystem\Directory;
-use Shudd3r\Skeletons\Environment\FileSystem\File;
-use Shudd3r\Skeletons\Environment\FileSystem\Paths;
+use Shudd3r\Skeletons\Environment\Files\Directory;
+use Shudd3r\Skeletons\Environment\Files\File;
+use Shudd3r\Skeletons\Environment\Files\Paths;
 use Exception;
 
 
@@ -56,10 +56,10 @@ class FakeDirectory implements Directory
         return $this->files[$filename] ?? new MockedFile(null, $filename, $this);
     }
 
-    public function files(): array
+    public function fileList(): array
     {
         foreach ($this->subdirectories as $dirname => $directory) {
-            foreach ($directory->files() as $file) {
+            foreach ($directory->fileList() as $file) {
                 $this->addFile($dirname . '/' . $file->name(), $file->contents());
             }
         }

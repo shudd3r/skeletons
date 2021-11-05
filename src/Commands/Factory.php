@@ -20,7 +20,7 @@ use Shudd3r\Skeletons\Processors;
 use Shudd3r\Skeletons\Processors\Processor;
 use Shudd3r\Skeletons\Commands\Command\DescribedCommand;
 use Shudd3r\Skeletons\Commands\Precondition\DescribedPrecondition;
-use Shudd3r\Skeletons\Environment\FileSystem\Directory;
+use Shudd3r\Skeletons\Environment\Files\Directory;
 
 
 abstract class Factory implements Commands

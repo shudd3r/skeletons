@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Environment\FileSystem\File;
+namespace Shudd3r\Skeletons\Environment\Files\File;
 
-use Shudd3r\Skeletons\Environment\FileSystem\File;
-use Shudd3r\Skeletons\Environment\FileSystem\Paths;
+use Shudd3r\Skeletons\Environment\Files\File;
+use Shudd3r\Skeletons\Environment\Files\Paths;
 
 
 class RenamedFile implements File

@@ -62,10 +62,11 @@ attached [docs/script-example](docs/script-example) file.
 
 #### Setup steps
 Instantiate application:
+
 ```php
 namespace Shudd3r\Skeletons;
 
-use Shudd3r\Skeletons\Environment\FileSystem\Directory\LocalDirectory;
+use Shudd3r\Skeletons\Environment\Files\Directory\LocalDirectory;
 
 $package  = new LocalDirectory(get_cwd());
 $template = new LocalDirectory(__DIR__ . '/template');

@@ -13,7 +13,7 @@ namespace Shudd3r\Skeletons\Processors\Processor;
 
 use Shudd3r\Skeletons\Processors\Processor;
 use Shudd3r\Skeletons\Templates\Template;
-use Shudd3r\Skeletons\Environment\FileSystem\File;
+use Shudd3r\Skeletons\Environment\Files\File;
 use Shudd3r\Skeletons\Replacements\Token;
 
 
