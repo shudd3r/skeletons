@@ -13,27 +13,12 @@ namespace Shudd3r\Skeletons\Tests\Setup;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Setup\AppSetup;
-use Shudd3r\Skeletons\Templates;
-use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Exception;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class AppSetupTest extends TestCase
 {
-    public function testCreatingReplacementsClassWithGivenReplacementInstances()
-    {
-        $setup = new AppSetup();
-        $setup->addReplacement('foo', new Doubles\FakeReplacement('foo-value'));
-        $setup->addReplacement('bar', new Doubles\FakeReplacement('bar-value'));
-
-        $expected = new Replacements([
-            'foo' => new Doubles\FakeReplacement('foo-value'),
-            'bar' => new Doubles\FakeReplacement('bar-value'),
-        ]);
-        $this->assertEquals($expected, $setup->replacements());
-    }
-
     public function testOverwritingDefinedReplacement_ThrowsException()
     {
         $setup = new AppSetup();
@@ -49,21 +34,6 @@ class AppSetupTest extends TestCase
 
         $this->expectException(Exception\ReplacementOverwriteException::class);
         $setup->addReplacement('original.content', new Doubles\FakeReplacement());
-    }
-
-    public function testCreatingTemplatesClassWithGivenTemplateFactoryInstances()
-    {
-        $setup = new AppSetup();
-        $setup->addTemplate('file1.txt', new Doubles\FakeTemplateFactory());
-        $setup->addTemplate('file2.txt', new Doubles\FakeTemplateFactory());
-
-
-        $env      = new Doubles\FakeRuntimeEnv();
-        $expected = new Templates($env, [
-            'file1.txt' => new Doubles\FakeTemplateFactory(),
-            'file2.txt' => new Doubles\FakeTemplateFactory(),
-        ]);
-        $this->assertEquals($expected, $setup->templates($env));
     }
 
     public function testOverwritingTemplateForDefinedFile_ThrowsException()

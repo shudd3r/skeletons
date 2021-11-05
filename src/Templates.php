@@ -14,33 +14,33 @@ namespace Shudd3r\Skeletons;
 use Shudd3r\Skeletons\Templates\Template;
 use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Templates\Factory;
+use Shudd3r\Skeletons\Templates\TemplateFiles;
 
 
 class Templates
 {
-    private RuntimeEnv $env;
-    private array      $factories;
+    private RuntimeEnv    $env;
+    private TemplateFiles $files;
+    private array         $factories;
 
-    private Files $files;
-
-    public function __construct(RuntimeEnv $env, array $factories = [])
+    public function __construct(RuntimeEnv $env, TemplateFiles $files, array $factories)
     {
         $this->env       = $env;
+        $this->files     = $files;
         $this->factories = $factories;
     }
 
     public function template(string $filename): Template
     {
-        $this->files ?? $this->generatedFiles();
         $factory = $this->factory($filename);
         $file    = $this->files->file($filename);
         return $factory ? $factory->template($file, $this->env) : new Template\BasicTemplate($file->contents());
     }
 
-    public function generatedFiles(array $ignore = []): Files
+    public function generatedFiles(array $filter = [], bool $inclusive = false): Files
     {
-        $this->files = new Files\Directory\TemplateDirectory($this->env->skeleton(), $ignore);
-        return new Files\ReflectedFiles($this->env->package(), $this->files);
+        $files = $filter ? $this->files->withFilter($filter, $inclusive) : $this->files;
+        return new Files\ReflectedFiles($this->env->package(), $files);
     }
 
     private function factory(string $filename): ?Factory
