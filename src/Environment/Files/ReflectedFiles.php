@@ -9,36 +9,20 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Environment\Files\Directory;
+namespace Shudd3r\Skeletons\Environment\Files;
 
-use Shudd3r\Skeletons\Environment\Files\Directory;
-use Shudd3r\Skeletons\Environment\Files\File;
+use Shudd3r\Skeletons\Environment\Files;
 
 
-class ReflectedDirectory implements Directory
+class ReflectedFiles implements Files
 {
-    private Directory $target;
-    private Directory $origin;
+    private Files $target;
+    private Files $origin;
 
-    public function __construct(Directory $target, Directory $origin)
+    public function __construct(Files $target, Files $origin)
     {
         $this->target = $target;
         $this->origin = $origin;
-    }
-
-    public function path(): string
-    {
-        return $this->target->path();
-    }
-
-    public function exists(): bool
-    {
-        return $this->target->exists();
-    }
-
-    public function subdirectory(string $name): Directory
-    {
-        return new self($this->target->subdirectory($name), $this->origin->subdirectory($name));
     }
 
     public function file(string $filename): File

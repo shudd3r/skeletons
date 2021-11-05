@@ -19,6 +19,8 @@ class Update extends Factory
 {
     public function command(array $options): Command
     {
+        $files = $this->templates->generatedFiles(['init']);
+
         $isInteractive = isset($options['i']) || isset($options['interactive']);
         $metaFilename  = $this->env->metaDataFile()->name();
 
@@ -27,7 +29,7 @@ class Update extends Factory
         $validationTokens = new Reader\ValidationReader($this->replacements, $this->env, $options);
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
-        $validateFiles     = new Precondition\SkeletonSynchronization($validationTokens, $this->filesValidator($cache));
+        $validateFiles     = new Precondition\SkeletonSynchronization($validationTokens, $this->filesValidator($files, $cache));
         $validReplacements = new Precondition\ValidReplacements($updateTokens);
         $preconditions     = new Precondition\Preconditions(
             $this->checkInfo('Checking meta data status (`' . $metaFilename . '` should exist)', $metaDataExists),
@@ -36,7 +38,7 @@ class Update extends Factory
         );
 
         $saveMetaData  = new Command\SaveMetaData($updateTokens, $this->env->metaData());
-        $generateFiles = new Command\ProcessTokens($updateTokens, $this->filesGenerator($cache), $this->env->output());
+        $generateFiles = new Command\ProcessTokens($updateTokens, $this->filesGenerator($files, $cache), $this->env->output());
         $command       = new Command\CommandSequence(
             $this->commandInfo('Updating skeleton files:', $generateFiles),
             $this->commandInfo('Updating meta data file (`' . $metaFilename . '`)', $saveMetaData)

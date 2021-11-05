@@ -12,34 +12,39 @@
 namespace Shudd3r\Skeletons;
 
 use Shudd3r\Skeletons\Templates\Template;
+use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Templates\Factory;
+use Shudd3r\Skeletons\Templates\TemplateFiles;
 
 
 class Templates
 {
-    private RuntimeEnv $env;
-    private array      $factories;
+    private RuntimeEnv    $env;
+    private TemplateFiles $files;
+    private array         $factories;
 
-    public function __construct(RuntimeEnv $env, array $factories = [])
+    public function __construct(RuntimeEnv $env, TemplateFiles $files, array $factories)
     {
         $this->env       = $env;
+        $this->files     = $files;
         $this->factories = $factories;
     }
 
     public function template(string $filename): Template
     {
         $factory = $this->factory($filename);
-        return $factory ? $factory->template($filename, $this->env) : $this->basicTemplate($filename);
+        $file    = $this->files->file($filename);
+        return $factory ? $factory->template($file, $this->env) : new Template\BasicTemplate($file->contents());
+    }
+
+    public function generatedFiles(array $filter = [], bool $inclusive = false): Files
+    {
+        $files = $filter ? $this->files->withFilter($filter, $inclusive) : $this->files;
+        return new Files\ReflectedFiles($this->env->package(), $files);
     }
 
     private function factory(string $filename): ?Factory
     {
         return $this->factories[$filename] ?? null;
-    }
-
-    private function basicTemplate(string $filename): Template
-    {
-        $contents = $this->env->skeleton()->file($filename)->contents();
-        return new Template\BasicTemplate($contents);
     }
 }
