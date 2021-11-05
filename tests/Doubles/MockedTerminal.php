@@ -51,4 +51,12 @@ class MockedTerminal extends Terminal
         $this->messagesSent = [];
         return $messages;
     }
+
+    public function reset(): self
+    {
+        $this->messagesSent = [];
+        $this->inputStrings = [];
+        $this->errorCode    = 0;
+        return $this;
+    }
 }

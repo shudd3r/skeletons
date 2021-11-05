@@ -25,8 +25,9 @@ class ApplicationTest extends TestCase
     private const SRC_NAMESPACE = 'namespace.src';
     private const REPO_NAME     = 'repository.name';
 
-    private static Fixtures\ExampleFiles $files;
-    private static Doubles\FakeDirectory $skeleton;
+    private static Fixtures\ExampleFiles  $files;
+    private static Doubles\FakeDirectory  $skeleton;
+    private static Doubles\MockedTerminal $terminal;
 
     private array $initOptions = [
         'repo'    => 'initial/repo',
@@ -47,6 +48,7 @@ class ApplicationTest extends TestCase
     {
         self::$files    = new Fixtures\ExampleFiles('example-files');
         self::$skeleton = self::$files->directory('template');
+        self::$terminal = new Doubles\MockedTerminal();
     }
 
     public function testUnknownCommand_ReturnsErrorCode()
@@ -168,7 +170,7 @@ class ApplicationTest extends TestCase
 
     protected function app(Directory $packageDir, ?bool $forceMetaFile = null, bool $backupExists = false): Application
     {
-        $app = new Application($packageDir, self::$skeleton, new Doubles\MockedTerminal());
+        $app = new Application($packageDir, self::$skeleton, self::$terminal->reset());
 
         if ($backupExists) { $app->backup($this->backupDirectory()); }
         if ($forceMetaFile) { $this->addMetaFile($packageDir); }
