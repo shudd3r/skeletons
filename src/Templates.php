@@ -31,8 +31,10 @@ class Templates
 
     public function template(string $filename): Template
     {
+        $this->files ?? $this->generatedFiles();
         $factory = $this->factory($filename);
-        return $factory ? $factory->template($filename, $this->env) : $this->basicTemplate($filename);
+        $file    = $this->files->file($filename);
+        return $factory ? $factory->template($file, $this->env) : new Template\BasicTemplate($file->contents());
     }
 
     public function generatedFiles(array $ignore = []): Files
@@ -44,12 +46,5 @@ class Templates
     private function factory(string $filename): ?Factory
     {
         return $this->factories[$filename] ?? null;
-    }
-
-    private function basicTemplate(string $filename): Template
-    {
-        $this->files ?? $this->generatedFiles();
-        $contents = $this->files->file($filename)->contents();
-        return new Template\BasicTemplate($contents);
     }
 }
