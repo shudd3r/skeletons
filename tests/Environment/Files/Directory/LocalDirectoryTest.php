@@ -64,7 +64,7 @@ class LocalDirectoryTest extends LocalFileSystemTests
         $this->assertEquals($directory->file('\dir\path\file.tmp'), $file);
     }
 
-    public function testFilesMethod_ReturnsFilesArray()
+    public function testFileListMethod_ReturnsFilesArray()
     {
         $directory = self::directory();
         $files     = ['a.tmp', 'b.tmp', 'c.tmp'];

@@ -41,7 +41,7 @@ class TemplateDirectoryTest extends TestCase
         $this->assertFilename('.git/hooks/pre-commit', $files[0]);
     }
 
-    public function testFilesMethod_ReturnsFilesWithoutTemplateExtensionsFromWrappedDirectory()
+    public function testFileListMethod_ReturnsFilesWithoutTemplateExtensionsFromWrappedDirectory()
     {
         $directory = $this->directory($this->filesystemSetup());
 

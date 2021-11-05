@@ -19,7 +19,7 @@ use Shudd3r\Skeletons\Tests\Doubles\MockedFile;
 
 class ReflectedDirectoryTest extends TestCase
 {
-    public function testFiles_ReturnsFilesExistingInOriginDirectoryWithRootDirectoryPaths()
+    public function testFileList_ReturnsFilesExistingInOriginDirectoryWithRootDirectoryPaths()
     {
         $root      = new FakeDirectory('root/path');
         $origin    = new FakeDirectory('origin/path');
