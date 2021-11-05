@@ -20,14 +20,14 @@ use Shudd3r\Skeletons\Processors;
 use Shudd3r\Skeletons\Processors\Processor;
 use Shudd3r\Skeletons\Commands\Command\DescribedCommand;
 use Shudd3r\Skeletons\Commands\Precondition\DescribedPrecondition;
-use Shudd3r\Skeletons\Environment\Files\Directory;
+use Shudd3r\Skeletons\Environment\Files;
 
 
 abstract class Factory implements Commands
 {
     protected RuntimeEnv   $env;
     protected Replacements $replacements;
-    protected Directory    $generatedFiles;
+    protected Files        $generatedFiles;
 
     private Templates $templates;
 
@@ -35,7 +35,7 @@ abstract class Factory implements Commands
     {
         $this->env            = $env;
         $this->replacements   = $replacements;
-        $this->generatedFiles = new Directory\ReflectedDirectory($env->package(), $env->skeleton());
+        $this->generatedFiles = new Files\ReflectedFiles($env->package(), $env->skeleton());
         $this->templates      = $templates;
     }
 

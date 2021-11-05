@@ -12,7 +12,7 @@
 namespace Shudd3r\Skeletons\Commands;
 
 use Shudd3r\Skeletons\Replacements\Reader\InitialReader;
-use Shudd3r\Skeletons\Environment\Files\Directory;
+use Shudd3r\Skeletons\Environment\Files;
 
 
 class Initialize extends Factory
@@ -23,7 +23,7 @@ class Initialize extends Factory
         $metaFilename  = $this->env->metaDataFile()->name();
 
         $initialTokens  = new InitialReader($this->replacements, $this->env, $options);
-        $expectedBackup = new Directory\ReflectedDirectory($this->env->backup(), $this->generatedFiles);
+        $expectedBackup = new Files\ReflectedFiles($this->env->backup(), $this->generatedFiles);
 
         $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);
         $noBackupOverwrite = new Precondition\CheckFilesOverwrite($expectedBackup);
