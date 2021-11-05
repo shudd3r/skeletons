@@ -12,15 +12,15 @@
 namespace Shudd3r\Skeletons\Commands\Precondition;
 
 use Shudd3r\Skeletons\Commands\Precondition;
-use Shudd3r\Skeletons\Environment\Files\Directory;
+use Shudd3r\Skeletons\Environment\Files;
 
 
 class CheckFilesOverwrite implements Precondition
 {
-    private Directory $destination;
-    private bool      $expected;
+    private Files $destination;
+    private bool  $expected;
 
-    public function __construct(Directory $destination, bool $expected = false)
+    public function __construct(Files $destination, bool $expected = false)
     {
         $this->destination = $destination;
         $this->expected    = $expected;
