@@ -67,10 +67,7 @@ class Application
         $this->displayHeader($interactive && in_array($command, ['init', 'update']));
 
         try {
-            $factory = $this->factory($command, $options);
-            $command = $factory->command($options);
-
-            $command->execute();
+            $this->factory($command)->command($options)->execute();
         } catch (Exception $e) {
             $this->terminal->send($e->getMessage() . PHP_EOL, 1);
         }
@@ -82,36 +79,19 @@ class Application
         return $exitCode;
     }
 
-    protected function factory(string $command, array $options): Commands
+    protected function factory(string $command): Commands
     {
+        $env          = $this->envSetup->runtimeEnv($this->terminal);
+        $replacements = $this->appSetup->replacements();
+        $templates    = $this->appSetup->templates($env);
+
         switch ($command) {
-            case 'init':
-                $env = $this->runtimeEnv();
-                return new Commands\Initialize($env, $this->replacements(), $this->templates($env));
-            case 'check':
-                $env = $this->runtimeEnv(isset($options['remote']) ? ['local', 'init'] : ['init']);
-                return new Commands\Validate($env, $this->replacements(), $this->templates($env));
-            case 'update':
-                $env = $this->runtimeEnv(['init']);
-                return new Commands\Update($env, $this->replacements(), $this->templates($env));
+            case 'init':   return new Commands\Initialize($env, $replacements, $templates);
+            case 'check':  return new Commands\Validate($env, $replacements, $templates);
+            case 'update': return new Commands\Update($env, $replacements, $templates);
         }
 
         throw new Exception("Unknown `{$command}` command");
-    }
-
-    private function replacements(): Replacements
-    {
-        return $this->appSetup->replacements();
-    }
-
-    private function runtimeEnv(array $ignoreTemplates = []): RuntimeEnv
-    {
-        return $this->envSetup->runtimeEnv($this->terminal, $ignoreTemplates);
-    }
-
-    private function templates(RuntimeEnv $env): Templates
-    {
-        return $this->appSetup->templates($env);
     }
 
     private function displayHeader(bool $isInteractive): void

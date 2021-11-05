@@ -27,28 +27,25 @@ abstract class Factory implements Commands
 {
     protected RuntimeEnv   $env;
     protected Replacements $replacements;
-    protected Files        $generatedFiles;
-
-    private Templates $templates;
+    protected Templates    $templates;
 
     public function __construct(RuntimeEnv $env, Replacements $replacements, Templates $templates)
     {
-        $this->env            = $env;
-        $this->replacements   = $replacements;
-        $this->generatedFiles = new Files\ReflectedFiles($env->package(), $env->skeleton());
-        $this->templates      = $templates;
+        $this->env          = $env;
+        $this->replacements = $replacements;
+        $this->templates    = $templates;
     }
 
     abstract public function command(array $options): Command;
 
-    protected function filesValidator(TokenCache $tokenCache = null): Processor
+    protected function filesValidator(Files $files, TokenCache $tokenCache = null): Processor
     {
-        return $this->fileProcessor(new Processors\FileValidators($this->env->output(), $tokenCache));
+        return $this->fileProcessor($files, new Processors\FileValidators($this->env->output(), $tokenCache));
     }
 
-    protected function filesGenerator(TokenCache $tokenCache = null): Processor
+    protected function filesGenerator(Files $files, TokenCache $tokenCache = null): Processor
     {
-        return $this->fileProcessor(new Processors\FileGenerators($this->env->output(), $tokenCache));
+        return $this->fileProcessor($files, new Processors\FileGenerators($this->env->output(), $tokenCache));
     }
 
     protected function commandInfo(string $message, Command $command): Command
@@ -61,8 +58,8 @@ abstract class Factory implements Commands
         return new DescribedPrecondition($precondition, $this->env->output(), $message, $status);
     }
 
-    private function fileProcessor(Processors $processors): Processor
+    private function fileProcessor(Files $files, Processors $processors): Processor
     {
-        return new Processor\FilesProcessor($this->generatedFiles, $this->templates, $processors);
+        return new Processor\FilesProcessor($files, $this->templates, $processors);
     }
 }

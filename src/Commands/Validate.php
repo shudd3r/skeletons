@@ -18,6 +18,8 @@ class Validate extends Factory
 {
     public function command(array $options): Command
     {
+        $files = $this->templates->generatedFiles(isset($options['remote']) ? ['local', 'init'] : ['init']);
+
         $metaFilename     = $this->env->metaDataFile()->name();
         $validationTokens = new Replacements\Reader\ValidationReader($this->replacements, $this->env, $options);
 
@@ -28,7 +30,7 @@ class Validate extends Factory
             $this->checkInfo('Validating meta data replacements', $validReplacements)
         );
 
-        $processTokens = new Command\ProcessTokens($validationTokens, $this->filesValidator(), $this->env->output());
+        $processTokens = new Command\ProcessTokens($validationTokens, $this->filesValidator($files), $this->env->output());
         $command       = $this->commandInfo('Checking skeleton files synchronization:', $processTokens);
 
         return new Command\ProtectedCommand($command, $precondition, $this->env->output());
