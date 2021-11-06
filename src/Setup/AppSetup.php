@@ -13,7 +13,6 @@ namespace Shudd3r\Skeletons\Setup;
 
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Environment\Files\File;
 use Shudd3r\Skeletons\Templates;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\Exception;
@@ -67,25 +66,14 @@ class AppSetup
 
     private function templateFiles(RuntimeEnv $env): Templates\TemplateFiles
     {
-        $files = [];
-        $types = [
-            'file'  => [],
-            'local' => [],
-            'init'  => []
-        ];
-
+        $typeIndex = [];
         foreach ($env->skeleton()->fileList() as $originalFile) {
-            [$type, $filename] = $this->targetFilename($originalFile->name());
-            if ($type === 'orig') {
-                $files[$filename] = $originalFile;
-                continue;
-            }
-
-            $files[$filename] = new File\RenamedFile($originalFile, $filename);
-            $types[$type][]   = $filename;
+            $originalName = $originalFile->name();
+            [$type, $filename] = $this->targetFilename($originalName);
+            $typeIndex[$type][$filename] = $originalName;
         }
 
-        return new Templates\TemplateFiles($env->skeleton(), $files, $types);
+        return new Templates\TemplateFiles($env->skeleton(), $typeIndex);
     }
 
     private function targetFilename(string $filename): array

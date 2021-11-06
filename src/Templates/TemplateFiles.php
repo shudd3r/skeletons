@@ -15,52 +15,41 @@ use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Environment\Files\File;
 
 
-class TemplateFiles implements Files
+class TemplateFiles
 {
     private Files $skeleton;
-    private array $files;
     private array $typeIndex;
+    private array $index;
 
-    private array $filter    = [];
-    private bool  $inclusive = false;
-
-    public function __construct(Files $skeleton, array $files, array $typeIndex)
+    /**
+     * @param Files                        $skeleton
+     * @param array<string, array<string>> $typeIndex
+     */
+    public function __construct(Files $skeleton, array $typeIndex)
     {
         $this->skeleton  = $skeleton;
-        $this->files     = $files;
         $this->typeIndex = $typeIndex;
+        $this->index     = $this->fileIndex();
     }
 
-    public function withFilter(array $types, bool $inclusive): self
+    public function files(array $exclude = []): Files
     {
-        $files = clone $this;
-
-        $files->filter    = $types;
-        $files->inclusive = $inclusive;
-
-        return $files;
+        $index = $exclude ? $this->fileIndex($exclude) : $this->index;
+        return new Files\IndexedFiles($this->skeleton, $index);
     }
 
     public function file(string $filename): File
     {
-        return $this->files[$filename] ?? $this->skeleton->file($filename);
+        return $this->skeleton->file($this->index[$filename] ?? $filename);
     }
 
-    public function fileList(): array
+    private function fileIndex(array $exclude = [])
     {
-        return array_values($this->filteredFiles());
-    }
-
-    private function filteredFiles(): array
-    {
-        if (!$this->filter) { return $this->files; }
-
-        $filenames = [];
-        foreach ($this->filter as $type) {
-            $filenames = array_merge($filenames, $this->typeIndex[$type] ?? []);
+        $index = [];
+        foreach ($this->typeIndex as $type => $typeIndex) {
+            if ($exclude && in_array($type, $exclude)) { continue; }
+            $index += $typeIndex;
         }
-
-        $index = array_flip($filenames);
-        return $this->inclusive ? array_intersect_key($this->files, $index) : array_diff_key($this->files, $index);
+        return $index;
     }
 }

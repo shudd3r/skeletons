@@ -37,10 +37,9 @@ class Templates
         return $factory ? $factory->template($file, $this->env) : new Template\BasicTemplate($file->contents());
     }
 
-    public function generatedFiles(array $filter = [], bool $inclusive = false): Files
+    public function generatedFiles(array $excludeTypes = []): Files
     {
-        $files = $filter ? $this->files->withFilter($filter, $inclusive) : $this->files;
-        return new Files\ReflectedFiles($this->env->package(), $files);
+        return new Files\ReflectedFiles($this->env->package(), $this->files->files($excludeTypes));
     }
 
     private function factory(string $filename): ?Factory
