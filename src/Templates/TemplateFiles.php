@@ -43,7 +43,7 @@ class TemplateFiles
         return $this->skeleton->file($this->index[$filename] ?? $filename);
     }
 
-    private function fileIndex(array $exclude = [])
+    private function fileIndex(array $exclude = []): array
     {
         $index = [];
         foreach ($this->typeIndex as $type => $typeIndex) {
