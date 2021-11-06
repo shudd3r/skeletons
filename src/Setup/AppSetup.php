@@ -13,7 +13,6 @@ namespace Shudd3r\Skeletons\Setup;
 
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Environment\Files\File;
 use Shudd3r\Skeletons\Templates;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\Exception;
@@ -67,42 +66,33 @@ class AppSetup
 
     private function templateFiles(RuntimeEnv $env): Templates\TemplateFiles
     {
-        $files = [];
-        $types = [
-            'file'  => [],
-            'local' => [],
-            'init'  => []
-        ];
-
+        $typeIndex = [];
         foreach ($env->skeleton()->fileList() as $originalFile) {
-            [$type, $filename] = $this->targetFilename($originalFile->name());
-            if ($type === 'orig') {
-                $files[$filename] = $originalFile;
-                continue;
-            }
-
-            $files[$filename] = new File\RenamedFile($originalFile, $filename);
-            $types[$type][]   = $filename;
+            $sourceName = $originalFile->name();
+            $fileType   = $this->fileType($sourceName);
+            $targetName = $this->targetFilename($sourceName, $fileType);
+            $typeIndex[$fileType][$targetName] = $sourceName;
         }
 
-        return new Templates\TemplateFiles($env->skeleton(), $files, $types);
+        return new Templates\TemplateFiles($env->skeleton(), $typeIndex);
     }
 
-    private function targetFilename(string $filename): array
+    private function fileType(string $filename): string
     {
         $extFound = strrpos($filename, self::EXT_PREFIX);
-        if (!$extFound) { return ['orig', $filename]; }
+        if (!$extFound) { return 'orig'; }
 
         $directive = substr($filename, $extFound);
-        if (!in_array($directive, self::EXT_TYPES)) { return ['orig', $filename]; }
-        $filename = $this->unlockedPath(substr($filename, 0, -strlen($directive)));
+        if (!in_array($directive, self::EXT_TYPES)) { return 'orig'; }
 
-        $type = substr($directive, strlen(self::EXT_PREFIX));
-        return [$type, $filename];
+        return substr($directive, strlen(self::EXT_PREFIX));
     }
 
-    private function unlockedPath(string $filename): string
+    private function targetFilename(string $filename, string $type): string
     {
-        return str_replace(self::EXT_DIR, '', $filename);
+        if ($type === 'orig') { return $filename; }
+        $realPathFilename = str_replace(self::EXT_DIR . '/', '/', $filename);
+        if (strpos($realPathFilename, '//')) { $realPathFilename = $filename; }
+        return substr($realPathFilename, 0, -strlen(self::EXT_PREFIX . $type));
     }
 }
