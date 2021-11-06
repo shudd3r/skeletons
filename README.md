@@ -196,10 +196,9 @@ so check out [`MergedJsonTemplateTest`](tests/Templates/Template/MergedJsonTempl
 for details.
 
 ### TODO features
-- [ ] `help` command
+- [ ] `synch` command - generating divergent (with backup) & missing files
 - [x] Handling empty directories - allow removing `.gitkeep` when files added
 - [x] Handling `.gitattributes` in templates (blocking package import)
 - [x] Initial "example files" - removed later, so ignored by validation
 - [x] Handling untracked "dev files" like git hooks, IDE setup, etc.
-- [ ] Re-initialization regenerating missing (local) files with meta-data.
-- [ ] Forced update - backup & generate not synchronized or missing files
+- [ ] `help` command
