@@ -71,7 +71,9 @@ class AppSetup
             $sourceName = $originalFile->name();
             $fileType   = $this->fileType($sourceName);
             $targetName = $this->targetFilename($sourceName, $fileType);
-            $typeIndex[$fileType][$targetName] = $sourceName;
+
+            $type = $fileType === 'file' ? 'orig' : $fileType;
+            $typeIndex[$type][$targetName] = $sourceName;
         }
 
         return new Templates\TemplateFiles($env->skeleton(), $typeIndex);
