@@ -13,6 +13,7 @@ namespace Shudd3r\Skeletons\Processors\Processor;
 
 use Shudd3r\Skeletons\Processors\Processor;
 use Shudd3r\Skeletons\Templates\Template;
+use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Environment\Files\File;
 use Shudd3r\Skeletons\Replacements\Token;
 
@@ -21,15 +22,22 @@ class CompareFile implements Processor
 {
     private Template $template;
     private File     $file;
+    private ?Files   $backup;
 
-    public function __construct(Template $template, File $file)
+    public function __construct(Template $template, File $file, Files $backup = null)
     {
         $this->template = $template;
         $this->file     = $file;
+        $this->backup   = $backup;
     }
 
     public function process(Token $token): bool
     {
-        return $this->template->render($token) === $this->file->contents();
+        $fileContents = $this->file->contents();
+        $synchronized = $this->template->render($token) === $fileContents;
+        if ($this->backup && !$synchronized && $fileContents) {
+            $this->backup->file($this->file->name())->write($fileContents);
+        }
+        return $synchronized;
     }
 }
