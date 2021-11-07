@@ -1,0 +1,6 @@
+{
+    "package.name": "initial/package-name",
+    "repository.name": "initial/repo",
+    "package.description": "Initial package description",
+    "namespace.src": "Package\\Initial"
+}

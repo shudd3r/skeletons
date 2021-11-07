@@ -100,16 +100,17 @@ exit($exitCode);
 
 #### Default CLI parameters
 Available `$command` values:
-- `init`: generate file structure from skeleton template
+- `init`: generate file structure from skeleton template (with backup on overwrite)
 - `check`: verify project synchronization with used skeleton
 - `update`: change current placeholder values (synchronized package required)
+- `synch`: generate missing & mismatched skeleton files (with backup on overwrite)
 
 Application `$options`:
 - `-i`, `--interactive`: allows providing (init/update) placeholder values
   via interactive shell
-- `--remote`: should be used with `check` command to validate skeleton
-  synchronization of deployed package, where not all generated files are
-  deployed.
+- `--remote`: may be used with `check` or `synch` command to validate/generate
+  only skeleton files of deployed package, when not all generated files are
+  deployed to remote repository.
 
 Built-in placeholder value options:
 - `--package=...`: package name (Packagist)
@@ -196,7 +197,7 @@ so check out [`MergedJsonTemplateTest`](tests/Templates/Template/MergedJsonTempl
 for details.
 
 ### TODO features
-- [ ] `synch` command - generating divergent (with backup) & missing files
+- [x] `synch` command - generating divergent (with backup) & missing files
 - [x] Handling empty directories - allow removing `.gitkeep` when files added
 - [x] Handling `.gitattributes` in templates (blocking package import)
 - [x] Initial "example files" - removed later, so ignored by validation

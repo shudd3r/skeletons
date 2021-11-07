@@ -153,6 +153,15 @@ class ApplicationTest extends TestCase
         $this->assertSameFiles($package, 'package-synchronized');
     }
 
+    public function testSynchronizingDesynchronizedPackage_GeneratesMissingAndDivergentFilesWithBackup()
+    {
+        $package = self::$files->directory('package-desynchronized');
+        $app     = $this->app($package);
+
+        $this->assertEquals(0, $app->run('synch'));
+        $this->assertSameFiles($package, 'package-after-synch');
+    }
+
     protected function assertSameFiles(Directory $package, string $fixturesDirectory, bool $addMetaFile = false): void
     {
         $expected = self::$files->directory($fixturesDirectory);
