@@ -14,6 +14,7 @@ namespace Shudd3r\Skeletons\Processors;
 use Shudd3r\Skeletons\Processors;
 use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\Templates\Template;
+use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Environment\Files\File;
 use Shudd3r\Skeletons\Replacements\TokenCache;
 use Shudd3r\Skeletons\Environment\Output;
@@ -23,22 +24,25 @@ class FileValidators implements Processors
 {
     private Output      $output;
     private ?TokenCache $cache;
+    private ?Files      $backup;
 
-    public function __construct(Output $output, ?TokenCache $cache = null)
+    public function __construct(Output $output, ?TokenCache $cache = null, ?Files $backup = null)
     {
         $this->output = $output;
         $this->cache  = $cache;
+        $this->backup = $backup;
     }
 
     public function processor(Template $template, File $packageFile): Processor
     {
-        $compareFiles  = $this->processorInfo(new Processor\CompareFile($template, $packageFile), $packageFile->name());
+        $compareFiles  = new Processor\CompareFile($template, $packageFile, $this->backup);
         $contentsToken = new Token\CompositeToken(
             new Token\InitialContents(false),
             $this->originalContentsToken($packageFile)
         );
 
-        return new Processor\ExpandedTokenProcessor($contentsToken, $compareFiles);
+        $processor = $this->backup ? $compareFiles : $this->processorInfo($compareFiles, $packageFile->name());
+        return new Processor\ExpandedTokenProcessor($contentsToken, $processor);
     }
 
     private function originalContentsToken(File $packageFile): Token

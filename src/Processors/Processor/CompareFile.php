@@ -24,7 +24,7 @@ class CompareFile implements Processor
     private File     $file;
     private ?Files   $backup;
 
-    public function __construct(Template $template, File $file, Files $backup = null)
+    public function __construct(Template $template, File $file, ?Files $backup = null)
     {
         $this->template = $template;
         $this->file     = $file;
