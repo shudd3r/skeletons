@@ -18,16 +18,15 @@ use Shudd3r\Skeletons\Environment\Files\File;
 
 class MockedProcessors implements Processors
 {
-    private array $usedTemplates = [];
+    private ?Processors\Processor $createdProcessor = null;
 
     public function processor(Template $template, File $packageFile): Processors\Processor
     {
-        $this->usedTemplates[$packageFile->name()] = $template;
-        return new MockedProcessor();
+        return $this->createdProcessor = new MockedProcessor();
     }
 
-    public function usedTemplates(): array
+    public function createdProcessor(): ?Processors\Processor
     {
-        return $this->usedTemplates;
+        return $this->createdProcessor;
     }
 }

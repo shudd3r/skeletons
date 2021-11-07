@@ -22,21 +22,48 @@ class CompareFileTest extends TestCase
 {
     public function testSuccessfulComparison_ReturnsTrue()
     {
-        $template  = new Template\BasicTemplate('{replace.me} contents');
+        $template = new Template\BasicTemplate('{replace.me} contents');
+        $token    = new Token\ValueToken('replace.me', 'expected');
+
         $file      = new Doubles\MockedFile('expected contents');
         $processor = new CompareFile($template, $file);
-
-        $token = new Token\ValueToken('replace.me', 'expected');
         $this->assertTrue($processor->process($token));
     }
 
     public function testFailedComparison_ReturnsFalse()
     {
-        $template  = new Template\BasicTemplate('{replace.me} contents');
+        $template = new Template\BasicTemplate('{replace.me} contents');
+        $token    = new Token\ValueToken('replace.me', 'unexpected');
+
         $file      = new Doubles\MockedFile('expected contents');
         $processor = new CompareFile($template, $file);
-
-        $token = new Token\ValueToken('replace.me', 'unexpected');
         $this->assertFalse($processor->process($token));
+    }
+
+    public function testEmptyTemplate_ForNotExistingFile_ReturnsTrue()
+    {
+        $template = new Template\BasicTemplate('');
+        $token    = new Token\ValueToken('replace.me', 'expected');
+
+        $file      = new Doubles\MockedFile(null);
+        $processor = new CompareFile($template, $file);
+        $this->assertTrue($processor->process($token));
+    }
+
+    public function testInstanceWithBackup_FailedComparison_CreatesCopyOfExistingFile()
+    {
+        $template = new Template\BasicTemplate('{replace.me} contents');
+        $backup   = new Doubles\FakeDirectory();
+        $token    = new Token\ValueToken('replace.me', 'unexpected');
+
+        $file      = new Doubles\MockedFile(null);
+        $processor = new CompareFile($template, $file, $backup);
+        $this->assertFalse($processor->process($token));
+        $this->assertSame([], $backup->fileList());
+
+        $file      = new Doubles\MockedFile('foo contents', 'foo.file');
+        $processor = new CompareFile($template, $file, $backup);
+        $this->assertFalse($processor->process($token));
+        $this->assertSame('foo contents', $backup->file('foo.file')->contents());
     }
 }

@@ -38,9 +38,9 @@ abstract class Factory implements Commands
 
     abstract public function command(array $options): Command;
 
-    protected function filesValidator(Files $files, TokenCache $tokenCache = null): Processor
+    protected function filesValidator(Files $files, ?TokenCache $tokenCache = null, Files $backup = null): Processor
     {
-        return $this->fileProcessor($files, new Processors\FileValidators($this->env->output(), $tokenCache));
+        return $this->fileProcessor($files, new Processors\FileValidators($this->env->output(), $tokenCache, $backup));
     }
 
     protected function filesGenerator(Files $files, TokenCache $tokenCache = null): Processor
