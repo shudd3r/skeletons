@@ -120,7 +120,7 @@ class ApplicationTest extends TestCase
     public function testUpdatingSynchronizedPackage_GeneratesUpdatedPackageFiles()
     {
         $package = self::$files->directory('package-synchronized');
-        $app     = $this->app($package);
+        $app     = $this->app($package, null, false, true);
 
         $this->assertSame(0, $app->run('update', $this->updateOptions));
         $this->assertSameFiles($package, 'package-updated');
@@ -129,7 +129,7 @@ class ApplicationTest extends TestCase
     public function testUpdatingPackageWithoutMetaDataFile_AbortsExecutionWithoutSideEffects()
     {
         $package = self::$files->directory('package-synchronized');
-        $app     = $this->app($package, false);
+        $app     = $this->app($package, false, false, true);
 
         $this->assertNotEquals(0, $app->run('update', $this->updateOptions));
         $this->assertSameFiles($package, 'package-synchronized');
@@ -138,7 +138,7 @@ class ApplicationTest extends TestCase
     public function testUpdatingDesynchronizedPackage_AbortsExecutionWithoutSideEffects()
     {
         $package = self::$files->directory('package-desynchronized');
-        $app     = $this->app($package);
+        $app     = $this->app($package, null, false, true);
 
         $this->assertNotEquals(0, $app->run('update', $this->updateOptions));
         $this->assertSameFiles($package, 'package-desynchronized');
@@ -147,7 +147,7 @@ class ApplicationTest extends TestCase
     public function testUpdatingWithInvalidReplacements_AbortsExecutionWithoutSideEffects()
     {
         $package = self::$files->directory('package-synchronized');
-        $app     = $this->app($package);
+        $app     = $this->app($package, null, false, true);
 
         $this->assertNotEquals(0, $app->run('update', ['package' => 'invalid-package-name'] + $this->updateOptions));
         $this->assertSameFiles($package, 'package-synchronized');
@@ -177,8 +177,12 @@ class ApplicationTest extends TestCase
         }
     }
 
-    protected function app(Directory $packageDir, ?bool $forceMetaFile = null, bool $backupExists = false): Application
-    {
+    protected function app(
+        Directory $packageDir,
+        ?bool $forceMetaFile = null,
+        bool $backupExists = false,
+        bool $isUpdate = false
+    ): Application {
         $app = new Application($packageDir, self::$skeleton, self::$terminal->reset());
 
         if ($backupExists) { $app->backup($this->backupDirectory()); }
@@ -190,7 +194,7 @@ class ApplicationTest extends TestCase
         $app->replacement(self::PACKAGE_DESC)->add(new Replacement\PackageDescription(self::PACKAGE_NAME));
         $app->replacement(self::SRC_NAMESPACE)->add(new Replacement\SrcNamespace(self::PACKAGE_NAME));
 
-        $app->template('composer.json')->add(new MergedJsonFactory());
+        $app->template('composer.json')->add(new MergedJsonFactory($isUpdate));
 
         return $app;
     }

@@ -1,6 +1,7 @@
 {
     "name": "initial/package-name",
     "description": "Initial package description",
+    "type": "library",
     "license": "MIT",
     "authors": [
         {

@@ -19,12 +19,35 @@ use Shudd3r\Skeletons\RuntimeEnv;
 
 class MergedJsonFactory implements Factory
 {
+    private bool $dynamicKeyUpdate;
+
+    /**
+     * This parameter should be set to true only for updating templates
+     * with dynamic keys (containing placeholders) when valid schema
+     * can be assumed.
+     *
+     * Otherwise, merging algorithm would not be able to distinguish
+     * missing key in original file (with additional key that is not
+     * present in the template schema) from updated key that should
+     * replace the old one.
+     *
+     * When synchronization can be assumed algorithm can treat keys
+     * positionally recognizing mismatched key at current position
+     * as an old value of updated schema that should be replaced.
+     *
+     * @param bool $dynamicKeyUpdate
+     */
+    public function __construct(bool $dynamicKeyUpdate = false)
+    {
+        $this->dynamicKeyUpdate = $dynamicKeyUpdate;
+    }
+
     public function template(File $template, RuntimeEnv $env): Template
     {
         return new Template\MergedJsonTemplate(
             new Template\BasicTemplate($template->contents()),
             $env->package()->file($template->name())->contents(),
-            $env->metaDataFile()->exists()
+            $this->dynamicKeyUpdate
         );
     }
 }

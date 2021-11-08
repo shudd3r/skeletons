@@ -85,7 +85,7 @@ $app->replacement('namespace.src')->add(new Replacement\SrcNamespace('package.na
 ```
 
 Define custom [`Templates\Factory`](src/Templates/Factory.php)
-objects for selected template files:
+objects for selected template files<sup>*</sup>:
 ```php
 use Shudd3r\Skeletons\Templates\Factory;
 
@@ -97,6 +97,10 @@ and execute application:
 $exitCode = $app->run($command, $options);
 exit($exitCode);
 ```
+<sup>*Template that defines dynamic keys for `MergedJsonTemplate`
+(in case of `composer.json` it would usually be `namespace` placeholder)
+requires different merging algorithm for updates, so `$command` needs
+to be defined before custom template (see: [script-example](docs/script-example))</sup>
 
 #### Default CLI parameters
 Available `$command` values:
@@ -109,8 +113,7 @@ Application `$options`:
 - `-i`, `--interactive`: allows providing (init/update) placeholder values
   via interactive shell
 - `--remote`: may be used with `check` or `synch` command to validate/generate
-  only skeleton files of deployed package, when not all generated files are
-  deployed to remote repository.
+  only skeleton files that are deployed to remote repository.
 
 Built-in placeholder value options:
 - `--package=...`: package name (Packagist)
