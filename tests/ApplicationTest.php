@@ -185,8 +185,8 @@ class ApplicationTest extends TestCase
         $package = self::$files->directory('package-desynchronized');
         $app     = $this->app($package);
 
-        $this->assertEquals(0, $app->run('synch'));
-        $this->assertSameFiles($package, 'package-after-synch');
+        $this->assertEquals(0, $app->run('sync'));
+        $this->assertSameFiles($package, 'package-after-sync');
     }
 
     private function assertSameFiles(Directory $package, string $fixturesDirectory): void

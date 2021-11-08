@@ -107,12 +107,12 @@ Available `$command` values:
 - `init`: generate file structure from skeleton template (with backup on overwrite)
 - `check`: verify project synchronization with used skeleton
 - `update`: change current placeholder values (synchronized package required)
-- `synch`: generate missing & mismatched skeleton files (with backup on overwrite)
+- `sync`: generate missing & mismatched skeleton files (with backup on overwrite)
 
 Application `$options`:
 - `-i`, `--interactive`: allows providing (init/update) placeholder values
   via interactive shell
-- `--remote`: may be used with `check` or `synch` command to validate/generate
+- `--remote`: may be used with `check` or `sync` command to validate/generate
   only skeleton files that are deployed to remote repository.
 
 Built-in placeholder value options:
@@ -200,7 +200,7 @@ so check out [`MergedJsonTemplateTest`](tests/Templates/Template/MergedJsonTempl
 for details.
 
 ### TODO features
-- [x] `synch` command - generating divergent (with backup) & missing files
+- [x] `sync` command - generating divergent (with backup) & missing files
 - [x] Handling empty directories - allow removing `.gitkeep` when files added
 - [x] Handling `.gitattributes` in templates (blocking package import)
 - [x] Initial "example files" - removed later, so ignored by validation
