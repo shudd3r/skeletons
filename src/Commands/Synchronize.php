@@ -11,7 +11,7 @@
 
 namespace Shudd3r\Skeletons\Commands;
 
-use Shudd3r\Skeletons\Replacements;
+use Shudd3r\Skeletons\Replacements\Reader;
 use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Processors;
 
@@ -20,28 +20,30 @@ class Synchronize extends Factory
 {
     public function command(array $options): Command
     {
-        $files = $this->templates->generatedFiles(isset($options['remote']) ? ['local', 'init'] : ['init']);
-
-        $metaFilename     = $this->env->metaDataFile()->name();
-        $validationTokens = new Replacements\Reader\ValidationReader($this->replacements, $this->env, $options);
-        $expectedBackup   = new Files\ReflectedFiles($this->env->backup(), $files);
+        $files     = $this->templates->generatedFiles(isset($options['remote']) ? ['local', 'init'] : ['init']);
+        $backup    = new Files\ReflectedFiles($this->env->backup(), $files);
+        $tokens    = new Reader\ValidationReader($this->replacements, $this->env, $options);
+        $processor = $this->filesProcessor($files, $this->mismatchedFileGenerators());
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
-        $noBackupOverwrite = new Precondition\CheckFilesOverwrite($expectedBackup);
-        $validReplacements = new Precondition\ValidReplacements($validationTokens);
-        $precondition      = new Precondition\Preconditions(
-            $this->checkInfo('Checking meta data status (`' . $metaFilename . '` should exist)', $metaDataExists),
+        $noBackupOverwrite = new Precondition\CheckFilesOverwrite($backup);
+        $validReplacements = new Precondition\ValidReplacements($tokens);
+        $preconditions     = new Precondition\Preconditions(
+            $this->checkInfo('Checking meta data status (`' . $this->metaFile . '` should exist)', $metaDataExists),
             $this->checkInfo('Checking backup overwrite', $noBackupOverwrite),
             $this->checkInfo('Validating meta data replacements', $validReplacements)
         );
 
-        $fileValidators = new Processors\FileValidators($this->env->output(), null, $this->env->backup());
-        $fileGenerators = new Processors\FileGenerators($this->env->output());
-        $synchronizer   = new Processors\FallbackProcessors($fileValidators, $fileGenerators);
-        $filesProcessor = new Processors\Processor\FilesProcessor($files, $this->templates, $synchronizer);
-        $processTokens  = new Command\ProcessTokens($validationTokens, $filesProcessor, $this->env->output());
+        $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->env->output());
+        $command       = $this->commandInfo('Generating skeleton files (with backup):', $generateFiles);
 
-        $command = $this->commandInfo('Generating missing/divergent skeleton files (with backup):', $processTokens);
-        return new Command\ProtectedCommand($command, $precondition, $this->env->output());
+        return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
+    }
+
+    private function mismatchedFileGenerators(): Processors
+    {
+        $fileValidators = $this->fileValidators(null, $this->env->backup());
+        $fileGenerators = $this->fileGenerators();
+        return new Processors\FallbackProcessors($fileValidators, $fileGenerators);
     }
 }
