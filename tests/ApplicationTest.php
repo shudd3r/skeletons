@@ -67,6 +67,28 @@ class ApplicationTest extends TestCase
         $this->assertSameFiles($package, 'package-initialized');
     }
 
+    /**
+     * @dataProvider fileContentsCreateBackup
+     * @param string $contents
+     * @param bool   $expectBackup
+     */
+    public function testInitialization_CreatesBackupOnlyForMismatchedNonEmptyFiles(string $contents, bool $expectBackup)
+    {
+        $package = self::$files->directory('package');
+        $backup  = new Doubles\FakeDirectory();
+        $app     = $this->app($package);
+
+        $app->backup($backup);
+        $package->removeFile('composer.json');
+        if ($contents === '---match---') {
+            $contents = self::$files->contentsOf('package-initialized/composer.json');
+        }
+        $package->addFile('composer.json', $contents);
+
+        $app->run('init', $this->initOptions);
+        $this->assertSame($expectBackup, $backup->file('composer.json')->exists());
+    }
+
     public function testWithBackupDirectorySet_BackupFilesAreCopiedToThatDirectory()
     {
         $package = self::$files->directory('package');
@@ -104,7 +126,7 @@ class ApplicationTest extends TestCase
         $this->assertSame($expected, $this->snapshot($package));
     }
 
-    public function testInitializationOverwritingBackupFile_AbortsExecutionWithoutSideEffects()
+    public function testInitializationThatCouldOverwriteBackupFile_AbortsExecutionWithoutSideEffects()
     {
         $package = self::$files->directory('package');
         $app     = $this->app($package);
@@ -204,13 +226,44 @@ class ApplicationTest extends TestCase
         $this->assertSame($expected, $this->snapshot($package));
     }
 
-    public function testSynchronizingDesynchronizedPackage_GeneratesMissingAndDivergentFilesWithBackup()
+    public function testSynchronizingPackage_GeneratesMissingAndDivergentFiles()
     {
         $package = self::$files->directory('package-desynchronized');
         $app     = $this->app($package);
 
         $this->assertEquals(0, $app->run('sync'));
         $this->assertSameFiles($package, 'package-after-sync');
+    }
+
+    /**
+     * @dataProvider fileContentsCreateBackup
+     * @param string $contents
+     * @param bool   $expectBackup
+     */
+    public function testSynchronizingPackage_CreatesBackupOnlyForMismatchedNonEmptyFiles(string $contents, bool $expectBackup)
+    {
+        $package = self::$files->directory('package-desynchronized');
+        $backup  = new Doubles\FakeDirectory();
+        $app     = $this->app($package);
+
+        $app->backup($backup);
+        $package->removeFile('composer.json');
+        if ($contents === '---match---') {
+            $contents = self::$files->contentsOf('package-synchronized/composer.json');
+        }
+        $package->addFile('composer.json', $contents);
+
+        $app->run('sync');
+        $this->assertSame($expectBackup, $backup->file('composer.json')->exists());
+    }
+
+    public function fileContentsCreateBackup(): array
+    {
+        return [
+            'mismatched' => ['{}', true],
+            'matched'    => ['---match---', false],
+            'empty'      => ['', false]
+        ];
     }
 
     private function assertSameFiles(Directory $package, string $fixturesDirectory): void

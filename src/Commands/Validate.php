@@ -11,26 +11,25 @@
 
 namespace Shudd3r\Skeletons\Commands;
 
-use Shudd3r\Skeletons\Replacements;
+use Shudd3r\Skeletons\Replacements\Reader;
 
 
 class Validate extends Factory
 {
     public function command(array $options): Command
     {
-        $files = $this->templates->generatedFiles(isset($options['remote']) ? ['local', 'init'] : ['init']);
-
-        $metaFilename     = $this->env->metaDataFile()->name();
-        $validationTokens = new Replacements\Reader\ValidationReader($this->replacements, $this->env, $options);
+        $files     = $this->templates->generatedFiles(isset($options['remote']) ? ['local', 'init'] : ['init']);
+        $tokens    = new Reader\ValidationReader($this->replacements, $this->env, $options);
+        $processor = $this->filesProcessor($files, $this->fileValidators());
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
-        $validReplacements = new Precondition\ValidReplacements($validationTokens);
+        $validReplacements = new Precondition\ValidReplacements($tokens);
         $precondition      = new Precondition\Preconditions(
-            $this->checkInfo('Checking meta data status (`' . $metaFilename . '` should exist)', $metaDataExists),
+            $this->checkInfo('Checking meta data status (`' . $this->metaFile . '` should exist)', $metaDataExists),
             $this->checkInfo('Validating meta data replacements', $validReplacements)
         );
 
-        $processTokens = new Command\ProcessTokens($validationTokens, $this->filesValidator($files), $this->env->output());
+        $processTokens = new Command\ProcessTokens($tokens, $processor, $this->env->output());
         $command       = $this->commandInfo('Checking skeleton files synchronization:', $processTokens);
 
         return new Command\ProtectedCommand($command, $precondition, $this->env->output());

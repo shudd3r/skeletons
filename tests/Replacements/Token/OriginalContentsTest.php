@@ -48,6 +48,7 @@ class OriginalContentsTest extends TestCase
         return [
             'no placeholder'       => ['original contents', 'template string', 'template string'],
             'no original contents' => ['', "template -{$orig}- string", 'template -- string'],
+            'short contents'       => ['xxx', "template -{$orig}- string", 'template -- string'],
             'only placeholder'     => ['This is original content', "{$orig}", null],
             'surrounded by text'   => ['Foo -Bar- Baz', "Foo -{$orig}- Baz", null],
             'two placeholders'     => ['Foo -Bar- Baz', "Foo -{$orig}- {$orig}", null],

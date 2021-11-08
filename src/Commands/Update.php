@@ -19,29 +19,29 @@ class Update extends Factory
 {
     public function command(array $options): Command
     {
-        $files = $this->templates->generatedFiles(['init']);
-
         $isInteractive = isset($options['i']) || isset($options['interactive']);
-        $metaFilename  = $this->env->metaDataFile()->name();
 
+        $files            = $this->templates->generatedFiles(['init']);
         $cache            = new TokenCache();
-        $updateTokens     = new Reader\UpdateReader($this->replacements, $this->env, $options);
         $validationTokens = new Reader\ValidationReader($this->replacements, $this->env, $options);
+        $validator        = $this->filesProcessor($files, $this->fileValidators($cache));
+        $updateTokens     = new Reader\UpdateReader($this->replacements, $this->env, $options);
+        $generator        = $this->filesProcessor($files, $this->fileGenerators($cache));
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
-        $validateFiles     = new Precondition\SkeletonSynchronization($validationTokens, $this->filesValidator($files, $cache));
+        $validateFiles     = new Precondition\SkeletonSynchronization($validationTokens, $validator);
         $validReplacements = new Precondition\ValidReplacements($updateTokens);
         $preconditions     = new Precondition\Preconditions(
-            $this->checkInfo('Checking meta data status (`' . $metaFilename . '` should exist)', $metaDataExists),
+            $this->checkInfo('Checking meta data status (`' . $this->metaFile . '` should exist)', $metaDataExists),
             $this->checkInfo('Checking skeleton files synchronization:', $validateFiles, false),
             $this->checkInfo('Gathering replacement values', $validReplacements, !$isInteractive)
         );
 
         $saveMetaData  = new Command\SaveMetaData($updateTokens, $this->env->metaData());
-        $generateFiles = new Command\ProcessTokens($updateTokens, $this->filesGenerator($files, $cache), $this->env->output());
+        $generateFiles = new Command\ProcessTokens($updateTokens, $generator, $this->env->output());
         $command       = new Command\CommandSequence(
             $this->commandInfo('Updating skeleton files:', $generateFiles),
-            $this->commandInfo('Updating meta data file (`' . $metaFilename . '`)', $saveMetaData)
+            $this->commandInfo('Updating meta data file (`' . $this->metaFile . '`)', $saveMetaData)
         );
 
         return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
