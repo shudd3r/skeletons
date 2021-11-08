@@ -13,6 +13,7 @@ namespace Shudd3r\Skeletons\Commands;
 
 use Shudd3r\Skeletons\Replacements\Reader;
 use Shudd3r\Skeletons\Environment\Files;
+use Shudd3r\Skeletons\Processors;
 
 
 class Initialize extends Factory
@@ -24,7 +25,7 @@ class Initialize extends Factory
         $files     = $this->templates->generatedFiles();
         $backup    = new Files\ReflectedFiles($this->env->backup(), $files);
         $tokens    = new Reader\InitialReader($this->replacements, $this->env, $options);
-        $processor = $this->filesProcessor($files, $this->fileGenerators());
+        $processor = $this->filesProcessor($files, $this->mismatchedFileGenerators());
 
         $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);
         $noBackupOverwrite = new Precondition\CheckFilesOverwrite($backup);
@@ -35,15 +36,20 @@ class Initialize extends Factory
             $this->checkInfo('Gathering replacement values', $validReplacements, !$isInteractive)
         );
 
-        $backupFiles   = new Command\BackupFiles($files, $this->env->backup());
         $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->env->output());
         $saveMetaData  = new Command\SaveMetaData($tokens, $this->env->metaData());
         $command       = new Command\CommandSequence(
-            $this->commandInfo('Moving existing skeleton files to backup directory', $backupFiles),
             $this->commandInfo('Generating skeleton files:', $generateFiles),
             $this->commandInfo('Generating meta data file (`' . $this->metaFile . '`)', $saveMetaData)
         );
 
         return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
+    }
+
+    private function mismatchedFileGenerators(): Processors
+    {
+        $fileValidators = $this->fileValidators(null, $this->env->backup());
+        $fileGenerators = $this->fileGenerators();
+        return new Processors\FallbackProcessors($fileValidators, $fileGenerators);
     }
 }
