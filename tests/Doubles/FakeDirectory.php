@@ -83,6 +83,11 @@ class FakeDirectory implements Directory
         $this->files[$name] = new MockedFile($contents, $name, $this);
     }
 
+    public function removeFile(string $name): void
+    {
+        unset($this->files[$name]);
+    }
+
     public function updateIndex(File $file): void
     {
         $filename = $file->name();

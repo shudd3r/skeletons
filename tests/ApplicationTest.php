@@ -16,6 +16,7 @@ use Shudd3r\Skeletons\Application;
 use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Templates\Factory\MergedJsonFactory;
 use Shudd3r\Skeletons\Environment\Files\Directory;
+use Shudd3r\Skeletons\Environment\Files\File;
 
 
 class ApplicationTest extends TestCase
@@ -53,7 +54,7 @@ class ApplicationTest extends TestCase
 
     public function testUnknownCommand_ReturnsErrorCode()
     {
-        $app = $this->app(self::$files->directory('package'));
+        $app = $this->app(new Doubles\FakeDirectory());
         $this->assertNotEquals(0, $app->run('unknown', []));
     }
 
@@ -69,19 +70,28 @@ class ApplicationTest extends TestCase
     public function testInitializationWithExistingMetaDataFile_AbortsExecutionWithoutSideEffects()
     {
         $package = self::$files->directory('package');
-        $app     = $this->app($package, true);
+        $app     = $this->app($package);
 
+        $package->addFile('.package/skeleton.json');
+        $app->metaFile('.package/skeleton.json');
+
+        $expected = $this->snapshot($package);
         $this->assertNotEquals(0, $app->run('init', $this->initOptions));
-        $this->assertSameFiles($package, 'package', true);
+        $this->assertSame($expected, $this->snapshot($package));
     }
 
     public function testInitializationOverwritingBackupFile_AbortsExecutionWithoutSideEffects()
     {
         $package = self::$files->directory('package');
-        $app     = $this->app($package, null, true);
+        $app     = $this->app($package);
+        $backup  = new Doubles\FakeDirectory();
 
+        $app->backup($backup);
+        $backup->addFile('README.md');
+
+        $expected = $this->snapshot($package);
         $this->assertNotEquals(0, $app->run('init', $this->initOptions));
-        $this->assertSameFiles($package, 'package');
+        $this->assertSame($expected, $this->snapshot($package));
     }
 
     public function testInitializeWithInvalidReplacements_AbortsExecutionWithoutSideEffects()
@@ -89,20 +99,29 @@ class ApplicationTest extends TestCase
         $package = self::$files->directory('package');
         $app     = $this->app($package);
 
+        $expected = $this->snapshot($package);
         $this->assertNotEquals(0, $app->run('init', ['package' => 'invalid-package-name'] + $this->initOptions));
-        $this->assertSameFiles($package, 'package');
+        $this->assertSame($expected, $this->snapshot($package));
     }
 
-    public function testInitializedPackageWithLocalFiles_IsValidForLocalCheck()
+    public function testSynchronizedPackage_IsValidForLocalCheck()
     {
         $app = $this->app(self::$files->directory('package-initialized'));
+        $this->assertSame(0, $app->run('check'));
+
+        $app = $this->app(self::$files->directory('package-synchronized'));
         $this->assertSame(0, $app->run('check'));
     }
 
     public function testSynchronizedPackageWithoutLocalFiles_IsValidForRemoteCheck()
     {
-        $app = $this->app(self::$files->directory('package-synchronized'));
+        $package = self::$files->directory('package-synchronized');
+        $app     = $this->app($package);
+
+        $package->removeFile('.git/hooks/pre-commit');
+
         $this->assertSame(0, $app->run('check', ['remote' => true]));
+        $this->assertNotSame(0, $app->run('check'));
     }
 
     public function testDesynchronizedPackage_IsInvalid()
@@ -113,14 +132,17 @@ class ApplicationTest extends TestCase
 
     public function testPackageWithoutMetaDataFile_IsInvalid()
     {
-        $app = $this->app(self::$files->directory('package-synchronized'), false);
+        $package = self::$files->directory('package-synchronized');
+        $app     = $this->app($package);
+
+        $package->removeFile('.github/skeleton.json');
         $this->assertNotEquals(0, $app->run('check'));
     }
 
     public function testUpdatingSynchronizedPackage_GeneratesUpdatedPackageFiles()
     {
         $package = self::$files->directory('package-synchronized');
-        $app     = $this->app($package, null, false, true);
+        $app     = $this->app($package, true);
 
         $this->assertSame(0, $app->run('update', $this->updateOptions));
         $this->assertSameFiles($package, 'package-updated');
@@ -129,28 +151,33 @@ class ApplicationTest extends TestCase
     public function testUpdatingPackageWithoutMetaDataFile_AbortsExecutionWithoutSideEffects()
     {
         $package = self::$files->directory('package-synchronized');
-        $app     = $this->app($package, false, false, true);
+        $app     = $this->app($package, true);
 
+        $package->removeFile('.github/skeleton.json');
+
+        $expected = $this->snapshot($package);
         $this->assertNotEquals(0, $app->run('update', $this->updateOptions));
-        $this->assertSameFiles($package, 'package-synchronized');
+        $this->assertSame($expected, $this->snapshot($package));
     }
 
     public function testUpdatingDesynchronizedPackage_AbortsExecutionWithoutSideEffects()
     {
         $package = self::$files->directory('package-desynchronized');
-        $app     = $this->app($package, null, false, true);
+        $app     = $this->app($package, true);
 
+        $expected = $this->snapshot($package);
         $this->assertNotEquals(0, $app->run('update', $this->updateOptions));
-        $this->assertSameFiles($package, 'package-desynchronized');
+        $this->assertSame($expected, $this->snapshot($package));
     }
 
     public function testUpdatingWithInvalidReplacements_AbortsExecutionWithoutSideEffects()
     {
         $package = self::$files->directory('package-synchronized');
-        $app     = $this->app($package, null, false, true);
+        $app     = $this->app($package, true);
 
+        $expected = $this->snapshot($package);
         $this->assertNotEquals(0, $app->run('update', ['package' => 'invalid-package-name'] + $this->updateOptions));
-        $this->assertSameFiles($package, 'package-synchronized');
+        $this->assertSame($expected, $this->snapshot($package));
     }
 
     public function testSynchronizingDesynchronizedPackage_GeneratesMissingAndDivergentFilesWithBackup()
@@ -162,11 +189,9 @@ class ApplicationTest extends TestCase
         $this->assertSameFiles($package, 'package-after-synch');
     }
 
-    protected function assertSameFiles(Directory $package, string $fixturesDirectory, bool $addMetaFile = false): void
+    private function assertSameFiles(Directory $package, string $fixturesDirectory): void
     {
-        $expected = self::$files->directory($fixturesDirectory);
-        if ($addMetaFile) { $this->addMetaFile($expected); }
-
+        $expected   = self::$files->directory($fixturesDirectory);
         $givenFiles = $package->fileList();
         $this->assertCount(count($expected->fileList()), $givenFiles, 'Different number of files');
 
@@ -177,17 +202,9 @@ class ApplicationTest extends TestCase
         }
     }
 
-    protected function app(
-        Directory $packageDir,
-        ?bool $forceMetaFile = null,
-        bool $backupExists = false,
-        bool $isUpdate = false
-    ): Application {
+    protected function app(Directory $packageDir, bool $isUpdate = false): Application
+    {
         $app = new Application($packageDir, self::$skeleton, self::$terminal->reset());
-
-        if ($backupExists) { $app->backup($this->backupDirectory()); }
-        if ($forceMetaFile) { $this->addMetaFile($packageDir); }
-        if (!is_null($forceMetaFile)) { $app->metaFile('forced/metaFile.json'); }
 
         $app->replacement(self::PACKAGE_NAME)->add(new Replacement\PackageName());
         $app->replacement(self::REPO_NAME)->add(new Replacement\RepositoryName(self::PACKAGE_NAME));
@@ -199,15 +216,8 @@ class ApplicationTest extends TestCase
         return $app;
     }
 
-    private function backupDirectory(): Directory
+    private function snapshot(Directory $directory): array
     {
-        $backup = new Doubles\FakeDirectory();
-        $backup->addFile('README.md', 'anything');
-        return $backup;
-    }
-
-    private function addMetaFile(Directory $directory): void
-    {
-        $directory->file('forced/metaFile.json')->write('something');
+        return array_map(fn (File $file) => $file->contents(), $directory->fileList());
     }
 }
