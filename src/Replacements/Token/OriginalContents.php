@@ -33,15 +33,16 @@ class OriginalContents implements Token
 
     public function token(string $mask): Token
     {
+        if (!$this->contents) { return $this->newTokenInstance(); }
+
         $placeholder = '{' . self::PLACEHOLDER . '}';
 
         $hasPlaceholder = strpos($mask, $placeholder) !== false;
         if (!$hasPlaceholder) { return $this->newTokenInstance(); }
 
         $fixedParts = explode($placeholder, $mask);
-        if (!$this->contents) { return $this->newTokenInstance(); }
-
-        $contents = $this->trimmedContents($this->contents, array_shift($fixedParts), array_pop($fixedParts));
+        $contents   = $this->trimmedContents($this->contents, array_shift($fixedParts), array_pop($fixedParts));
+        if (!$contents) { return $this->newTokenInstance(); }
 
         $clips = [];
         foreach ($fixedParts as $fixedPart) {
@@ -69,9 +70,9 @@ class OriginalContents implements Token
         if ($prefix) {
             $contents = substr($contents, strlen($prefix));
         }
-        if ($postfix) {
+        if ($postfix && $contents) {
             $contents = substr($contents, 0, -strlen($postfix));
         }
-        return $contents;
+        return $contents ?: '';
     }
 }
