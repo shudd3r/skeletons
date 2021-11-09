@@ -21,10 +21,10 @@ use Shudd3r\Skeletons\Environment\Files\File;
 
 class ApplicationTests extends TestCase
 {
-    private const PACKAGE_NAME  = 'package.name';
-    private const PACKAGE_DESC  = 'package.description';
-    private const SRC_NAMESPACE = 'namespace.src';
-    private const REPO_NAME     = 'repository.name';
+    protected const PACKAGE_NAME  = 'package.name';
+    protected const PACKAGE_DESC  = 'package.description';
+    protected const SRC_NAMESPACE = 'namespace.src';
+    protected const REPO_NAME     = 'repository.name';
 
     protected static Fixtures\ExampleFiles  $files;
     protected static Doubles\FakeDirectory  $skeleton;

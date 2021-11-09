@@ -30,20 +30,66 @@ class AppIntegrationTest extends ApplicationTests
         $backup  = new Doubles\FakeDirectory();
 
         $app->backup($backup);
-        $app->run('init', []);
+        $this->assertFalse($backup->file('README.md')->exists());
+        $this->assertFalse($backup->file('composer.json')->exists());
 
+        $app->run('init', []);
         $this->assertTrue($backup->file('README.md')->exists());
         $this->assertTrue($backup->file('composer.json')->exists());
     }
 
     public function testWithMetaDataFilenameSet_MetaDataIsSavedInThatFileInsidePackageDirectory()
     {
-        $package = self::$files->directory('package');
+        $package = new Doubles\FakeDirectory();
         $app     = $this->app($package);
 
         $app->metaFile('dev/meta-data.json');
-        $app->run('init', []);
+        $this->assertFalse($package->file('dev/meta-data.json')->exists());
 
+        $app->run('init', []);
         $this->assertTrue($package->file('dev/meta-data.json')->exists());
+    }
+
+    public function testWithoutOptionValues_ReplacementsAreTakenFromInput()
+    {
+        $package = new Doubles\FakeDirectory();
+        $app = $this->app($package);
+
+        $app->metaFile('dev/meta-date.json');
+        $expected = [
+            self::PACKAGE_NAME  => 'input/package',
+            self::REPO_NAME     => 'input/repo',
+            self::PACKAGE_DESC  => 'input description',
+            self::SRC_NAMESPACE => 'Input\\Namespace'
+        ];
+        $this->addInputs($expected);
+
+        $app->run('init', ['i' => true]);
+        $this->assertSame($expected, json_decode($package->file('dev/meta-date.json')->contents(), true));
+    }
+
+    public function testWithoutInput_ReplacementsAreResolvedFromDefaultsAnaFallbacks()
+    {
+        $package = new Doubles\FakeDirectory('/root/package/directory');
+        $app = $this->app($package);
+
+        $app->metaFile('dev/meta-date.json');
+        $expected = [
+            self::PACKAGE_NAME  => 'package/directory',
+            self::REPO_NAME     => 'input/repo',
+            self::PACKAGE_DESC  => 'package/directory package',
+            self::SRC_NAMESPACE => 'Input\\Namespace'
+        ];
+
+        $inputs = $expected + [self::PACKAGE_NAME => '', self::PACKAGE_DESC => ''];
+        $this->addInputs($inputs);
+
+        $app->run('init', ['i' => true]);
+        $this->assertSame($expected, json_decode($package->file('dev/meta-date.json')->contents(), true));
+    }
+
+    private function addInputs(array $inputs): void
+    {
+        array_walk($inputs, fn (string $inputValue) => self::$terminal->addInput($inputValue));
     }
 }
