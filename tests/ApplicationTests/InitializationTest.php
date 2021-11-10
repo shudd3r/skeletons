@@ -17,12 +17,13 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class InitializationTest extends ApplicationTests
 {
-    private array $initOptions = [
-        'repo'    => 'initial/repo',
-        'package' => 'initial/package-name',
-        'desc'    => 'Initial package description',
-        'ns'      => 'Package\Initial',
-        'i'       => true
+    private array $initArgs = [
+        'init',
+        '-i',
+        'repo=initial/repo',
+        'package=initial/package-name',
+        'desc=Initial package description',
+        'ns=Package\Initial'
     ];
 
     public function testInitialization_GeneratesFilesFromTemplate()
@@ -30,7 +31,7 @@ class InitializationTest extends ApplicationTests
         $package = self::$files->directory('package');
         $app     = $this->app($package);
 
-        $this->assertSame(0, $app->run('init', $this->initOptions));
+        $this->assertSame(0, $app->run($this->args(...$this->initArgs)));
         $this->assertSameFiles($package, 'package-initialized');
     }
 
@@ -52,7 +53,7 @@ class InitializationTest extends ApplicationTests
         }
         $package->addFile('composer.json', $contents);
 
-        $app->run('init', $this->initOptions);
+        $app->run($this->args(...$this->initArgs));
         $this->assertSame($expectBackup, $backup->file('composer.json')->exists());
     }
 
@@ -65,7 +66,7 @@ class InitializationTest extends ApplicationTests
         $app->metaFile('.package/skeleton.json');
 
         $expected = $this->snapshot($package);
-        $this->assertNotEquals(0, $app->run('init', $this->initOptions));
+        $this->assertNotEquals(0, $app->run($this->args(...$this->initArgs)));
         $this->assertSame($expected, $this->snapshot($package));
     }
 
@@ -79,7 +80,7 @@ class InitializationTest extends ApplicationTests
         $backup->addFile('README.md');
 
         $expected = $this->snapshot($package);
-        $this->assertNotEquals(0, $app->run('init', $this->initOptions));
+        $this->assertNotEquals(0, $app->run($this->args(...$this->initArgs)));
         $this->assertSame($expected, $this->snapshot($package));
     }
 
@@ -89,7 +90,10 @@ class InitializationTest extends ApplicationTests
         $app     = $this->app($package);
 
         $expected = $this->snapshot($package);
-        $this->assertNotEquals(0, $app->run('init', ['package' => 'invalid-package-name'] + $this->initOptions));
+
+        $args    = $this->initArgs;
+        $args[3] = 'package=invalid-package-name';
+        $this->assertNotEquals(0, $app->run($this->args(...$args)));
         $this->assertSame($expected, $this->snapshot($package));
     }
 }

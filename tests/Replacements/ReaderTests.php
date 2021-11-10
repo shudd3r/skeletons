@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\Reader;
 use Shudd3r\Skeletons\Replacements\Token;
+use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
@@ -73,5 +74,10 @@ abstract class ReaderTests extends TestCase
         if ($metaData) { $env->metaData()->save($metaData); }
 
         return $env;
+    }
+
+    protected function args(array $args): InputArgs
+    {
+        return new InputArgs(array_merge(['script', 'init'], $args));
     }
 }

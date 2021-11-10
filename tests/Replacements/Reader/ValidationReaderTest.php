@@ -40,7 +40,7 @@ class ValidationReaderTest extends ReaderTests
     protected function reader(array $inputs, array $options, array $removeDefaults = []): Reader
     {
         $replacements = $this->replacements($removeDefaults);
-        return new Reader\ValidationReader($replacements, $this->env($inputs, self::META_DATA), $options);
+        return new Reader\ValidationReader($replacements, $this->env($inputs, self::META_DATA), $this->args($options));
     }
 
     protected function defaults(array $override = []): array

@@ -11,21 +11,20 @@
 
 namespace Shudd3r\Skeletons\Commands;
 
+use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements\Reader;
 use Shudd3r\Skeletons\Replacements\TokenCache;
 
 
 class Update extends Factory
 {
-    public function command(array $options): Command
+    public function command(InputArgs $args): Command
     {
-        $isInteractive = isset($options['i']) || isset($options['interactive']);
-
         $files            = $this->templates->generatedFiles(['init']);
         $cache            = new TokenCache();
-        $validationTokens = new Reader\ValidationReader($this->replacements, $this->env, $options);
+        $validationTokens = new Reader\ValidationReader($this->replacements, $this->env, $args);
         $validator        = $this->filesProcessor($files, $this->fileValidators($cache));
-        $updateTokens     = new Reader\UpdateReader($this->replacements, $this->env, $options);
+        $updateTokens     = new Reader\UpdateReader($this->replacements, $this->env, $args);
         $generator        = $this->filesProcessor($files, $this->fileGenerators($cache));
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
@@ -34,7 +33,7 @@ class Update extends Factory
         $preconditions     = new Precondition\Preconditions(
             $this->checkInfo('Checking meta data status (`' . $this->metaFile . '` should exist)', $metaDataExists),
             $this->checkInfo('Checking skeleton files synchronization:', $validateFiles, false),
-            $this->checkInfo('Gathering replacement values', $validReplacements, !$isInteractive)
+            $this->checkInfo('Gathering replacement values', $validReplacements, !$args->interactive())
         );
 
         $saveMetaData  = new Command\SaveMetaData($updateTokens, $this->env->metaData());

@@ -16,11 +16,12 @@ use Shudd3r\Skeletons\Tests\ApplicationTests;
 
 class UpdateTest extends ApplicationTests
 {
-    private array $updateOptions = [
-        'repo'    => 'updated/repo',
-        'package' => 'updated/package-name',
-        'desc'    => 'Updated package description',
-        'ns'      => 'Package\Updated'
+    private array $updateArgs = [
+        'update',
+        'repo=updated/repo',
+        'package=updated/package-name',
+        'desc=Updated package description',
+        'ns=Package\Updated'
     ];
 
     public function testUpdatingSynchronizedPackage_GeneratesUpdatedPackageFiles()
@@ -28,7 +29,7 @@ class UpdateTest extends ApplicationTests
         $package = self::$files->directory('package-synchronized');
         $app     = $this->app($package, true);
 
-        $this->assertSame(0, $app->run('update', $this->updateOptions));
+        $this->assertSame(0, $app->run($this->args(...$this->updateArgs)));
         $this->assertSameFiles($package, 'package-updated');
     }
 
@@ -40,7 +41,7 @@ class UpdateTest extends ApplicationTests
         $package->removeFile('.github/skeleton.json');
 
         $expected = $this->snapshot($package);
-        $this->assertNotEquals(0, $app->run('update', $this->updateOptions));
+        $this->assertNotEquals(0, $app->run($this->args(...$this->updateArgs)));
         $this->assertSame($expected, $this->snapshot($package));
     }
 
@@ -50,7 +51,7 @@ class UpdateTest extends ApplicationTests
         $app     = $this->app($package, true);
 
         $expected = $this->snapshot($package);
-        $this->assertNotEquals(0, $app->run('update', $this->updateOptions));
+        $this->assertNotEquals(0, $app->run($this->args(...$this->updateArgs)));
         $this->assertSame($expected, $this->snapshot($package));
     }
 
@@ -60,7 +61,11 @@ class UpdateTest extends ApplicationTests
         $app     = $this->app($package, true);
 
         $expected = $this->snapshot($package);
-        $this->assertNotEquals(0, $app->run('update', ['package' => 'invalid-package-name'] + $this->updateOptions));
+
+        $args    = $this->updateArgs;
+        $args[2] = 'package=invalid-package-name';
+
+        $this->assertNotEquals(0, $app->run($this->args(...$args)));
         $this->assertSame($expected, $this->snapshot($package));
     }
 }

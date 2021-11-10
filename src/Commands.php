@@ -16,5 +16,5 @@ use Shudd3r\Skeletons\Commands\Command;
 
 interface Commands
 {
-    public function command(array $options): Command;
+    public function command(InputArgs $args): Command;
 }

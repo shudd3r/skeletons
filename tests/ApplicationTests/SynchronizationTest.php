@@ -22,7 +22,7 @@ class SynchronizationTest extends ApplicationTests
         $package = self::$files->directory('package-desynchronized');
         $app     = $this->app($package);
 
-        $this->assertEquals(0, $app->run('sync'));
+        $this->assertEquals(0, $app->run($this->args('sync')));
         $this->assertSameFiles($package, 'package-after-sync');
     }
 
@@ -44,7 +44,7 @@ class SynchronizationTest extends ApplicationTests
         }
         $package->addFile('composer.json', $contents);
 
-        $app->run('sync');
+        $app->run($this->args('sync'));
         $this->assertSame($expectBackup, $backup->file('composer.json')->exists());
     }
 }

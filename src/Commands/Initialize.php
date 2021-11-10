@@ -11,6 +11,7 @@
 
 namespace Shudd3r\Skeletons\Commands;
 
+use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements\Reader;
 use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Processors;
@@ -18,13 +19,11 @@ use Shudd3r\Skeletons\Processors;
 
 class Initialize extends Factory
 {
-    public function command(array $options): Command
+    public function command(InputArgs $args): Command
     {
-        $isInteractive = isset($options['i']) || isset($options['interactive']);
-
         $files     = $this->templates->generatedFiles();
         $backup    = new Files\ReflectedFiles($this->env->backup(), $files);
-        $tokens    = new Reader\InitialReader($this->replacements, $this->env, $options);
+        $tokens    = new Reader\InitialReader($this->replacements, $this->env, $args);
         $processor = $this->filesProcessor($files, $this->mismatchedFileGenerators());
 
         $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);
@@ -33,7 +32,7 @@ class Initialize extends Factory
         $preconditions     = new Precondition\Preconditions(
             $this->checkInfo('Checking meta data status (`' . $this->metaFile . '` should not exist)', $noMetaDataFile),
             $this->checkInfo('Checking backup overwrite', $noBackupOverwrite),
-            $this->checkInfo('Gathering replacement values', $validReplacements, !$isInteractive)
+            $this->checkInfo('Gathering replacement values', $validReplacements, !$args->interactive())
         );
 
         $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->env->output());
