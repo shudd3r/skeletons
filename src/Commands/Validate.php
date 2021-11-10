@@ -19,7 +19,7 @@ class Validate extends Factory
 {
     public function command(InputArgs $args): Command
     {
-        $files     = $this->templates->generatedFiles($args->remoteOnly() ? ['local', 'init'] : ['init']);
+        $files     = $this->templates->generatedFiles($args);
         $tokens    = new Reader\ValidationReader($this->replacements, $this->env, $args);
         $processor = $this->filesProcessor($files, $this->fileValidators());
 

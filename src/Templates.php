@@ -37,8 +37,11 @@ class Templates
         return $factory ? $factory->template($file, $this->env) : new Template\BasicTemplate($file->contents());
     }
 
-    public function generatedFiles(array $excludeTypes = []): Files
+    public function generatedFiles(InputArgs $args): Files
     {
+        $excludeTypes = $args->command() === 'init' ? [] : ['init'];
+        if ($args->remoteOnly()) { $excludeTypes[] = 'local'; }
+
         return new Files\ReflectedFiles($this->env->package(), $this->files->files($excludeTypes));
     }
 

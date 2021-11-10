@@ -20,7 +20,7 @@ class Update extends Factory
 {
     public function command(InputArgs $args): Command
     {
-        $files            = $this->templates->generatedFiles(['init']);
+        $files            = $this->templates->generatedFiles($args);
         $cache            = new TokenCache();
         $validationTokens = new Reader\ValidationReader($this->replacements, $this->env, $args);
         $validator        = $this->filesProcessor($files, $this->fileValidators($cache));

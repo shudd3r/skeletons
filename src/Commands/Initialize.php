@@ -21,7 +21,7 @@ class Initialize extends Factory
 {
     public function command(InputArgs $args): Command
     {
-        $files     = $this->templates->generatedFiles();
+        $files     = $this->templates->generatedFiles($args);
         $backup    = new Files\ReflectedFiles($this->env->backup(), $files);
         $tokens    = new Reader\InitialReader($this->replacements, $this->env, $args);
         $processor = $this->filesProcessor($files, $this->mismatchedFileGenerators());
