@@ -101,6 +101,7 @@ Available `<command>` values:
 - `check`: verify project synchronization with used skeleton
 - `update`: change current placeholder values (synchronized package required)
 - `sync`: generate missing & mismatched skeleton files (with backup on overwrite)
+- `help`: display help similar to this section
 
 Application `<options>`:
 - `-i`, `--interactive`: allows providing `init` or `update` placeholder values
@@ -199,4 +200,6 @@ for details.
 - [x] Handling `.gitattributes` in templates (blocking package import)
 - [x] Initial "example files" - removed later, so ignored by validation
 - [x] Handling untracked "dev files" like git hooks, IDE setup, etc.
-- [ ] `help` command
+- [x] `help` command
+- [ ] Add GenericReplacement for simple user-defined replacements
+- [ ] Error codes & final message depending on exit code
