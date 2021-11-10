@@ -24,6 +24,7 @@ class SrcNamespaceTest extends TestCase
         $replacement = new SrcNamespace();
         $this->assertSame('ns', $replacement->optionName());
         $this->assertSame('Source files namespace', $replacement->inputPrompt());
+        $this->assertSame('Source files namespace [format: <vendor>\\<namespace>]', $replacement->description());
     }
 
     public function testWithSrcNamespaceInComposerJson_DefaultValue_IsReadFromComposerJson()

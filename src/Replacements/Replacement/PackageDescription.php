@@ -36,6 +36,11 @@ class PackageDescription implements Replacement
         return 'Package description';
     }
 
+    public function description(): string
+    {
+        return $this->inputPrompt() . ' [format: non-empty string]';
+    }
+
     public function token(string $name, string $value): ?ValueToken
     {
         return $this->isValid($value) ? new ValueToken($name, $value) : null;

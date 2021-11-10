@@ -24,6 +24,7 @@ class PackageDescriptionTest extends TestCase
         $replacement = new PackageDescription();
         $this->assertSame('desc', $replacement->optionName());
         $this->assertSame('Package description', $replacement->inputPrompt());
+        $this->assertSame('Package description [format: non-empty string]', $replacement->description());
     }
 
     public function testWithDescriptionInComposerJson_DefaultValue_IsReadFromComposerJson()

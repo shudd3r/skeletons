@@ -46,6 +46,11 @@ class FakeReplacement implements Replacement
         return $this->prompt;
     }
 
+    public function description(): string
+    {
+        return $this->prompt . ' [format: anything]';
+    }
+
     public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string
     {
         return $this->default ?? $this->fallbackValue($fallback);

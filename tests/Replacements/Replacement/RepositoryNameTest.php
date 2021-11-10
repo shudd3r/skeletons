@@ -24,6 +24,7 @@ class RepositoryNameTest extends TestCase
         $replacement = new RepositoryName();
         $this->assertSame('repo', $replacement->optionName());
         $this->assertSame('Github repository name', $replacement->inputPrompt());
+        $this->assertSame('Github repository name [format: <owner>/<repository>]', $replacement->description());
     }
 
     public function testWithoutGitConfigFile_DefaultValue_IsResolvedFromFallbackReplacement()
