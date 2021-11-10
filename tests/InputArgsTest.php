@@ -21,14 +21,14 @@ class InputArgsTest extends TestCase
     {
         $args = new InputArgs([]);
         $this->assertSame('skeleton-script', $args->script());
-        $this->assertSame('init', $args->command());
+        $this->assertSame('help', $args->command());
     }
 
     public function testScriptNameOnlyInstance_ReturnsDefaultCommand()
     {
         $args = new InputArgs(['script-only']);
         $this->assertSame('script-only', $args->script());
-        $this->assertSame('init', $args->command());
+        $this->assertSame('help', $args->command());
     }
 
     public function testCommandValue_IsAlwaysSecondArgument()

@@ -21,7 +21,7 @@ class InputArgs
 
     public function __construct(array $argv)
     {
-        $argv = array_values($argv) + ['skeleton-script', 'init'];
+        $argv = array_values($argv) + ['skeleton-script', 'help'];
         $this->script  = basename(array_shift($argv));
         $this->command = array_shift($argv);
         $this->parseArgs($argv);
