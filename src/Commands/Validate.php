@@ -11,15 +11,16 @@
 
 namespace Shudd3r\Skeletons\Commands;
 
+use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements\Reader;
 
 
 class Validate extends Factory
 {
-    public function command(array $options): Command
+    public function command(InputArgs $args): Command
     {
-        $files     = $this->templates->generatedFiles(isset($options['remote']) ? ['local', 'init'] : ['init']);
-        $tokens    = new Reader\ValidationReader($this->replacements, $this->env, $options);
+        $files     = $this->templates->generatedFiles($args->remoteOnly() ? ['local', 'init'] : ['init']);
+        $tokens    = new Reader\ValidationReader($this->replacements, $this->env, $args);
         $processor = $this->filesProcessor($files, $this->fileValidators());
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());

@@ -20,7 +20,7 @@ class AppIntegrationTest extends ApplicationTests
     public function testUnknownCommand_ReturnsErrorCode()
     {
         $app = $this->app(new Doubles\FakeDirectory());
-        $this->assertNotEquals(0, $app->run('unknown', []));
+        $this->assertNotEquals(0, $app->run($this->args('unknown')));
     }
 
     public function testWithBackupDirectorySet_BackupFilesAreCopiedToThatDirectory()
@@ -33,7 +33,7 @@ class AppIntegrationTest extends ApplicationTests
         $this->assertFalse($backup->file('README.md')->exists());
         $this->assertFalse($backup->file('composer.json')->exists());
 
-        $app->run('init', []);
+        $app->run($this->args('init'));
         $this->assertTrue($backup->file('README.md')->exists());
         $this->assertTrue($backup->file('composer.json')->exists());
     }
@@ -46,7 +46,7 @@ class AppIntegrationTest extends ApplicationTests
         $app->metaFile('dev/meta-data.json');
         $this->assertFalse($package->file('dev/meta-data.json')->exists());
 
-        $app->run('init', []);
+        $app->run($this->args('init'));
         $this->assertTrue($package->file('dev/meta-data.json')->exists());
     }
 
@@ -64,7 +64,7 @@ class AppIntegrationTest extends ApplicationTests
         ];
         $this->addInputs($expected);
 
-        $app->run('init', ['i' => true]);
+        $app->run($this->args('init', '-i'));
         $this->assertSame($expected, json_decode($package->file('dev/meta-date.json')->contents(), true));
     }
 
@@ -84,7 +84,7 @@ class AppIntegrationTest extends ApplicationTests
         $inputs = $expected + [self::PACKAGE_NAME => '', self::PACKAGE_DESC => ''];
         $this->addInputs($inputs);
 
-        $app->run('init', ['i' => true]);
+        $app->run($this->args('init', '-i'));
         $this->assertSame($expected, json_decode($package->file('dev/meta-date.json')->contents(), true));
     }
 

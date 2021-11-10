@@ -25,19 +25,19 @@ class InitialReaderTest extends ReaderTests
 
     public function testWithOptionValues_TokensAreBuiltWithMatchingOptionValue()
     {
-        $reader = $this->reader([], ['optBaz' => 'baz (option)']);
+        $reader = $this->reader([], ['optBaz=baz (option)']);
         $this->assertTokenValues($reader, $this->defaults(['baz' => 'baz (option)']));
     }
 
     public function testWhenNotEmptyInteractiveInputValueIsGiven_TokenIsBuiltWithThatValue()
     {
-        $reader = $this->reader(['', 'baz (input)'], ['i' => true]);
+        $reader = $this->reader(['', 'baz (input)'], ['-i']);
         $this->assertTokenValues($reader, $this->defaults(['baz' => 'baz (input)']));
     }
 
     public function testOptionValue_BecomesDefaultForEmptyInput()
     {
-        $reader = $this->reader(['', ''], ['i' => true, 'optFoo' => 'foo (option)']);
+        $reader = $this->reader(['', ''], ['-i', 'optFoo=foo (option)']);
         $this->assertTokenValues($reader, $this->defaults(['foo' => 'foo (option)']));
     }
 
@@ -49,10 +49,10 @@ class InitialReaderTest extends ReaderTests
         $reader = $this->reader([], [], ['foo']);
         $this->assertTokenValues($reader, $this->defaults(['foo' => 'bar (default)']));
 
-        $reader = $this->reader([], ['optBar' => 'bar (option)'], ['foo']);
+        $reader = $this->reader([], ['optBar=bar (option)'], ['foo']);
         $this->assertTokenValues($reader, $this->defaults(['foo' => 'bar (option)', 'bar' => 'bar (option)']));
 
-        $reader = $this->reader(['foo (input)'], ['i' => true, 'optFoo' => 'foo (option)'], ['bar']);
+        $reader = $this->reader(['foo (input)'], ['-i', 'optFoo=foo (option)'], ['bar']);
         $this->assertTokenValues($reader, $this->defaults(['foo' => 'foo (input)', 'bar' => 'foo (input)']));
     }
 
@@ -65,7 +65,7 @@ class InitialReaderTest extends ReaderTests
     protected function reader(array $inputs, array $options, array $removeDefaults = []): Reader
     {
         $replacements = $this->replacements($removeDefaults);
-        return new Reader\InitialReader($replacements, $this->env($inputs), $options);
+        return new Reader\InitialReader($replacements, $this->env($inputs), $this->args($options));
     }
 
     protected function defaults(array $override = []): array

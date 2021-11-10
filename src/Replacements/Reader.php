@@ -11,6 +11,7 @@
 
 namespace Shudd3r\Skeletons\Replacements;
 
+use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\RuntimeEnv;
 
@@ -23,15 +24,13 @@ abstract class Reader
     /** @var ?Token\ValueToken[] */
     protected array $tokens = [];
 
-    private array $options;
-    private bool  $interactive;
+    private InputArgs $args;
 
-    public function __construct(Replacements $replacements, RuntimeEnv $env, array $options)
+    public function __construct(Replacements $replacements, RuntimeEnv $env, InputArgs $args)
     {
         $this->replacements = $replacements;
         $this->env          = $env;
-        $this->options      = $options;
-        $this->interactive  = isset($options['i']) || isset($options['interactive']);
+        $this->args         = $args;
     }
 
     public function token(): ?Token
@@ -54,14 +53,14 @@ abstract class Reader
 
     protected function commandLineOption(Replacement $replacement): ?string
     {
-        $option = $replacement->optionName();
-        return $option ? ($this->options[$option] ?? null) : null;
+        $optionName = $replacement->optionName();
+        return $optionName ? $this->args->valueOf($optionName) ?: null : null;
     }
 
     protected function inputString(Replacement $replacement, string $default): string
     {
         $prompt = $replacement->inputPrompt();
-        if (!$prompt || !$this->interactive) { return $default; }
+        if (!$prompt || !$this->args->interactive()) { return $default; }
 
         $promptPostfix = $default ? ' [default: `' . $default . '`]:' : ':';
         return $this->env->input()->value($prompt . $promptPostfix) ?: $default;

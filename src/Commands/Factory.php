@@ -12,6 +12,7 @@
 namespace Shudd3r\Skeletons\Commands;
 
 use Shudd3r\Skeletons\Commands;
+use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\Templates;
 use Shudd3r\Skeletons\Replacements;
@@ -38,7 +39,7 @@ abstract class Factory implements Commands
         $this->metaFile     = $env->metaDataFile()->name();
     }
 
-    abstract public function command(array $options): Command;
+    abstract public function command(InputArgs $args): Command;
 
     protected function filesProcessor(Files $files, Processors $processors): Processor
     {

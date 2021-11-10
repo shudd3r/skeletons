@@ -13,6 +13,7 @@ namespace Shudd3r\Skeletons\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Application;
+use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Templates\Factory\MergedJsonFactory;
 use Shudd3r\Skeletons\Environment\Files\Directory;
@@ -71,6 +72,11 @@ class ApplicationTests extends TestCase
         $app->template('composer.json')->add(new MergedJsonFactory($isUpdate));
 
         return $app;
+    }
+
+    protected function args(string ...$args): InputArgs
+    {
+        return new InputArgs(array_merge(['script-name'], $args));
     }
 
     protected function snapshot(Directory $directory): array

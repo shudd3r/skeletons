@@ -35,14 +35,21 @@ class Application
         $this->terminal = $terminal ?? new Terminal();
     }
 
-    public function backup(Directory $backup): void
+    public function run(InputArgs $args): int
     {
-        $this->envSetup->setBackupDirectory($backup);
-    }
+        $this->displayHeader($args->interactive());
 
-    public function metaFile(string $filename): void
-    {
-        $this->envSetup->setMetaFile($filename);
+        try {
+            $this->factory($args->command())->command($args)->execute();
+        } catch (Exception $e) {
+            $this->terminal->send($e->getMessage() . PHP_EOL, 1);
+        }
+
+        $exitCode = $this->terminal->exitCode();
+        $summary  = $exitCode ? 'Aborted (ERRORS)' : 'Done (OK)';
+        $this->terminal->send(PHP_EOL . $summary . PHP_EOL);
+
+        return $exitCode;
     }
 
     public function replacement(string $placeholder): ReplacementSetup
@@ -55,28 +62,14 @@ class Application
         return new TemplateSetup($this->appSetup, $filename);
     }
 
-    /**
-     * @param string $command Command name (usually first CLI argument)
-     * @param array  $options Command options
-     *
-     * @return int Exit code where 0 means execution without errors
-     */
-    public function run(string $command, array $options = []): int
+    public function backup(Directory $backup): void
     {
-        $interactive = isset($options['i']) || isset($options['interactive']);
-        $this->displayHeader($interactive && in_array($command, ['init', 'update']));
+        $this->envSetup->setBackupDirectory($backup);
+    }
 
-        try {
-            $this->factory($command)->command($options)->execute();
-        } catch (Exception $e) {
-            $this->terminal->send($e->getMessage() . PHP_EOL, 1);
-        }
-
-        $exitCode = $this->terminal->exitCode();
-        $summary  = $exitCode ? 'Aborted (ERRORS)' : 'Done (OK)';
-        $this->terminal->send(PHP_EOL . $summary . PHP_EOL);
-
-        return $exitCode;
+    public function metaFile(string $filename): void
+    {
+        $this->envSetup->setMetaFile($filename);
     }
 
     protected function factory(string $command): Commands

@@ -11,6 +11,7 @@
 
 namespace Shudd3r\Skeletons\Commands;
 
+use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements\Reader;
 use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Processors;
@@ -18,11 +19,11 @@ use Shudd3r\Skeletons\Processors;
 
 class Synchronize extends Factory
 {
-    public function command(array $options): Command
+    public function command(InputArgs $args): Command
     {
-        $files     = $this->templates->generatedFiles(isset($options['remote']) ? ['local', 'init'] : ['init']);
+        $files     = $this->templates->generatedFiles($args->remoteOnly() ? ['local', 'init'] : ['init']);
         $backup    = new Files\ReflectedFiles($this->env->backup(), $files);
-        $tokens    = new Reader\ValidationReader($this->replacements, $this->env, $options);
+        $tokens    = new Reader\ValidationReader($this->replacements, $this->env, $args);
         $processor = $this->filesProcessor($files, $this->mismatchedFileGenerators());
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());

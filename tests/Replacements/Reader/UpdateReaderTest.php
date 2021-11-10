@@ -25,26 +25,26 @@ class UpdateReaderTest extends ReaderTests
 
     public function testWithOptionValues_TokensAreBuiltWithMatchingOptionValue()
     {
-        $reader = $this->reader([], ['optBar' => 'bar (option)']);
+        $reader = $this->reader([], ['optBar=bar (option)']);
         $this->assertTokenValues($reader, $this->defaults(['bar' => 'bar (option)']));
     }
 
     public function testWhenNotEmptyInteractiveInputValueIsGiven_TokensAreBuiltWithThatValue()
     {
-        $reader = $this->reader(['', 'baz (input)'], ['i' => true]);
+        $reader = $this->reader(['', 'baz (input)'], ['-i']);
         $this->assertTokenValues($reader, $this->defaults(['baz' => 'baz (input)']));
     }
 
     public function testOptionValue_BecomesDefaultForEmptyInput()
     {
-        $reader = $this->reader(['', ''], ['i' => true, 'optFoo' => 'foo (option)']);
+        $reader = $this->reader(['', ''], ['-i', 'optFoo=foo (option)']);
         $this->assertTokenValues($reader, $this->defaults(['foo' => 'foo (option)']));
     }
 
     protected function reader(array $inputs, array $options, array $removeDefaults = []): Reader
     {
         $replacements = $this->replacements($removeDefaults);
-        return new Reader\UpdateReader($replacements, $this->env($inputs, self::META_DATA), $options);
+        return new Reader\UpdateReader($replacements, $this->env($inputs, self::META_DATA), $this->args($options));
     }
 
     protected function defaults(array $override = []): array

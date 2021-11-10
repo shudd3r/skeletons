@@ -30,9 +30,7 @@ if (!file_exists($rootDirectory . '/composer.json')) {
 
 require_once $rootDirectory . '/vendor/autoload.php';
 
-// Simplified command line parsing
-$options = getopt('i', ['package:', 'repo:', 'desc:', 'ns:', 'interactive', 'remote'], $commandIdx);
-$command = $argv[$commandIdx] ?? 'init';
+$args = new InputArgs($argv ?? []);
 
 // Instantiate skeletons Application
 $skeleton = new LocalDirectory(__DIR__ . '/template');
@@ -46,7 +44,7 @@ $app->replacement('package.description')->add(new Replacement\PackageDescription
 $app->replacement('namespace.src')->add(new Replacement\SrcNamespace('package.name'));
 
 // Defining custom template factories for selected files
-$app->template('composer.json')->add(new Factory\MergedJsonFactory($command === 'update'));
+$app->template('composer.json')->add(new Factory\MergedJsonFactory($args->command() === 'update'));
 
-$exitCode = $app->run($command, $options);
+$exitCode = $app->run($args);
 exit($exitCode);
