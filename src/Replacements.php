@@ -30,6 +30,16 @@ class Replacements
         return $this->replacements[$replacementName] ?? null;
     }
 
+    public function info(): array
+    {
+        $describe = function (Replacement $replacement): ?string {
+            if (!$replacement->optionName()) { return null; }
+            return str_pad($replacement->optionName(), 10) . $replacement->description();
+        };
+
+        return array_filter(array_map($describe, $this->replacements));
+    }
+
     public function tokens(Reader $reader): void
     {
         foreach ($this->replacements as $name => $replacement) {
