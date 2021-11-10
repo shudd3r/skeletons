@@ -37,6 +37,11 @@ class SrcNamespace implements Replacement
         return 'Source files namespace';
     }
 
+    public function description(): string
+    {
+        return $this->inputPrompt() . ' [format: <vendor>\\<namespace>]';
+    }
+
     public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string
     {
         return $this->namespaceFromComposer($env) ?? $this->namespaceFromFallbackValue($fallback);

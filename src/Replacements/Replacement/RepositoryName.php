@@ -36,6 +36,11 @@ class RepositoryName implements Replacement
         return 'Github repository name';
     }
 
+    public function description(): string
+    {
+        return $this->inputPrompt() . ' [format: <owner>/<repository>]';
+    }
+
     public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string
     {
         return $this->repositoryFromGitConfig($env) ?? $this->fallbackValue($fallback);

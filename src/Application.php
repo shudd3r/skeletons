@@ -83,6 +83,7 @@ class Application
             case 'check':  return new Commands\Validate($env, $replacements, $templates);
             case 'update': return new Commands\Update($env, $replacements, $templates);
             case 'sync':   return new Commands\Synchronize($env, $replacements, $templates);
+            case 'help':   return new Commands\Help($env, $replacements);
         }
 
         throw new Exception("Unknown `{$command}` command");

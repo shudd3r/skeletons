@@ -24,6 +24,7 @@ class PackageNameTest extends TestCase
         $replacement = new PackageName();
         $this->assertSame('package', $replacement->optionName());
         $this->assertSame('Packagist package name', $replacement->inputPrompt());
+        $this->assertSame('Packagist package name [format: <vendor>/<package>]', $replacement->description());
     }
 
     public function testWithPackageNameInComposerJson_DefaultValue_IsReadFromComposerJson()

@@ -30,6 +30,11 @@ class PackageName implements Replacement
         return 'Packagist package name';
     }
 
+    public function description(): string
+    {
+        return $this->inputPrompt() . ' [format: <vendor>/<package>]';
+    }
+
     public function token(string $name, string $value): ?ValueToken
     {
         if (!$this->isValid($value)) { return null; }
