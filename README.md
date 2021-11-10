@@ -45,36 +45,27 @@ Following sections will cover template & script files in more details.
   ```
 - Publish skeleton package
 
-#### Building projects using skeleton
-Usage of skeleton package should be explained individually in
-its README, because commands may depend on how its executable
-script was built.
-
-Scripts of different skeletons may vary significantly as
-they're highly customizable. The differences may come from
-command & options remapping, using only a subset of built-in
-replacements, adding custom replacements or introducing
-different template behavior for certain skeleton files.
-
-### Executable script file
+#### Executable script file
 Entire script that uses this library might look like
 attached [docs/script-example](docs/script-example) file.
 
-#### Setup steps
-Instantiate application:
+##### Setup steps
+- Instantiate input arguments and application:
 
 ```php
 namespace Shudd3r\Skeletons;
 
 use Shudd3r\Skeletons\Environment\Files\Directory\LocalDirectory;
 
+$args = new InputArgs($argv);
+
 $package  = new LocalDirectory(get_cwd());
 $template = new LocalDirectory(__DIR__ . '/template');
 $app      = new Application($package, $template);
 ```
 
-Add [`Replacement`](src/Replacements/Replacement.php) definitions
-for placeholders used in templates:
+- Add [`Replacement`](src/Replacements/Replacement.php) definitions
+  for placeholders used in templates:
 ```php
 use Shudd3r\Skeletons\Replacements\Replacement;
 
@@ -84,47 +75,50 @@ $app->replacement('package.description')->add(new Replacement\PackageDescription
 $app->replacement('namespace.src')->add(new Replacement\SrcNamespace('package.name'));
 ```
 
-Define custom [`Templates\Factory`](src/Templates/Factory.php)
-objects for selected template files<sup>*</sup>:
+- Define custom [`Templates\Factory`](src/Templates/Factory.php)
+  objects for selected template files<sup>*</sup>:
 ```php
 use Shudd3r\Skeletons\Templates\Factory;
 
-$app->template('composer.json')->add(new Factory\MergedJsonFactory());
+$app->template('composer.json')->add(new Factory\MergedJsonFactory($args->command() === 'update'));
 ```
-Parse command `$args` into main `$command` and `$options` array
-and execute application:
+- Run application with `InputArgs`:
 ```php
-$exitCode = $app->run($command, $options);
+$exitCode = $app->run($args);
 exit($exitCode);
 ```
 <sup>*Template that defines dynamic keys for `MergedJsonTemplate`
 (in case of `composer.json` it would usually be `namespace` placeholder)
-requires different merging algorithm for updates, so `$command` needs
-to be defined before custom template (see: [script-example](docs/script-example))</sup>
+requires different merging algorithm for updates. If template doesn't use
+dynamic keys, boolean parameter is not required.</sup>
 
-#### Default CLI parameters
-Available `$command` values:
+### Command line usage
+```
+vendor\bin\script-name <command> [<options>] [<argument>=<value>]
+```
+Available `<command>` values:
 - `init`: generate file structure from skeleton template (with backup on overwrite)
 - `check`: verify project synchronization with used skeleton
 - `update`: change current placeholder values (synchronized package required)
 - `sync`: generate missing & mismatched skeleton files (with backup on overwrite)
 
-Application `$options`:
-- `-i`, `--interactive`: allows providing (init/update) placeholder values
+Application `<options>`:
+- `-i`, `--interactive`: allows providing `init` or `update` placeholder values
   via interactive shell
-- `--remote`: may be used with `check` or `sync` command to validate/generate
-  only skeleton files that are deployed to remote repository.
+- `-r`, `--remote`: may be used so that only skeleton files that are deployed to
+  remote repository were processed.
 
-Built-in placeholder value options:
-- `--package=...`: package name (Packagist)
-- `--repo=...`: remote (GitHub) repository name
-- `--desc=...`: package description
-- `--ns=...`: project's main namespace
+Available `<argument>` names depend on placeholders configured in application.
+Currently, built-in placeholders can receive their values from following arguments:
+- `package`: package name (Packagist)
+- `repo`: remote (GitHub) repository name
+- `desc`: package description
+- `ns`: project's main namespace
 
 For example following command for [script-example](docs/script-example)
 would update package description:
 ```bash
-vendor/bin/script-example --desc="New package description" update
+vendor/bin/script-example update desc="New package description"
 ```
 With both `--interactive` and placeholder options,
 command values will become default for empty input.
