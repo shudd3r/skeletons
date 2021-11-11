@@ -74,7 +74,29 @@ $app->replacement('repository.name')->add(new Replacement\RepositoryName('packag
 $app->replacement('package.description')->add(new Replacement\PackageDescription('package.name'));
 $app->replacement('namespace.src')->add(new Replacement\SrcNamespace('package.name'));
 ```
+Simple replacement definitions don't need to be implemented - [`GenericReplacement`](src/Replacements/Replacement/GenericReplacement.php)
+can be used instead. It can also be built using fluent builder invoked with `build()`
+method. Here is an example of build equivalent to [`PackageDescription`](src/Replacements/Replacement/PackageDescription.php):
+```php
+use Shudd3r\Skeletons\RuntimeEnv;
+use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
 
+$defaultDescription = function (RuntimeEnv $env, FallbackReader $fallback): string {
+    $fallbackValue = function (): ?string {
+        $value = $fallback->valueOf('package.name');
+        return $value ? $value . ' package' : ''; 
+    };
+
+    return $env->composer()->value('description') ?? $fallbackValue();
+};
+
+$app->replacement('alternate.description')
+    ->build($defaultDescription)
+    ->validate(fn (string $value): bool => !empty($value))
+    ->inputPrompt('Alternative description')
+    ->optionName('alt-desc')
+    ->description('Alternative description [format: non-empty string]');
+```
 - Define custom [`Templates\Factory`](src/Templates/Factory.php)
   objects for selected template files<sup>*</sup>:
 ```php
@@ -202,5 +224,5 @@ for details.
 - [x] Initial "example files" - removed later, so ignored by validation
 - [x] Handling untracked "dev files" like git hooks, IDE setup, etc.
 - [x] `help` command
-- [ ] Add GenericReplacement for simple user-defined replacements
+- [x] Add GenericReplacement for simple user-defined replacements
 - [ ] Error codes & final message depending on exit code
