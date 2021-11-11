@@ -28,7 +28,7 @@ class GenericReplacement implements Replacement
     private ?string  $description;
 
     /**
-     * @param Closure  $default     fn (RuntimeEnv, FallbackReader) => ?string
+     * @param Closure  $default     fn (RuntimeEnv, FallbackReader) => string
      * @param ?Closure $token       fn (string, string) => ?ValueToken
      * @param ?Closure $validate    fn (string) => bool
      * @param ?string  $inputPrompt
@@ -66,7 +66,7 @@ class GenericReplacement implements Replacement
         return $this->description ?? $this->inputPrompt ?? '';
     }
 
-    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): ?string
+    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string
     {
         return ($this->default)($env, $fallback);
     }

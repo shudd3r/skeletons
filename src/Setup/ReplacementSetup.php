@@ -36,7 +36,7 @@ class ReplacementSetup
      * @see RuntimeEnv
      * @see FallbackReader
      *
-     * @param Closure  $default fn (RuntimeEnv, FallbackReader) => ?string
+     * @param Closure  $default fn (RuntimeEnv, FallbackReader) => string
      */
     public function build(Closure $default): ReplacementBuilder
     {

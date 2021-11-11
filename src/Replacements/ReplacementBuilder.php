@@ -31,7 +31,7 @@ class ReplacementBuilder
      * @see RuntimeEnv
      * @see FallbackReader
      *
-     * @param Closure  $default fn (RuntimeEnv, FallbackReader) => ?string
+     * @param Closure  $default fn (RuntimeEnv, FallbackReader) => string
      */
     public function __construct(Closure $default)
     {
