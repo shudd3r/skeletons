@@ -40,7 +40,7 @@ class InputArgs
     public function interactive(): bool
     {
         if (!in_array($this->command, ['init', 'update'])) { return false; }
-        return isset($this->options['i']) || isset($this->options['interactive']);
+        return !$this->arguments || isset($this->options['i']) || isset($this->options['interactive']);
     }
 
     public function remoteOnly(): bool

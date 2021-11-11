@@ -51,13 +51,14 @@ class InputArgsTest extends TestCase
     public function interactiveArgs(): array
     {
         return [
-            'no args'       => [false, ['init']],
-            'wrong command' => [false, ['sync', '-i']],
-            'short init'    => [true, ['init', '-i']],
-            'short update'  => [true, ['update', '-i']],
-            'missing short' => [false, ['init', '-a']],
+            'command only'  => [true, ['init']],
+            'no args'       => [true, ['init', '-opt']],
+            'short update'  => [true, ['update', '-i', 'foo=bar']],
+            'no option'     => [false, ['init', 'foo=bar']],
+            'other short'   => [false, ['init', '-a', 'foo=bar']],
+            'other long'    => [false, ['init', '--long-args', '--it', 'foo=bar']],
+            'wrong command' => [false, ['sync', '-i', 'foo=bar']],
             'grouped short' => [true, ['init', '-string']],
-            'missing long'  => [false, ['init', '--long-args', '--it']],
             'correct long'  => [true, ['init', '--long-args', '--interactive']],
             'long & short'  => [true, ['init', '--long-args', '--interactive', '-shi']],
         ];
