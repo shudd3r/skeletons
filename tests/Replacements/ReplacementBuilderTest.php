@@ -12,9 +12,9 @@
 namespace Shudd3r\Skeletons\Tests\Replacements;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\Skeletons\Replacements\Replacement\GenericReplacement;
-use Shudd3r\Skeletons\Replacements\ReplacementBuilder;
-use Closure;
+use Shudd3r\Skeletons\Replacements\Builder\ReplacementBuilder;
+use Shudd3r\Skeletons\Replacements\Builder\BuilderSetup;
+use Shudd3r\Skeletons\Replacements\Replacement;
 
 
 class ReplacementBuilderTest extends TestCase
@@ -26,14 +26,15 @@ class ReplacementBuilderTest extends TestCase
     public function testBuildingReplacement(array $constructorParams)
     {
         $builder = new ReplacementBuilder($constructorParams[0]);
+        $setup   = new BuilderSetup($builder);
 
-        if ($constructorParams[1] ?? null) { $builder->token($constructorParams[1]); }
-        if ($constructorParams[2] ?? null) { $builder->validate($constructorParams[2]); }
-        if ($constructorParams[3] ?? null) { $builder->inputPrompt($constructorParams[3]); }
-        if ($constructorParams[4] ?? null) { $builder->optionName($constructorParams[4]); }
-        if ($constructorParams[5] ?? null) { $builder->description($constructorParams[5]); }
+        if ($constructorParams[1] ?? null) { $setup->token($constructorParams[1]); }
+        if ($constructorParams[2] ?? null) { $setup->validate($constructorParams[2]); }
+        if ($constructorParams[3] ?? null) { $setup->inputPrompt($constructorParams[3]); }
+        if ($constructorParams[4] ?? null) { $setup->optionName($constructorParams[4]); }
+        if ($constructorParams[5] ?? null) { $setup->description($constructorParams[5]); }
 
-        $expected = new GenericReplacement(...$constructorParams);
+        $expected = new Replacement\GenericReplacement(...$constructorParams);
         $this->assertEquals($expected, $builder->build());
     }
 

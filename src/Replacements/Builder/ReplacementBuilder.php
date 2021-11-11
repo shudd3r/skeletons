@@ -9,10 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Replacements;
+namespace Shudd3r\Skeletons\Replacements\Builder;
 
-use Shudd3r\Skeletons\Replacements\Replacement\GenericReplacement;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
+use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Closure;
@@ -38,20 +37,12 @@ class ReplacementBuilder
         $this->default = $default;
     }
 
-    /**
-     * @see ValueToken
-     *
-     * @param Closure $token fn (string, string) => ?ValueToken
-     */
     public function token(Closure $token): self
     {
         $this->token = $token;
         return $this;
     }
 
-    /**
-     * @param Closure $validate fn (string) => bool
-     */
     public function validate(Closure $validate): self
     {
         $this->validate = $validate;
@@ -78,7 +69,7 @@ class ReplacementBuilder
 
     public function build(): Replacement
     {
-        return new GenericReplacement(
+        return new Replacement\GenericReplacement(
             $this->default,
             $this->token,
             $this->validate,

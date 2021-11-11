@@ -12,7 +12,8 @@
 namespace Shudd3r\Skeletons\Setup;
 
 use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Replacements\ReplacementBuilder;
+use Shudd3r\Skeletons\Replacements\Builder\ReplacementBuilder;
+use Shudd3r\Skeletons\Replacements\Builder\BuilderSetup;
 use Closure;
 
 
@@ -38,10 +39,10 @@ class ReplacementSetup
      *
      * @param Closure  $default fn (RuntimeEnv, FallbackReader) => string
      */
-    public function build(Closure $default): ReplacementBuilder
+    public function build(Closure $default): BuilderSetup
     {
         $builder = new ReplacementBuilder($default);
         $this->setup->addBuilder($this->placeholder, $builder);
-        return $builder;
+        return new BuilderSetup($builder);
     }
 }
