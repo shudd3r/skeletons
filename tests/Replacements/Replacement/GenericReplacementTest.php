@@ -61,6 +61,17 @@ class GenericReplacementTest extends TestCase
         $this->assertFalse($replacement->isValid('bar'));
     }
 
+    public function testForInvalidValue_TokenMethod_ReturnsNull()
+    {
+        $createdToken = new ValueToken('foo', 'hardcoded');
+        $token        = fn (string $name, string $value) => $createdToken;
+        $validate     = fn (string $value) => $value === 'valid';
+        $replacement  = new GenericReplacement(self::$default, $token, $validate);
+
+        $this->assertSame($createdToken, $replacement->token('placeholder', 'valid'));
+        $this->assertNull($replacement->token('placeholder', 'foo'));
+    }
+
     public function testInputOptions()
     {
         $replacement = new GenericReplacement(self::$default, null, null, 'Give value', 'option', 'This is option');
