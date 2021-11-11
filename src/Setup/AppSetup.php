@@ -13,6 +13,7 @@ namespace Shudd3r\Skeletons\Setup;
 
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\Replacement;
+use Shudd3r\Skeletons\Replacements\ReplacementBuilder;
 use Shudd3r\Skeletons\Templates;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\Exception;
@@ -28,11 +29,20 @@ class AppSetup
         self::EXT_PREFIX . 'init'
     ];
 
+    /** @var ?Replacement[] */
     private array $replacements = [];
-    private array $templates    = [];
+
+    /** @var ReplacementBuilder[] */
+    private array $builders = [];
+
+    /** @var Templates\Factory[]  */
+    private array $templates = [];
 
     public function replacements(): Replacements
     {
+        foreach ($this->builders as $placeholder => $builder) {
+            $this->replacements[$placeholder] = $builder->build();
+        }
         return new Replacements($this->replacements);
     }
 
@@ -43,16 +53,15 @@ class AppSetup
 
     public function addReplacement(string $placeholder, Replacement $replacement): void
     {
-        if ($placeholder === Replacements\Token\OriginalContents::PLACEHOLDER) {
-            $message = "Overwritten built-in `$placeholder` placeholder replacement - use different name";
-            throw new Exception\ReplacementOverwriteException($message);
-        }
-
-        if (isset($this->replacements[$placeholder])) {
-            $message = "Duplicated definition for `$placeholder` placeholder replacement";
-            throw new Exception\ReplacementOverwriteException($message);
-        }
+        $this->validatePlaceholder($placeholder);
         $this->replacements[$placeholder] = $replacement;
+    }
+
+    public function addBuilder(string $placeholder, ReplacementBuilder $builder): void
+    {
+        $this->validatePlaceholder($placeholder);
+        $this->replacements[$placeholder] = null;
+        $this->builders[$placeholder]     = $builder;
     }
 
     public function addTemplate(string $filename, Templates\Factory $template): void
@@ -62,6 +71,19 @@ class AppSetup
             throw new Exception\TemplateOverwriteException($message);
         }
         $this->templates[$filename] = $template;
+    }
+
+    private function validatePlaceholder(string $placeholder): void
+    {
+        if ($placeholder === Replacements\Token\OriginalContents::PLACEHOLDER) {
+            $message = "Overwritten built-in `$placeholder` replacement placeholder - use different name";
+            throw new Exception\ReplacementOverwriteException($message);
+        }
+
+        if (array_key_exists($placeholder, $this->replacements)) {
+            $message = "Duplicated definition for `$placeholder` placeholder replacement";
+            throw new Exception\ReplacementOverwriteException($message);
+        }
     }
 
     private function templateFiles(RuntimeEnv $env): Templates\TemplateFiles
