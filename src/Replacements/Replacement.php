@@ -24,7 +24,7 @@ interface Replacement
 
     public function description(): string;
 
-    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): ?string;
+    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string;
 
     public function isValid(string $value): bool;
 
