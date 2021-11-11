@@ -13,7 +13,7 @@ namespace Shudd3r\Skeletons\Setup;
 
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Replacements\Builder\ReplacementBuilder;
+use Shudd3r\Skeletons\Setup\Builder\ReplacementBuilder;
 use Shudd3r\Skeletons\Templates;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\Exception;

@@ -9,11 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Tests\Replacements;
+namespace Shudd3r\Skeletons\Tests\Setup\Builder;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\Skeletons\Replacements\Builder\ReplacementBuilder;
-use Shudd3r\Skeletons\Replacements\Builder\BuilderSetup;
+use Shudd3r\Skeletons\Setup\Builder\ReplacementBuilder;
+use Shudd3r\Skeletons\Setup\Builder\BuildSetup;
 use Shudd3r\Skeletons\Replacements\Replacement;
 
 
@@ -26,7 +26,7 @@ class ReplacementBuilderTest extends TestCase
     public function testBuildingReplacement(array $constructorParams)
     {
         $builder = new ReplacementBuilder($constructorParams[0]);
-        $setup   = new BuilderSetup($builder);
+        $setup   = new BuildSetup($builder);
 
         if ($constructorParams[1] ?? null) { $setup->token($constructorParams[1]); }
         if ($constructorParams[2] ?? null) { $setup->validate($constructorParams[2]); }
