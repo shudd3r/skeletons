@@ -68,7 +68,7 @@ class HelpTest extends ApplicationTests
     private function assertMessage(string $expectedStart, string $expectedEnd): void
     {
         $messages = self::$terminal->messagesSent();
-        $helpMessage = str_replace(PHP_EOL, "\n", $messages[5]);
+        $helpMessage = str_replace(PHP_EOL, "\n", $messages[1]);
 
         $this->assertStringStartsWith($expectedStart, $helpMessage);
         $this->assertStringEndsWith($expectedEnd, $helpMessage);

@@ -23,6 +23,13 @@ use Exception;
 class Application
 {
     private const VERSION = '0.1';
+    private const HEADER_MESSAGE = <<<HEAD
+        ------------------------------------------------------------
+        Shudd3r/Skeletons (%s)
+        Package skeleton template & validation system
+        %s------------------------------------------------------------
+        HEAD;
+
 
     private EnvSetup $envSetup;
     private AppSetup $appSetup;
@@ -91,12 +98,8 @@ class Application
 
     private function displayHeader(bool $isInteractive): void
     {
-        $this->terminal->send(PHP_EOL);
-        $this->terminal->send('------------------------------------------------------------' . PHP_EOL);
-        $this->terminal->send('Shudd3r/Skeletons (' . self::VERSION . ')' . PHP_EOL);
-        $this->terminal->send('Package skeleton template & validation system' . PHP_EOL);
-        $isInteractive &&
-        $this->terminal->send('Interactive input mode (press ctrl-c to abort)' . PHP_EOL);
-        $this->terminal->send('------------------------------------------------------------' . PHP_EOL);
+        $interactiveNote = $isInteractive ? 'Interactive input mode (press ctrl-c to abort)' . PHP_EOL : '';
+        $header = sprintf(PHP_EOL . self::HEADER_MESSAGE . PHP_EOL, self::VERSION, $interactiveNote);
+        $this->terminal->send($header);
     }
 }
