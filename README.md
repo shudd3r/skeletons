@@ -104,8 +104,9 @@ Available `<command>` values:
 - `help`: display help similar to this section
 
 Application `<options>`:
-- `-i`, `--interactive`: allows providing `init` or `update` placeholder values
-  via interactive shell
+- `-i`, `--interactive`: allows providing placeholder values for `init` or `update`
+  command via interactive shell. When no `<argument>=<value>` is provided interactive
+  mode is turned on implicitly by default.
 - `-r`, `--remote`: may be used so that only skeleton files that are deployed to
   remote repository were processed.
 

@@ -28,12 +28,12 @@ class HelpTest extends ApplicationTests
 
         $expectedStart = <<<HELP
             Usage from package root directory:
-            vendor/bin/script-name <command> [<options>]
+            vendor/bin/script-name <command> [<options>] [<argument>=<value> ...]
+            
             HELP;
 
         $expectedEnd = <<<HELP
-                -r, --remote      May be used so that only deployable skeleton
-                                  files were processed
+            No available <arguments> for placeholder <values>
             
             HELP;
 
@@ -47,19 +47,22 @@ class HelpTest extends ApplicationTests
         $app = new Application($package, $templates, self::$terminal->reset());
 
         $app->replacement('foo.test')->add(new Doubles\FakeReplacement(null, null, 'foo', 'Option Foo'));
-        $app->replacement('bar.test')->add(new Doubles\FakeReplacement(null, null, 'bar', 'Option Bar'));
+        $app->replacement('bar.test')->add(new Doubles\FakeReplacement(null, null, null, 'Option Bar'));
+        $app->replacement('baz.test')->add(new Doubles\FakeReplacement(null, null, 'baz', 'Option Baz'));
 
         $this->assertSame(0, $app->run($this->args('help')));
 
         $expectedStart = <<<HELP
             Usage from package root directory:
             vendor/bin/script-name <command> [<options>] [<argument>=<value> ...]
+            
             HELP;
 
         $expectedEnd = <<<HELP
             Available <arguments> for placeholder <values>:
                 foo       Option Foo [format: anything]
-                bar       Option Bar [format: anything]
+                baz       Option Baz [format: anything]
+            
             HELP;
 
         $this->assertMessage($expectedStart, $expectedEnd);
