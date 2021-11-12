@@ -38,6 +38,6 @@ class CompareFile implements Processor
         if ($this->backup && !$synchronized && $fileContents) {
             $this->backup->file($this->file->name())->write($fileContents);
         }
-        return $synchronized;
+        return $synchronized && $this->file->exists();
     }
 }

@@ -12,6 +12,7 @@
 namespace Shudd3r\Skeletons\Tests\ApplicationTests;
 
 use Shudd3r\Skeletons\Tests\ApplicationTests;
+use Shudd3r\Skeletons\Application;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
@@ -55,6 +56,17 @@ class InitializationTest extends ApplicationTests
 
         $app->run($this->args(...$this->initArgs));
         $this->assertSame($expectBackup, $backup->file('composer.json')->exists());
+    }
+
+    public function testInitialization_CreatesEmptyTemplateFiles()
+    {
+        $package  = new Doubles\FakeDirectory();
+        $template = new Doubles\FakeDirectory();
+        $app      = new Application($package, $template, self::$terminal->reset());
+
+        $template->addFile('.gitkeep');
+        $app->run($this->args(...$this->initArgs));
+        $this->assertTrue($package->file('.gitkeep')->exists());
     }
 
     public function testInitializationWithExistingMetaDataFile_AbortsExecutionWithoutSideEffects()

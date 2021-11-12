@@ -219,10 +219,11 @@ for details.
 
 ### TODO features
 - [x] `sync` command - generating divergent (with backup) & missing files
-- [x] Handling empty directories - allow removing `.gitkeep` when files added
 - [x] Handling `.gitattributes` in templates (blocking package import)
 - [x] Initial "example files" - removed later, so ignored by validation
 - [x] Handling untracked "dev files" like git hooks, IDE setup, etc.
 - [x] `help` command
 - [x] Add GenericReplacement for simple user-defined replacements
+- [ ] Add procedure removing init dummy files like `.gitkeep` or example
+  files when original package files exist in directory
 - [ ] Error codes & final message depending on exit code
