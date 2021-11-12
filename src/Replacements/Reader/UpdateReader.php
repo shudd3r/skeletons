@@ -17,9 +17,12 @@ use Shudd3r\Skeletons\Replacements\Replacement;
 
 class UpdateReader extends Reader
 {
-    public function readToken(string $name, Replacement $replacement): void
+    public function readToken(string $name, Replacement $replacement): bool
     {
         $default = $this->commandLineOption($replacement) ?? $this->metaDataValue($name);
-        $this->tokens[$name] = $replacement->token($name, $this->inputString($replacement, $default));
+        $token   = $replacement->token($name, $this->inputString($replacement, $default));
+        $this->tokens[$name] = $token;
+
+        return $token !== null;
     }
 }

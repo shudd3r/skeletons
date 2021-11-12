@@ -49,7 +49,7 @@ abstract class Reader
         return $values;
     }
 
-    abstract public function readToken(string $name, Replacement $replacement): void;
+    abstract public function readToken(string $name, Replacement $replacement): bool;
 
     protected function commandLineOption(Replacement $replacement): ?string
     {
@@ -72,7 +72,14 @@ abstract class Reader
             $this->env->output()->send('    Invalid value. Try ' . $retryInfo . PHP_EOL);
             $input = $this->validInput($replacement, $prompt, $default);
         }
-        return $input ?? '';
+
+        if ($input === null) {
+            $abortMessage = '    Invalid value. Try `help` command for information on this value format.' . PHP_EOL
+                          . '    Aborting...' . PHP_EOL;
+            $this->env->output()->send($abortMessage);
+            return '';
+        }
+        return $input;
     }
 
     protected function metaDataValue(string $namespace): string
@@ -82,7 +89,7 @@ abstract class Reader
 
     private function tokens(): array
     {
-        if (!$this->tokens) { $this->replacements->tokens($this); }
+        if (!$this->tokens) { $this->replacements->tokens($this, $this->args->interactive()); }
         return $this->tokens;
     }
 
