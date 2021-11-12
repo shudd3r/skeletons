@@ -65,20 +65,15 @@ abstract class Reader
         if (!$replacement->isValid($default)) { $default = null; }
         $prompt = $default ? $prompt . ' [default: `' . $default . '`]: ' : $prompt . ': ';
 
-        $input = $this->validInput($replacement, $prompt, $default);
+        $input = $this->fallbackInput($prompt, $default);
         $retry = 2;
-        while ($input === null && $retry--) {
+        while (!$replacement->isValid($input) && $retry--) {
             $retryInfo = $retry === 0 ? 'once more' : 'again';
             $this->env->output()->send('    Invalid value. Try ' . $retryInfo . PHP_EOL);
-            $input = $this->validInput($replacement, $prompt, $default);
+            $input = $this->fallbackInput($prompt, $default);
         }
 
-        if ($input === null) {
-            $abortMessage = '    Invalid value. Try `help` command for information on this value format.' . PHP_EOL
-                          . '    Aborting...' . PHP_EOL;
-            $this->env->output()->send($abortMessage);
-            return '';
-        }
+        if ($retry < 0) { $this->sendAbortMessage(); }
         return $input;
     }
 
@@ -93,10 +88,19 @@ abstract class Reader
         return $this->tokens;
     }
 
-    private function validInput(Replacement $replacement, string $prompt, ?string $default): ?string
+    private function fallbackInput(string $prompt, ?string $default): string
     {
         $value = $this->env->input()->value('  > ' . $prompt);
-        if (!$value && $default !== null) { return $default; }
-        return $replacement->isValid($value) ? $value : null;
+        return !$value && $default !== null ? $default : $value;
+    }
+
+    private function sendAbortMessage(): void
+    {
+        $abortMessage = <<<ABORT
+            Invalid value. Try `help` command for information on this value format.
+            Aborting...
+        
+        ABORT;
+        $this->env->output()->send($abortMessage);
     }
 }

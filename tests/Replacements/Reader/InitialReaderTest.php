@@ -47,11 +47,11 @@ class InitialReaderTest extends ReaderTests
         $this->assertTokenValues($reader, $this->defaults(['foo' => 'finally valid']));
     }
 
-    public function testInvalidInteractiveInput_AfterTwoRetriesResolvesToEmptyString()
+    public function testInvalidInteractiveInput_AfterTwoRetriesUsesInvalidValue()
     {
-        $inputs = ['invalid', 'invalid', 'invalid'];
+        $inputs = ['invalid', 'invalid', 'invalid', 'finally valid'];
         $reader = $this->reader($inputs, ['-i', 'optFoo=foo (option)']);
-        $this->assertTokenValues($reader, $this->defaults(['foo' => '']));
+        $this->assertNull($reader->token());
     }
 
     public function testWithUnresolvedDefaultValues_TokenDefaultsComeFromFallbackTokenValues()
