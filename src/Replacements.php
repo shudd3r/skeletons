@@ -40,10 +40,11 @@ class Replacements
         return array_filter(array_map($describe, $this->replacements));
     }
 
-    public function tokens(Reader $reader): void
+    public function tokens(Reader $reader, bool $isInteractive): void
     {
         foreach ($this->replacements as $name => $replacement) {
-            $reader->readToken($name, $replacement);
+            $success = $reader->readToken($name, $replacement);
+            if (!$success && $isInteractive) { break; }
         }
     }
 }

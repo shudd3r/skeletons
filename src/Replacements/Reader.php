@@ -49,7 +49,7 @@ abstract class Reader
         return $values;
     }
 
-    abstract public function readToken(string $name, Replacement $replacement): void;
+    abstract public function readToken(string $name, Replacement $replacement): bool;
 
     protected function commandLineOption(Replacement $replacement): ?string
     {
@@ -62,8 +62,19 @@ abstract class Reader
         $prompt = $replacement->inputPrompt();
         if (!$prompt || !$this->args->interactive()) { return $default; }
 
-        $promptPostfix = $default ? ' [default: `' . $default . '`]:' : ':';
-        return $this->env->input()->value($prompt . $promptPostfix) ?: $default;
+        if (!$replacement->isValid($default)) { $default = null; }
+        $prompt = $default ? $prompt . ' [default: `' . $default . '`]: ' : $prompt . ': ';
+
+        $input = $this->fallbackInput($prompt, $default);
+        $retry = 2;
+        while (!$replacement->isValid($input) && $retry--) {
+            $retryInfo = $retry === 0 ? 'once more' : 'again';
+            $this->env->output()->send('    Invalid value. Try ' . $retryInfo . PHP_EOL);
+            $input = $this->fallbackInput($prompt, $default);
+        }
+
+        if ($retry < 0) { $this->sendAbortMessage(); }
+        return $input;
     }
 
     protected function metaDataValue(string $namespace): string
@@ -73,7 +84,23 @@ abstract class Reader
 
     private function tokens(): array
     {
-        if (!$this->tokens) { $this->replacements->tokens($this); }
+        if (!$this->tokens) { $this->replacements->tokens($this, $this->args->interactive()); }
         return $this->tokens;
+    }
+
+    private function fallbackInput(string $prompt, ?string $default): string
+    {
+        $value = $this->env->input()->value('  > ' . $prompt);
+        return !$value && $default !== null ? $default : $value;
+    }
+
+    private function sendAbortMessage(): void
+    {
+        $abortMessage = <<<ABORT
+            Invalid value. Try `help` command for information on this value format.
+            Aborting...
+        
+        ABORT;
+        $this->env->output()->send($abortMessage);
     }
 }

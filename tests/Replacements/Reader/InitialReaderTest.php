@@ -37,8 +37,21 @@ class InitialReaderTest extends ReaderTests
 
     public function testOptionValue_BecomesDefaultForEmptyInput()
     {
-        $reader = $this->reader(['', ''], ['-i', 'optFoo=foo (option)']);
+        $reader = $this->reader([], ['-i', 'optFoo=foo (option)']);
         $this->assertTokenValues($reader, $this->defaults(['foo' => 'foo (option)']));
+    }
+
+    public function testInvalidInteractiveInput_IsRetriedUntilValid()
+    {
+        $reader = $this->reader(['invalid', 'invalid', 'finally valid'], ['-i', 'optFoo=foo (option)']);
+        $this->assertTokenValues($reader, $this->defaults(['foo' => 'finally valid']));
+    }
+
+    public function testInvalidInteractiveInput_AfterTwoRetriesUsesInvalidValue()
+    {
+        $inputs = ['invalid', 'invalid', 'invalid', 'finally valid'];
+        $reader = $this->reader($inputs, ['-i', 'optFoo=foo (option)']);
+        $this->assertNull($reader->token());
     }
 
     public function testWithUnresolvedDefaultValues_TokenDefaultsComeFromFallbackTokenValues()

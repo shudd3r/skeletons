@@ -17,15 +17,16 @@ use Shudd3r\Skeletons\Replacements\Replacement;
 
 class InitialReader extends Reader implements FallbackReader
 {
-    public function readToken(string $name, Replacement $replacement): void
+    public function readToken(string $name, Replacement $replacement): bool
     {
-        if (array_key_exists($name, $this->tokens)) { return; }
+        if (array_key_exists($name, $this->tokens)) { return true; }
         $this->tokens[$name] = null;
 
-        $default  = $this->commandLineOption($replacement) ?? $replacement->defaultValue($this->env, $this);
-        $initial  = $this->inputString($replacement, $replacement->isValid($default) ? $default : '');
+        $default = $this->commandLineOption($replacement) ?? $replacement->defaultValue($this->env, $this);
+        $token   = $replacement->token($name, $this->inputString($replacement, $default));
+        $this->tokens[$name] = $token;
 
-        $this->tokens[$name] = $replacement->token($name, $initial);
+        return $token !== null;
     }
 
     public function valueOf(string $name): string
