@@ -58,7 +58,7 @@ class FakeReplacement implements Replacement
 
     public function isValid(string $value): bool
     {
-        return isset($this->default) || isset($this->fallback);
+        return $value !== 'invalid' && (isset($this->default) || isset($this->fallback));
     }
 
     public function token(string $name, string $value): ?ValueToken

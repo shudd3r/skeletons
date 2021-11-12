@@ -19,7 +19,7 @@ class UpdateReader extends Reader
 {
     public function readToken(string $name, Replacement $replacement): void
     {
-        $value = $this->inputString($replacement, $this->commandLineOption($replacement) ?? $this->metaDataValue($name));
-        $this->tokens[$name] = $replacement->token($name, $value);
+        $default = $this->commandLineOption($replacement) ?? $this->metaDataValue($name);
+        $this->tokens[$name] = $replacement->token($name, $this->inputString($replacement, $default));
     }
 }

@@ -21,6 +21,7 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 abstract class ReaderTests extends TestCase
 {
+    /** <placeholder, <<fallback>, <option>, <prompt>> */
     protected const REPLACEMENT_PARAMS = [
         'foo' => ['bar', 'optFoo', 'give Foo'],
         'bar' => ['foo', 'optBar', null],
@@ -38,6 +39,8 @@ abstract class ReaderTests extends TestCase
         'bar' => 'bar (meta)',
         'baz' => 'baz (meta)'
     ];
+
+    protected static Doubles\FakeRuntimeEnv $env;
 
     public function testInvalidToken_ReturnsNull() {
         $reader = $this->reader([], [], ['baz']);
@@ -69,11 +72,11 @@ abstract class ReaderTests extends TestCase
 
     protected function env(array $inputs = [], array $metaData = []): Doubles\FakeRuntimeEnv
     {
-        $env = new Doubles\FakeRuntimeEnv();
-        array_walk($inputs, fn ($input) => $env->input()->addInput($input));
-        if ($metaData) { $env->metaData()->save($metaData); }
+        self::$env = new Doubles\FakeRuntimeEnv();
+        array_walk($inputs, fn ($input) => self::$env->input()->addInput($input));
+        if ($metaData) { self::$env->metaData()->save($metaData); }
 
-        return $env;
+        return self::$env;
     }
 
     protected function args(array $args): InputArgs

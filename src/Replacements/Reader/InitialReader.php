@@ -22,10 +22,8 @@ class InitialReader extends Reader implements FallbackReader
         if (array_key_exists($name, $this->tokens)) { return; }
         $this->tokens[$name] = null;
 
-        $default  = $this->commandLineOption($replacement) ?? $replacement->defaultValue($this->env, $this);
-        $initial  = $this->inputString($replacement, $replacement->isValid($default) ? $default : '');
-
-        $this->tokens[$name] = $replacement->token($name, $initial);
+        $default = $this->commandLineOption($replacement) ?? $replacement->defaultValue($this->env, $this);
+        $this->tokens[$name] = $replacement->token($name, $this->inputString($replacement, $default));
     }
 
     public function valueOf(string $name): string
