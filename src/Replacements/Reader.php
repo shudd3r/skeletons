@@ -63,13 +63,13 @@ abstract class Reader
         if (!$prompt || !$this->args->interactive()) { return $default; }
 
         if (!$replacement->isValid($default)) { $default = null; }
-        $prompt = $default ? $prompt . ' [default: `' . $default . '`]:' : $prompt . ':';
+        $prompt = $default ? $prompt . ' [default: `' . $default . '`]: ' : $prompt . ': ';
 
         $input = $this->validInput($replacement, $prompt, $default);
         $retry = 2;
         while ($input === null && $retry--) {
             $retryInfo = $retry === 0 ? 'once more' : 'again';
-            $this->env->output()->send('Invalid value. Try ' . $retryInfo . PHP_EOL);
+            $this->env->output()->send('    Invalid value. Try ' . $retryInfo . PHP_EOL);
             $input = $this->validInput($replacement, $prompt, $default);
         }
         return $input ?? '';
@@ -88,7 +88,7 @@ abstract class Reader
 
     private function validInput(Replacement $replacement, string $prompt, ?string $default): ?string
     {
-        $value = $this->env->input()->value($prompt);
+        $value = $this->env->input()->value('  > ' . $prompt);
         if (!$value && $default !== null) { return $default; }
         return $replacement->isValid($value) ? $value : null;
     }
