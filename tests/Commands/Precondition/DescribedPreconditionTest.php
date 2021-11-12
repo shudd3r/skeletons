@@ -41,22 +41,33 @@ class DescribedPreconditionTest extends TestCase
 
     public function testWithoutStatus_DisplaysDescriptionOnly()
     {
-        $described = $this->described(true, 'Checking foo', false);
+        $described = $this->described(true, 'Checking foo', []);
         $this->assertTrue($described->isFulfilled());
         $this->assertMessageLine('- Checking foo');
 
-        $described = $this->described(false, 'Checking bar', false);
+        $described = $this->described(false, 'Checking bar', []);
         $this->assertFalse($described->isFulfilled());
         $this->assertMessageLine('- Checking bar');
     }
 
-    private function assertMessageLine(string $message): void
+    public function testWithoutFailStatus_DisplaysOKStatus_AndNoNewLineOnFAIL()
     {
-        $output = implode('', self::$output->messagesSent());
-        $this->assertSame($message . PHP_EOL, $output);
+        $described = $this->described(true, 'Checking foo', ['DONE']);
+        $this->assertTrue($described->isFulfilled());
+        $this->assertMessageLine('- Checking foo... DONE');
+
+        $described = $this->described(false, 'Checking foo', ['DONE']);
+        $this->assertFalse($described->isFulfilled());
+        $this->assertMessageLine('- Checking foo...', false);
     }
 
-    private function described(bool $isFulfilled, string $description, bool $status = true): Precondition
+    private function assertMessageLine(string $message, bool $newLineEnding = true): void
+    {
+        $output = implode('', self::$output->messagesSent());
+        $this->assertSame($message . ($newLineEnding ? PHP_EOL : ''), $output);
+    }
+
+    private function described(bool $isFulfilled, string $description, array $status = null): Precondition
     {
         $precondition = new Doubles\FakePrecondition($isFulfilled);
         return new Precondition\DescribedPrecondition($precondition, self::$output, $description, $status);

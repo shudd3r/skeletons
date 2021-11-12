@@ -28,11 +28,11 @@ class Initialize extends Factory
 
         $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);
         $noBackupOverwrite = new Precondition\CheckFilesOverwrite($backup);
-        $validReplacements = new Precondition\ValidReplacements($tokens);
+        $validReplacements = new Precondition\ValidReplacements($tokens, $this->env->output());
         $preconditions     = new Precondition\Preconditions(
-            $this->checkInfo('Checking meta data status (`' . $this->metaFile . '` should not exist)', $noMetaDataFile),
-            $this->checkInfo('Checking backup overwrite', $noBackupOverwrite),
-            $this->checkInfo('Gathering replacement values', $validReplacements, !$args->interactive())
+            $this->checkInfo('Meta data file should not exist (`' . $this->metaFile . '`)', $noMetaDataFile),
+            $this->checkInfo('Backup should not overwrite files', $noBackupOverwrite),
+            $this->checkInfo('Gathering replacement values', $validReplacements, $args->interactive() ? [] : ['OK'])
         );
 
         $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->env->output());

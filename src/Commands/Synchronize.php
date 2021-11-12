@@ -27,12 +27,12 @@ class Synchronize extends Factory
         $processor = $this->filesProcessor($files, $this->mismatchedFileGenerators());
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
+        $validReplacements = new Precondition\ValidReplacements($tokens, $this->env->output());
         $noBackupOverwrite = new Precondition\CheckFilesOverwrite($backup);
-        $validReplacements = new Precondition\ValidReplacements($tokens);
         $preconditions     = new Precondition\Preconditions(
-            $this->checkInfo('Checking meta data status (`' . $this->metaFile . '` should exist)', $metaDataExists),
-            $this->checkInfo('Checking backup overwrite', $noBackupOverwrite),
-            $this->checkInfo('Validating meta data replacements', $validReplacements)
+            $this->checkInfo('Looking for meta data file (`' . $this->metaFile . '`)', $metaDataExists),
+            $this->checkInfo('Validating meta data replacements', $validReplacements, ['OK']),
+            $this->checkInfo('Backup should not overwrite files', $noBackupOverwrite)
         );
 
         $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->env->output());

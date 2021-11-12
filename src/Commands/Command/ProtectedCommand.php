@@ -32,7 +32,7 @@ class ProtectedCommand implements Command
     public function execute(): void
     {
         if (!$this->precondition->isFulfilled()) {
-            $this->output->send('Precondition failed', 1);
+            $this->output->send(PHP_EOL . 'Precondition failed', 1);
             return;
         }
 

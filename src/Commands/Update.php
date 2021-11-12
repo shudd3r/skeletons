@@ -28,12 +28,14 @@ class Update extends Factory
         $generator        = $this->filesProcessor($files, $this->fileGenerators($cache));
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
+        $validMetaData     = new Precondition\ValidReplacements($validationTokens, $this->env->output());
         $validateFiles     = new Precondition\SkeletonSynchronization($validationTokens, $validator);
-        $validReplacements = new Precondition\ValidReplacements($updateTokens);
+        $validReplacements = new Precondition\ValidReplacements($updateTokens, $this->env->output());
         $preconditions     = new Precondition\Preconditions(
-            $this->checkInfo('Checking meta data status (`' . $this->metaFile . '` should exist)', $metaDataExists),
-            $this->checkInfo('Checking skeleton files synchronization:', $validateFiles, false),
-            $this->checkInfo('Gathering replacement values', $validReplacements, !$args->interactive())
+            $this->checkInfo('Looking for meta data file (`' . $this->metaFile . '`)', $metaDataExists),
+            $this->checkInfo('Validating meta data replacements', $validMetaData, ['OK']),
+            $this->checkInfo('Checking skeleton files synchronization:', $validateFiles, []),
+            $this->checkInfo('Gathering replacement values', $validReplacements, $args->interactive() ? [] : ['OK'])
         );
 
         $saveMetaData  = new Command\SaveMetaData($updateTokens, $this->env->metaData());

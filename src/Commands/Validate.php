@@ -23,11 +23,11 @@ class Validate extends Factory
         $tokens    = new Reader\ValidationReader($this->replacements, $this->env, $args);
         $processor = $this->filesProcessor($files, $this->fileValidators());
 
-        $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
-        $validReplacements = new Precondition\ValidReplacements($tokens);
-        $precondition      = new Precondition\Preconditions(
-            $this->checkInfo('Checking meta data status (`' . $this->metaFile . '` should exist)', $metaDataExists),
-            $this->checkInfo('Validating meta data replacements', $validReplacements)
+        $metaDataExists = new Precondition\CheckFileExists($this->env->metaDataFile());
+        $validMetaData  = new Precondition\ValidReplacements($tokens, $this->env->output());
+        $precondition   = new Precondition\Preconditions(
+            $this->checkInfo('Looking for meta data file (`' . $this->metaFile . '`)', $metaDataExists),
+            $this->checkInfo('Validating meta data replacements', $validMetaData, ['OK'])
         );
 
         $processTokens = new Command\ProcessTokens($tokens, $processor, $this->env->output());
