@@ -48,7 +48,14 @@ class FakeDirectory implements Directory
 
     public function subdirectory(string $name): self
     {
-        return $this->subdirectories[$name] ??= new self($this->path . '/' . $name, false);
+        $name = $this->normalized($name);
+        $directory = $this->subdirectories[$name] ??= new self($this->path . '/' . $name, false);
+        foreach ($this->files as $filename => $file) {
+            if (strpos($filename, $name . '/') === 0) {
+                $directory->addFile(substr($filename, strlen($name) + 1), $file->contents());
+            }
+        }
+        return $directory;
     }
 
     public function file(string $filename): File
@@ -60,12 +67,18 @@ class FakeDirectory implements Directory
     {
         foreach ($this->subdirectories as $dirname => $directory) {
             foreach ($directory->fileList() as $file) {
-                $this->addFile($dirname . '/' . $file->name(), $file->contents());
+                $filename = $dirname . '/' . $file->name();
+                if (isset($this->files[$filename])) {
+                    if (!$file->exists()) { $this->removeFile($filename); }
+                    continue;
+                }
+                $this->addFile($filename, $file->contents());
             }
         }
 
         $files = [];
         foreach ($this->files as $filename => $file) {
+            if (!$file->exists()) { continue; }
             $files[] = $this->file($filename);
         }
 
