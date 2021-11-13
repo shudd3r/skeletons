@@ -23,12 +23,18 @@ class BuildSetup
         $this->builder = $builder;
     }
 
+    /**
+     * @param Closure $token fn (string $placeholder, string $value) => ?ValueToken
+     */
     public function token(Closure $token): self
     {
         $this->builder->token($token);
         return $this;
     }
 
+    /**
+     * @param Closure $validate fn (string $value) => bool
+     */
     public function validate(Closure $validate): self
     {
         $this->builder->validate($validate);

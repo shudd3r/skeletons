@@ -37,12 +37,18 @@ class ReplacementBuilder
         $this->default = $default;
     }
 
+    /**
+     * @param Closure $token fn (string $placeholder, string $value) => ?ValueToken
+     */
     public function token(Closure $token): self
     {
         $this->token = $token;
         return $this;
     }
 
+    /**
+     * @param Closure $validate fn (string $value) => bool
+     */
     public function validate(Closure $validate): self
     {
         $this->validate = $validate;
