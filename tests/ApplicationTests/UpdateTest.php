@@ -18,6 +18,7 @@ class UpdateTest extends ApplicationTests
 {
     private array $updateArgs = [
         'update',
+        '--local',
         'repo=updated/repo',
         'package=updated/package-name',
         'desc=Updated package description',
@@ -63,7 +64,7 @@ class UpdateTest extends ApplicationTests
         $expected = $this->snapshot($package);
 
         $args    = $this->updateArgs;
-        $args[2] = 'package=invalid-package-name';
+        $args[3] = 'package=invalid-package-name';
 
         $this->assertNotEquals(0, $app->run($this->args(...$args)));
         $this->assertSame($expected, $this->snapshot($package));

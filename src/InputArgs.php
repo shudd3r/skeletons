@@ -16,7 +16,7 @@ class InputArgs
 {
     private const SHORT_OPTIONS = [
         'i' => 'interactive',
-        'r' => 'remote'
+        'l' => 'local'
     ];
 
     private string $script;
@@ -24,7 +24,7 @@ class InputArgs
 
     private array $options = [
         'interactive' => false,
-        'remote'      => false
+        'local'       => false
     ];
 
     private array $arguments = [];
@@ -53,9 +53,9 @@ class InputArgs
         return !$this->arguments || $this->options['interactive'];
     }
 
-    public function remoteOnly(): bool
+    public function includeLocalFiles(): bool
     {
-        return $this->options['remote'];
+        return $this->options['local'];
     }
 
     public function valueOf(string $name): string

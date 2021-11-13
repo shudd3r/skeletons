@@ -65,26 +65,26 @@ class InputArgsTest extends TestCase
     }
 
     /**
-     * @dataProvider remoteOnlyArgs
+     * @dataProvider localFilesArgs
      * @param bool   $expected
      * @param array  $args
      */
-    public function testRemoteOnlyOption(bool $expected, array $args)
+    public function testLocalFilesOption(bool $expected, array $args)
     {
         $args = new InputArgs(array_merge(['script'], $args));
-        $this->assertSame($expected, $args->remoteOnly());
+        $this->assertSame($expected, $args->includeLocalFiles());
     }
 
-    public function remoteOnlyArgs(): array
+    public function localFilesArgs(): array
     {
         return [
             'no args'       => [false, ['init']],
-            'short'         => [true, ['init', '-r']],
+            'short'         => [true, ['init', '-l']],
             'missing short' => [false, ['init', '-a']],
-            'grouped short' => [true, ['init', '-string']],
-            'missing long'  => [false, ['init', '--long-args', '--rem']],
-            'correct long'  => [true, ['init', '--long-args', '--remote']],
-            'long & short'  => [true, ['init', '--long-args', '--remote', '-ir']],
+            'grouped short' => [true, ['init', '-glued']],
+            'missing long'  => [false, ['init', '--long-args', '--loc']],
+            'correct long'  => [true, ['init', '--long-args', '--local']],
+            'long & short'  => [true, ['init', '--long-args', '--local', '-il']],
         ];
     }
 

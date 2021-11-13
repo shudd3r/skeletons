@@ -20,7 +20,7 @@ class InitializationTest extends ApplicationTests
 {
     private array $initArgs = [
         'init',
-        '-i',
+        '-il',
         'repo=initial/repo',
         'package=initial/package-name',
         'desc=Initial package description',

@@ -128,9 +128,11 @@ Available `<command>` values:
 Application `<options>`:
 - `-i`, `--interactive`: allows providing placeholder values for `init` or `update`
   command via interactive shell. When no `<argument>=<value>` is provided interactive
-  mode is turned on implicitly by default.
-- `-r`, `--remote`: may be used so that only skeleton files that are deployed to
-  remote repository were processed.
+  mode is implicitly switched on.
+- `-l`, `--local`: may be used to include files that are not deployed to remote
+  repository if skeleton defines them (like git hooks or IDE settings). This option
+  may be used for all file operations - initialization, validation, synchronization
+  and updates.
 
 Available `<argument>` names depend on placeholders configured in application.
 Currently, built-in placeholders can receive their values from following arguments:
@@ -139,13 +141,14 @@ Currently, built-in placeholders can receive their values from following argumen
 - `desc`: package description
 - `ns`: project's main namespace
 
+Values that contain spaces should be surrounded with double quotes.
 For example following command for [script-example](docs/script-example)
 would update package description:
 ```bash
 vendor/bin/script-example update desc="New package description"
 ```
-With both `--interactive` and placeholder options,
-command values will become default for empty input.
+With both `--interactive` option and placeholder arguments are provided,
+valid argument values will become default for empty input.
 
 ### Template files
 Project file structure controlled by skeleton will

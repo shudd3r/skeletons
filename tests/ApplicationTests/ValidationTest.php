@@ -19,27 +19,27 @@ class ValidationTest extends ApplicationTests
     public function testSynchronizedPackage_IsValidForLocalCheck()
     {
         $app = $this->app(self::$files->directory('package-initialized'));
-        $this->assertSame(0, $app->run($this->args('check')));
+        $this->assertSame(0, $app->run($this->args('check', '--local')));
 
         $app = $this->app(self::$files->directory('package-synchronized'));
-        $this->assertSame(0, $app->run($this->args('check')));
+        $this->assertSame(0, $app->run($this->args('check', '--local')));
     }
 
-    public function testSynchronizedPackageWithoutLocalFiles_IsValidForRemoteCheck()
+    public function testSynchronizedPackageWithoutLocalFiles_IsValidForDeployedFiles()
     {
         $package = self::$files->directory('package-synchronized');
         $app     = $this->app($package);
 
         $package->removeFile('.git/hooks/pre-commit');
 
-        $this->assertSame(0, $app->run($this->args('check', '--remote')));
-        $this->assertNotSame(0, $app->run($this->args('check')));
+        $this->assertSame(0, $app->run($this->args('check')));
+        $this->assertNotSame(0, $app->run($this->args('check', '--local')));
     }
 
     public function testDesynchronizedPackage_IsInvalid()
     {
         $app = $this->app(self::$files->directory('package-desynchronized'));
-        $this->assertNotEquals(0, $app->run($this->args('check')));
+        $this->assertNotEquals(0, $app->run($this->args('check', '--local')));
     }
 
     public function testPackageWithoutMetaDataFile_IsInvalid()
@@ -48,6 +48,6 @@ class ValidationTest extends ApplicationTests
         $app     = $this->app($package);
 
         $package->removeFile('.github/skeleton.json');
-        $this->assertNotEquals(0, $app->run($this->args('check')));
+        $this->assertNotEquals(0, $app->run($this->args('check', '--local')));
     }
 }
