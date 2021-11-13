@@ -30,17 +30,18 @@ class AppSetupTest extends TestCase
             'basic.file',
             'escaped.file.sk_file',
             'escaped_dir.sk_dir/local.file.sk_local',
-            'dir/initial.file.sk_init'
+            'dir/initial.file.sk_init',
+            'src/dummy.file.sk_dummy'
         ]);
 
         $setup     = new AppSetup();
         $templates = $setup->templates(new Doubles\FakeRuntimeEnv($package, $template));
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'init', '--local']));
-        $this->assertFileList($files, ['basic.file', 'escaped.file', 'escaped_dir/local.file', 'dir/initial.file']);
+        $this->assertFileList($files, ['basic.file', 'escaped.file', 'escaped_dir/local.file', 'dir/initial.file', 'src/dummy.file']);
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'init']));
-        $this->assertFileList($files, ['basic.file', 'escaped.file', 'dir/initial.file']);
+        $this->assertFileList($files, ['basic.file', 'escaped.file', 'dir/initial.file', 'src/dummy.file']);
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'check', '--local']));
         $this->assertFileList($files, ['basic.file', 'escaped.file', 'escaped_dir/local.file']);

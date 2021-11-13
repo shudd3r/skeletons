@@ -39,7 +39,7 @@ class Templates
 
     public function generatedFiles(InputArgs $args): Files
     {
-        $excludeTypes = $args->command() === 'init' ? [] : ['init'];
+        $excludeTypes = $args->command() === 'init' ? [] : ['init', 'dummy'];
         if (!$args->includeLocalFiles()) { $excludeTypes[] = 'local'; }
 
         return new Files\ReflectedFiles($this->env->package(), $this->files->files($excludeTypes));
