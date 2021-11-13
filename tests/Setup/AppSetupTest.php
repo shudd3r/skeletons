@@ -21,11 +21,32 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class AppSetupTest extends TestCase
 {
+    public function testReplacementSetup_AddsReplacementsInDefinedOrder()
+    {
+        $setup = new AppSetup();
+
+        $replacement = new ReplacementSetup($setup, 'first.placeholder');
+        $replacement->add(new Doubles\FakeReplacement(null, null, 'opt1'));
+
+        $replacement = new ReplacementSetup($setup, 'second.placeholder');
+        $replacement->build($dummy = fn () => 'dummy')->optionName('opt2');
+
+        $replacement = new ReplacementSetup($setup, 'third.placeholder');
+        $replacement->add(new Doubles\FakeReplacement(null, null, 'opt3'));
+
+        $replacements = $setup->replacements();
+        $expectedReplacement = new Replacement\GenericReplacement($dummy, null, null, null, 'opt2');
+        $this->assertEquals($expectedReplacement, $replacements->replacement('second.placeholder'));
+
+        $placeholderOrder = array_keys($replacements->info());
+        $this->assertSame(['first.placeholder', 'second.placeholder', 'third.placeholder'], $placeholderOrder);
+    }
+
     public function testOverwritingDefinedReplacement_ThrowsException()
     {
         $setup = new AppSetup();
-        $setup->addReplacement('foo', new Doubles\FakeReplacement());
 
+        $setup->addReplacement('foo', new Doubles\FakeReplacement());
         $this->expectException(Exception\ReplacementOverwriteException::class);
         $setup->addReplacement('foo', new Doubles\FakeReplacement());
     }
@@ -41,52 +62,30 @@ class AppSetupTest extends TestCase
     public function testOverwritingTemplateForDefinedFile_ThrowsException()
     {
         $setup = new AppSetup();
-        $setup->addTemplate('file.txt', new Doubles\FakeTemplateFactory());
 
+        $setup->addTemplate('file.txt', new Doubles\FakeTemplateFactory());
         $this->expectException(Exception\TemplateOverwriteException::class);
         $setup->addTemplate('file.txt', new Doubles\FakeTemplateFactory());
     }
 
-    public function testReplacementSetup_AddsReplacementsInDefinedOrder()
-    {
-        $appSetup = new AppSetup();
-
-        $setup = new ReplacementSetup($appSetup, 'first.placeholder');
-        $setup->add(new Doubles\FakeReplacement(null, null, 'opt1'));
-
-        $setup = new ReplacementSetup($appSetup, 'second.placeholder');
-        $setup->build($dummy = fn () => 'dummy')->optionName('opt2');
-
-        $setup = new ReplacementSetup($appSetup, 'third.placeholder');
-        $setup->add(new Doubles\FakeReplacement(null, null, 'opt3'));
-
-        $replacements = $appSetup->replacements();
-        $expectedReplacement = new Replacement\GenericReplacement($dummy, null, null, null, 'opt2');
-        $this->assertEquals($expectedReplacement, $replacements->replacement('second.placeholder'));
-
-        $placeholderOrder = array_keys($replacements->info());
-        $this->assertSame(['first.placeholder', 'second.placeholder', 'third.placeholder'], $placeholderOrder);
-    }
-
     public function testReplacementSetupBuildForExistingPlaceholder_ThrowsException()
     {
-        $appSetup = new AppSetup();
+        $setup = new AppSetup();
 
-        $setup = new ReplacementSetup($appSetup, 'first.placeholder');
-        $setup->add(new Doubles\FakeReplacement());
+        $replacement = new ReplacementSetup($setup, 'first.placeholder');
+        $replacement->add(new Doubles\FakeReplacement());
 
-        $setup = new ReplacementSetup($appSetup, 'first.placeholder');
-
+        $replacement = new ReplacementSetup($setup, 'first.placeholder');
         $this->expectException(Exception\ReplacementOverwriteException::class);
-        $setup->build(fn () => 'dummy');
+        $replacement->build(fn () => 'dummy');
     }
 
     public function testReplacementSetupBuildForBuiltInPlaceholder_ThrowsException()
     {
-        $appSetup = new AppSetup();
-        $setup    = new ReplacementSetup($appSetup, 'original.content');
+        $setup = new AppSetup();
 
+        $replacement = new ReplacementSetup($setup, 'original.content');
         $this->expectException(Exception\ReplacementOverwriteException::class);
-        $setup->build(fn () => 'dummy');
+        $replacement->build(fn () => 'dummy');
     }
 }
