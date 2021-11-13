@@ -15,12 +15,40 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Setup\AppSetup;
 use Shudd3r\Skeletons\Setup\ReplacementSetup;
 use Shudd3r\Skeletons\Replacements\Replacement;
+use Shudd3r\Skeletons\Environment\Files;
+use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Exception;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class AppSetupTest extends TestCase
 {
+    public function testTemplates_ReturnsTemplatesWithIndexedSkeletonFiles()
+    {
+        $package  = $this->directoryFiles([]);
+        $template = $this->directoryFiles([
+            'basic.file',
+            'escaped.file.sk_file',
+            'escaped_dir.sk_dir/local.file.sk_local',
+            'dir/initial.file.sk_init'
+        ]);
+
+        $setup     = new AppSetup();
+        $templates = $setup->templates(new Doubles\FakeRuntimeEnv($package, $template));
+
+        $files = $templates->generatedFiles(new InputArgs(['script', 'init', '--local']));
+        $this->assertFileList($files, ['basic.file', 'escaped.file', 'escaped_dir/local.file', 'dir/initial.file']);
+
+        $files = $templates->generatedFiles(new InputArgs(['script', 'init']));
+        $this->assertFileList($files, ['basic.file', 'escaped.file', 'dir/initial.file']);
+
+        $files = $templates->generatedFiles(new InputArgs(['script', 'check', '--local']));
+        $this->assertFileList($files, ['basic.file', 'escaped.file', 'escaped_dir/local.file']);
+
+        $files = $templates->generatedFiles(new InputArgs(['script', 'check']));
+        $this->assertFileList($files, ['basic.file', 'escaped.file']);
+    }
+
     public function testReplacementSetup_AddsReplacementsInDefinedOrder()
     {
         $setup = new AppSetup();
@@ -87,5 +115,24 @@ class AppSetupTest extends TestCase
         $replacement = new ReplacementSetup($setup, 'original.content');
         $this->expectException(Exception\ReplacementOverwriteException::class);
         $replacement->build(fn () => 'dummy');
+    }
+
+    private function assertFileList(Files $files, array $filenames): void
+    {
+        $filenames = array_flip($filenames);
+        foreach ($files->fileList() as $file) {
+            $name = $file->name();
+            $this->assertArrayHasKey($name, $filenames);
+            unset($filenames[$name]);
+        }
+
+        $this->assertEmpty($filenames);
+    }
+
+    private function directoryFiles(array $filenames): Doubles\FakeDirectory
+    {
+        $directory = new Doubles\FakeDirectory();
+        array_walk($filenames, fn (string $filename) => $directory->addFile($filename));
+        return $directory;
     }
 }

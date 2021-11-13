@@ -22,9 +22,9 @@ class FakeRuntimeEnv extends RuntimeEnv
     private FakeDirectory  $bkp;
     private MockedFile     $met;
 
-    public function __construct(FakeDirectory $package = null) {
+    public function __construct(FakeDirectory $package = null, FakeDirectory $templates = null) {
         $this->pkg = $package ?? new FakeDirectory();
-        $this->tpl = new FakeDirectory();
+        $this->tpl = $templates ?? new FakeDirectory();
         $this->cli = new MockedTerminal();
         $this->bkp = new FakeDirectory();
         $this->met = new MockedFile(null);
