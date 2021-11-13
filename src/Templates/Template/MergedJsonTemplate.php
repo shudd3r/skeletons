@@ -83,6 +83,10 @@ class MergedJsonTemplate implements Template
     private function mergedListItems(array $items, array $package): ?array
     {
         $template = $this->extractedFirstItemTemplate($items);
+        if ($this->synchronized) {
+            $package = array_slice($package, count($items));
+        }
+
         foreach ($package as $value) {
             if (in_array($value, $items)) { continue; }
             $items[] = $template ? $this->mergedAssocStructure($template, $value) : $value;

@@ -6,9 +6,9 @@
     "authors": [
         {
             "name": "Shudd3r",
-            "email": "shudder@example.com",
+            "email": "{author.email}",
             "homepage": null,
-            "role": null
+            "role": "Developer"
         }
     ],
     "minimum-stability": null,

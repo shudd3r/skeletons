@@ -6,7 +6,13 @@
     "authors": [
         {
             "name": "Shudd3r",
-            "email": "shudder@example.com"
+            "email": "updated@example.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Shudd3r",
+            "email": "initial@example.com",
+            "role": "Developer"
         },
         {
             "name": "Someone",

@@ -133,7 +133,7 @@ class MergedJsonTemplateTest extends TestCase
     public function testExampleComposerJsonFileInitialization()
     {
         $template = $this->examplePackageTemplate('package-composer.json', false);
-        $token    = $this->token('package/name', 'Initial package description', 'MyProject\\\\Namespace');
+        $token    = $this->token('package/name', 'Initial package description', 'MyProject\\\\Namespace', 'initial@example.com');
 
         $expected = self::$files->contentsOf('initialized-composer.json');
         $this->assertSame($expected, $template->render($token));
@@ -142,7 +142,7 @@ class MergedJsonTemplateTest extends TestCase
     public function testWithoutSynchronizationFlag_UpdatedKeyIsAdded()
     {
         $template = $this->examplePackageTemplate('initialized-composer.json', false);
-        $token    = $this->token('new-package/name', 'Updated description', 'MyProject\\\\UpdatedNamespace');
+        $token    = $this->token('new-package/name', 'Updated description', 'MyProject\\\\UpdatedNamespace', 'updated@example.com');
 
         $expected = self::$files->contentsOf('update-not-synchronized.json');
         $this->assertSame($expected, $template->render($token));
@@ -151,7 +151,7 @@ class MergedJsonTemplateTest extends TestCase
     public function testWithSynchronizationFlag_UpdatedKeyIsReplaced()
     {
         $template = $this->examplePackageTemplate('initialized-composer.json', true);
-        $token    = $this->token('new-package/name', 'Updated description', 'MyProject\\\\UpdatedNamespace');
+        $token    = $this->token('new-package/name', 'Updated description', 'MyProject\\\\UpdatedNamespace', 'updated@example.com');
 
         $expected = self::$files->contentsOf('update-synchronized.json');
         $this->assertSame($expected, $template->render($token));
@@ -185,12 +185,13 @@ class MergedJsonTemplateTest extends TestCase
         return new Template\MergedJsonTemplate($template, $package, $synchronized);
     }
 
-    private function token(string $packageName, string $description, string $namespace): Token
+    private function token(string $packageName, string $description, string $namespace, string $email): Token
     {
         return new Token\CompositeToken(
             new Token\ValueToken('package.name', $packageName),
             new Token\ValueToken('package.description', $description),
-            new Token\ValueToken('namespace.src.esc', $namespace)
+            new Token\ValueToken('namespace.src.esc', $namespace),
+            new Token\ValueToken('author.email', $email)
         );
     }
 }
