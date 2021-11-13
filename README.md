@@ -51,7 +51,6 @@ attached [docs/script-example](docs/script-example) file.
 
 ##### Setup steps
 - Instantiate input arguments and application:
-
 ```php
 namespace Shudd3r\Skeletons;
 
@@ -75,28 +74,25 @@ $app->replacement('package.description')->add(new Replacement\PackageDescription
 $app->replacement('namespace.src')->add(new Replacement\SrcNamespace('package.name'));
 ```
 Simple replacement definitions don't need to be implemented - [`GenericReplacement`](src/Replacements/Replacement/GenericReplacement.php)
-can be used instead. It can also be built using fluent builder invoked with `build()`
-method. Here is an example of build equivalent to [`PackageDescription`](src/Replacements/Replacement/PackageDescription.php):
+can be used:
 ```php
-use Shudd3r\Skeletons\RuntimeEnv;
-use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
+use Shudd3r\Skeletons\Replacements\Replacement\GenericReplacement;
 
-$defaultDescription = function (RuntimeEnv $env, FallbackReader $fallback): string {
-    $fallbackValue = function (): ?string {
-        $value = $fallback->valueOf('package.name');
-        return $value ? $value . ' package' : ''; 
-    };
+$default  = fn () => 'default@example.com';
+$validate = fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL);
 
-    return $env->composer()->value('description') ?? $fallbackValue();
-};
-
-$app->replacement('alternate.description')
-    ->build($defaultDescription)
-    ->validate(fn (string $value): bool => !empty($value))
-    ->inputPrompt('Alternative description')
-    ->optionName('alt-desc')
-    ->description('Alternative description [format: non-empty string]');
+$app->replacement('author.email')
+    ->add(new GenericReplacement($default, null, $validate, 'Your email address', 'email'));
 ```
+It can also be built using fluent builder invoked with `build()` method:
+```php
+$app->replacement('author.email')
+    ->build(fn () => 'default@example.com')
+    ->optionName('email')
+    ->inputPrompt('Your email address')
+    ->validate(fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL));
+```
+
 - Define custom [`Templates\Factory`](src/Templates/Factory.php)
   objects for selected template files<sup>*</sup>:
 ```php

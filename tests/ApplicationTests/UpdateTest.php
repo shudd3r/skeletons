@@ -22,7 +22,8 @@ class UpdateTest extends ApplicationTests
         'repo=updated/repo',
         'package=updated/package-name',
         'desc=Updated package description',
-        'ns=Package\Updated'
+        'ns=Package\Updated',
+        'email=updated@example.com'
     ];
 
     public function testUpdatingSynchronizedPackage_GeneratesUpdatedPackageFiles()

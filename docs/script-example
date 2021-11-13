@@ -37,13 +37,18 @@ $skeleton = new LocalDirectory(__DIR__ . '/template');
 $package  = new LocalDirectory($rootDirectory);
 $app      = new Application($package, $skeleton);
 
-// Defining placeholder replacements
+// Define placeholder replacements
 $app->replacement('package.name')->add(new Replacement\PackageName());
 $app->replacement('repository.name')->add(new Replacement\RepositoryName('package.name'));
 $app->replacement('package.description')->add(new Replacement\PackageDescription('package.name'));
 $app->replacement('namespace.src')->add(new Replacement\SrcNamespace('package.name'));
+$app->replacement('author.email')
+    ->build(fn () => 'default@example.com')
+    ->optionName('email')
+    ->inputPrompt('Your email address')
+    ->validate(fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL));
 
-// Defining custom template factories for selected files
+// Define custom template factories for selected files
 $app->template('composer.json')->add(new Factory\MergedJsonFactory($args->command() === 'update'));
 
 $exitCode = $app->run($args);

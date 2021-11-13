@@ -26,6 +26,7 @@ class ApplicationTests extends TestCase
     protected const PACKAGE_DESC  = 'package.description';
     protected const SRC_NAMESPACE = 'namespace.src';
     protected const REPO_NAME     = 'repository.name';
+    protected const AUTHOR_EMAIL  = 'author.email';
 
     protected static Fixtures\ExampleFiles  $files;
     protected static Doubles\FakeDirectory  $skeleton;
@@ -68,6 +69,11 @@ class ApplicationTests extends TestCase
         $app->replacement(self::REPO_NAME)->add(new Replacement\RepositoryName(self::PACKAGE_NAME));
         $app->replacement(self::PACKAGE_DESC)->add(new Replacement\PackageDescription(self::PACKAGE_NAME));
         $app->replacement(self::SRC_NAMESPACE)->add(new Replacement\SrcNamespace(self::PACKAGE_NAME));
+        $app->replacement(self::AUTHOR_EMAIL)
+            ->build(fn () => 'default@example.com')
+            ->optionName('email')
+            ->inputPrompt('Your email address')
+            ->validate(fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL));
 
         $app->template('composer.json')->add(new MergedJsonFactory($isUpdate));
 

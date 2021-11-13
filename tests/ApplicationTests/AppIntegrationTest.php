@@ -60,7 +60,8 @@ class AppIntegrationTest extends ApplicationTests
             self::PACKAGE_NAME  => 'input/package',
             self::REPO_NAME     => 'input/repo',
             self::PACKAGE_DESC  => 'input description',
-            self::SRC_NAMESPACE => 'Input\\Namespace'
+            self::SRC_NAMESPACE => 'Input\\Namespace',
+            self::AUTHOR_EMAIL  => 'input@example.com'
         ];
         $this->addInputs($expected);
 
@@ -68,7 +69,7 @@ class AppIntegrationTest extends ApplicationTests
         $this->assertSame($expected, json_decode($package->file('dev/meta-date.json')->contents(), true));
     }
 
-    public function testWithoutInput_ReplacementsAreResolvedFromDefaultsAnaFallbacks()
+    public function testWithoutInput_ReplacementsAreResolvedFromDefaultsAndFallbacks()
     {
         $package = new Doubles\FakeDirectory('/root/package/directory');
         $app = $this->app($package);
@@ -78,10 +79,11 @@ class AppIntegrationTest extends ApplicationTests
             self::PACKAGE_NAME  => 'package/directory',
             self::REPO_NAME     => 'input/repo',
             self::PACKAGE_DESC  => 'package/directory package',
-            self::SRC_NAMESPACE => 'Input\\Namespace'
+            self::SRC_NAMESPACE => 'Input\\Namespace',
+            self::AUTHOR_EMAIL  => 'default@example.com'
         ];
 
-        $inputs = $expected + [self::PACKAGE_NAME => '', self::PACKAGE_DESC => ''];
+        $inputs = $expected + [self::PACKAGE_NAME => '', self::PACKAGE_DESC => '', self::AUTHOR_EMAIL => ''];
         $this->addInputs($inputs);
 
         $app->run($this->args('init', '-i'));

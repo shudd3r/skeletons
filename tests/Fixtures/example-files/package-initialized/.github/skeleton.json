@@ -2,5 +2,6 @@
     "package.name": "initial/package-name",
     "repository.name": "initial/repo",
     "package.description": "Initial package description",
-    "namespace.src": "Package\\Initial"
+    "namespace.src": "Package\\Initial",
+    "author.email": "initial@example.com"
 }

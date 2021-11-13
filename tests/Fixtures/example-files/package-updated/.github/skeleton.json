@@ -2,5 +2,6 @@
     "package.name": "updated/package-name",
     "repository.name": "updated/repo",
     "package.description": "Updated package description",
-    "namespace.src": "Package\\Updated"
+    "namespace.src": "Package\\Updated",
+    "author.email": "updated@example.com"
 }

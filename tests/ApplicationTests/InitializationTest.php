@@ -24,7 +24,8 @@ class InitializationTest extends ApplicationTests
         'repo=initial/repo',
         'package=initial/package-name',
         'desc=Initial package description',
-        'ns=Package\Initial'
+        'ns=Package\Initial',
+        'email=initial@example.com'
     ];
 
     public function testInitialization_GeneratesFilesFromTemplate()
