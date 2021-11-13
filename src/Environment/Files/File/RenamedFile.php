@@ -47,4 +47,9 @@ class RenamedFile implements File
     {
         $this->file->write($contents);
     }
+
+    public function remove(): void
+    {
+        $this->file->remove();
+    }
 }

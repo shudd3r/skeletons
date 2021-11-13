@@ -50,4 +50,10 @@ class MockedFile implements File
         $this->contents = $contents;
         $this->root->updateIndex($this);
     }
+
+    public function remove(): void
+    {
+        $this->contents = null;
+        $this->root->removeFile($this->name);
+    }
 }
