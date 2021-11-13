@@ -14,10 +14,20 @@ namespace Shudd3r\Skeletons;
 
 class InputArgs
 {
+    private const SHORT_OPTIONS = [
+        'i' => 'interactive',
+        'r' => 'remote'
+    ];
+
     private string $script;
     private string $command;
-    private array  $options   = [];
-    private array  $arguments = [];
+
+    private array $options = [
+        'interactive' => false,
+        'remote'      => false
+    ];
+
+    private array $arguments = [];
 
     public function __construct(array $argv)
     {
@@ -40,12 +50,12 @@ class InputArgs
     public function interactive(): bool
     {
         if (!in_array($this->command, ['init', 'update'])) { return false; }
-        return !$this->arguments || isset($this->options['i']) || isset($this->options['interactive']);
+        return !$this->arguments || $this->options['interactive'];
     }
 
     public function remoteOnly(): bool
     {
-        return isset($this->options['r']) || isset($this->options['remote']);
+        return $this->options['remote'];
     }
 
     public function valueOf(string $name): string
@@ -57,21 +67,27 @@ class InputArgs
     {
         foreach ($argv as $option) {
             [$name, $value] = explode('=', $option, 2) + ['', ''];
-            $name[0] === '-' ? $this->addOption($name) : $this->arguments[$name] = $value;
+            $name[0] === '-' ? $this->parseOption($name) : $this->arguments[$name] = $value;
         }
     }
 
-    private function addOption(string $rawName): void
+    private function parseOption(string $rawName): void
     {
         $name = ltrim($rawName, '-');
         if (!$name) { return; }
 
         if ($rawName[1] === '-') {
-            $this->options[$name] = true;
+            $this->setOption($name);
             return;
         }
 
         $options = str_split($name);
-        array_walk($options, fn (string $name) => $this->options[$name] = true);
+        array_walk($options, fn (string $name) => $this->setOption(self::SHORT_OPTIONS[$name] ?? '-'));
+    }
+
+    private function setOption(string $name): void
+    {
+        if (!isset($this->options[$name])) { return; }
+        $this->options[$name] = true;
     }
 }
