@@ -32,9 +32,9 @@ class TemplateFiles
         $this->index     = $this->fileIndex();
     }
 
-    public function files(array $exclude = []): Files
+    public function files(array $types): Files
     {
-        $index = $exclude ? $this->fileIndex($exclude) : $this->index;
+        $index = $types === array_keys($this->typeIndex) ? $this->index : $this->fileIndex($types);
         return new Files\IndexedFiles($this->skeleton, $index);
     }
 
@@ -43,11 +43,11 @@ class TemplateFiles
         return $this->skeleton->file($this->index[$filename] ?? $filename);
     }
 
-    private function fileIndex(array $exclude = []): array
+    private function fileIndex(array $types = null): array
     {
         $index = [];
         foreach ($this->typeIndex as $type => $typeIndex) {
-            if ($exclude && in_array($type, $exclude)) { continue; }
+            if ($types && !in_array($type, $types)) { continue; }
             $index += $typeIndex;
         }
         return $index;

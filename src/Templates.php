@@ -39,15 +39,15 @@ class Templates
 
     public function generatedFiles(InputArgs $args): Files
     {
-        $excludeTypes = $args->command() === 'init' ? [] : ['init', 'dummy'];
-        if (!$args->includeLocalFiles()) { $excludeTypes[] = 'local'; }
+        $types = $args->command() === 'init' ? ['orig', 'init', 'dummy'] : ['orig'];
+        if ($args->includeLocalFiles()) { $types[] = 'local'; }
 
-        return new Files\ReflectedFiles($this->env->package(), $this->files->files($excludeTypes));
+        return new Files\ReflectedFiles($this->env->package(), $this->files->files($types));
     }
 
     public function dummyFiles(): Files
     {
-        return new Files\ReflectedFiles($this->env->package(), $this->files->files(['orig', 'init', 'local']));
+        return new Files\ReflectedFiles($this->env->package(), $this->files->files(['dummy']));
     }
 
     private function factory(string $filename): ?Factory
