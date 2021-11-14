@@ -157,6 +157,12 @@ Behavior of some template files can be modified by adding
 a suffix to their names:
 - `.sk_init` - files generated at initialization only, not verified.
   Usually used for example files.
+- `.sk_dummy` - similar to init files, but serving as temporary
+  directory placeholder (like `.gitkeeep`). Can be removed manually,
+  but they are also removed by `init`, `update` & `sync` operations
+  when other files in same directory are present.
+  Also note that package with redundant dummy files will be **marked as
+  invalid** by `check` operation.
 - `.sk_local` - untracked, local dev environment files. Generated &
   updated, but not verified on remote environments.
 - `.sk_file` - deactivates files processed by remote workflows.
@@ -223,6 +229,8 @@ for details.
 - [x] Handling untracked "dev files" like git hooks, IDE setup, etc.
 - [x] `help` command
 - [x] Add GenericReplacement for simple user-defined replacements
-- [ ] Add procedure removing init dummy files like `.gitkeep` or example
+- [x] Add procedure removing init dummy files like `.gitkeep` or example
   files when original package files exist in directory
+- [ ] Add procedure checking existence of dummy-initialized directories
+- [ ] Additive placeholder updates (new author = expand list in composer.json)
 - [ ] Error codes & final message depending on exit code
