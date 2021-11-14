@@ -70,4 +70,15 @@ class UpdateTest extends ApplicationTests
         $this->assertNotEquals(0, $app->run($this->args(...$args)));
         $this->assertSame($expected, $this->snapshot($package));
     }
+
+    public function testRedundantDummyFiles_AreRemoved()
+    {
+        $package = self::$files->directory('package-synchronized');
+        $app     = $this->app($package, true);
+
+        $package->addFile('docs/SOMETHING.md');
+        $this->assertTrue($package->file('docs/.gitkeep')->exists());
+        $app->run($this->args(...$this->updateArgs));
+        $this->assertFalse($package->file('docs/.gitkeep')->exists());
+    }
 }

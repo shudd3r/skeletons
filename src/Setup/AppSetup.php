@@ -26,7 +26,8 @@ class AppSetup
     private const EXT_TYPES  = [
         self::EXT_PREFIX . 'file',
         self::EXT_PREFIX . 'local',
-        self::EXT_PREFIX . 'init'
+        self::EXT_PREFIX . 'init',
+        self::EXT_PREFIX . 'dummy'
     ];
 
     /** @var ?Replacement[] */

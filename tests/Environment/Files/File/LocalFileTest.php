@@ -81,7 +81,7 @@ class LocalFileTest extends LocalFileSystemTests
         self::clear();
     }
 
-    public function testForNotExistingFile_WriteMethod_CreatesFileWithPassedStringContent()
+    public function testForNotExistingFile_WriteMethod_CreatesFileWithPassedContents()
     {
         $file = self::file('test.tmp');
         $this->assertFalse($file->exists());
@@ -101,6 +101,20 @@ class LocalFileTest extends LocalFileSystemTests
 
         $file->write('Test file contents...');
         $this->assertTrue($file->exists());
+        self::clear();
+    }
+
+    public function testRemoveMethod_RemovesFile()
+    {
+        self::create('test.tmp', 'contents');
+        $file = self::file('test.tmp');
+        $this->assertSame('contents', $file->contents());
+        $this->assertTrue($file->exists());
+
+        $file->remove();
+
+        $this->assertFalse($file->exists());
+        $this->assertEmpty($file->contents());
         self::clear();
     }
 

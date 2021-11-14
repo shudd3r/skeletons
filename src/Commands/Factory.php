@@ -12,6 +12,7 @@
 namespace Shudd3r\Skeletons\Commands;
 
 use Shudd3r\Skeletons\Commands;
+use Shudd3r\Skeletons\Environment\Output;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\Templates;
@@ -29,6 +30,7 @@ abstract class Factory implements Commands
     protected RuntimeEnv   $env;
     protected Replacements $replacements;
     protected Templates    $templates;
+    protected Output       $output;
     protected string       $metaFile;
 
     public function __construct(RuntimeEnv $env, Replacements $replacements, Templates $templates)
@@ -36,6 +38,7 @@ abstract class Factory implements Commands
         $this->env          = $env;
         $this->replacements = $replacements;
         $this->templates    = $templates;
+        $this->output       = $env->output();
         $this->metaFile     = $env->metaDataFile()->name();
     }
 

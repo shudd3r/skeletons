@@ -21,6 +21,7 @@ class Update extends Factory
     public function command(InputArgs $args): Command
     {
         $files            = $this->templates->generatedFiles($args);
+        $dummies          = $this->templates->dummyFiles();
         $cache            = new TokenCache();
         $validationTokens = new Reader\ValidationReader($this->replacements, $this->env, $args);
         $validator        = $this->filesProcessor($files, $this->fileValidators($cache));
@@ -28,9 +29,9 @@ class Update extends Factory
         $generator        = $this->filesProcessor($files, $this->fileGenerators($cache));
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
-        $validMetaData     = new Precondition\ValidReplacements($validationTokens, $this->env->output());
+        $validMetaData     = new Precondition\ValidReplacements($validationTokens, $this->output);
         $validateFiles     = new Precondition\SkeletonSynchronization($validationTokens, $validator);
-        $validReplacements = new Precondition\ValidReplacements($updateTokens, $this->env->output());
+        $validReplacements = new Precondition\ValidReplacements($updateTokens, $this->output);
         $preconditions     = new Precondition\Preconditions(
             $this->checkInfo('Looking for meta data file (`' . $this->metaFile . '`)', $metaDataExists),
             $this->checkInfo('Validating meta data replacements', $validMetaData, ['OK']),
@@ -39,12 +40,13 @@ class Update extends Factory
         );
 
         $saveMetaData  = new Command\SaveMetaData($updateTokens, $this->env->metaData());
-        $generateFiles = new Command\ProcessTokens($updateTokens, $generator, $this->env->output());
+        $generateFiles = new Command\ProcessTokens($updateTokens, $generator, $this->output);
         $command       = new Command\CommandSequence(
             $this->commandInfo('Updating skeleton files:', $generateFiles),
+            new Command\HandleRedundantFiles($this->env->package(), $dummies, $this->output),
             $this->commandInfo('Updating meta data file (`' . $this->metaFile . '`)', $saveMetaData)
         );
 
-        return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
+        return new Command\ProtectedCommand($command, $preconditions, $this->output);
     }
 }

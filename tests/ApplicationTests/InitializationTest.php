@@ -109,4 +109,14 @@ class InitializationTest extends ApplicationTests
         $this->assertNotEquals(0, $app->run($this->args(...$args)));
         $this->assertSame($expected, $this->snapshot($package));
     }
+
+    public function testRedundantDummyFiles_AreNotAdded()
+    {
+        $package = self::$files->directory('package');
+        $app     = $this->app($package);
+
+        $package->addFile('docs/SOMETHING.md');
+        $app->run($this->args(...$this->initArgs));
+        $this->assertFalse($package->file('docs/.gitkeep')->exists());
+    }
 }

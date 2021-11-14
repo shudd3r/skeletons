@@ -15,17 +15,90 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Setup\AppSetup;
 use Shudd3r\Skeletons\Setup\ReplacementSetup;
 use Shudd3r\Skeletons\Replacements\Replacement;
+use Shudd3r\Skeletons\Environment\Files;
+use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Exception;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class AppSetupTest extends TestCase
 {
+    public function testTemplates_ReturnsTemplatesWithIndexedSkeletonFiles()
+    {
+        $filenames = ['basic.file', 'escaped.file', 'escaped/local.file', 'dir/initial.file', 'src/dummy.file'];
+        $package   = $this->directoryFiles($filenames);
+        $template  = $this->directoryFiles([
+            'basic.file', 'escaped.file.sk_file',
+            'dir/initial.file.sk_init', 'src/dummy.file.sk_dummy',
+            'escaped.sk_dir/local.file.sk_local'
+        ]);
+
+        $setup     = new AppSetup();
+        $templates = $setup->templates(new Doubles\FakeRuntimeEnv($package, $template));
+
+        $files = $templates->generatedFiles(new InputArgs(['script', 'init', '--local']));
+        $this->assertFileList($files, $filenames);
+
+        $files = $templates->generatedFiles(new InputArgs(['script', 'init']));
+        $this->assertFileList($files, ['basic.file', 'escaped.file', 'dir/initial.file', 'src/dummy.file']);
+
+        $files = $templates->generatedFiles(new InputArgs(['script', 'check', '--local']));
+        $this->assertFileList($files, ['basic.file', 'escaped.file', 'escaped/local.file']);
+
+        $files = $templates->generatedFiles(new InputArgs(['script', 'check']));
+        $this->assertFileList($files, ['basic.file', 'escaped.file']);
+
+        $this->assertFileList($templates->dummyFiles(), ['src/dummy.file']);
+    }
+
+    public function testRemovingTemplatesGeneratedFiles_RemovesFilesFromPackageDirectory()
+    {
+        $filenames = ['basic.file', 'escaped.file', 'escaped/local.file', 'dir/initial.file', 'src/dummy.file'];
+        $package   = $this->directoryFiles($filenames);
+        $template  = $this->directoryFiles([
+            'basic.file', 'escaped.file.sk_file',
+            'dir/initial.file.sk_init', 'src/dummy.file.sk_dummy',
+            'escaped.sk_dir/local.file.sk_local'
+        ]);
+
+        $setup     = new AppSetup();
+        $templates = $setup->templates(new Doubles\FakeRuntimeEnv($package, $template));
+        $dummy     = $templates->dummyFiles()->fileList();
+        $generated = $templates->generatedFiles(new InputArgs(['script', 'init', '--local']))->fileList();
+
+        $this->assertFileList($package, $filenames);
+        array_walk($dummy, fn (Files\File $file) => $file->remove());
+        $this->assertFileList($package, array_diff($filenames, ['src/dummy.file']));
+        array_walk($generated, fn (Files\File $file) => $file->remove());
+        $this->assertFileList($package, []);
+    }
+
+    public function testReplacementSetup_AddsReplacementsInDefinedOrder()
+    {
+        $setup = new AppSetup();
+
+        $replacement = new ReplacementSetup($setup, 'first.placeholder');
+        $replacement->add(new Doubles\FakeReplacement(null, null, 'opt1'));
+
+        $replacement = new ReplacementSetup($setup, 'second.placeholder');
+        $replacement->build($dummy = fn () => 'dummy')->optionName('opt2');
+
+        $replacement = new ReplacementSetup($setup, 'third.placeholder');
+        $replacement->add(new Doubles\FakeReplacement(null, null, 'opt3'));
+
+        $replacements = $setup->replacements();
+        $expectedReplacement = new Replacement\GenericReplacement($dummy, null, null, null, 'opt2');
+        $this->assertEquals($expectedReplacement, $replacements->replacement('second.placeholder'));
+
+        $placeholderOrder = array_keys($replacements->info());
+        $this->assertSame(['first.placeholder', 'second.placeholder', 'third.placeholder'], $placeholderOrder);
+    }
+
     public function testOverwritingDefinedReplacement_ThrowsException()
     {
         $setup = new AppSetup();
-        $setup->addReplacement('foo', new Doubles\FakeReplacement());
 
+        $setup->addReplacement('foo', new Doubles\FakeReplacement());
         $this->expectException(Exception\ReplacementOverwriteException::class);
         $setup->addReplacement('foo', new Doubles\FakeReplacement());
     }
@@ -41,52 +114,49 @@ class AppSetupTest extends TestCase
     public function testOverwritingTemplateForDefinedFile_ThrowsException()
     {
         $setup = new AppSetup();
-        $setup->addTemplate('file.txt', new Doubles\FakeTemplateFactory());
 
+        $setup->addTemplate('file.txt', new Doubles\FakeTemplateFactory());
         $this->expectException(Exception\TemplateOverwriteException::class);
         $setup->addTemplate('file.txt', new Doubles\FakeTemplateFactory());
     }
 
-    public function testReplacementSetup_AddsReplacementsInDefinedOrder()
-    {
-        $appSetup = new AppSetup();
-
-        $setup = new ReplacementSetup($appSetup, 'first.placeholder');
-        $setup->add(new Doubles\FakeReplacement(null, null, 'opt1'));
-
-        $setup = new ReplacementSetup($appSetup, 'second.placeholder');
-        $setup->build($dummy = fn () => 'dummy')->optionName('opt2');
-
-        $setup = new ReplacementSetup($appSetup, 'third.placeholder');
-        $setup->add(new Doubles\FakeReplacement(null, null, 'opt3'));
-
-        $replacements = $appSetup->replacements();
-        $expectedReplacement = new Replacement\GenericReplacement($dummy, null, null, null, 'opt2');
-        $this->assertEquals($expectedReplacement, $replacements->replacement('second.placeholder'));
-
-        $placeholderOrder = array_keys($replacements->info());
-        $this->assertSame(['first.placeholder', 'second.placeholder', 'third.placeholder'], $placeholderOrder);
-    }
-
     public function testReplacementSetupBuildForExistingPlaceholder_ThrowsException()
     {
-        $appSetup = new AppSetup();
+        $setup = new AppSetup();
 
-        $setup = new ReplacementSetup($appSetup, 'first.placeholder');
-        $setup->add(new Doubles\FakeReplacement());
+        $replacement = new ReplacementSetup($setup, 'first.placeholder');
+        $replacement->add(new Doubles\FakeReplacement());
 
-        $setup = new ReplacementSetup($appSetup, 'first.placeholder');
-
+        $replacement = new ReplacementSetup($setup, 'first.placeholder');
         $this->expectException(Exception\ReplacementOverwriteException::class);
-        $setup->build(fn () => 'dummy');
+        $replacement->build(fn () => 'dummy');
     }
 
     public function testReplacementSetupBuildForBuiltInPlaceholder_ThrowsException()
     {
-        $appSetup = new AppSetup();
-        $setup    = new ReplacementSetup($appSetup, 'original.content');
+        $setup = new AppSetup();
 
+        $replacement = new ReplacementSetup($setup, 'original.content');
         $this->expectException(Exception\ReplacementOverwriteException::class);
-        $setup->build(fn () => 'dummy');
+        $replacement->build(fn () => 'dummy');
+    }
+
+    private function assertFileList(Files $files, array $filenames): void
+    {
+        $filenames = array_flip($filenames);
+        foreach ($files->fileList() as $file) {
+            $name = $file->name();
+            $this->assertArrayHasKey($name, $filenames);
+            unset($filenames[$name]);
+        }
+
+        $this->assertEmpty($filenames);
+    }
+
+    private function directoryFiles(array $filenames): Doubles\FakeDirectory
+    {
+        $directory = new Doubles\FakeDirectory();
+        array_walk($filenames, fn (string $filename) => $directory->addFile($filename));
+        return $directory;
     }
 }

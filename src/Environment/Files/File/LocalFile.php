@@ -53,6 +53,12 @@ class LocalFile implements File
         file_put_contents($this->path, $contents);
     }
 
+    public function remove(): void
+    {
+        if (!$this->exists()) { return; }
+        unlink($this->path);
+    }
+
     private function createDirectoryStructure(): void
     {
         $path = dirname($this->path);

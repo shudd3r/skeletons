@@ -23,26 +23,28 @@ class Initialize extends Factory
     {
         $files     = $this->templates->generatedFiles($args);
         $backup    = new Files\ReflectedFiles($this->env->backup(), $files);
+        $dummies   = $this->templates->dummyFiles();
         $tokens    = new Reader\InitialReader($this->replacements, $this->env, $args);
         $processor = $this->filesProcessor($files, $this->mismatchedFileGenerators());
 
         $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);
         $noBackupOverwrite = new Precondition\CheckFilesOverwrite($backup);
-        $validReplacements = new Precondition\ValidReplacements($tokens, $this->env->output());
+        $validReplacements = new Precondition\ValidReplacements($tokens, $this->output);
         $preconditions     = new Precondition\Preconditions(
             $this->checkInfo('Meta data file should not exist (`' . $this->metaFile . '`)', $noMetaDataFile),
             $this->checkInfo('Backup should not overwrite files', $noBackupOverwrite),
             $this->checkInfo('Gathering replacement values', $validReplacements, $args->interactive() ? [] : ['OK'])
         );
 
-        $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->env->output());
+        $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->output);
         $saveMetaData  = new Command\SaveMetaData($tokens, $this->env->metaData());
         $command       = new Command\CommandSequence(
             $this->commandInfo('Generating skeleton files:', $generateFiles),
+            new Command\HandleRedundantFiles($this->env->package(), $dummies),
             $this->commandInfo('Generating meta data file (`' . $this->metaFile . '`)', $saveMetaData)
         );
 
-        return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
+        return new Command\ProtectedCommand($command, $preconditions, $this->output);
     }
 
     private function mismatchedFileGenerators(): Processors

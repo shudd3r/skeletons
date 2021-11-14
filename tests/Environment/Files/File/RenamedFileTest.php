@@ -28,7 +28,7 @@ class RenamedFileTest extends TestCase
     {
         $wrapped = new MockedFile(null);
         $file    = $this->file($wrapped);
-        $this->assertSame('', $file->contents());
+        $this->assertEmpty($file->contents());
         $this->assertFalse($file->exists());
 
         $wrapped->write('contents');
@@ -37,6 +37,10 @@ class RenamedFileTest extends TestCase
 
         $file->write('new contents');
         $this->assertSame('new contents', $wrapped->contents());
+
+        $file->remove();
+        $this->assertFalse($wrapped->exists());
+        $this->assertEmpty($wrapped->contents());
     }
 
     private function file(MockedFile $wrapped, string $name = 'foo.txt'): RenamedFile
