@@ -45,6 +45,11 @@ class Templates
         return new Files\ReflectedFiles($this->env->package(), $this->files->files($excludeTypes));
     }
 
+    public function dummyFiles(): Files
+    {
+        return new Files\ReflectedFiles($this->env->package(), $this->files->files(['orig', 'init', 'local']));
+    }
+
     private function factory(string $filename): ?Factory
     {
         return $this->factories[$filename] ?? null;

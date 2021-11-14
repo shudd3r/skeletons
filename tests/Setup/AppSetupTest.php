@@ -48,6 +48,8 @@ class AppSetupTest extends TestCase
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'check']));
         $this->assertFileList($files, ['basic.file', 'escaped.file']);
+
+        $this->assertFileList($templates->dummyFiles(), ['src/dummy.file']);
     }
 
     public function testReplacementSetup_AddsReplacementsInDefinedOrder()
