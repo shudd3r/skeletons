@@ -25,31 +25,52 @@ class AppSetupTest extends TestCase
 {
     public function testTemplates_ReturnsTemplatesWithIndexedSkeletonFiles()
     {
-        $package  = $this->directoryFiles([]);
-        $template = $this->directoryFiles([
-            'basic.file',
-            'escaped.file.sk_file',
-            'escaped_dir.sk_dir/local.file.sk_local',
-            'dir/initial.file.sk_init',
-            'src/dummy.file.sk_dummy'
+        $filenames = ['basic.file', 'escaped.file', 'escaped/local.file', 'dir/initial.file', 'src/dummy.file'];
+        $package   = $this->directoryFiles($filenames);
+        $template  = $this->directoryFiles([
+            'basic.file', 'escaped.file.sk_file',
+            'dir/initial.file.sk_init', 'src/dummy.file.sk_dummy',
+            'escaped.sk_dir/local.file.sk_local'
         ]);
 
         $setup     = new AppSetup();
         $templates = $setup->templates(new Doubles\FakeRuntimeEnv($package, $template));
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'init', '--local']));
-        $this->assertFileList($files, ['basic.file', 'escaped.file', 'escaped_dir/local.file', 'dir/initial.file', 'src/dummy.file']);
+        $this->assertFileList($files, $filenames);
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'init']));
         $this->assertFileList($files, ['basic.file', 'escaped.file', 'dir/initial.file', 'src/dummy.file']);
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'check', '--local']));
-        $this->assertFileList($files, ['basic.file', 'escaped.file', 'escaped_dir/local.file']);
+        $this->assertFileList($files, ['basic.file', 'escaped.file', 'escaped/local.file']);
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'check']));
         $this->assertFileList($files, ['basic.file', 'escaped.file']);
 
         $this->assertFileList($templates->dummyFiles(), ['src/dummy.file']);
+    }
+
+    public function testRemovingTemplatesGeneratedFiles_RemovesFilesFromPackageDirectory()
+    {
+        $filenames = ['basic.file', 'escaped.file', 'escaped/local.file', 'dir/initial.file', 'src/dummy.file'];
+        $package   = $this->directoryFiles($filenames);
+        $template  = $this->directoryFiles([
+            'basic.file', 'escaped.file.sk_file',
+            'dir/initial.file.sk_init', 'src/dummy.file.sk_dummy',
+            'escaped.sk_dir/local.file.sk_local'
+        ]);
+
+        $setup     = new AppSetup();
+        $templates = $setup->templates(new Doubles\FakeRuntimeEnv($package, $template));
+        $dummy     = $templates->dummyFiles()->fileList();
+        $generated = $templates->generatedFiles(new InputArgs(['script', 'init', '--local']))->fileList();
+
+        $this->assertFileList($package, $filenames);
+        array_walk($dummy, fn (Files\File $file) => $file->remove());
+        $this->assertFileList($package, array_diff($filenames, ['src/dummy.file']));
+        array_walk($generated, fn (Files\File $file) => $file->remove());
+        $this->assertFileList($package, []);
     }
 
     public function testReplacementSetup_AddsReplacementsInDefinedOrder()
