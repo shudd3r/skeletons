@@ -17,7 +17,7 @@ use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Environment\Output;
 
 
-class HandleRedundantFiles implements Command
+class HandleDummyFiles implements Command
 {
     use Files\Paths;
 

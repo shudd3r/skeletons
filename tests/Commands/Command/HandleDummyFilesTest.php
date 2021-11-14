@@ -17,7 +17,7 @@ use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
-class HandleRedundantFilesTest extends TestCase
+class HandleDummyFilesTest extends TestCase
 {
     private static Doubles\MockedTerminal $terminal;
 
@@ -149,6 +149,6 @@ class HandleRedundantFilesTest extends TestCase
 
     private function command(Files\Directory $directory, Files $files, bool $remove = true): Command
     {
-        return new Command\HandleRedundantFiles($directory, $files, self::$terminal->reset(), $remove);
+        return new Command\HandleDummyFiles($directory, $files, self::$terminal->reset(), $remove);
     }
 }
