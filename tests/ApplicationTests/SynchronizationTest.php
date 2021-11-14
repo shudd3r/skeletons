@@ -47,4 +47,15 @@ class SynchronizationTest extends ApplicationTests
         $app->run($this->args('sync'));
         $this->assertSame($expectBackup, $backup->file('composer.json')->exists());
     }
+
+    public function testRedundantDummyFiles_AreRemoved()
+    {
+        $package = self::$files->directory('package-desynchronized');
+        $app     = $this->app($package);
+
+        $package->addFile('docs/SOMETHING.md');
+        $this->assertTrue($package->file('docs/.gitkeep')->exists());
+        $app->run($this->args('sync'));
+        $this->assertFalse($package->file('docs/.gitkeep')->exists());
+    }
 }

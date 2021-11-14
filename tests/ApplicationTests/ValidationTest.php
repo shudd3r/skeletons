@@ -50,4 +50,15 @@ class ValidationTest extends ApplicationTests
         $package->removeFile('.github/skeleton.json');
         $this->assertNotEquals(0, $app->run($this->args('check', '--local')));
     }
+
+    public function testPackageWithRedundantDummyFiles_IsInvalid()
+    {
+        $package = self::$files->directory('package-synchronized');
+        $app     = $this->app($package);
+
+        $package->addFile('docs/SOMETHING.md');
+        $this->assertTrue($package->file('docs/.gitkeep')->exists());
+        $app->run($this->args('check'));
+        $this->assertNotEquals(0, $app->run($this->args('check')));
+    }
 }

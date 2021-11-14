@@ -23,11 +23,12 @@ class Synchronize extends Factory
     {
         $files     = $this->templates->generatedFiles($args);
         $backup    = new Files\ReflectedFiles($this->env->backup(), $files);
+        $dummies   = $this->templates->dummyFiles();
         $tokens    = new Reader\ValidationReader($this->replacements, $this->env, $args);
         $processor = $this->filesProcessor($files, $this->mismatchedFileGenerators());
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());
-        $validReplacements = new Precondition\ValidReplacements($tokens, $this->env->output());
+        $validReplacements = new Precondition\ValidReplacements($tokens, $this->output);
         $noBackupOverwrite = new Precondition\CheckFilesOverwrite($backup);
         $preconditions     = new Precondition\Preconditions(
             $this->checkInfo('Looking for meta data file (`' . $this->metaFile . '`)', $metaDataExists),
@@ -35,10 +36,13 @@ class Synchronize extends Factory
             $this->checkInfo('Backup should not overwrite files', $noBackupOverwrite)
         );
 
-        $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->env->output());
-        $command       = $this->commandInfo('Generating skeleton files (with backup):', $generateFiles);
+        $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->output);
+        $command       = new Command\CommandSequence(
+            $this->commandInfo('Generating skeleton files (with backup):', $generateFiles),
+            new Command\HandleRedundantFiles($this->env->package(), $dummies, $this->output)
+        );
 
-        return new Command\ProtectedCommand($command, $preconditions, $this->env->output());
+        return new Command\ProtectedCommand($command, $preconditions, $this->output);
     }
 
     private function mismatchedFileGenerators(): Processors
