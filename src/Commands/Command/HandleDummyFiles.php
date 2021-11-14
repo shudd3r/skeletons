@@ -24,14 +24,14 @@ class HandleDummyFiles implements Command
     private Directory $package;
     private Files     $files;
     private ?Output   $output;
-    private bool      $remove;
+    private bool      $validate;
 
-    public function __construct(Directory $package, Files $files, ?Output $output = null, bool $remove = true)
+    public function __construct(Directory $package, Files $files, Output $output = null, bool $validate = false)
     {
-        $this->package = $package;
-        $this->files   = $files;
-        $this->output  = $output;
-        $this->remove  = $remove;
+        $this->package  = $package;
+        $this->files    = $files;
+        $this->output   = $output;
+        $this->validate = $validate;
     }
 
     public function execute(): void
@@ -41,19 +41,19 @@ class HandleDummyFiles implements Command
             if ($this->essentialDummies($subdirectory, $files)) { continue; }
 
             if (!$invalid && $this->output) {
-                $action = $this->remove ? 'Removing' : 'Found';
+                $action = $this->validate ? 'Found' : 'Removing';
                 $this->output->send($action . ' redundant dummy files:' . PHP_EOL);
             }
 
             $invalid = true;
             $handler = function (Files\File $file): void {
-                $this->output && $this->output->send('   x ' . $file->name() . PHP_EOL);
-                $this->remove && $file->remove();
+                $this->output and $this->output->send('   x ' . $file->name() . PHP_EOL);
+                $this->validate or $file->remove();
             };
             array_walk($files, $handler);
         }
 
-        if ($invalid && !$this->remove && $this->output) { $this->sendErrorMessage(); }
+        if ($invalid && $this->validate) { $this->sendErrorMessage(); }
     }
 
     private function fileIndex(): array

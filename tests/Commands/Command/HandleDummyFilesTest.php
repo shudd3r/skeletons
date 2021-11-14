@@ -31,7 +31,7 @@ class HandleDummyFilesTest extends TestCase
         $directory = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
         $dummies   = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
 
-        $this->command($directory, $dummies, false)->execute();
+        $this->command($directory, $dummies, true)->execute();
 
         $this->assertEmpty(self::$terminal->messagesSent());
         $this->assertSame(0, self::$terminal->exitCode());
@@ -42,7 +42,7 @@ class HandleDummyFilesTest extends TestCase
         $directory = $this->directory(['foo/dummy0.txt', 'foo/dummy1.txt', 'foo/orig.txt']);
         $dummies   = $this->directory(['foo/dummy0.txt', 'foo/dummy1.txt']);
 
-        $this->command($directory, $dummies, false)->execute();
+        $this->command($directory, $dummies, true)->execute();
 
         $messageStream = implode('', self::$terminal->messagesSent());
         $this->assertStringContainsString('foo/dummy0.txt', $messageStream);
@@ -147,8 +147,8 @@ class HandleDummyFilesTest extends TestCase
         return $directory;
     }
 
-    private function command(Files\Directory $directory, Files $files, bool $remove = true): Command
+    private function command(Files\Directory $directory, Files $files, bool $validate = false): Command
     {
-        return new Command\HandleDummyFiles($directory, $files, self::$terminal->reset(), $remove);
+        return new Command\HandleDummyFiles($directory, $files, self::$terminal->reset(), $validate);
     }
 }
