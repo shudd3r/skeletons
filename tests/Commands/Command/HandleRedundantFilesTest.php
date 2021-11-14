@@ -17,23 +17,61 @@ use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
-class RemoveRedundantFilesTest extends TestCase
+class HandleRedundantFilesTest extends TestCase
 {
-    public function testDummiesInRootDirectory_AreNotRemoved()
+    private static Doubles\MockedTerminal $terminal;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::$terminal = new Doubles\MockedTerminal();
+    }
+
+    public function testNoRedundantDummiesInCheckMode_SendNoOutput()
+    {
+        $directory = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
+        $dummies   = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
+
+        $this->command($directory, $dummies, false)->execute();
+
+        $this->assertEmpty(self::$terminal->messagesSent());
+        $this->assertSame(0, self::$terminal->exitCode());
+    }
+
+    public function testRedundantDummiesInCheckMode_SendFileListAndErrorMessage()
+    {
+        $directory = $this->directory(['foo/dummy0.txt', 'foo/dummy1.txt', 'foo/orig.txt']);
+        $dummies   = $this->directory(['foo/dummy0.txt', 'foo/dummy1.txt']);
+
+        $this->command($directory, $dummies, false)->execute();
+
+        $messageStream = implode('', self::$terminal->messagesSent());
+        $this->assertStringContainsString('foo/dummy0.txt', $messageStream);
+        $this->assertStringContainsString('foo/dummy1.txt', $messageStream);
+        $this->assertNotSame(0, self::$terminal->exitCode());
+    }
+
+    public function testDummiesInRootDirectory_AreNotRemovedAndNoMessagesAreSent()
     {
         $directory = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
         $dummies   = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
 
         $this->command($directory, $dummies)->execute();
+
         $this->assertCount(3, $dummies->fileList());
+        $this->assertEmpty(self::$terminal->messagesSent());
     }
 
-    public function testDummiesWithOriginalFileInSameDirectory_AreRemoved()
+    public function testDummiesWithOriginalFileInSameDirectory_AreRemovedAndFileListIsSent()
     {
         $directory = $this->directory(['foo/dummy0.txt', 'foo/dummy1.txt', 'foo/orig.txt']);
         $dummies   = $this->directory(['foo/dummy0.txt', 'foo/dummy1.txt']);
 
         $this->command($directory, $dummies)->execute();
+
+        $messageStream = implode('', self::$terminal->messagesSent());
+        $this->assertStringContainsString('foo/dummy0.txt', $messageStream);
+        $this->assertStringContainsString('foo/dummy1.txt', $messageStream);
+        $this->assertSame(0, self::$terminal->exitCode());
         $this->assertEmpty($dummies->fileList());
     }
 
@@ -43,6 +81,7 @@ class RemoveRedundantFilesTest extends TestCase
         $dummies   = $this->directory(['foo/dummy0.txt', 'foo/dummy1.txt', 'foo/dummy2.txt']);
 
         $this->command($directory, $dummies)->execute();
+
         $this->assertCount(3, $dummies->fileList());
     }
 
@@ -52,6 +91,7 @@ class RemoveRedundantFilesTest extends TestCase
         $dummies   = $this->directory(['foo/dummy0.txt']);
 
         $this->command($directory, $dummies)->execute();
+
         $this->assertEmpty($dummies->fileList());
     }
 
@@ -61,6 +101,7 @@ class RemoveRedundantFilesTest extends TestCase
         $dummies   = $this->directory(['foo/dummy0.txt', 'foo/bar/dummy1.txt']);
 
         $this->command($directory, $dummies)->execute();
+
         $this->assertCount(1, $dummies->fileList());
         $this->assertFalse($dummies->file('foo/dummy0.txt')->exists());
         $this->assertTrue($dummies->file('foo/bar/dummy1.txt')->exists());
@@ -72,6 +113,7 @@ class RemoveRedundantFilesTest extends TestCase
         $dummies   = $this->directory(['foo/dummy0.txt', 'foo/bar/dummy1.txt']);
 
         $this->command($directory, $dummies)->execute();
+
         $this->assertEmpty($dummies->fileList());
     }
 
@@ -105,8 +147,8 @@ class RemoveRedundantFilesTest extends TestCase
         return $directory;
     }
 
-    private function command(Files\Directory $directory, Files $files): Command
+    private function command(Files\Directory $directory, Files $files, bool $remove = true): Command
     {
-        return new Command\RemoveRedundantFiles($directory, $files);
+        return new Command\HandleRedundantFiles($directory, $files, self::$terminal->reset(), $remove);
     }
 }
