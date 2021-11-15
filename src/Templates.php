@@ -47,7 +47,7 @@ class Templates
 
     public function dummyFiles(): Files
     {
-        return new Files\ReflectedFiles($this->env->package(), $this->files->files(['dummy']));
+        return $this->files->files(['dummy']);
     }
 
     private function factory(string $filename): ?Factory
