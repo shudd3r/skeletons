@@ -22,68 +22,63 @@ class HandleDummyFiles implements Command
     use Files\Paths;
 
     private Directory $package;
-    private Files     $files;
+    private Files     $dummies;
     private ?Output   $output;
     private bool      $validate;
 
-    public function __construct(Directory $package, Files $files, Output $output = null, bool $validate = false)
+    public function __construct(Directory $package, Files $dummies, Output $output = null, bool $validate = false)
     {
         $this->package  = $package;
-        $this->files    = $files;
+        $this->dummies  = $dummies;
         $this->output   = $output;
         $this->validate = $validate;
     }
 
     public function execute(): void
     {
-        $invalid = false;
-        foreach ($this->fileIndex() as $subdirectory => $files) {
-            if ($this->essentialDummies($subdirectory, $files)) { continue; }
+        $redundantFiles = $this->redundantDummyFiles();
+        if (!$redundantFiles) { return; }
 
-            if (!$invalid && $this->output) {
-                $action = $this->validate ? 'Found' : 'Removing';
-                $this->output->send($action . ' redundant dummy files:' . PHP_EOL);
-            }
-
-            $invalid = true;
-            $handler = function (Files\File $file): void {
-                $this->output and $this->output->send('   x ' . $file->name() . PHP_EOL);
-                $this->validate or $file->remove();
-            };
-            array_walk($files, $handler);
+        if ($this->output) {
+            $action = $this->validate ? 'Found' : 'Removing';
+            $this->output->send($action . ' redundant dummy files:' . PHP_EOL);
         }
 
-        if ($invalid && $this->validate) { $this->sendErrorMessage(); }
+        array_walk($redundantFiles, fn ($filename) => $this->handleRedundantFile($filename));
+        if ($this->validate) { $this->sendErrorMessage(); }
     }
 
-    private function fileIndex(): array
+    private function redundantDummyFiles(): array
     {
-        $fileIndex = [];
-        foreach ($this->files->fileList() as $file) {
+        $index    = [];
+        $multiple = [];
+        foreach ($this->dummies->fileList() as $file) {
             $filename = $file->name();
             if (!$this->package->file($filename)->exists()) { continue; }
             if (!strpos($filename, '/')) { continue; }
 
             $systemPath = $this->normalized($filename, DIRECTORY_SEPARATOR);
             $dirname    = dirname($systemPath);
-            $filename   = basename($systemPath);
+            $count      = count($this->package->subdirectory($dirname)->fileList());
 
-            $fileIndex[$dirname][$filename] = $file;
+            if ($count === 1) { continue; }
+            if (!isset($index[$dirname])) {
+                $index[$dirname] = $filename;
+                continue;
+            }
+
+            $multiple[$dirname] ??= [$index[$dirname]];
+            $multiple[$dirname][] = $filename;
+            if (count($multiple[$dirname]) === $count) { unset($index[$dirname], $multiple[$dirname]); }
         }
 
-        return $fileIndex;
+        return $this->mergeMultipleFiles(array_values($index), $multiple);
     }
 
-    private function essentialDummies(string $subdirectory, array $dummyFiles): bool
+    private function handleRedundantFile(string $filename): void
     {
-        $packageFiles = $this->package->subdirectory($subdirectory)->fileList();
-        foreach ($packageFiles as $idx => $file) {
-            $filename = $file->name();
-            if (!isset($dummyFiles[$filename])) { continue; }
-            unset($packageFiles[$idx]);
-        }
-
-        return empty($packageFiles);
+        $this->output and $this->output->send('   x ' . $filename . PHP_EOL);
+        $this->validate or $this->package->file($filename)->remove();
     }
 
     private function sendErrorMessage(): void
@@ -94,5 +89,15 @@ class HandleDummyFiles implements Command
         
         ERROR;
         $this->output->send($errorMessage, 1);
+    }
+
+    private function mergeMultipleFiles(array $filenames, array $multiple): array
+    {
+        foreach ($multiple as $files) {
+            foreach ($files as $filename) {
+                $filenames[] = $filename;
+            }
+        }
+        return $filenames;
     }
 }

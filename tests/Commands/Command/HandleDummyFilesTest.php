@@ -45,96 +45,98 @@ class HandleDummyFilesTest extends TestCase
         $this->command($directory, $dummies, true)->execute();
 
         $messageStream = implode('', self::$terminal->messagesSent());
-        $this->assertStringContainsString('foo/dummy0.txt', $messageStream);
         $this->assertStringContainsString('foo/dummy1.txt', $messageStream);
         $this->assertNotSame(0, self::$terminal->exitCode());
     }
 
-    public function testDummiesInRootDirectory_AreNotRemovedAndNoMessagesAreSent()
+    public function testDummiesInRootDirectory_AreIgnored()
     {
         $directory = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
         $dummies   = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
 
         $this->command($directory, $dummies)->execute();
 
-        $this->assertCount(3, $dummies->fileList());
+        $this->assertCount(3, $directory->fileList());
         $this->assertEmpty(self::$terminal->messagesSent());
     }
 
     public function testDummiesWithOriginalFileInSameDirectory_AreRemovedAndFileListIsSent()
     {
-        $directory = $this->directory(['foo/dummy0.txt', 'foo/dummy1.txt', 'foo/orig.txt']);
-        $dummies   = $this->directory(['foo/dummy0.txt', 'foo/dummy1.txt']);
+        $directory = $this->directory(['foo/dummy1.txt', 'foo/dummy2.txt', 'foo/orig.txt']);
+        $dummies   = $this->directory(['foo/dummy1.txt', 'foo/dummy2.txt']);
 
         $this->command($directory, $dummies)->execute();
 
         $messageStream = implode('', self::$terminal->messagesSent());
-        $this->assertStringContainsString('foo/dummy0.txt', $messageStream);
         $this->assertStringContainsString('foo/dummy1.txt', $messageStream);
+        $this->assertStringContainsString('foo/dummy2.txt', $messageStream);
         $this->assertSame(0, self::$terminal->exitCode());
-        $this->assertEmpty($dummies->fileList());
-    }
-
-    public function testDummiesWithoutOriginalFilesInSameDirectory_AreNotRemoved()
-    {
-        $directory = $this->directory(['foo/dummy0.txt', 'foo/dummy1.txt', 'foo/dummy2.txt']);
-        $dummies   = $this->directory(['foo/dummy0.txt', 'foo/dummy1.txt', 'foo/dummy2.txt']);
-
-        $this->command($directory, $dummies)->execute();
-
-        $this->assertCount(3, $dummies->fileList());
+        $this->assertFiles($directory, ['foo/orig.txt']);
     }
 
     public function testDummiesWithOriginalFilesInSubdirectories_AreRemoved()
     {
-        $directory = $this->directory(['foo/dummy0.txt', 'foo/bar/orig.txt']);
-        $dummies   = $this->directory(['foo/dummy0.txt']);
+        $directory = $this->directory(['foo/dummy.txt', 'foo/bar/orig.txt']);
+        $dummies   = $this->directory(['foo/dummy.txt']);
 
         $this->command($directory, $dummies)->execute();
 
-        $this->assertEmpty($dummies->fileList());
+        $this->assertFiles($directory, ['foo/bar/orig.txt']);
     }
 
-    public function testDummiesWithSingleSiblingsInSubdirectory_AreRemoved()
+    public function testMultipleDummiesInSameDirectoryWithoutOriginalFiles_AreNotRemoved()
     {
-        $directory = $this->directory(['foo/dummy0.txt', 'foo/bar/dummy1.txt', 'other/orig.txt']);
+        $directory = $this->directory(['foo/dummy1.txt', 'foo/dummy2.txt']);
+        $dummies   = $this->directory(['foo/dummy1.txt', 'foo/dummy2.txt', 'foo/dummy3.txt']);
+
+        $this->command($directory, $dummies)->execute();
+        $this->assertCount(2, $directory->fileList());
+    }
+
+    public function testDummiesWithSiblingsInSubdirectory_AreRemoved()
+    {
+        $directory = $this->directory(['foo/dummy0.txt', 'foo/bar/dummy1.txt']);
         $dummies   = $this->directory(['foo/dummy0.txt', 'foo/bar/dummy1.txt']);
 
         $this->command($directory, $dummies)->execute();
 
-        $this->assertCount(1, $dummies->fileList());
-        $this->assertFalse($dummies->file('foo/dummy0.txt')->exists());
-        $this->assertTrue($dummies->file('foo/bar/dummy1.txt')->exists());
+        $this->assertFiles($directory, ['foo/bar/dummy1.txt']);
     }
 
     public function testDummiesWithOriginalFilesInSameSubdirectory_AreRemoved()
     {
-        $directory = $this->directory(['foo/dummy0.txt', 'foo/bar/dummy1.txt', 'foo/bar/baz.txt']);
-        $dummies   = $this->directory(['foo/dummy0.txt', 'foo/bar/dummy1.txt']);
+        $directory = $this->directory(['foo/baz/dummy0.txt', 'foo/bar/dummy1.txt', 'foo/bar/baz.txt']);
+        $dummies   = $this->directory(['foo/baz/dummy0.txt', 'foo/bar/dummy1.txt']);
 
         $this->command($directory, $dummies)->execute();
 
-        $this->assertEmpty($dummies->fileList());
+        $this->assertFiles($directory, ['foo/baz/dummy0.txt', 'foo/bar/baz.txt']);
     }
 
     public function testRedundantDummiesInMultipleDirectories_AreRemoved()
     {
-        $fileStructure = [
-            'orig0' => 'foo/orig0.txt', 'foo/dummy0.txt',
-            'foo/bar/dummy1.txt',
-            'bar/dummy2.txt', 'orig1' => 'bar/orig1.txt',
-            'orig2' => 'bar/baz/orig2,txt'
+        $files = [
+            'orig'    => ['foo/orig0.txt', 'bar/orig1.txt', 'bar/baz/orig2,txt'],
+            'dummies' => ['foo/dummy0.txt', 'bar/dummy1.txt', 'foo/bar/dummy3.txt']
         ];
-        $directory = $this->directory($fileStructure);
-
-        unset($fileStructure['orig0'], $fileStructure['orig1'], $fileStructure['orig2']);
-        $fileStructure[] = 'bar/baz/removed-dummy.txt';
-        $dummies = $this->directory($fileStructure);
+        $directory = $this->directory(array_merge($files['orig'], $files['dummies']));
+        $dummies   = $this->directory(array_merge($files['dummies'], ['bar/baz/removed-dummy.txt']));
 
         $this->command($directory, $dummies)->execute();
 
-        $expectedDummies = $this->directory(['foo/bar/dummy1.txt', 'bar/baz/removed-dummy.txt']);
-        $this->assertEquals($expectedDummies->fileList(), $dummies->fileList());
+        $this->assertFiles($directory, array_merge($files['orig'], ['foo/bar/dummy3.txt']));
+    }
+
+    private function assertFiles(Files\Directory $directory, array $filenames)
+    {
+        $expected = array_flip($filenames);
+        foreach ($directory->fileList() as $file) {
+            $filename = $file->name();
+            $this->assertArrayHasKey($filename, $expected);
+            unset($expected[$filename]);
+        }
+
+        $this->assertSame([], $expected);
     }
 
     private function directory(array $subdirectories = []): Doubles\FakeDirectory
