@@ -36,25 +36,17 @@ class HandleDummyFiles implements Command
 
     public function execute(): void
     {
-        $redundantFiles = $this->redundantDummyFiles();
-        if (!$redundantFiles) { return; }
-
-        if ($this->output) {
-            $action = $this->validate ? 'Found' : 'Removing';
-            $this->output->send($action . ' redundant dummy files:' . PHP_EOL);
-        }
-
-        array_walk($redundantFiles, fn ($filename) => $this->handleRedundantFile($filename));
-        if ($this->validate) { $this->sendErrorMessage(); }
+        $fileIndex = $this->fileIndex();
+        $this->handleMissingFiles($fileIndex['missing']);
+        $this->handleRedundantFiles($fileIndex['redundant']);
     }
 
-    private function redundantDummyFiles(): array
+    private function fileIndex(): array
     {
-        $index    = [];
+        $index = ['redundant' => [], 'missing' => []];
         $multiple = [];
         foreach ($this->dummies->fileList() as $file) {
             $filename = $file->name();
-            if (!$this->package->file($filename)->exists()) { continue; }
             if (!strpos($filename, '/')) { continue; }
 
             $systemPath = $this->normalized($filename, DIRECTORY_SEPARATOR);
@@ -62,30 +54,85 @@ class HandleDummyFiles implements Command
             $count      = count($this->package->subdirectory($dirname)->fileList());
 
             if ($count === 1) { continue; }
-            if (!isset($index[$dirname])) {
-                $index[$dirname] = $filename;
+            if ($count === 0) {
+                $index['missing'][] = $filename;
                 continue;
             }
 
-            $multiple[$dirname] ??= [$index[$dirname]];
+            if (!isset($index['redundant'][$dirname])) {
+                $index['redundant'][$dirname] = $filename;
+                continue;
+            }
+
+            $multiple[$dirname] ??= [$index['redundant'][$dirname]];
             $multiple[$dirname][] = $filename;
-            if (count($multiple[$dirname]) === $count) { unset($index[$dirname], $multiple[$dirname]); }
+            if (count($multiple[$dirname]) === $count) { unset($index['redundant'][$dirname], $multiple[$dirname]); }
         }
 
-        return $this->mergeMultipleFiles(array_values($index), $multiple);
+        return [
+            'redundant' => $this->mergeMultipleFiles(array_values($index['redundant']), $multiple),
+            'missing'   => $index['missing']
+        ];
     }
 
-    private function handleRedundantFile(string $filename): void
+    private function handleRedundantFiles(array $redundantFiles): void
     {
-        $this->output and $this->output->send('   x ' . $filename . PHP_EOL);
-        $this->validate or $this->package->file($filename)->remove();
+        if (!$redundantFiles) { return; }
+        if ($this->output) {
+            $action = $this->validate ? 'Found' : 'Removing';
+            $this->output->send($action . ' redundant dummy files:' . PHP_EOL);
+        }
+
+        foreach ($redundantFiles as $filename) {
+            $this->displayFilename($filename);
+            if ($this->validate) { continue; }
+            $this->package->file($filename)->remove();
+        }
+
+        $this->sendRedundantErrorMessage();
     }
 
-    private function sendErrorMessage(): void
+    private function handleMissingFiles(array $missingFiles): void
     {
+        if (!$missingFiles) { return; }
+        if ($this->output) {
+            $action = $this->validate ? 'Discovered' : 'Creating';
+            $this->output->send($action . ' missing dummy files:' . PHP_EOL);
+        }
+
+        foreach ($missingFiles as $filename) {
+            $this->displayFilename($filename);
+            if ($this->validate) { continue; }
+            $this->package->file($filename)->write($this->dummies->file($filename)->contents());
+        }
+
+        $this->sendMissingErrorMessage();
+    }
+
+    private function displayFilename(string $filename): void
+    {
+        if (!$this->output) { return; }
+        $this->output->send('   x ' . $filename . PHP_EOL);
+    }
+
+    private function sendRedundantErrorMessage(): void
+    {
+        if (!$this->validate) { return; }
         $errorMessage = <<<ERROR
             These dummy files are no longer needed.
             You can remove them automatically with `sync` command.
+        
+        ERROR;
+        $this->output->send($errorMessage, 1);
+    }
+
+    private function sendMissingErrorMessage(): void
+    {
+        if (!$this->validate) { return; }
+        $errorMessage = <<<ERROR
+            Directories of these files are required by skeleton, and
+            should be created to make such directories deployable.
+            You can create them automatically with `sync` command.
         
         ERROR;
         $this->output->send($errorMessage, 1);

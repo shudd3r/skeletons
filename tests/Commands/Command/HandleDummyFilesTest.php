@@ -26,7 +26,7 @@ class HandleDummyFilesTest extends TestCase
         self::$terminal = new Doubles\MockedTerminal();
     }
 
-    public function testNoRedundantDummiesInCheckMode_SendNoOutput()
+    public function testNoInvalidDummiesInCheckMode_SendNoOutput()
     {
         $directory = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
         $dummies   = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
@@ -47,6 +47,19 @@ class HandleDummyFilesTest extends TestCase
         $messageStream = implode('', self::$terminal->messagesSent());
         $this->assertStringContainsString('foo/dummy1.txt', $messageStream);
         $this->assertNotSame(0, self::$terminal->exitCode());
+    }
+
+    public function testMissingDummiesInCheckMode_SendFileListAndErrorMessage()
+    {
+        $directory = $this->directory(['foo/dummy0.txt']);
+        $dummies   = $this->directory(['foo/dummy0.txt', 'bar/dummy1.txt']);
+
+        $this->command($directory, $dummies, true)->execute();
+
+        $messageStream = implode('', self::$terminal->messagesSent());
+        $this->assertNotSame(0, self::$terminal->exitCode());
+        $this->assertStringContainsString('bar/dummy1.txt', $messageStream);
+        $this->assertFiles($directory, ['foo/dummy0.txt']);
     }
 
     public function testDummiesInRootDirectory_AreIgnored()
@@ -125,6 +138,16 @@ class HandleDummyFilesTest extends TestCase
         $this->command($directory, $dummies)->execute();
 
         $this->assertFiles($directory, array_merge($files['orig'], ['foo/bar/dummy3.txt']));
+    }
+
+    public function testMissingDummyFiles_AreCreated()
+    {
+        $directory = $this->directory($files = ['foo/orig0.txt', 'bar/orig1.txt', 'bar/baz/orig2,txt']);
+        $dummies   = $this->directory(['foo/bar/dummy3.txt']);
+
+        $this->command($directory, $dummies)->execute();
+
+        $this->assertFiles($directory, array_merge($files, ['foo/bar/dummy3.txt']));
     }
 
     private function assertFiles(Files\Directory $directory, array $filenames)
