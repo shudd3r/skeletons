@@ -39,7 +39,7 @@ class Synchronize extends Factory
         $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->output);
         $command       = new Command\CommandSequence(
             $this->commandInfo('Generating skeleton files (with backup):', $generateFiles),
-            new Command\HandleRedundantFiles($this->env->package(), $dummies, $this->output)
+            new Command\HandleDummyFiles($this->env->package(), $dummies, $this->output)
         );
 
         return new Command\ProtectedCommand($command, $preconditions, $this->output);

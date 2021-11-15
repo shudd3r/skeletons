@@ -63,12 +63,9 @@ class AppSetupTest extends TestCase
 
         $setup     = new AppSetup();
         $templates = $setup->templates(new Doubles\FakeRuntimeEnv($package, $template));
-        $dummy     = $templates->dummyFiles()->fileList();
         $generated = $templates->generatedFiles(new InputArgs(['script', 'init', '--local']))->fileList();
 
         $this->assertFileList($package, $filenames);
-        array_walk($dummy, fn (Files\File $file) => $file->remove());
-        $this->assertFileList($package, array_diff($filenames, ['src/dummy.file']));
         array_walk($generated, fn (Files\File $file) => $file->remove());
         $this->assertFileList($package, []);
     }

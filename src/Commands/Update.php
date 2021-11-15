@@ -43,7 +43,7 @@ class Update extends Factory
         $generateFiles = new Command\ProcessTokens($updateTokens, $generator, $this->output);
         $command       = new Command\CommandSequence(
             $this->commandInfo('Updating skeleton files:', $generateFiles),
-            new Command\HandleRedundantFiles($this->env->package(), $dummies, $this->output),
+            new Command\HandleDummyFiles($this->env->package(), $dummies, $this->output),
             $this->commandInfo('Updating meta data file (`' . $this->metaFile . '`)', $saveMetaData)
         );
 

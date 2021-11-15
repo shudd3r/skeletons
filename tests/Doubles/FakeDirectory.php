@@ -14,6 +14,7 @@ namespace Shudd3r\Skeletons\Tests\Doubles;
 use Shudd3r\Skeletons\Environment\Files\Directory;
 use Shudd3r\Skeletons\Environment\Files\File;
 use Shudd3r\Skeletons\Environment\Files\Paths;
+use Closure;
 use Exception;
 
 
@@ -49,13 +50,15 @@ class FakeDirectory implements Directory
     public function subdirectory(string $name): self
     {
         $name = $this->normalized($name);
-        $directory = $this->subdirectories[$name] ??= new self($this->path . '/' . $name, false);
+        if (isset($this->subdirectories[$name])) { return $this->subdirectories[$name]; }
+        $directory = new self($this->path . '/' . $name, false);
         foreach ($this->files as $filename => $file) {
-            if (strpos($filename, $name . '/') === 0) {
-                $directory->addFile(substr($filename, strlen($name) + 1), $file->contents());
-            }
+            if (strpos($filename, $name . '/') !== 0) { continue; }
+            $relativeName = substr($filename, strlen($name) + 1);
+            if ($directory->file($relativeName)->exists()) { continue; }
+            $directory->addFile($relativeName, $file->contents());
         }
-        return $directory;
+        return $this->subdirectories[$name] = $directory;
     }
 
     public function file(string $filename): File
@@ -68,10 +71,7 @@ class FakeDirectory implements Directory
         foreach ($this->subdirectories as $dirname => $directory) {
             foreach ($directory->fileList() as $file) {
                 $filename = $dirname . '/' . $file->name();
-                if (isset($this->files[$filename])) {
-                    if (!$file->exists()) { $this->removeFile($filename); }
-                    continue;
-                }
+                if (isset($this->files[$filename])) { continue; }
                 $this->addFile($filename, $file->contents());
             }
         }
@@ -99,12 +99,23 @@ class FakeDirectory implements Directory
     public function removeFile(string $name): void
     {
         unset($this->files[$name]);
+        $this->updateSubdirectories($name, fn ($targetFile) => $targetFile->remove());
     }
 
     public function updateIndex(File $file): void
     {
         $filename = $file->name();
-        if (isset($this->files[$filename])) { return; }
         $this->files[$filename] = $file;
+        $this->updateSubdirectories($filename, fn ($targetFile) => $targetFile->write($file->contents()));
+    }
+
+    private function updateSubdirectories(string $filename, Closure $procedure): void
+    {
+        if (!strpos($filename, '/')) { return; }
+        foreach ($this->subdirectories as $name => $directory) {
+            if (strpos($filename, $name . '/') !== 0) { continue; }
+            $relativeName = substr($filename, strlen($name) + 1);
+            $procedure($directory->file($relativeName));
+        }
     }
 }
