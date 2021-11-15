@@ -80,7 +80,7 @@ class HandleDummyFiles implements Command
         if (!$redundantFiles) { return; }
         if ($this->output) {
             $action = $this->validate ? 'Found' : 'Removing';
-            $this->output->send($action . ' redundant dummy files:' . PHP_EOL);
+            $this->output->send('- ' . $action . ' redundant dummy files:' . PHP_EOL);
         }
 
         foreach ($redundantFiles as $filename) {
@@ -97,7 +97,7 @@ class HandleDummyFiles implements Command
         if (!$missingFiles) { return; }
         if ($this->output) {
             $action = $this->validate ? 'Discovered' : 'Creating';
-            $this->output->send($action . ' missing dummy files:' . PHP_EOL);
+            $this->output->send('- ' . $action . ' missing dummy files:' . PHP_EOL);
         }
 
         foreach ($missingFiles as $filename) {
@@ -112,15 +112,15 @@ class HandleDummyFiles implements Command
     private function displayFilename(string $filename): void
     {
         if (!$this->output) { return; }
-        $this->output->send('   x ' . $filename . PHP_EOL);
+        $this->output->send('    ' . $filename . PHP_EOL);
     }
 
     private function sendRedundantErrorMessage(): void
     {
         if (!$this->validate) { return; }
         $errorMessage = <<<ERROR
-            These dummy files are no longer needed.
-            You can remove them automatically with `sync` command.
+          These dummy files are no longer needed.
+          You can remove them automatically with `sync` command.
         
         ERROR;
         $this->output->send($errorMessage, 1);
@@ -130,9 +130,9 @@ class HandleDummyFiles implements Command
     {
         if (!$this->validate) { return; }
         $errorMessage = <<<ERROR
-            Directories of these files are required by skeleton, and
-            should be created to make such directories deployable.
-            You can create them automatically with `sync` command.
+          Directories that contain these files are required by skeleton,
+          and dummy files are necessary to make empty directories deployable.
+          You can create them automatically with `sync` command.
         
         ERROR;
         $this->output->send($errorMessage, 1);

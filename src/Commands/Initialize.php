@@ -39,7 +39,7 @@ class Initialize extends Factory
         $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->output);
         $saveMetaData  = new Command\SaveMetaData($tokens, $this->env->metaData());
         $command       = new Command\CommandSequence(
-            $this->commandInfo('Generating skeleton files:', $generateFiles),
+            $this->commandInfo('Generating missing or mismatched skeleton files (with backup):', $generateFiles),
             new Command\HandleDummyFiles($this->env->package(), $dummies),
             $this->commandInfo('Generating meta data file (`' . $this->metaFile . '`)', $saveMetaData)
         );
