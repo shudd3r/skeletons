@@ -12,7 +12,6 @@
 namespace Shudd3r\Skeletons\Commands;
 
 use Shudd3r\Skeletons\Commands;
-use Shudd3r\Skeletons\Environment\Output;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\Templates;
@@ -20,9 +19,8 @@ use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\TokenCache;
 use Shudd3r\Skeletons\Processors;
 use Shudd3r\Skeletons\Processors\Processor;
-use Shudd3r\Skeletons\Commands\Command\DescribedCommand;
-use Shudd3r\Skeletons\Commands\Precondition\DescribedPrecondition;
 use Shudd3r\Skeletons\Environment\Files;
+use Shudd3r\Skeletons\Environment\Output;
 
 
 abstract class Factory implements Commands
@@ -59,12 +57,12 @@ abstract class Factory implements Commands
         return new Processors\FileGenerators($this->env->output(), $tokenCache);
     }
 
-    protected function commandInfo(string $message, Command $command): Command
+    protected function commandInfo(Command $command, string $message): Command
     {
-        return new DescribedCommand($command, $this->env->output(), $message);
+        return new Command\DescribedCommand($command, $this->env->output(), $message);
     }
 
-    protected function checkInfo(string $message, Precondition $precondition, array $status = null): Precondition
+    protected function checkInfo(Precondition $precondition, string $message, array $status = null): Precondition
     {
         $messages = new Precondition\Messages($this->env->output(), $message, $status);
         return new Precondition\DescribedPrecondition($precondition, $messages);

@@ -31,17 +31,17 @@ class Initialize extends Factory
         $noBackupOverwrite = new Precondition\CheckFilesOverwrite($backup);
         $validReplacements = new Precondition\ValidReplacements($tokens, $this->output);
         $preconditions     = new Precondition\Preconditions(
-            $this->checkInfo('Meta data file should not exist (`' . $this->metaFile . '`)', $noMetaDataFile),
-            $this->checkInfo('Backup should not overwrite files', $noBackupOverwrite),
-            $this->checkInfo('Gathering replacement values', $validReplacements, $args->interactive() ? [] : ['OK'])
+            $this->checkInfo($noMetaDataFile, 'Meta data file should not exist (`' . $this->metaFile . '`)'),
+            $this->checkInfo($noBackupOverwrite, 'Backup should not overwrite files'),
+            $this->checkInfo($validReplacements, 'Gathering replacement values', $args->interactive() ? [] : ['OK'])
         );
 
         $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->output);
         $saveMetaData  = new Command\SaveMetaData($tokens, $this->env->metaData());
         $command       = new Command\CommandSequence(
-            $this->commandInfo('Generating missing or mismatched skeleton files (with backup):', $generateFiles),
+            $this->commandInfo($generateFiles, 'Generating missing or mismatched skeleton files (with backup):'),
             new Command\HandleDummyFiles($this->env->package(), $dummies),
-            $this->commandInfo('Generating meta data file (`' . $this->metaFile . '`)', $saveMetaData)
+            $this->commandInfo($saveMetaData, 'Generating meta data file (`' . $this->metaFile . '`)')
         );
 
         return new Command\ProtectedCommand($command, $preconditions, $this->output);
