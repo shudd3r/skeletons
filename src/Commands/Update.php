@@ -33,10 +33,10 @@ class Update extends Factory
         $validateFiles     = new Precondition\SkeletonSynchronization($validationTokens, $validator);
         $validReplacements = new Precondition\ValidReplacements($updateTokens, $this->output);
         $preconditions     = new Precondition\Preconditions(
-            $this->checkInfo($metaDataExists, 'Looking for meta data file (`' . $this->metaFile . '`)'),
-            $this->checkInfo($validMetaData, 'Validating meta data replacements', ['OK']),
-            $this->checkInfo($validateFiles, 'Checking skeleton files synchronization:', []),
-            $this->checkInfo($validReplacements, 'Gathering replacement values', $args->interactive() ? [] : ['OK'])
+            $this->checkInfo($metaDataExists, 'Looking for meta data file (`' . $this->metaFile . '`)', 8),
+            $this->checkInfo($validMetaData, 'Validating meta data replacements', 16, ['OK']),
+            $this->checkInfo($validateFiles, 'Checking skeleton files synchronization:', 1, []),
+            $this->checkInfo($validReplacements, 'Gathering replacement values', 4, $args->interactive() ? [] : ['OK'])
         );
 
         $saveMetaData  = new Command\SaveMetaData($updateTokens, $this->env->metaData());

@@ -27,8 +27,8 @@ class Validate extends Factory
         $metaDataExists = new Precondition\CheckFileExists($this->env->metaDataFile());
         $validMetaData  = new Precondition\ValidReplacements($tokens, $this->output);
         $precondition   = new Precondition\Preconditions(
-            $this->checkInfo($metaDataExists, 'Looking for meta data file (`' . $this->metaFile . '`)'),
-            $this->checkInfo($validMetaData, 'Validating meta data replacements', ['OK'])
+            $this->checkInfo($metaDataExists, 'Looking for meta data file (`' . $this->metaFile . '`)', 8),
+            $this->checkInfo($validMetaData, 'Validating meta data replacements', 16, ['OK'])
         );
 
         $processTokens = new Command\ProcessTokens($tokens, $processor, $this->output);

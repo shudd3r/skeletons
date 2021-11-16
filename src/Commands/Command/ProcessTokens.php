@@ -32,10 +32,13 @@ class ProcessTokens implements Command
 
     public function execute(): void
     {
-        if (!$token = $this->reader->token()) { return; }
+        if (!$token = $this->reader->token()) {
+            $this->output->send('', 4);
+            return;
+        }
 
         if (!$this->processor->process($token)) {
-            $this->output->send('Processing FAILED', 1);
+            $this->output->send('', 1);
         }
     }
 }

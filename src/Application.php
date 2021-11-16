@@ -55,7 +55,7 @@ class Application
         $exitCode = $this->terminal->exitCode();
         $summary  = $this->summaryMessage($exitCode, $args->command());
         if ($summary) {
-            $this->terminal->send($summary);
+            $this->terminal->send(PHP_EOL . $summary . PHP_EOL);
         }
         return $exitCode;
     }
@@ -110,13 +110,20 @@ class Application
         $messages = [
             0   => $command === 'check' ? 'Package files match skeleton (OK)' : 'Done (OK)',
             1   => 'Package files do not match skeleton (FAIL)',
+            2   => 'Process aborted',
             3   => 'Unable to update package not matching skeleton (ABORTED)',
             6   => 'Invalid input (ABORTED)',
-            10  => 'Missing meta-data file (ABORTED)',
+            10  => $command === 'init' ? 'Package already initialized (ABORTED)' : 'Missing meta-data file (ABORTED)',
             18  => 'Invalid meta-data file (ABORTED)',
+            34  => 'Unsafe backup operation (ABORTED)',
             128 => 'Application error: Exited unexpectedly (ERROR)'
         ];
 
-        return $messages[$exitCode] ?? 'Process finished';
+        $message = $messages[$exitCode] ?? 'Process finished';
+        if ($exitCode & 2) {
+            $message = 'Precondition failure: ' . $message;
+        }
+
+        return $message;
     }
 }
