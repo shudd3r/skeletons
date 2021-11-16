@@ -66,6 +66,7 @@ abstract class Factory implements Commands
 
     protected function checkInfo(string $message, Precondition $precondition, array $status = null): Precondition
     {
-        return new DescribedPrecondition($precondition, $this->env->output(), $message, $status);
+        $messages = new Precondition\Messages($this->env->output(), $message, $status);
+        return new Precondition\DescribedPrecondition($precondition, $messages);
     }
 }
