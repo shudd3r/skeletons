@@ -49,13 +49,14 @@ class Application
         try {
             $this->factory($args->command())->command($args)->execute();
         } catch (Exception $e) {
-            $this->terminal->send($e->getMessage() . PHP_EOL, 1);
+            $this->terminal->send($e->getMessage() . PHP_EOL, 128);
         }
 
         $exitCode = $this->terminal->exitCode();
-        $summary  = $exitCode ? 'Aborted (ERRORS)' : 'Done (OK)';
-        $this->terminal->send(PHP_EOL . $summary . PHP_EOL);
-
+        $summary  = $this->summaryMessage($exitCode, $args->command());
+        if ($summary) {
+            $this->terminal->send($summary);
+        }
         return $exitCode;
     }
 
@@ -101,5 +102,21 @@ class Application
         $interactiveNote = $isInteractive ? 'Interactive input mode (press ctrl-c to abort)' . PHP_EOL : '';
         $header = sprintf(PHP_EOL . self::HEADER_MESSAGE . PHP_EOL, self::VERSION, $interactiveNote);
         $this->terminal->send($header);
+    }
+
+    private function summaryMessage(int $exitCode, string $command): string
+    {
+        if ($command === 'help') { return ''; }
+        $messages = [
+            0   => $command === 'check' ? 'Package files match skeleton (OK)' : 'Done (OK)',
+            1   => 'Package files do not match skeleton (FAIL)',
+            3   => 'Unable to update package not matching skeleton (ABORTED)',
+            6   => 'Invalid input (ABORTED)',
+            10  => 'Missing meta-data file (ABORTED)',
+            18  => 'Invalid meta-data file (ABORTED)',
+            128 => 'Application error: Exited unexpectedly (ERROR)'
+        ];
+
+        return $messages[$exitCode] ?? 'Process finished';
     }
 }
