@@ -41,6 +41,7 @@ class Terminal implements Input, Output
     public function send(string $message, int $errorCode = 0): void
     {
         $this->errorCode |= $errorCode;
+        if (!$message) { return; }
         fwrite($errorCode === 0 ? $this->output : $this->error, $message);
     }
 
