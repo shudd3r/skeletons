@@ -20,7 +20,7 @@ class AppIntegrationTest extends ApplicationTests
     public function testUnknownCommand_ReturnsErrorCode()
     {
         $app = $this->app(new Doubles\FakeDirectory());
-        $this->assertNotEquals(0, $app->run($this->args('unknown')));
+        $this->assertSame(128, $app->run($this->args('unknown')));
     }
 
     public function testWithBackupDirectorySet_BackupFilesAreCopiedToThatDirectory()

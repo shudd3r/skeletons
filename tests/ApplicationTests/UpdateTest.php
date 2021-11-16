@@ -43,7 +43,7 @@ class UpdateTest extends ApplicationTests
         $package->removeFile('.github/skeleton.json');
 
         $expected = $this->snapshot($package);
-        $this->assertNotEquals(0, $app->run($this->args(...$this->updateArgs)));
+        $this->assertSame(10, $app->run($this->args(...$this->updateArgs)));
         $this->assertSame($expected, $this->snapshot($package));
     }
 
@@ -53,7 +53,7 @@ class UpdateTest extends ApplicationTests
         $app     = $this->app($package, true);
 
         $expected = $this->snapshot($package);
-        $this->assertNotEquals(0, $app->run($this->args(...$this->updateArgs)));
+        $this->assertSame(3, $app->run($this->args(...$this->updateArgs)));
         $this->assertSame($expected, $this->snapshot($package));
     }
 
@@ -67,7 +67,7 @@ class UpdateTest extends ApplicationTests
         $args    = $this->updateArgs;
         $args[3] = 'package=invalid-package-name';
 
-        $this->assertNotEquals(0, $app->run($this->args(...$args)));
+        $this->assertSame(6, $app->run($this->args(...$args)));
         $this->assertSame($expected, $this->snapshot($package));
     }
 

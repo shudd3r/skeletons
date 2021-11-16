@@ -79,7 +79,7 @@ class InitializationTest extends ApplicationTests
         $app->metaFile('.package/skeleton.json');
 
         $expected = $this->snapshot($package);
-        $this->assertNotEquals(0, $app->run($this->args(...$this->initArgs)));
+        $this->assertSame(10, $app->run($this->args(...$this->initArgs)));
         $this->assertSame($expected, $this->snapshot($package));
     }
 
@@ -93,7 +93,7 @@ class InitializationTest extends ApplicationTests
         $backup->addFile('README.md');
 
         $expected = $this->snapshot($package);
-        $this->assertNotEquals(0, $app->run($this->args(...$this->initArgs)));
+        $this->assertSame(34, $app->run($this->args(...$this->initArgs)));
         $this->assertSame($expected, $this->snapshot($package));
     }
 
@@ -106,7 +106,7 @@ class InitializationTest extends ApplicationTests
 
         $args    = $this->initArgs;
         $args[3] = 'package=invalid-package-name';
-        $this->assertNotEquals(0, $app->run($this->args(...$args)));
+        $this->assertSame(6, $app->run($this->args(...$args)));
         $this->assertSame($expected, $this->snapshot($package));
     }
 
