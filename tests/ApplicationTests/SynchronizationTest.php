@@ -22,7 +22,7 @@ class SynchronizationTest extends ApplicationTests
         $package = self::$files->directory('package-desynchronized');
         $app     = $this->app($package);
 
-        $this->assertEquals(0, $app->run($this->args('sync', '--local')));
+        $this->assertSame(0, $app->run($this->args('sync', '--local')));
         $this->assertSameFiles($package, 'package-after-sync');
     }
 

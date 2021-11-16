@@ -33,13 +33,13 @@ class ValidationTest extends ApplicationTests
         $package->removeFile('.git/hooks/pre-commit');
 
         $this->assertSame(0, $app->run($this->args('check')));
-        $this->assertNotSame(0, $app->run($this->args('check', '--local')));
+        $this->assertSame(1, $app->run($this->args('check', '--local')));
     }
 
     public function testDesynchronizedPackage_IsInvalid()
     {
         $app = $this->app(self::$files->directory('package-desynchronized'));
-        $this->assertNotEquals(0, $app->run($this->args('check', '--local')));
+        $this->assertSame(1, $app->run($this->args('check', '--local')));
     }
 
     public function testPackageWithoutMetaDataFile_IsInvalid()
@@ -48,7 +48,7 @@ class ValidationTest extends ApplicationTests
         $app     = $this->app($package);
 
         $package->removeFile('.github/skeleton.json');
-        $this->assertNotEquals(0, $app->run($this->args('check', '--local')));
+        $this->assertSame(10, $app->run($this->args('check', '--local')));
     }
 
     public function testPackageWithRedundantDummyFiles_IsInvalid()
@@ -59,6 +59,6 @@ class ValidationTest extends ApplicationTests
         $package->addFile('docs/SOMETHING.md');
         $this->assertTrue($package->file('docs/.gitkeep')->exists());
         $app->run($this->args('check'));
-        $this->assertNotEquals(0, $app->run($this->args('check')));
+        $this->assertSame(1, $app->run($this->args('check')));
     }
 }

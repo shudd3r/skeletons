@@ -31,14 +31,14 @@ class Synchronize extends Factory
         $validReplacements = new Precondition\ValidReplacements($tokens, $this->output);
         $noBackupOverwrite = new Precondition\CheckFilesOverwrite($backup);
         $preconditions     = new Precondition\Preconditions(
-            $this->checkInfo('Looking for meta data file (`' . $this->metaFile . '`)', $metaDataExists),
-            $this->checkInfo('Validating meta data replacements', $validReplacements, ['OK']),
-            $this->checkInfo('Backup should not overwrite files', $noBackupOverwrite)
+            $this->checkInfo($metaDataExists, 'Looking for meta data file (`' . $this->metaFile . '`)', 8),
+            $this->checkInfo($validReplacements, 'Validating meta data replacements', 16, ['OK']),
+            $this->checkInfo($noBackupOverwrite, 'Backup should not overwrite files', 32)
         );
 
         $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->output);
         $command       = new Command\CommandSequence(
-            $this->commandInfo('Generating skeleton files (with backup):', $generateFiles),
+            $this->commandInfo($generateFiles, 'Generating missing or mismatched skeleton files (with backup):'),
             new Command\HandleDummyFiles($this->env->package(), $dummies, $this->output)
         );
 

@@ -33,18 +33,18 @@ class Update extends Factory
         $validateFiles     = new Precondition\SkeletonSynchronization($validationTokens, $validator);
         $validReplacements = new Precondition\ValidReplacements($updateTokens, $this->output);
         $preconditions     = new Precondition\Preconditions(
-            $this->checkInfo('Looking for meta data file (`' . $this->metaFile . '`)', $metaDataExists),
-            $this->checkInfo('Validating meta data replacements', $validMetaData, ['OK']),
-            $this->checkInfo('Checking skeleton files synchronization:', $validateFiles, []),
-            $this->checkInfo('Gathering replacement values', $validReplacements, $args->interactive() ? [] : ['OK'])
+            $this->checkInfo($metaDataExists, 'Looking for meta data file (`' . $this->metaFile . '`)', 8),
+            $this->checkInfo($validMetaData, 'Validating meta data replacements', 16, ['OK']),
+            $this->checkInfo($validateFiles, 'Checking skeleton files synchronization:', 1, []),
+            $this->checkInfo($validReplacements, 'Gathering replacement values', 4, $args->interactive() ? [] : ['OK'])
         );
 
         $saveMetaData  = new Command\SaveMetaData($updateTokens, $this->env->metaData());
         $generateFiles = new Command\ProcessTokens($updateTokens, $generator, $this->output);
         $command       = new Command\CommandSequence(
-            $this->commandInfo('Updating skeleton files:', $generateFiles),
+            $this->commandInfo($generateFiles, 'Updating skeleton files:'),
             new Command\HandleDummyFiles($this->env->package(), $dummies, $this->output),
-            $this->commandInfo('Updating meta data file (`' . $this->metaFile . '`)', $saveMetaData)
+            $this->commandInfo($saveMetaData, 'Updating meta data file (`' . $this->metaFile . '`)')
         );
 
         return new Command\ProtectedCommand($command, $preconditions, $this->output);

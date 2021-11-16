@@ -234,4 +234,4 @@ for details.
   files when original package files exist in directory
 - [x] Add procedure checking existence of dummy-initialized directories
 - [ ] Additive placeholder updates (new author = expand list in composer.json)
-- [ ] Error codes & final message depending on exit code
+- [x] Error codes & final message depending on exit code
