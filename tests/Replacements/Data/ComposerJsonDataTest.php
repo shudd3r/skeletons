@@ -13,7 +13,7 @@ namespace Shudd3r\Skeletons\Tests\Replacements\Data;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements\Data\ComposerJsonData;
-use Shudd3r\Skeletons\Tests\Doubles;
+use Shudd3r\Skeletons\Environment\Files\File\VirtualFile;
 use RuntimeException;
 
 
@@ -21,7 +21,7 @@ class ComposerJsonDataTest extends TestCase
 {
     public function testNotJsonData_ThrowsException()
     {
-        $composer = new ComposerJsonData(new Doubles\MockedFile('some string'));
+        $composer = new ComposerJsonData(new VirtualFile('not-json.foo', 'some string'));
         $this->expectException(RuntimeException::class);
         $composer->value('foo');
     }
@@ -108,6 +108,6 @@ class ComposerJsonDataTest extends TestCase
             ]
         ];
 
-        return new ComposerJsonData(new Doubles\MockedFile(json_encode($data)));
+        return new ComposerJsonData(new VirtualFile('composer.json', json_encode($data)));
     }
 }

@@ -9,25 +9,27 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Tests\Doubles;
+namespace Shudd3r\Skeletons\Environment\Files\File;
 
 use Shudd3r\Skeletons\Environment\Files\File;
+use Shudd3r\Skeletons\Environment\Files\Directory\VirtualDirectory;
 use Shudd3r\Skeletons\Environment\Files\Paths;
 
 
-class MockedFile implements File
+class VirtualFile implements File
 {
     use Paths;
 
-    private string        $name;
-    private FakeDirectory $root;
-    private ?string       $contents;
+    private ?string $contents;
+    private string  $name;
 
-    public function __construct(?string $contents = '', string $name = 'file.txt', FakeDirectory $root = null)
+    private VirtualDirectory $root;
+
+    public function __construct(string $name = 'foo.txt', ?string $contents = '', VirtualDirectory $root = null)
     {
         $this->name     = $this->normalized($name);
-        $this->root     = $root ?? new FakeDirectory();
         $this->contents = $contents;
+        $this->root     = $root ?? new VirtualDirectory();
     }
 
     public function name(): string

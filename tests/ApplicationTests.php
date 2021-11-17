@@ -28,9 +28,9 @@ class ApplicationTests extends TestCase
     protected const REPO_NAME     = 'repository.name';
     protected const AUTHOR_EMAIL  = 'author.email';
 
-    protected static Fixtures\ExampleFiles  $files;
-    protected static Doubles\FakeDirectory  $skeleton;
-    protected static Doubles\MockedTerminal $terminal;
+    protected static Fixtures\ExampleFiles      $files;
+    protected static Directory\VirtualDirectory $skeleton;
+    protected static Doubles\MockedTerminal     $terminal;
 
     public static function setUpBeforeClass(): void
     {

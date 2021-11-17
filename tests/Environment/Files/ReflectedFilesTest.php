@@ -13,26 +13,26 @@ namespace Shudd3r\Skeletons\Tests\Environment\Files;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Environment\Files\ReflectedFiles;
-use Shudd3r\Skeletons\Tests\Doubles;
+use Shudd3r\Skeletons\Environment\Files\Directory\VirtualDirectory;
 
 
 class ReflectedFilesTest extends TestCase
 {
     public function testFileMethod_ReturnsFileFromTargetFiles()
     {
-        $target = new Doubles\FakeDirectory();
+        $target = new VirtualDirectory();
         $target->addFile('foo.txt');
 
-        $files = new ReflectedFiles($target, new Doubles\FakeDirectory());
+        $files = new ReflectedFiles($target, new VirtualDirectory());
         $this->assertSame($target->file('foo.txt'), $files->file('foo.txt'));
     }
 
     public function testFileList_ReturnsFilesFromTargetThatExistInSource()
     {
-        $target = new Doubles\FakeDirectory();
+        $target = new VirtualDirectory();
         $target->addFile('target-foo.txt');
 
-        $source = new Doubles\FakeDirectory();
+        $source = new VirtualDirectory();
         $source->addFile('source-foo.txt');
         $source->addFile('source-bar.txt');
 

@@ -13,20 +13,20 @@ namespace Shudd3r\Skeletons\Tests\Environment\Files\File;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Environment\Files\File\RenamedFile;
-use Shudd3r\Skeletons\Tests\Doubles\MockedFile;
+use Shudd3r\Skeletons\Environment\Files\File\VirtualFile;
 
 
 class RenamedFileTest extends TestCase
 {
     public function testNameMethod_ReturnsNameProperty()
     {
-        $file = $this->file(new MockedFile('', 'original/name.ext'), 'given/name.ext');
+        $file = $this->file(new VirtualFile('', 'original/name.ext'), 'given/name.ext');
         $this->assertSame('given/name.ext', $file->name());
     }
 
     public function testMethodsReferringToWrappedFileInstance()
     {
-        $wrapped = new MockedFile(null);
+        $wrapped = new VirtualFile('foo.txt', null);
         $file    = $this->file($wrapped);
         $this->assertEmpty($file->contents());
         $this->assertFalse($file->exists());
@@ -43,7 +43,7 @@ class RenamedFileTest extends TestCase
         $this->assertEmpty($wrapped->contents());
     }
 
-    private function file(MockedFile $wrapped, string $name = 'foo.txt'): RenamedFile
+    private function file(VirtualFile $wrapped, string $name = 'foo.txt'): RenamedFile
     {
         return new RenamedFile($wrapped, $name);
     }

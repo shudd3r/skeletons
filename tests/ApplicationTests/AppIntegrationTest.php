@@ -12,14 +12,13 @@
 namespace Shudd3r\Skeletons\Tests\ApplicationTests;
 
 use Shudd3r\Skeletons\Tests\ApplicationTests;
-use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class AppIntegrationTest extends ApplicationTests
 {
     public function testUnknownCommand_ReturnsErrorCode()
     {
-        $app = $this->app(new Doubles\FakeDirectory());
+        $app = $this->app(self::$files->directory());
         $this->assertSame(128, $app->run($this->args('unknown')));
     }
 
@@ -27,7 +26,7 @@ class AppIntegrationTest extends ApplicationTests
     {
         $package = self::$files->directory('package');
         $app     = $this->app($package);
-        $backup  = new Doubles\FakeDirectory();
+        $backup  = self::$files->directory();
 
         $app->backup($backup);
         $this->assertFalse($backup->file('README.md')->exists());
@@ -40,7 +39,7 @@ class AppIntegrationTest extends ApplicationTests
 
     public function testWithMetaDataFilenameSet_MetaDataIsSavedInThatFileInsidePackageDirectory()
     {
-        $package = new Doubles\FakeDirectory();
+        $package = self::$files->directory();
         $app     = $this->app($package);
 
         $app->metaFile('dev/meta-data.json');
@@ -52,7 +51,7 @@ class AppIntegrationTest extends ApplicationTests
 
     public function testWithoutOptionValues_ReplacementsAreTakenFromInput()
     {
-        $package = new Doubles\FakeDirectory();
+        $package = self::$files->directory();
         $app = $this->app($package);
 
         $app->metaFile('dev/meta-date.json');
@@ -71,7 +70,7 @@ class AppIntegrationTest extends ApplicationTests
 
     public function testWithoutInput_ReplacementsAreResolvedFromDefaultsAndFallbacks()
     {
-        $package = new Doubles\FakeDirectory('/root/package/directory');
+        $package = self::$files->directory('not/exists/package/directory');
         $app = $this->app($package);
 
         $app->metaFile('dev/meta-date.json');
@@ -83,8 +82,8 @@ class AppIntegrationTest extends ApplicationTests
             self::AUTHOR_EMAIL  => 'default@example.com'
         ];
 
-        $inputs = $expected + [self::PACKAGE_NAME => '', self::PACKAGE_DESC => '', self::AUTHOR_EMAIL => ''];
-        $this->addInputs($inputs);
+        $emptyInputs = [self::PACKAGE_NAME => '', self::PACKAGE_DESC => '', self::AUTHOR_EMAIL => ''];
+        $this->addInputs(array_merge($expected, $emptyInputs));
 
         $app->run($this->args('init', '-i'));
         $this->assertSame($expected, json_decode($package->file('dev/meta-date.json')->contents(), true));
@@ -92,7 +91,7 @@ class AppIntegrationTest extends ApplicationTests
 
     public function testDisplaysSkeletonNameInScriptHeader()
     {
-        $app = $this->app(new Doubles\FakeDirectory());
+        $app = $this->app(self::$files->directory());
 
         $app->run($this->args('help'));
         $messages = self::$terminal->messagesSent();

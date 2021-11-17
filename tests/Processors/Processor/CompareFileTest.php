@@ -13,9 +13,10 @@ namespace Shudd3r\Skeletons\Tests\Processors\Processor;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Processors\Processor\CompareFile;
+use Shudd3r\Skeletons\Environment\Files\Directory\VirtualDirectory;
+use Shudd3r\Skeletons\Environment\Files\File\VirtualFile;
 use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\Templates\Template;
-use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class CompareFileTest extends TestCase
@@ -25,7 +26,7 @@ class CompareFileTest extends TestCase
         $template = new Template\BasicTemplate('{replace.me} contents');
         $token    = new Token\ValueToken('replace.me', 'expected');
 
-        $file      = new Doubles\MockedFile('expected contents');
+        $file      = new VirtualFile('foo.txt', 'expected contents');
         $processor = new CompareFile($template, $file);
         $this->assertTrue($processor->process($token));
     }
@@ -35,7 +36,7 @@ class CompareFileTest extends TestCase
         $template = new Template\BasicTemplate('{replace.me} contents');
         $token    = new Token\ValueToken('replace.me', 'unexpected');
 
-        $file      = new Doubles\MockedFile('expected contents');
+        $file      = new VirtualFile('foo.txt', 'expected contents');
         $processor = new CompareFile($template, $file);
         $this->assertFalse($processor->process($token));
     }
@@ -43,15 +44,15 @@ class CompareFileTest extends TestCase
     public function testInstanceWithBackup_FailedComparison_CreatesCopyOfExistingFile()
     {
         $template = new Template\BasicTemplate('{replace.me} contents');
-        $backup   = new Doubles\FakeDirectory();
+        $backup   = new VirtualDirectory();
         $token    = new Token\ValueToken('replace.me', 'unexpected');
 
-        $file      = new Doubles\MockedFile(null, 'foo.txt');
+        $file      = new VirtualFile('foo.txt', null);
         $processor = new CompareFile($template, $file, $backup);
         $this->assertFalse($processor->process($token));
         $this->assertFalse($backup->file('foo.txt')->exists());
 
-        $file      = new Doubles\MockedFile('foo contents', 'foo.file');
+        $file      = new VirtualFile('foo.file', 'foo contents');
         $processor = new CompareFile($template, $file, $backup);
         $this->assertFalse($processor->process($token));
         $this->assertTrue($backup->file('foo.file')->exists());
@@ -61,8 +62,8 @@ class CompareFileTest extends TestCase
     public function testEmptyTemplate_ForNotExistingFile_ReturnsFalse()
     {
         $template = new Template\BasicTemplate('');
-        $file     = new Doubles\MockedFile(null, 'foo.txt');
-        $backup   = new Doubles\FakeDirectory();
+        $file     = new VirtualFile('foo.txt', null);
+        $backup   = new VirtualDirectory();
         $token    = new Token\ValueToken('replace.me', 'expected');
 
         $processor = new CompareFile($template, $file, $backup);

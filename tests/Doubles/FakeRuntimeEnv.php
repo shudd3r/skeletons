@@ -12,22 +12,24 @@
 namespace Shudd3r\Skeletons\Tests\Doubles;
 
 use Shudd3r\Skeletons\RuntimeEnv;
+use Shudd3r\Skeletons\Environment\Files\Directory\VirtualDirectory;
+use Shudd3r\Skeletons\Environment\Files\File\VirtualFile;
 
 
 class FakeRuntimeEnv extends RuntimeEnv
 {
-    private MockedTerminal $cli;
-    private FakeDirectory  $pkg;
-    private FakeDirectory  $tpl;
-    private FakeDirectory  $bkp;
-    private MockedFile     $met;
+    private MockedTerminal   $cli;
+    private VirtualDirectory $pkg;
+    private VirtualDirectory $tpl;
+    private VirtualDirectory $bkp;
+    private VirtualFile      $met;
 
-    public function __construct(FakeDirectory $package = null, FakeDirectory $templates = null) {
-        $this->pkg = $package ?? new FakeDirectory();
-        $this->tpl = $templates ?? new FakeDirectory();
+    public function __construct(VirtualDirectory $package = null, VirtualDirectory $templates = null) {
+        $this->pkg = $package ?? new VirtualDirectory();
+        $this->tpl = $templates ?? new VirtualDirectory();
         $this->cli = new MockedTerminal();
-        $this->bkp = new FakeDirectory();
-        $this->met = new MockedFile(null);
+        $this->bkp = new VirtualDirectory();
+        $this->met = new VirtualFile('meta-data.json', null);
 
         parent::__construct($this->pkg, $this->tpl, $this->cli, $this->bkp, $this->met);
     }
@@ -42,22 +44,22 @@ class FakeRuntimeEnv extends RuntimeEnv
         return $this->cli;
     }
 
-    public function package(): FakeDirectory
+    public function package(): VirtualDirectory
     {
         return $this->pkg;
     }
 
-    public function skeleton(): FakeDirectory
+    public function skeleton(): VirtualDirectory
     {
         return $this->tpl;
     }
 
-    public function backup(): FakeDirectory
+    public function backup(): VirtualDirectory
     {
         return $this->bkp;
     }
 
-    public function metaDataFile(): MockedFile
+    public function metaDataFile(): VirtualFile
     {
         return $this->met;
     }

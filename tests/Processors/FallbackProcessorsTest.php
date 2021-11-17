@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Processors\FallbackProcessors;
 use Shudd3r\Skeletons\Processors\Processor\FallbackProcessor;
 use Shudd3r\Skeletons\Templates\Template\BasicTemplate;
+use Shudd3r\Skeletons\Environment\Files\File\VirtualFile;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
@@ -28,7 +29,7 @@ class FallbackProcessorsTest extends TestCase
         $this->assertNull($fallback->createdProcessor());
 
         $processors = new FallbackProcessors($primary, $fallback);
-        $processor  = $processors->processor(new BasicTemplate(''), new Doubles\MockedFile());
+        $processor  = $processors->processor(new BasicTemplate(''), new VirtualFile());
         $expected   = new FallbackProcessor($primary->createdProcessor(), $fallback->createdProcessor());
         $this->assertEquals($expected, $processor);
     }

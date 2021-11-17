@@ -162,9 +162,9 @@ class HandleDummyFilesTest extends TestCase
         $this->assertSame([], $expected);
     }
 
-    private function directory(array $subdirectories = []): Doubles\FakeDirectory
+    private function directory(array $subdirectories = []): Files\Directory
     {
-        $directory = new Doubles\FakeDirectory();
+        $directory = new Files\Directory\VirtualDirectory();
         foreach ($subdirectories as $file) {
             $directory->addFile($file);
         }

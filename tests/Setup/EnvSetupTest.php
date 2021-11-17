@@ -13,6 +13,7 @@ namespace Shudd3r\Skeletons\Tests\Setup;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Setup\EnvSetup;
+use Shudd3r\Skeletons\Environment\Files\Directory;
 use Shudd3r\Skeletons\Replacements\Data;
 use Shudd3r\Skeletons\Exception;
 use Shudd3r\Skeletons\Tests\Doubles;
@@ -22,10 +23,10 @@ class EnvSetupTest extends TestCase
 {
     public function testRuntimeEnvMethod_CreatesRuntimeEnvWithGivenValues()
     {
-        $package  = new Doubles\FakeDirectory();
-        $skeleton = new Doubles\FakeDirectory();
+        $package  = new Directory\VirtualDirectory();
+        $skeleton = new Directory\VirtualDirectory();
         $terminal = new Doubles\MockedTerminal();
-        $backup   = new Doubles\FakeDirectory();
+        $backup   = new Directory\VirtualDirectory();
         $setup    = new EnvSetup($package, $skeleton);
 
         $package->addFile($filename = '.dev/meta-data.json', '{}');
@@ -45,8 +46,8 @@ class EnvSetupTest extends TestCase
 
     public function testResolvingDefaultValues()
     {
-        $package = new Doubles\FakeDirectory();
-        $setup   = new EnvSetup($package, new Doubles\FakeDirectory());
+        $package = new Directory\VirtualDirectory();
+        $setup   = new EnvSetup($package, new Directory\VirtualDirectory());
 
         $package->addFile($filename = '.github/skeleton.json', '{}');
 
@@ -57,8 +58,8 @@ class EnvSetupTest extends TestCase
 
     public function testNotExistingPackageDirectory_RuntimeEnvMethod_ThrowsException()
     {
-        $package = new Doubles\FakeDirectory('/some/path', false);
-        $setup   = new EnvSetup($package, new Doubles\FakeDirectory());
+        $package = new Directory\VirtualDirectory('/some/path', false);
+        $setup   = new EnvSetup($package, new Directory\VirtualDirectory());
 
         $this->expectException(Exception\InvalidDirectoryException::class);
         $setup->runtimeEnv(new Doubles\MockedTerminal());
@@ -66,8 +67,8 @@ class EnvSetupTest extends TestCase
 
     public function testNotExistingSkeletonDirectory_RuntimeEnvMethod_ThrowsException()
     {
-        $skeleton = new Doubles\FakeDirectory('/some/path', false);
-        $setup    = new EnvSetup(new Doubles\FakeDirectory(), $skeleton);
+        $skeleton = new Directory\VirtualDirectory('/some/path', false);
+        $setup    = new EnvSetup(new Directory\VirtualDirectory(), $skeleton);
 
         $this->expectException(Exception\InvalidDirectoryException::class);
         $setup->runtimeEnv(new Doubles\MockedTerminal());
