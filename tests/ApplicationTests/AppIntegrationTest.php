@@ -90,6 +90,22 @@ class AppIntegrationTest extends ApplicationTests
         $this->assertSame($expected, json_decode($package->file('dev/meta-date.json')->contents(), true));
     }
 
+    public function testDisplaysSkeletonNameInScriptHeader()
+    {
+        $app = $this->app(new Doubles\FakeDirectory());
+
+        $app->run($this->args('help'));
+        $messages = self::$terminal->messagesSent();
+        $this->assertStringContainsString('Script-name', $messages[0]);
+
+        $app->skeletonName('My Super Skeleton');
+
+        $app->run($this->args('help'));
+        $messages = self::$terminal->messagesSent();
+        $this->assertStringNotContainsString('Script-name', $messages[0]);
+        $this->assertStringContainsString('My Super Skeleton', $messages[0]);
+    }
+
     private function addInputs(array $inputs): void
     {
         array_walk($inputs, fn (string $inputValue) => self::$terminal->addInput($inputValue));

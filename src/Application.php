@@ -23,17 +23,11 @@ use Exception;
 class Application
 {
     private const VERSION = '0.1';
-    private const HEADER_MESSAGE = <<<HEAD
-        ------------------------------------------------------------
-        Shudd3r/Skeletons (%s)
-        Package skeleton template & validation system
-        %s------------------------------------------------------------
-        HEAD;
-
 
     private EnvSetup $envSetup;
     private AppSetup $appSetup;
     private Terminal $terminal;
+    private string   $skeletonName;
 
     public function __construct(Directory $package, Directory $skeleton, Terminal $terminal = null)
     {
@@ -44,7 +38,7 @@ class Application
 
     public function run(InputArgs $args): int
     {
-        $this->displayHeader($args->interactive());
+        $this->terminal->send($this->headerMessage($args));
 
         try {
             $this->factory($args->command())->command($args)->execute();
@@ -53,10 +47,8 @@ class Application
         }
 
         $exitCode = $this->terminal->exitCode();
-        $summary  = $this->summaryMessage($exitCode, $args->command());
-        if ($summary) {
-            $this->terminal->send(PHP_EOL . $summary . PHP_EOL);
-        }
+        $this->terminal->send($this->summaryMessage($exitCode, $args->command()));
+
         return $exitCode;
     }
 
@@ -80,6 +72,12 @@ class Application
         $this->envSetup->setMetaFile($filename);
     }
 
+    public function skeletonName(string $name): void
+    {
+        if (!$name) { return; }
+        $this->skeletonName = $name;
+    }
+
     protected function factory(string $command): Commands
     {
         $env          = $this->envSetup->runtimeEnv($this->terminal);
@@ -97,11 +95,25 @@ class Application
         throw new Exception("Unknown `{$command}` command");
     }
 
-    private function displayHeader(bool $isInteractive): void
+    private function headerMessage(InputArgs $args): string
     {
-        $interactiveNote = $isInteractive ? 'Interactive input mode (press ctrl-c to abort)' . PHP_EOL : '';
-        $header = sprintf(PHP_EOL . self::HEADER_MESSAGE . PHP_EOL, self::VERSION, $interactiveNote);
-        $this->terminal->send($header);
+        $lines = [
+            $this->skeletonName ?? ucfirst($args->script()),
+            'Skeleton template & validation system',
+            sprintf('powered by Shudd3r/Skeletons (%s)', self::VERSION)
+        ];
+
+        if ($args->interactive()) {
+            $lines[] = 'Interactive input mode (press ctrl-c to abort)';
+        }
+
+        $length = 60;
+        foreach ($lines as &$line) {
+            $line = str_pad($line, $length, " ", STR_PAD_BOTH);
+        }
+        $separator = PHP_EOL . str_repeat('-', $length) . PHP_EOL;
+
+        return $separator . implode(PHP_EOL, $lines) . $separator;
     }
 
     private function summaryMessage(int $exitCode, string $command): string
@@ -124,6 +136,6 @@ class Application
             $message = 'Precondition failure: ' . $message;
         }
 
-        return $message;
+        return PHP_EOL . $message . PHP_EOL;
     }
 }
