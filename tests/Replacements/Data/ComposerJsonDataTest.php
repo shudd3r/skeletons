@@ -21,7 +21,7 @@ class ComposerJsonDataTest extends TestCase
 {
     public function testNotJsonData_ThrowsException()
     {
-        $composer = new ComposerJsonData(new VirtualFile('some string'));
+        $composer = new ComposerJsonData(new VirtualFile('not-json.foo', 'some string'));
         $this->expectException(RuntimeException::class);
         $composer->value('foo');
     }
@@ -108,6 +108,6 @@ class ComposerJsonDataTest extends TestCase
             ]
         ];
 
-        return new ComposerJsonData(new VirtualFile(json_encode($data)));
+        return new ComposerJsonData(new VirtualFile('composer.json', json_encode($data)));
     }
 }

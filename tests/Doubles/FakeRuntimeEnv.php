@@ -29,7 +29,7 @@ class FakeRuntimeEnv extends RuntimeEnv
         $this->tpl = $templates ?? new VirtualDirectory();
         $this->cli = new MockedTerminal();
         $this->bkp = new VirtualDirectory();
-        $this->met = new VirtualFile(null);
+        $this->met = new VirtualFile('meta-data.json', null);
 
         parent::__construct($this->pkg, $this->tpl, $this->cli, $this->bkp, $this->met);
     }

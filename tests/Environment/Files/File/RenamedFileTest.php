@@ -26,7 +26,7 @@ class RenamedFileTest extends TestCase
 
     public function testMethodsReferringToWrappedFileInstance()
     {
-        $wrapped = new VirtualFile(null);
+        $wrapped = new VirtualFile('foo.txt', null);
         $file    = $this->file($wrapped);
         $this->assertEmpty($file->contents());
         $this->assertFalse($file->exists());

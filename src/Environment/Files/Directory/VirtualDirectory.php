@@ -80,7 +80,7 @@ class VirtualDirectory implements Directory
     public function file(string $filename): File
     {
         $this->synchronizeFiles();
-        return $this->files[$filename] ?? new VirtualFile(null, $filename, $this);
+        return $this->files[$filename] ?? new VirtualFile($filename, null, $this);
     }
 
     public function fileList(): array
@@ -98,7 +98,7 @@ class VirtualDirectory implements Directory
         }
 
         $this->exists = true;
-        $this->files[$filename] = new VirtualFile($contents, $filename, $this);
+        $this->files[$filename] = new VirtualFile($filename, $contents, $this);
         $this->updateSubdirectories($filename, fn ($targetFile) => $targetFile->write($contents));
     }
 

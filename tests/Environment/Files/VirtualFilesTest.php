@@ -40,21 +40,21 @@ class VirtualFilesTest extends TestCase
     {
         $directory = new VirtualDirectory();
 
-        $expectedFile = new VirtualFile(null, 'foo.file', $directory);
+        $expectedFile = new VirtualFile('foo.file', null, $directory);
         $this->assertEmpty($directory->fileList());
         $this->assertEquals($expectedFile, $directory->file('foo.file'));
         $this->assertFalse($directory->file('foo.file')->exists());
 
         $directory->addFile('foo.file', 'contents');
 
-        $expectedFiles = [new VirtualFile('contents', 'foo.file', $directory)];
+        $expectedFiles = [new VirtualFile('foo.file', 'contents', $directory)];
         $this->assertEquals($expectedFiles, $directory->fileList());
         $this->assertEquals($expectedFiles[0], $directory->file('foo.file'));
         $this->assertTrue($directory->file('foo.file')->exists());
 
         $directory->addFile('bar.file');
 
-        $expectedFiles = [$expectedFiles[0], new VirtualFile('', 'bar.file', $directory)];
+        $expectedFiles = [$expectedFiles[0], new VirtualFile('bar.file', '', $directory)];
         $this->assertEquals($expectedFiles, $directory->fileList());
         $this->assertEquals($expectedFiles[1], $directory->file('bar.file'));
         $this->assertTrue($directory->file('bar.file')->exists());
@@ -113,8 +113,8 @@ class VirtualFilesTest extends TestCase
         $subdirectory = $directory->subdirectory('foo/bar');
 
         $expectedFiles = [
-            new VirtualFile('', 'baz.txt', $subdirectory),
-            new VirtualFile('', 'sub/file.txt', $subdirectory)
+            new VirtualFile('baz.txt', '', $subdirectory),
+            new VirtualFile('sub/file.txt', '', $subdirectory)
         ];
         $this->assertEquals($expectedFiles, $subdirectory->fileList());
     }
@@ -167,9 +167,9 @@ class VirtualFilesTest extends TestCase
     public function testInstantiationWithFileList_AddsFilesFilteringTestPostfix()
     {
         $files = [
-            new VirtualFile('foo contents', 'foo.txt.sk_tests'),
-            new VirtualFile('bar contents', 'foo.sk_tests/bar.txt'),
-            new VirtualFile('baz contents', 'baz.sk_tests')
+            new VirtualFile('foo.txt.sk_tests', 'foo contents'),
+            new VirtualFile('foo.sk_tests/bar.txt', 'bar contents'),
+            new VirtualFile('baz.sk_tests', 'baz contents')
         ];
 
         $directory = VirtualDirectory::withFiles($files);

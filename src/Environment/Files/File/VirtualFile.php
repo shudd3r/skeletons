@@ -25,11 +25,11 @@ class VirtualFile implements File
 
     private VirtualDirectory $root;
 
-    public function __construct(?string $contents = '', string $name = 'file.txt', VirtualDirectory $root = null)
+    public function __construct(string $name = 'foo.txt', ?string $contents = '', VirtualDirectory $root = null)
     {
         $this->name     = $this->normalized($name);
-        $this->root     = $root ?? new VirtualDirectory();
         $this->contents = $contents;
+        $this->root     = $root ?? new VirtualDirectory();
     }
 
     public function name(): string

@@ -26,7 +26,7 @@ class CompareFileTest extends TestCase
         $template = new Template\BasicTemplate('{replace.me} contents');
         $token    = new Token\ValueToken('replace.me', 'expected');
 
-        $file      = new VirtualFile('expected contents');
+        $file      = new VirtualFile('foo.txt', 'expected contents');
         $processor = new CompareFile($template, $file);
         $this->assertTrue($processor->process($token));
     }
@@ -36,7 +36,7 @@ class CompareFileTest extends TestCase
         $template = new Template\BasicTemplate('{replace.me} contents');
         $token    = new Token\ValueToken('replace.me', 'unexpected');
 
-        $file      = new VirtualFile('expected contents');
+        $file      = new VirtualFile('foo.txt', 'expected contents');
         $processor = new CompareFile($template, $file);
         $this->assertFalse($processor->process($token));
     }
@@ -47,12 +47,12 @@ class CompareFileTest extends TestCase
         $backup   = new VirtualDirectory();
         $token    = new Token\ValueToken('replace.me', 'unexpected');
 
-        $file      = new VirtualFile(null, 'foo.txt');
+        $file      = new VirtualFile('foo.txt', null);
         $processor = new CompareFile($template, $file, $backup);
         $this->assertFalse($processor->process($token));
         $this->assertFalse($backup->file('foo.txt')->exists());
 
-        $file      = new VirtualFile('foo contents', 'foo.file');
+        $file      = new VirtualFile('foo.file', 'foo contents');
         $processor = new CompareFile($template, $file, $backup);
         $this->assertFalse($processor->process($token));
         $this->assertTrue($backup->file('foo.file')->exists());
@@ -62,7 +62,7 @@ class CompareFileTest extends TestCase
     public function testEmptyTemplate_ForNotExistingFile_ReturnsFalse()
     {
         $template = new Template\BasicTemplate('');
-        $file     = new VirtualFile(null, 'foo.txt');
+        $file     = new VirtualFile('foo.txt', null);
         $backup   = new VirtualDirectory();
         $token    = new Token\ValueToken('replace.me', 'expected');
 
