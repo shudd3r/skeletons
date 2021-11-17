@@ -14,6 +14,7 @@ namespace Shudd3r\Skeletons\Tests\Replacements\Replacement;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements\Replacement\PackageName;
 use Shudd3r\Skeletons\Replacements\Token;
+use Shudd3r\Skeletons\Environment\Files\Directory;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
@@ -41,7 +42,7 @@ class PackageNameTest extends TestCase
     {
         $replacement = new PackageName();
         $fallback    = new Doubles\FakeFallbackReader();
-        $env         = new Doubles\FakeRuntimeEnv(new Doubles\FakeDirectory('www/dev/project/directory'));
+        $env         = new Doubles\FakeRuntimeEnv(new Directory\VirtualDirectory('www/dev/project/directory'));
         $this->assertSame('project/directory', $replacement->defaultValue($env, $fallback));
     }
 

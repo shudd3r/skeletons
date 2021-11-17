@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Processors\Processor\GenerateFile;
 use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\Templates\Template;
-use Shudd3r\Skeletons\Tests\Doubles;
+use Shudd3r\Skeletons\Environment\Files\File;
 
 
 class GenerateFileTest extends TestCase
@@ -23,7 +23,7 @@ class GenerateFileTest extends TestCase
     public function testRenderedStringIsWrittenToFile()
     {
         $template  = new Template\BasicTemplate('{replace.me} string');
-        $file      = new Doubles\MockedFile();
+        $file      = new File\VirtualFile();
         $processor = new GenerateFile($template, $file);
 
         $token = new Token\ValueToken('replace.me', 'rendered');

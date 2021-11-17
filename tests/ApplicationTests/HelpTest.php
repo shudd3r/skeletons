@@ -20,10 +20,7 @@ class HelpTest extends ApplicationTests
 {
     public function testWithoutDefinedReplacementOptions_DisplaysBaseMessage()
     {
-        $package   = new Doubles\FakeDirectory();
-        $templates = new Doubles\FakeDirectory();
-        $app = new Application($package, $templates, self::$terminal->reset());
-
+        $app = $this->dummyApp();
         $this->assertSame(0, $app->run($this->args('help')));
 
         $expectedStart = <<<HELP
@@ -42,10 +39,7 @@ class HelpTest extends ApplicationTests
 
     public function testWithDefinedReplacementOptions_DisplaysArgsInfo()
     {
-        $package   = new Doubles\FakeDirectory();
-        $templates = new Doubles\FakeDirectory();
-        $app = new Application($package, $templates, self::$terminal->reset());
-
+        $app = $this->dummyApp();
         $app->replacement('foo.test')->add(new Doubles\FakeReplacement(null, null, 'foo', 'Option Foo'));
         $app->replacement('bar.test')->add(new Doubles\FakeReplacement(null, null, null, 'Option Bar'));
         $app->replacement('baz.test')->add(new Doubles\FakeReplacement(null, null, 'baz', 'Option Baz'));
@@ -75,5 +69,10 @@ class HelpTest extends ApplicationTests
 
         $this->assertStringStartsWith($expectedStart, $helpMessage);
         $this->assertStringEndsWith($expectedEnd, $helpMessage);
+    }
+
+    private function dummyApp(): Application
+    {
+        return new Application(self::$files->directory(), self::$files->directory(), self::$terminal->reset());
     }
 }

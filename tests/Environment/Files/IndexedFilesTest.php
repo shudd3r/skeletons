@@ -14,7 +14,7 @@ namespace Shudd3r\Skeletons\Tests\Environment\Files;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Environment\Files\IndexedFiles;
 use Shudd3r\Skeletons\Environment\Files\File\RenamedFile;
-use Shudd3r\Skeletons\Tests\Doubles;
+use Shudd3r\Skeletons\Environment\Files\Directory;
 
 
 class IndexedFilesTest extends TestCase
@@ -62,9 +62,9 @@ class IndexedFilesTest extends TestCase
         $this->assertEquals($expected, $files->fileList());
     }
 
-    private function sourceFiles(array $filenames): Doubles\FakeDirectory
+    private function sourceFiles(array $filenames): Directory
     {
-        $source = new Doubles\FakeDirectory();
+        $source = new Directory\VirtualDirectory();
         array_walk($filenames, fn (string $filename) => $source->addFile($filename));
         return $source;
     }

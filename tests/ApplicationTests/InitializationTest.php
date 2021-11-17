@@ -13,7 +13,6 @@ namespace Shudd3r\Skeletons\Tests\ApplicationTests;
 
 use Shudd3r\Skeletons\Tests\ApplicationTests;
 use Shudd3r\Skeletons\Application;
-use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class InitializationTest extends ApplicationTests
@@ -45,7 +44,7 @@ class InitializationTest extends ApplicationTests
     public function testInitialization_CreatesBackupOnlyForMismatchedNonEmptyFiles(string $contents, bool $expectBackup)
     {
         $package = self::$files->directory('package');
-        $backup  = new Doubles\FakeDirectory();
+        $backup  = self::$files->directory();
         $app     = $this->app($package);
 
         $app->backup($backup);
@@ -61,8 +60,8 @@ class InitializationTest extends ApplicationTests
 
     public function testInitialization_CreatesEmptyTemplateFiles()
     {
-        $package  = new Doubles\FakeDirectory();
-        $template = new Doubles\FakeDirectory();
+        $package  = self::$files->directory();
+        $template = self::$files->directory();
         $app      = new Application($package, $template, self::$terminal->reset());
 
         $template->addFile('.gitkeep');
@@ -87,7 +86,7 @@ class InitializationTest extends ApplicationTests
     {
         $package = self::$files->directory('package');
         $app     = $this->app($package);
-        $backup  = new Doubles\FakeDirectory();
+        $backup  = self::$files->directory();
 
         $app->backup($backup);
         $backup->addFile('README.md');

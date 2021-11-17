@@ -15,6 +15,8 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Setup\AppSetup;
 use Shudd3r\Skeletons\Setup\ReplacementSetup;
 use Shudd3r\Skeletons\Replacements\Replacement;
+use Shudd3r\Skeletons\Environment\Files\Directory;
+use Shudd3r\Skeletons\Environment\Files\File;
 use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Exception;
@@ -66,7 +68,7 @@ class AppSetupTest extends TestCase
         $generated = $templates->generatedFiles(new InputArgs(['script', 'init', '--local']))->fileList();
 
         $this->assertFileList($package, $filenames);
-        array_walk($generated, fn (Files\File $file) => $file->remove());
+        array_walk($generated, fn (File $file) => $file->remove());
         $this->assertFileList($package, []);
     }
 
@@ -150,9 +152,9 @@ class AppSetupTest extends TestCase
         $this->assertEmpty($filenames);
     }
 
-    private function directoryFiles(array $filenames): Doubles\FakeDirectory
+    private function directoryFiles(array $filenames): Directory\VirtualDirectory
     {
-        $directory = new Doubles\FakeDirectory();
+        $directory = new Directory\VirtualDirectory();
         array_walk($filenames, fn (string $filename) => $directory->addFile($filename));
         return $directory;
     }

@@ -34,7 +34,7 @@ class SynchronizationTest extends ApplicationTests
     public function testSynchronizingPackage_CreatesBackupOnlyForMismatchedNonEmptyFiles(string $contents, bool $expectBackup)
     {
         $package = self::$files->directory('package-desynchronized');
-        $backup  = new Doubles\FakeDirectory();
+        $backup  = self::$files->directory();
         $app     = $this->app($package);
 
         $app->backup($backup);

@@ -12,7 +12,6 @@
 namespace Shudd3r\Skeletons\Tests\Fixtures;
 
 use Shudd3r\Skeletons\Environment\Files\Directory;
-use Shudd3r\Skeletons\Tests\Doubles\FakeDirectory;
 
 
 class ExampleFiles
@@ -24,14 +23,17 @@ class ExampleFiles
         $this->directory = new Directory\LocalDirectory(__DIR__ . '/' . $directory);
     }
 
-    public function directory(string $name): FakeDirectory
+    public function directory(string $name = null): Directory\VirtualDirectory
     {
-        $fakeDirectory = new FakeDirectory('/root/directory/' . $name);
-        foreach ($this->directory->subdirectory($name)->fileList() as $file) {
-            $fakeDirectory->addFile($this->productionName($file->name()), $file->contents());
+        $dirname   = $name ? '/root/directory/' . $name : '/dummy/directory';
+        $directory = new Directory\VirtualDirectory($dirname);
+        $files     = $name ? $this->directory->subdirectory($name)->fileList() : [];
+
+        foreach ($files as $file) {
+            $directory->addFile($this->productionName($file->name()), $file->contents());
         }
 
-        return $fakeDirectory;
+        return $directory;
     }
 
     public function contentsOf(string $filename): string
