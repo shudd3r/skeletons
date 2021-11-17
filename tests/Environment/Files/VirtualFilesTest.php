@@ -163,4 +163,22 @@ class VirtualFilesTest extends TestCase
         $this->assertCount(1, $subdirectory->fileList());
         $this->assertCount(3, $directory->fileList());
     }
+
+    public function testInstantiationWithFileList_AddsFilesFilteringTestPostfix()
+    {
+        $files = [
+            new VirtualFile('foo contents', 'foo.txt.sk_tests'),
+            new VirtualFile('bar contents', 'foo.sk_tests/bar.txt'),
+            new VirtualFile('baz contents', 'baz.sk_tests')
+        ];
+
+        $directory = VirtualDirectory::withFiles($files);
+
+        $expected = new VirtualDirectory();
+        $expected->addFile('foo.txt', 'foo contents');
+        $expected->addFile('foo/bar.txt', 'bar contents');
+        $expected->addFile('baz', 'baz contents');
+
+        $this->assertEquals($expected, $directory);
+    }
 }

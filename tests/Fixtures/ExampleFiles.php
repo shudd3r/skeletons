@@ -25,24 +25,13 @@ class ExampleFiles
 
     public function directory(string $name = null): Directory\VirtualDirectory
     {
-        $dirname   = $name ? '/root/directory/' . $name : '/dummy/directory';
-        $directory = new Directory\VirtualDirectory($dirname);
-        $files     = $name ? $this->directory->subdirectory($name)->fileList() : [];
-
-        foreach ($files as $file) {
-            $directory->addFile($this->productionName($file->name()), $file->contents());
-        }
-
-        return $directory;
+        $dirname = $name ? '/root/directory/' . $name : '/dummy/directory';
+        $files   = $name ? $this->directory->subdirectory($name)->fileList() : [];
+        return Directory\VirtualDirectory::withFiles($files, $dirname);
     }
 
     public function contentsOf(string $filename): string
     {
         return $this->directory->file($filename)->contents();
-    }
-
-    private function productionName(string $name): string
-    {
-        return str_replace('.sk_tests', '', $name);
     }
 }
