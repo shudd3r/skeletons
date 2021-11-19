@@ -39,10 +39,10 @@ class AppSetupTest extends TestCase
         $templates = $setup->templates(new Doubles\FakeRuntimeEnv($package, $template));
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'init', '--local']));
-        $this->assertFileList($files, $filenames);
+        $this->assertFileList($files, $filenames, ['src/dummy.file']);
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'init']));
-        $this->assertFileList($files, ['basic.file', 'escaped.file', 'dir/initial.file', 'src/dummy.file']);
+        $this->assertFileList($files, $filenames, ['src/dummy.file', 'escaped/local.file']);
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'check', '--local']));
         $this->assertFileList($files, ['basic.file', 'escaped.file', 'escaped/local.file']);
@@ -53,7 +53,7 @@ class AppSetupTest extends TestCase
         $this->assertFileList($templates->dummyFiles(), ['src/dummy.file']);
     }
 
-    public function testRemovingTemplatesGeneratedFiles_RemovesFilesFromPackageDirectory()
+    public function testRemovingTemplateGeneratedFiles_RemovesFilesFromPackageDirectory()
     {
         $filenames = ['basic.file', 'escaped.file', 'escaped/local.file', 'dir/initial.file', 'src/dummy.file'];
         $package   = $this->directoryFiles($filenames);
@@ -69,7 +69,7 @@ class AppSetupTest extends TestCase
 
         $this->assertFileList($package, $filenames);
         array_walk($generated, fn (File $file) => $file->remove());
-        $this->assertFileList($package, []);
+        $this->assertFileList($package, ['src/dummy.file']);
     }
 
     public function testReplacementSetup_AddsReplacementsInDefinedOrder()
@@ -140,9 +140,9 @@ class AppSetupTest extends TestCase
         $replacement->build(fn () => 'dummy');
     }
 
-    private function assertFileList(Files $files, array $filenames): void
+    private function assertFileList(Files $files, array $filenames, array $except = []): void
     {
-        $filenames = array_flip($filenames);
+        $filenames = array_flip($except ? array_diff($filenames, $except) : $filenames);
         foreach ($files->fileList() as $file) {
             $name = $file->name();
             $this->assertArrayHasKey($name, $filenames);

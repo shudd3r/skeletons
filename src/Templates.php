@@ -39,7 +39,7 @@ class Templates
 
     public function generatedFiles(InputArgs $args): Files
     {
-        $types = $args->command() === 'init' ? ['orig', 'init', 'dummy'] : ['orig'];
+        $types = $args->command() === 'init' ? ['orig', 'init'] : ['orig'];
         if ($args->includeLocalFiles()) { $types[] = 'local'; }
 
         return new Files\ReflectedFiles($this->env->package(), $this->files->files($types));

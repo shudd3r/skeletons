@@ -96,8 +96,8 @@ class HandleDummyFiles implements Command
     {
         if (!$missingFiles) { return; }
         if ($this->output) {
-            $action = $this->validate ? 'Discovered' : 'Creating';
-            $this->output->send('- ' . $action . ' missing dummy files:' . PHP_EOL);
+            $action = $this->validate ? 'Discovered missing' : 'Creating';
+            $this->output->send('- ' . $action . ' dummy files for required directories:' . PHP_EOL);
         }
 
         foreach ($missingFiles as $filename) {
