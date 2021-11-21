@@ -18,20 +18,21 @@ class InitialReader extends Reader implements FallbackReader
 {
     public function readToken(string $name): bool
     {
-        if (array_key_exists($name, $this->tokens)) { return true; }
         $this->tokens[$name] = null;
 
         $replacement = $this->replacements->replacement($name);
         $default     = $this->commandLineOption($replacement) ?? $replacement->defaultValue($this->env, $this);
         $token       = $replacement->token($name, $this->inputString($replacement, $default));
-        $this->tokens[$name] = $token;
 
+        $this->tokens[$name] = $token;
         return $token !== null;
     }
 
     public function valueOf(string $name): string
     {
-        $this->readToken($name);
+        if (!array_key_exists($name, $this->tokens)) {
+            $this->readToken($name);
+        }
 
         $token = $this->tokens[$name] ?? null;
         return $token ? $token->value() : '';
