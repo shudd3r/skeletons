@@ -14,7 +14,7 @@ namespace Shudd3r\Skeletons\Replacements\Reader;
 use Shudd3r\Skeletons\Replacements\Reader;
 
 
-class InitialReader extends Reader implements FallbackReader
+class InitialReader extends Reader
 {
     public function readToken(string $name): bool
     {
@@ -26,15 +26,5 @@ class InitialReader extends Reader implements FallbackReader
 
         $this->tokens[$name] = $token;
         return $token !== null;
-    }
-
-    public function valueOf(string $name): string
-    {
-        if (!array_key_exists($name, $this->tokens)) {
-            $this->readToken($name);
-        }
-
-        $token = $this->tokens[$name] ?? null;
-        return $token ? $token->value() : '';
     }
 }

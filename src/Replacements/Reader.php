@@ -16,7 +16,7 @@ use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\RuntimeEnv;
 
 
-abstract class Reader
+abstract class Reader implements Reader\FallbackReader
 {
     protected Replacements $replacements;
     protected RuntimeEnv   $env;
@@ -50,6 +50,16 @@ abstract class Reader
     }
 
     abstract public function readToken(string $name): bool;
+
+    public function valueOf(string $name): string
+    {
+        if (!array_key_exists($name, $this->tokens)) {
+            $this->readToken($name);
+        }
+
+        $token = $this->tokens[$name] ?? null;
+        return $token ? $token->value() : '';
+    }
 
     protected function commandLineOption(Replacement $replacement): ?string
     {
