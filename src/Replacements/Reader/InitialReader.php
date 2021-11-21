@@ -12,18 +12,18 @@
 namespace Shudd3r\Skeletons\Replacements\Reader;
 
 use Shudd3r\Skeletons\Replacements\Reader;
-use Shudd3r\Skeletons\Replacements\Replacement;
 
 
 class InitialReader extends Reader implements FallbackReader
 {
-    public function readToken(string $name, Replacement $replacement): bool
+    public function readToken(string $name): bool
     {
         if (array_key_exists($name, $this->tokens)) { return true; }
         $this->tokens[$name] = null;
 
-        $default = $this->commandLineOption($replacement) ?? $replacement->defaultValue($this->env, $this);
-        $token   = $replacement->token($name, $this->inputString($replacement, $default));
+        $replacement = $this->replacements->replacement($name);
+        $default     = $this->commandLineOption($replacement) ?? $replacement->defaultValue($this->env, $this);
+        $token       = $replacement->token($name, $this->inputString($replacement, $default));
         $this->tokens[$name] = $token;
 
         return $token !== null;
@@ -31,7 +31,7 @@ class InitialReader extends Reader implements FallbackReader
 
     public function valueOf(string $name): string
     {
-        $this->readToken($name, $this->replacements->replacement($name));
+        $this->readToken($name);
 
         $token = $this->tokens[$name] ?? null;
         return $token ? $token->value() : '';

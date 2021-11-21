@@ -42,8 +42,8 @@ class Replacements
 
     public function tokens(Reader $reader, bool $isInteractive): void
     {
-        foreach ($this->replacements as $name => $replacement) {
-            $success = $reader->readToken($name, $replacement);
+        foreach (array_keys($this->replacements) as $name) {
+            $success = $reader->readToken($name);
             if (!$success && $isInteractive) { break; }
         }
     }

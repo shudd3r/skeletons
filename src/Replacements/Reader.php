@@ -49,7 +49,7 @@ abstract class Reader
         return $values;
     }
 
-    abstract public function readToken(string $name, Replacement $replacement): bool;
+    abstract public function readToken(string $name): bool;
 
     protected function commandLineOption(Replacement $replacement): ?string
     {
