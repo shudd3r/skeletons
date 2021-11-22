@@ -25,6 +25,11 @@ class Replacements
         $this->replacements = $replacements;
     }
 
+    public function placeholders(): array
+    {
+        return array_keys($this->replacements);
+    }
+
     public function replacement(string $replacementName): ?Replacement
     {
         return $this->replacements[$replacementName] ?? null;
@@ -38,13 +43,5 @@ class Replacements
         };
 
         return array_filter(array_map($describe, $this->replacements));
-    }
-
-    public function tokens(Reader $reader, bool $isInteractive): void
-    {
-        foreach (array_keys($this->replacements) as $name) {
-            $success = $reader->readToken($name);
-            if (!$success && $isInteractive) { break; }
-        }
     }
 }

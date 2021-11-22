@@ -94,7 +94,13 @@ abstract class Reader implements Reader\FallbackReader
 
     private function tokens(): array
     {
-        if (!$this->tokens) { $this->replacements->tokens($this, $this->args->interactive()); }
+        if ($this->tokens) { return $this->tokens; }
+
+        foreach ($this->replacements->placeholders() as $placeholder) {
+            $success = $this->readToken($placeholder);
+            if (!$success && $this->args->interactive()) { break; }
+        }
+
         return $this->tokens;
     }
 
