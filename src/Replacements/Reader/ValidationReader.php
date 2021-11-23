@@ -16,7 +16,7 @@ use Shudd3r\Skeletons\Replacements\Reader;
 
 class ValidationReader extends Reader
 {
-    public function readToken(string $name): bool
+    protected function readToken(string $name): bool
     {
         $replacement = $this->replacements->replacement($name);
         $token       = $replacement->token($name, $this->metaDataValue($name));

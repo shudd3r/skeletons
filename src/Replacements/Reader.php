@@ -49,7 +49,7 @@ abstract class Reader implements Reader\FallbackReader
         return $values;
     }
 
-    abstract public function readToken(string $name): bool;
+    abstract protected function readToken(string $name): bool;
 
     public function valueOf(string $name): string
     {

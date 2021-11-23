@@ -25,7 +25,7 @@ class FakeReader extends Reader
         $this->tokens['placeholder'] = $returnsTokens ? new Token\ValueToken('placeholder', 'foo') : null;
     }
 
-    public function readToken(string $name): bool
+    protected function readToken(string $name): bool
     {
         return true;
     }

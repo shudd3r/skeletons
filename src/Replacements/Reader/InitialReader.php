@@ -16,7 +16,7 @@ use Shudd3r\Skeletons\Replacements\Reader;
 
 class InitialReader extends Reader
 {
-    public function readToken(string $name): bool
+    protected function readToken(string $name): bool
     {
         $this->tokens[$name] = null;
 
