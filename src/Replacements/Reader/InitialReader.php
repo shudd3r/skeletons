@@ -20,7 +20,7 @@ class InitialReader extends Reader
     protected function readToken(string $name): ?ValueToken
     {
         $replacement = $this->replacements->replacement($name);
-        $default     = $this->commandLineOption($replacement) ?? $replacement->defaultValue($this->env, $this);
+        $default     = $this->commandLineOption($replacement) ?? $this->defaultValue($replacement);
         return $replacement->token($name, $this->inputString($replacement, $default));
     }
 }

@@ -20,12 +20,12 @@ use Shudd3r\Skeletons\Replacements\Token\ValueToken;
 abstract class Reader implements Reader\FallbackReader
 {
     protected Replacements $replacements;
-    protected RuntimeEnv   $env;
 
     /** @var ?Token\ValueToken[] */
     private array $tokens = [];
 
-    private InputArgs $args;
+    private RuntimeEnv $env;
+    private InputArgs  $args;
 
     public function __construct(RuntimeEnv $env, InputArgs $args)
     {
@@ -78,6 +78,11 @@ abstract class Reader implements Reader\FallbackReader
 
         if ($retry < 0) { $this->sendAbortMessage(); }
         return $input;
+    }
+
+    protected function defaultValue(Replacement $replacement): string
+    {
+        return $replacement->defaultValue($this->env, $this);
     }
 
     protected function metaDataValue(string $namespace): string
