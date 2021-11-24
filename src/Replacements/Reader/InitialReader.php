@@ -12,19 +12,15 @@
 namespace Shudd3r\Skeletons\Replacements\Reader;
 
 use Shudd3r\Skeletons\Replacements\Reader;
+use Shudd3r\Skeletons\Replacements\Token\ValueToken;
 
 
 class InitialReader extends Reader
 {
-    protected function readToken(string $name): bool
+    protected function readToken(string $name): ?ValueToken
     {
-        $this->tokens[$name] = null;
-
         $replacement = $this->replacements->replacement($name);
         $default     = $this->commandLineOption($replacement) ?? $replacement->defaultValue($this->env, $this);
-        $token       = $replacement->token($name, $this->inputString($replacement, $default));
-
-        $this->tokens[$name] = $token;
-        return $token !== null;
+        return $replacement->token($name, $this->inputString($replacement, $default));
     }
 }

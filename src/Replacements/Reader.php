@@ -11,9 +11,10 @@
 
 namespace Shudd3r\Skeletons\Replacements;
 
+use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements;
-use Shudd3r\Skeletons\RuntimeEnv;
+use Shudd3r\Skeletons\Replacements\Token\ValueToken;
 
 
 abstract class Reader implements Reader\FallbackReader
@@ -22,7 +23,7 @@ abstract class Reader implements Reader\FallbackReader
     protected RuntimeEnv   $env;
 
     /** @var ?Token\ValueToken[] */
-    protected array $tokens = [];
+    private array $tokens = [];
 
     private InputArgs $args;
 
@@ -38,8 +39,8 @@ abstract class Reader implements Reader\FallbackReader
         $this->replacements = $replacements;
 
         foreach ($this->replacements->placeholders() as $placeholder) {
-            $success = $this->readToken($placeholder);
-            if (!$success && $this->args->interactive()) { break; }
+            $token = $this->token($placeholder);
+            if (!$token && $this->args->interactive()) { break; }
         }
 
         return $this->tokens;
@@ -47,15 +48,11 @@ abstract class Reader implements Reader\FallbackReader
 
     public function valueOf(string $name): string
     {
-        if (!array_key_exists($name, $this->tokens)) {
-            $this->readToken($name);
-        }
-
-        $token = $this->tokens[$name] ?? null;
+        $token = $this->token($name);
         return $token ? $token->value() : '';
     }
 
-    abstract protected function readToken(string $name): bool;
+    abstract protected function readToken(string $name): ?ValueToken;
 
     protected function commandLineOption(Replacement $replacement): ?string
     {
@@ -86,6 +83,13 @@ abstract class Reader implements Reader\FallbackReader
     protected function metaDataValue(string $namespace): string
     {
         return $this->env->metaData()->value($namespace) ?? '';
+    }
+
+    private function token(string $placeholder): ?ValueToken
+    {
+        if (array_key_exists($placeholder, $this->tokens)) { return $this->tokens[$placeholder]; }
+        $this->tokens[$placeholder] = null;
+        return $this->tokens[$placeholder] = $this->readToken($placeholder);
     }
 
     private function fallbackInput(string $prompt, ?string $default): string
