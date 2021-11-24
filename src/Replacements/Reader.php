@@ -19,13 +19,12 @@ use Shudd3r\Skeletons\Replacements\Token\ValueToken;
 
 abstract class Reader implements Reader\FallbackReader
 {
-    protected Replacements $replacements;
-
-    /** @var ?Token\ValueToken[] */
-    private array $tokens = [];
-
     private RuntimeEnv $env;
     private InputArgs  $args;
+
+    private Replacements $replacements;
+
+    private array $tokens = [];
 
     public function __construct(RuntimeEnv $env, InputArgs $args)
     {
@@ -51,7 +50,7 @@ abstract class Reader implements Reader\FallbackReader
         return $token ? $token->value() : '';
     }
 
-    abstract protected function readToken(string $name): ?ValueToken;
+    abstract protected function readToken(string $name, Replacement $replacement): ?ValueToken;
 
     protected function commandLineOption(Replacement $replacement): ?string
     {
@@ -93,7 +92,7 @@ abstract class Reader implements Reader\FallbackReader
     {
         if (array_key_exists($name, $this->tokens)) { return $this->tokens[$name]; }
         $this->tokens[$name] = null;
-        return $this->tokens[$name] = $this->readToken($name);
+        return $this->tokens[$name] = $this->readToken($name, $this->replacements->replacement($name));
     }
 
     private function fallbackInput(string $prompt, ?string $default): string

@@ -29,10 +29,10 @@ class FakeReader extends Reader
 
     public function tokens(Replacements $replacements): array
     {
-        return ['placeholder' => $this->readToken('placeholder')];
+        return ['placeholder' => $this->readToken('placeholder', new FakeReplacement())];
     }
 
-    protected function readToken(string $name): ?ValueToken
+    protected function readToken(string $name, Replacements\Replacement $replacement): ?ValueToken
     {
         return $this->returnsToken ? new ValueToken('placeholder', 'foo') : null;
     }

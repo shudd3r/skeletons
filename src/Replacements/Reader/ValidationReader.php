@@ -12,14 +12,14 @@
 namespace Shudd3r\Skeletons\Replacements\Reader;
 
 use Shudd3r\Skeletons\Replacements\Reader;
+use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Replacements\Token\ValueToken;
 
 
 class ValidationReader extends Reader
 {
-    protected function readToken(string $name): ?ValueToken
+    protected function readToken(string $name, Replacement $replacement): ?ValueToken
     {
-        $replacement = $this->replacements->replacement($name);
         return $replacement->token($name, $this->metaDataValue($name));
     }
 }
