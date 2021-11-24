@@ -13,7 +13,7 @@ namespace Shudd3r\Skeletons\Replacements\Replacement;
 
 use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
+use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\RuntimeEnv;
 
 
@@ -51,9 +51,9 @@ class RepositoryName implements Replacement
         return (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
     }
 
-    public function token(string $name, string $value): ?ValueToken
+    public function token(string $name, string $value): ?Token
     {
-        return $this->isValid($value) ? new ValueToken($name, $value) : null;
+        return $this->isValid($value) ? new Token\ValueToken($name, $value) : null;
     }
 
     private function repositoryFromGitConfig(RuntimeEnv $env): ?string

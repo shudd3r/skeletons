@@ -12,7 +12,7 @@
 namespace Shudd3r\Skeletons\Tests\Doubles;
 
 use Shudd3r\Skeletons\Replacements\Reader;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
+use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\InputArgs;
 
@@ -32,8 +32,8 @@ class FakeReader extends Reader
         return ['placeholder' => $this->readToken('placeholder', new FakeReplacement())];
     }
 
-    protected function readToken(string $name, Replacements\Replacement $replacement): ?ValueToken
+    protected function readToken(string $name, Replacements\Replacement $replacement): ?Token
     {
-        return $this->returnsToken ? new ValueToken('placeholder', 'foo') : null;
+        return $this->returnsToken ? new Token\ValueToken('placeholder', 'foo') : null;
     }
 }

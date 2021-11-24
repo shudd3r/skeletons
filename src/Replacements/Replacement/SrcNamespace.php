@@ -13,8 +13,7 @@ namespace Shudd3r\Skeletons\Replacements\Replacement;
 
 use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
-use Shudd3r\Skeletons\Replacements\Token\CompositeValueToken;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
+use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\RuntimeEnv;
 
 
@@ -57,12 +56,12 @@ class SrcNamespace implements Replacement
         return true;
     }
 
-    public function token(string $name, string $value): ?ValueToken
+    public function token(string $name, string $value): ?Token
     {
         if (!$this->isValid($value)) { return null; }
 
-        $subToken = new ValueToken($name . '.esc', str_replace('\\', '\\\\', $value));
-        return new CompositeValueToken($name, $value, $subToken);
+        $subToken = new Token\ValueToken($name . '.esc', str_replace('\\', '\\\\', $value));
+        return new Token\CompositeValueToken($name, $value, $subToken);
     }
 
     private function namespaceFromComposer(RuntimeEnv $env): ?string
