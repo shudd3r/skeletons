@@ -38,9 +38,8 @@ abstract class Reader implements Reader\FallbackReader
         if ($this->tokens) { return $this->tokens; }
         $this->replacements = $replacements;
 
-        foreach ($this->replacements->placeholders() as $placeholder) {
-            $token = $this->token($placeholder);
-            if (!$token && $this->args->interactive()) { break; }
+        foreach ($this->replacements->placeholders() as $name) {
+            if (!$this->token($name) && $this->args->interactive()) { break; }
         }
 
         return $this->tokens;
@@ -85,16 +84,16 @@ abstract class Reader implements Reader\FallbackReader
         return $replacement->defaultValue($this->env, $this);
     }
 
-    protected function metaDataValue(string $namespace): string
+    protected function metaDataValue(string $name): string
     {
-        return $this->env->metaData()->value($namespace) ?? '';
+        return $this->env->metaData()->value($name) ?? '';
     }
 
-    private function token(string $placeholder): ?ValueToken
+    private function token(string $name): ?ValueToken
     {
-        if (array_key_exists($placeholder, $this->tokens)) { return $this->tokens[$placeholder]; }
-        $this->tokens[$placeholder] = null;
-        return $this->tokens[$placeholder] = $this->readToken($placeholder);
+        if (array_key_exists($name, $this->tokens)) { return $this->tokens[$name]; }
+        $this->tokens[$name] = null;
+        return $this->tokens[$name] = $this->readToken($name);
     }
 
     private function fallbackInput(string $prompt, ?string $default): string
