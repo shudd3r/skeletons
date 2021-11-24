@@ -30,4 +30,10 @@ class CompositeTokenTest extends TestCase
 
         $this->assertSame('Template with foo-bar-baz', $token->replace($template));
     }
+
+    public function testValueMethod_ReturnsNull()
+    {
+        $token = new Token\CompositeToken(new Token\ValueToken('foo', 'bar'));
+        $this->assertNull($token->value());
+    }
 }

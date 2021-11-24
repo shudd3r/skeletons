@@ -18,6 +18,12 @@ use RuntimeException;
 
 class ValueListTokenTest extends TestCase
 {
+    public function testValueMethod_ReturnsNull()
+    {
+        $token = $this->token(['foo', 'bar']);
+        $this->assertNull($token->value());
+    }
+
     public function testPlaceholdersAreReplacedWithConsecutiveValues()
     {
         $template = '{replace}=1 {replace}=2 {replace}=3 {replace}=4';

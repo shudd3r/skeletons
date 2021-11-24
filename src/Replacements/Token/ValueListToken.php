@@ -40,4 +40,9 @@ class ValueListToken implements Token
 
         return $generated;
     }
+
+    public function value(): ?string
+    {
+        return null;
+    }
 }

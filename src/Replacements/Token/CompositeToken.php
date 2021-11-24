@@ -31,4 +31,9 @@ class CompositeToken implements Token
 
         return $template;
     }
+
+    public function value(): ?string
+    {
+        return null;
+    }
 }

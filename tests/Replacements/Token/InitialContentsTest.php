@@ -18,6 +18,12 @@ use Shudd3r\Skeletons\Replacements\Token\OriginalContents;
 
 class InitialContentsTest extends TestCase
 {
+    public function testValueMethod_ReturnsNull()
+    {
+        $token = new InitialContents();
+        $this->assertNull($token->value());
+    }
+
     public function testForTemplateWithoutPlaceholders_ReturnsUnchangedTemplate()
     {
         $token    = new InitialContents();

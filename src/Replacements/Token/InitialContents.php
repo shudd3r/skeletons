@@ -34,6 +34,11 @@ class InitialContents implements Token
         return preg_replace($this->pattern(), $replace, $template);
     }
 
+    public function value(): ?string
+    {
+        return null;
+    }
+
     private function hasPlaceholder($template): bool
     {
         $open = strpos($template, self::CONTENT_START);

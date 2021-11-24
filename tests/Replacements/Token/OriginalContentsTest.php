@@ -20,6 +20,12 @@ class OriginalContentsTest extends TestCase
 {
     private const FILENAME = 'cached/file.txt';
 
+    public function testValueMethod_ReturnsNull()
+    {
+        $token = $this->token('foo');
+        $this->assertNull($token->value());
+    }
+
     /**
      * @dataProvider useCases
      * @param string  $original
