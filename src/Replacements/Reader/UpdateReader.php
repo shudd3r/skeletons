@@ -13,16 +13,14 @@ namespace Shudd3r\Skeletons\Replacements\Reader;
 
 use Shudd3r\Skeletons\Replacements\Reader;
 use Shudd3r\Skeletons\Replacements\Replacement;
+use Shudd3r\Skeletons\Replacements\Token\ValueToken;
 
 
 class UpdateReader extends Reader
 {
-    public function readToken(string $name, Replacement $replacement): bool
+    protected function readToken(string $name, Replacement $replacement): ?ValueToken
     {
         $default = $this->commandLineOption($replacement) ?? $this->metaDataValue($name);
-        $token   = $replacement->token($name, $this->inputString($replacement, $default));
-        $this->tokens[$name] = $token;
-
-        return $token !== null;
+        return $replacement->token($name, $this->inputString($replacement, $default));
     }
 }

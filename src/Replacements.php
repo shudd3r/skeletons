@@ -12,7 +12,6 @@
 namespace Shudd3r\Skeletons;
 
 use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Replacements\Reader;
 
 
 class Replacements
@@ -23,6 +22,11 @@ class Replacements
     public function __construct(array $replacements)
     {
         $this->replacements = $replacements;
+    }
+
+    public function placeholders(): array
+    {
+        return array_keys($this->replacements);
     }
 
     public function replacement(string $replacementName): ?Replacement
@@ -38,13 +42,5 @@ class Replacements
         };
 
         return array_filter(array_map($describe, $this->replacements));
-    }
-
-    public function tokens(Reader $reader, bool $isInteractive): void
-    {
-        foreach ($this->replacements as $name => $replacement) {
-            $success = $reader->readToken($name, $replacement);
-            if (!$success && $isInteractive) { break; }
-        }
     }
 }

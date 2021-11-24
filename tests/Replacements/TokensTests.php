@@ -13,13 +13,14 @@ namespace Shudd3r\Skeletons\Tests\Replacements;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements;
+use Shudd3r\Skeletons\Replacements\Tokens;
 use Shudd3r\Skeletons\Replacements\Reader;
 use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
-abstract class ReaderTests extends TestCase
+abstract class TokensTests extends TestCase
 {
     /** <placeholder, <<fallback>, <option>, <prompt>> */
     protected const REPLACEMENT_PARAMS = [
@@ -43,20 +44,25 @@ abstract class ReaderTests extends TestCase
     protected static Doubles\FakeRuntimeEnv $env;
 
     public function testInvalidToken_ReturnsNull() {
-        $reader = $this->reader([], [], ['baz']);
-        $this->assertNull($reader->token());
-        $this->assertSame($this->defaults(['baz' => null]), $reader->tokenValues());
+        $tokens = $this->tokens([], [], ['baz']);
+        $this->assertNull($tokens->compositeToken());
+        $this->assertSame($this->defaults(['baz' => null]), $tokens->placeholderValues());
     }
 
-    protected function assertTokenValues(Reader $reader, array $expected): void
+    protected function assertTokenValues(Tokens $tokens, array $expected): void
     {
         $createToken   = fn($name, $value) => new Token\ValueToken($name, $value);
         $expectedToken = new Token\CompositeToken(...array_map($createToken, array_keys($expected), $expected));
-        $this->assertEquals($expectedToken, $reader->token());
-        $this->assertSame($expected, $reader->tokenValues());
+        $this->assertEquals($expectedToken, $tokens->compositeToken());
+        $this->assertSame($expected, $tokens->placeholderValues());
     }
 
-    abstract protected function reader(array $inputs, array $options, array $removeDefaults = []): Reader;
+    protected function tokens(array $inputs, array $options, array $removeDefaults = []): Tokens
+    {
+        return new Tokens($this->replacements($removeDefaults), $this->reader($inputs, $options));
+    }
+
+    abstract protected function reader(array $inputs, array $options): Reader;
 
     abstract protected function defaults(array $override = []): array;
 

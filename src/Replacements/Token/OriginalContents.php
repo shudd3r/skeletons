@@ -31,7 +31,7 @@ class OriginalContents implements Token
         return $token->replace($template);
     }
 
-    public function token(string $mask): Token
+    private function token(string $mask): Token
     {
         if (!$this->contents) { return $this->newTokenInstance(); }
 

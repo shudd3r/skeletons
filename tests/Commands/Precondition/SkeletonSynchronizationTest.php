@@ -13,6 +13,7 @@ namespace Shudd3r\Skeletons\Tests\Commands\Precondition;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Commands\Precondition\SkeletonSynchronization;
+use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
@@ -20,24 +21,23 @@ class SkeletonSynchronizationTest extends TestCase
 {
     public function testUnresolvedToken_ReturnsFalse()
     {
-        $reader       = new Doubles\FakeReader(false);
+        $tokens       = new Replacements\Tokens(new Replacements([]), new Doubles\FakeReader(false));
         $processor    = new Doubles\MockedProcessor(true);
-        $precondition = new SkeletonSynchronization($reader, $processor);
+        $precondition = new SkeletonSynchronization($tokens, $processor);
         $this->assertFalse($precondition->isFulfilled());
     }
 
     public function testResolvedToken_ReturnsStatusFromProcessor()
     {
-        $reader       = new Doubles\FakeReader(true);
+        $tokens       = new Replacements\Tokens(new Replacements([]), new Doubles\FakeReader(true));
         $processor    = new Doubles\MockedProcessor(true);
-        $precondition = new SkeletonSynchronization($reader, $processor);
+        $precondition = new SkeletonSynchronization($tokens, $processor);
         $this->assertTrue($precondition->isFulfilled());
-        $this->assertEquals($reader->token(), $processor->passedToken());
+        $this->assertEquals($tokens->compositeToken(), $processor->passedToken());
 
-        $reader       = new Doubles\FakeReader(true);
         $processor    = new Doubles\MockedProcessor(false);
-        $precondition = new SkeletonSynchronization($reader, $processor);
+        $precondition = new SkeletonSynchronization($tokens, $processor);
         $this->assertFalse($precondition->isFulfilled());
-        $this->assertEquals($reader->token(), $processor->passedToken());
+        $this->assertEquals($tokens->compositeToken(), $processor->passedToken());
     }
 }

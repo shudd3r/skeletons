@@ -11,45 +11,46 @@
 
 namespace Shudd3r\Skeletons\Replacements;
 
+use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements;
-use Shudd3r\Skeletons\RuntimeEnv;
+use Shudd3r\Skeletons\Replacements\Token\ValueToken;
 
 
-abstract class Reader
+abstract class Reader implements Reader\FallbackReader
 {
-    protected Replacements $replacements;
-    protected RuntimeEnv   $env;
+    private RuntimeEnv $env;
+    private InputArgs  $args;
 
-    /** @var ?Token\ValueToken[] */
-    protected array $tokens = [];
+    private Replacements $replacements;
 
-    private InputArgs $args;
+    private array $tokens = [];
 
-    public function __construct(Replacements $replacements, RuntimeEnv $env, InputArgs $args)
+    public function __construct(RuntimeEnv $env, InputArgs $args)
     {
+        $this->env  = $env;
+        $this->args = $args;
+    }
+
+    public function tokens(Replacements $replacements): array
+    {
+        if ($this->tokens) { return $this->tokens; }
         $this->replacements = $replacements;
-        $this->env          = $env;
-        $this->args         = $args;
-    }
 
-    public function token(): ?Token
-    {
-        $tokens = $this->tokens();
-        return !in_array(null, $tokens) ? new Token\CompositeToken(...array_values($tokens)) : null;
-    }
-
-    public function tokenValues(): array
-    {
-        $values = [];
-        foreach ($this->tokens() as $name => $token) {
-            $values[$name] = $token ? $token->value() : null;
+        foreach ($this->replacements->placeholders() as $name) {
+            if (!$this->token($name) && $this->args->interactive()) { break; }
         }
 
-        return $values;
+        return $this->tokens;
     }
 
-    abstract public function readToken(string $name, Replacement $replacement): bool;
+    public function valueOf(string $name): string
+    {
+        $token = $this->token($name);
+        return $token ? $token->value() : '';
+    }
+
+    abstract protected function readToken(string $name, Replacement $replacement): ?ValueToken;
 
     protected function commandLineOption(Replacement $replacement): ?string
     {
@@ -77,15 +78,21 @@ abstract class Reader
         return $input;
     }
 
-    protected function metaDataValue(string $namespace): string
+    protected function defaultValue(Replacement $replacement): string
     {
-        return $this->env->metaData()->value($namespace) ?? '';
+        return $replacement->defaultValue($this->env, $this);
     }
 
-    private function tokens(): array
+    protected function metaDataValue(string $name): string
     {
-        if (!$this->tokens) { $this->replacements->tokens($this, $this->args->interactive()); }
-        return $this->tokens;
+        return $this->env->metaData()->value($name) ?? '';
+    }
+
+    private function token(string $name): ?ValueToken
+    {
+        if (array_key_exists($name, $this->tokens)) { return $this->tokens[$name]; }
+        $this->tokens[$name] = null;
+        return $this->tokens[$name] = $this->readToken($name, $this->replacements->replacement($name));
     }
 
     private function fallbackInput(string $prompt, ?string $default): string

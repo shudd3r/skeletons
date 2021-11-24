@@ -12,27 +12,27 @@
 namespace Shudd3r\Skeletons\Commands\Command;
 
 use Shudd3r\Skeletons\Commands\Command;
-use Shudd3r\Skeletons\Replacements\Reader;
+use Shudd3r\Skeletons\Replacements\Tokens;
 use Shudd3r\Skeletons\Processors\Processor;
 use Shudd3r\Skeletons\Environment\Output;
 
 
 class ProcessTokens implements Command
 {
-    private Reader    $reader;
+    private Tokens    $tokens;
     private Processor $processor;
     private Output    $output;
 
-    public function __construct(Reader $reader, Processor $processor, Output $output)
+    public function __construct(Tokens $tokens, Processor $processor, Output $output)
     {
-        $this->reader    = $reader;
+        $this->tokens    = $tokens;
         $this->processor = $processor;
         $this->output    = $output;
     }
 
     public function execute(): void
     {
-        if (!$token = $this->reader->token()) {
+        if (!$token = $this->tokens->compositeToken()) {
             $this->output->send('', 4);
             return;
         }

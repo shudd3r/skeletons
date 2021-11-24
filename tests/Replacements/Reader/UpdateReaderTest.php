@@ -11,40 +11,39 @@
 
 namespace Shudd3r\Skeletons\Tests\Replacements\Reader;
 
-use Shudd3r\Skeletons\Tests\Replacements\ReaderTests;
-use Shudd3r\Skeletons\Replacements\Reader;
+use Shudd3r\Skeletons\Tests\Replacements\TokensTests;
+use Shudd3r\Skeletons\Replacements\Reader\UpdateReader;
 
 
-class UpdateReaderTest extends ReaderTests
+class UpdateReaderTest extends TokensTests
 {
     public function testWithoutInputValues_TokensAreBuiltWithMetaData()
     {
-        $reader = $this->reader([], []);
-        $this->assertTokenValues($reader, $this->defaults());
+        $tokens = $this->tokens([], []);
+        $this->assertTokenValues($tokens, $this->defaults());
     }
 
     public function testWithOptionValues_TokensAreBuiltWithMatchingOptionValue()
     {
-        $reader = $this->reader([], ['optBar=bar (option)']);
-        $this->assertTokenValues($reader, $this->defaults(['bar' => 'bar (option)']));
+        $tokens = $this->tokens([], ['optBar=bar (option)']);
+        $this->assertTokenValues($tokens, $this->defaults(['bar' => 'bar (option)']));
     }
 
     public function testWhenNotEmptyInteractiveInputValueIsGiven_TokensAreBuiltWithThatValue()
     {
-        $reader = $this->reader(['', 'baz (input)'], ['-i']);
-        $this->assertTokenValues($reader, $this->defaults(['baz' => 'baz (input)']));
+        $tokens = $this->tokens(['', 'baz (input)'], ['-i']);
+        $this->assertTokenValues($tokens, $this->defaults(['baz' => 'baz (input)']));
     }
 
     public function testOptionValue_BecomesDefaultForEmptyInput()
     {
-        $reader = $this->reader(['', ''], ['-i', 'optFoo=foo (option)']);
-        $this->assertTokenValues($reader, $this->defaults(['foo' => 'foo (option)']));
+        $tokens = $this->tokens(['', ''], ['-i', 'optFoo=foo (option)']);
+        $this->assertTokenValues($tokens, $this->defaults(['foo' => 'foo (option)']));
     }
 
-    protected function reader(array $inputs, array $options, array $removeDefaults = []): Reader
+    protected function reader(array $inputs, array $options): UpdateReader
     {
-        $replacements = $this->replacements($removeDefaults);
-        return new Reader\UpdateReader($replacements, $this->env($inputs, self::META_DATA), $this->args($options));
+        return new UpdateReader($this->env($inputs, self::META_DATA), $this->args($options));
     }
 
     protected function defaults(array $override = []): array
