@@ -12,24 +12,24 @@
 namespace Shudd3r\Skeletons\Commands\Precondition;
 
 use Shudd3r\Skeletons\Commands\Precondition;
-use Shudd3r\Skeletons\Replacements\Reader;
+use Shudd3r\Skeletons\Replacements\Tokens;
 use Shudd3r\Skeletons\Processors\Processor;
 
 
 class SkeletonSynchronization implements Precondition
 {
-    private Reader    $reader;
+    private Tokens    $tokens;
     private Processor $processor;
 
-    public function __construct(Reader $reader, Processor $processor)
+    public function __construct(Tokens $tokens, Processor $processor)
     {
-        $this->reader    = $reader;
+        $this->tokens    = $tokens;
         $this->processor = $processor;
     }
 
     public function isFulfilled(): bool
     {
-        $token = $this->reader->token();
+        $token = $this->tokens->compositeToken();
         return $token && $this->processor->process($token);
     }
 }

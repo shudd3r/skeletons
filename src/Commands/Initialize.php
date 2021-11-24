@@ -13,6 +13,7 @@ namespace Shudd3r\Skeletons\Commands;
 
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements\Reader;
+use Shudd3r\Skeletons\Replacements\Tokens;
 use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Processors;
 
@@ -24,7 +25,7 @@ class Initialize extends Factory
         $files     = $this->templates->generatedFiles($args);
         $backup    = new Files\ReflectedFiles($this->env->backup(), $files);
         $dummies   = $this->templates->dummyFiles();
-        $tokens    = new Reader\InitialReader($this->replacements, $this->env, $args);
+        $tokens    = new Tokens($this->replacements, new Reader\InitialReader($this->env, $args));
         $processor = $this->filesProcessor($files, $this->mismatchedFileGenerators());
 
         $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);

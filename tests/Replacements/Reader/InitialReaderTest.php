@@ -11,74 +11,73 @@
 
 namespace Shudd3r\Skeletons\Tests\Replacements\Reader;
 
-use Shudd3r\Skeletons\Tests\Replacements\ReaderTests;
-use Shudd3r\Skeletons\Replacements\Reader;
+use Shudd3r\Skeletons\Tests\Replacements\TokensTests;
+use Shudd3r\Skeletons\Replacements\Reader\InitialReader;
 
 
-class InitialReaderTest extends ReaderTests
+class InitialReaderTest extends TokensTests
 {
     public function testWithoutInputValues_TokensAreBuiltWithDefaultReplacementValues()
     {
-        $reader = $this->reader([], []);
-        $this->assertTokenValues($reader, $this->defaults());
+        $tokens = $this->tokens([], []);
+        $this->assertTokenValues($tokens, $this->defaults());
     }
 
     public function testWithOptionValues_TokensAreBuiltWithMatchingOptionValue()
     {
-        $reader = $this->reader([], ['optBaz=baz (option)']);
-        $this->assertTokenValues($reader, $this->defaults(['baz' => 'baz (option)']));
+        $tokens = $this->tokens([], ['optBaz=baz (option)']);
+        $this->assertTokenValues($tokens, $this->defaults(['baz' => 'baz (option)']));
     }
 
     public function testWhenNotEmptyInteractiveInputValueIsGiven_TokenIsBuiltWithThatValue()
     {
-        $reader = $this->reader(['', 'baz (input)'], ['-i']);
-        $this->assertTokenValues($reader, $this->defaults(['baz' => 'baz (input)']));
+        $tokens = $this->tokens(['', 'baz (input)'], ['-i']);
+        $this->assertTokenValues($tokens, $this->defaults(['baz' => 'baz (input)']));
     }
 
     public function testOptionValue_BecomesDefaultForEmptyInput()
     {
-        $reader = $this->reader([], ['-i', 'optFoo=foo (option)']);
-        $this->assertTokenValues($reader, $this->defaults(['foo' => 'foo (option)']));
+        $tokens = $this->tokens([], ['-i', 'optFoo=foo (option)']);
+        $this->assertTokenValues($tokens, $this->defaults(['foo' => 'foo (option)']));
     }
 
     public function testInvalidInteractiveInput_IsRetriedUntilValid()
     {
-        $reader = $this->reader(['invalid', 'invalid', 'finally valid'], ['-i', 'optFoo=foo (option)']);
-        $this->assertTokenValues($reader, $this->defaults(['foo' => 'finally valid']));
+        $tokens = $this->tokens(['invalid', 'invalid', 'finally valid'], ['-i', 'optFoo=foo (option)']);
+        $this->assertTokenValues($tokens, $this->defaults(['foo' => 'finally valid']));
     }
 
     public function testInvalidInteractiveInput_AfterTwoRetriesUsesInvalidValue()
     {
         $inputs = ['invalid', 'invalid', 'invalid', 'finally valid'];
-        $reader = $this->reader($inputs, ['-i', 'optFoo=foo (option)']);
-        $this->assertNull($reader->token());
+        $tokens = $this->tokens($inputs, ['-i', 'optFoo=foo (option)']);
+        $this->assertNull($tokens->compositeToken());
     }
 
     public function testWithUnresolvedDefaultValues_TokenDefaultsComeFromFallbackTokenValues()
     {
-        $reader = $this->reader([], [], ['bar']);
-        $this->assertTokenValues($reader, $this->defaults(['bar' => 'foo (default)']));
+        $tokens = $this->tokens([], [], ['bar']);
+        $this->assertTokenValues($tokens, $this->defaults(['bar' => 'foo (default)']));
 
-        $reader = $this->reader([], [], ['foo']);
-        $this->assertTokenValues($reader, $this->defaults(['foo' => 'bar (default)']));
+        $tokens = $this->tokens([], [], ['foo']);
+        $this->assertTokenValues($tokens, $this->defaults(['foo' => 'bar (default)']));
 
-        $reader = $this->reader([], ['optBar=bar (option)'], ['foo']);
-        $this->assertTokenValues($reader, $this->defaults(['foo' => 'bar (option)', 'bar' => 'bar (option)']));
+        $tokens = $this->tokens([], ['optBar=bar (option)'], ['foo']);
+        $this->assertTokenValues($tokens, $this->defaults(['foo' => 'bar (option)', 'bar' => 'bar (option)']));
 
-        $reader = $this->reader(['foo (input)'], ['-i', 'optFoo=foo (option)'], ['bar']);
-        $this->assertTokenValues($reader, $this->defaults(['foo' => 'foo (input)', 'bar' => 'foo (input)']));
+        $tokens = $this->tokens(['foo (input)'], ['-i', 'optFoo=foo (option)'], ['bar']);
+        $this->assertTokenValues($tokens, $this->defaults(['foo' => 'foo (input)', 'bar' => 'foo (input)']));
     }
 
     public function testWithCircularFallbackReferences_FallbackValuesResolveToEmptyString()
     {
-        $reader = $this->reader([], [], ['foo', 'bar']);
-        $this->assertTokenValues($reader, $this->defaults(['foo' => '', 'bar' => '']));
+        $tokens = $this->tokens([], [], ['foo', 'bar']);
+        $this->assertTokenValues($tokens, $this->defaults(['foo' => '', 'bar' => '']));
     }
 
-    protected function reader(array $inputs, array $options, array $removeDefaults = []): Reader
+    protected function reader(array $inputs, array $options): InitialReader
     {
-        $replacements = $this->replacements($removeDefaults);
-        return new Reader\InitialReader($replacements, $this->env($inputs), $this->args($options));
+        return new InitialReader($this->env($inputs), $this->args($options));
     }
 
     protected function defaults(array $override = []): array

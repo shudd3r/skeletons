@@ -12,7 +12,6 @@
 namespace Shudd3r\Skeletons;
 
 use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Replacements\Reader;
 
 
 class Replacements

@@ -11,7 +11,6 @@
 
 namespace Shudd3r\Skeletons\Tests\Doubles;
 
-use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements\Reader;
 use Shudd3r\Skeletons\Replacements\Token;
@@ -21,7 +20,7 @@ class FakeReader extends Reader
 {
     public function __construct(bool $returnsTokens = true)
     {
-        parent::__construct(new Replacements([]), new FakeRuntimeEnv(), new InputArgs([]));
+        parent::__construct(new FakeRuntimeEnv(), new InputArgs([]));
         $this->tokens['placeholder'] = $returnsTokens ? new Token\ValueToken('placeholder', 'foo') : null;
     }
 

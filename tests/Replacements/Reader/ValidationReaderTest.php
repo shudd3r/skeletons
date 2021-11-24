@@ -11,36 +11,36 @@
 
 namespace Shudd3r\Skeletons\Tests\Replacements\Reader;
 
-use Shudd3r\Skeletons\Tests\Replacements\ReaderTests;
-use Shudd3r\Skeletons\Replacements\Reader;
+use Shudd3r\Skeletons\Tests\Replacements\TokensTests;
+use Shudd3r\Skeletons\Replacements\Reader\ValidationReader;
+use Shudd3r\Skeletons\Replacements\Tokens;
 
 
-class ValidationReaderTest extends ReaderTests
+class ValidationReaderTest extends TokensTests
 {
     /**
      * @dataProvider possibleReaderSetups
-     * @param Reader $reader
+     * @param Tokens $tokens
      */
-    public function testTokensAreAlwaysBuiltWithMetaData(Reader $reader)
+    public function testTokensAreAlwaysBuiltWithMetaData(Tokens $tokens)
     {
-        $this->assertTokenValues($reader, $this->defaults());
+        $this->assertTokenValues($tokens, $this->defaults());
     }
 
     public function possibleReaderSetups(): array
     {
         return [
-            'no input'        => [$this->reader([], [])],
-            'active fallback' => [$this->reader([], [], ['foo'])],
-            'cli option'      => [$this->reader([], ['optFoo' => 'foo (option)'])],
-            'terminal input'  => [$this->reader(['foo (input)'], [])],
-            'terminal & cli'  => [$this->reader(['foo (input)'], ['optBar' => 'bar (option)'])],
+            'no input'        => [$this->tokens([], [])],
+            'active fallback' => [$this->tokens([], [], ['foo'])],
+            'cli option'      => [$this->tokens([], ['optFoo' => 'foo (option)'])],
+            'terminal input'  => [$this->tokens(['foo (input)'], [])],
+            'terminal & cli'  => [$this->tokens(['foo (input)'], ['optBar' => 'bar (option)'])],
         ];
     }
 
-    protected function reader(array $inputs, array $options, array $removeDefaults = []): Reader
+    protected function reader(array $inputs, array $options): ValidationReader
     {
-        $replacements = $this->replacements($removeDefaults);
-        return new Reader\ValidationReader($replacements, $this->env($inputs, self::META_DATA), $this->args($options));
+        return new ValidationReader($this->env($inputs, self::META_DATA), $this->args($options));
     }
 
     protected function defaults(array $override = []): array

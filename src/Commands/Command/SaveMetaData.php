@@ -12,23 +12,23 @@
 namespace Shudd3r\Skeletons\Commands\Command;
 
 use Shudd3r\Skeletons\Commands\Command;
-use Shudd3r\Skeletons\Replacements\Reader;
+use Shudd3r\Skeletons\Replacements\Tokens;
 use Shudd3r\Skeletons\Replacements\Data\MetaData;
 
 
 class SaveMetaData implements Command
 {
-    private Reader   $reader;
+    private Tokens   $tokens;
     private MetaData $metaData;
 
-    public function __construct(Reader $reader, MetaData $metaData)
+    public function __construct(Tokens $tokens, MetaData $metaData)
     {
-        $this->reader   = $reader;
+        $this->tokens   = $tokens;
         $this->metaData = $metaData;
     }
 
     public function execute(): void
     {
-        $this->metaData->save($this->reader->tokenValues());
+        $this->metaData->save($this->tokens->placeholderValues());
     }
 }

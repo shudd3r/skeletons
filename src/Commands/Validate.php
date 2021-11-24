@@ -13,6 +13,7 @@ namespace Shudd3r\Skeletons\Commands;
 
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements\Reader;
+use Shudd3r\Skeletons\Replacements\Tokens;
 
 
 class Validate extends Factory
@@ -21,7 +22,7 @@ class Validate extends Factory
     {
         $files     = $this->templates->generatedFiles($args);
         $dummies   = $this->templates->dummyFiles();
-        $tokens    = new Reader\ValidationReader($this->replacements, $this->env, $args);
+        $tokens    = new Tokens($this->replacements, new Reader\ValidationReader($this->env, $args));
         $processor = $this->filesProcessor($files, $this->fileValidators());
 
         $metaDataExists = new Precondition\CheckFileExists($this->env->metaDataFile());

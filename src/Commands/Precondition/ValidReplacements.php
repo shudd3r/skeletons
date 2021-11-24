@@ -12,28 +12,28 @@
 namespace Shudd3r\Skeletons\Commands\Precondition;
 
 use Shudd3r\Skeletons\Commands\Precondition;
-use Shudd3r\Skeletons\Replacements\Reader;
+use Shudd3r\Skeletons\Replacements\Tokens;
 use Shudd3r\Skeletons\Environment\Output;
 
 
 class ValidReplacements implements Precondition
 {
-    private Reader  $reader;
+    private Tokens  $tokens;
     private ?Output $output;
 
-    public function __construct(Reader $reader, ?Output $output = null)
+    public function __construct(Tokens $tokens, ?Output $output = null)
     {
-        $this->reader = $reader;
+        $this->tokens = $tokens;
         $this->output = $output;
     }
 
     public function isFulfilled(): bool
     {
-        if ($this->reader->token()) { return true; }
+        if ($this->tokens->compositeToken()) { return true; }
         if (!$this->output) { return false; }
 
         $this->output->send(PHP_EOL);
-        foreach ($this->reader->tokenValues() as $name => $value) {
+        foreach ($this->tokens->placeholderValues() as $name => $value) {
             if ($value !== null) { continue; }
             $this->output->send('    x Invalid value for {' . $name . '}' . PHP_EOL);
         }
