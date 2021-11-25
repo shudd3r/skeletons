@@ -13,7 +13,6 @@ namespace Shudd3r\Skeletons\Tests\Commands\Command;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Commands\Command\ProcessTokens;
-use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
@@ -21,7 +20,7 @@ class ProcessTokensTest extends TestCase
 {
     public function testResolvedTokens_ArePassedToProcessor()
     {
-        $tokens    = new Replacements\Tokens(new Replacements([]), new Doubles\FakeReader(true));
+        $tokens    = new Doubles\FakeTokens(true);
         $processor = new Doubles\MockedProcessor();
         $terminal  = new Doubles\MockedTerminal();
         $command   = new ProcessTokens($tokens, $processor, $terminal);
@@ -32,7 +31,7 @@ class ProcessTokensTest extends TestCase
 
     public function testUnresolvedTokens_ExecutionIsStopped()
     {
-        $tokens    = new Replacements\Tokens(new Replacements([]), new Doubles\FakeReader(false));
+        $tokens    = new Doubles\FakeTokens(false);
         $processor = new Doubles\MockedProcessor();
         $terminal  = new Doubles\MockedTerminal();
         $command   = new ProcessTokens($tokens, $processor, $terminal);
