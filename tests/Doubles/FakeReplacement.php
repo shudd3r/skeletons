@@ -63,8 +63,10 @@ class FakeReplacement implements Replacement
 
     public function token(string $name, string $value): ?Token
     {
-        if ($this->default === 'null') { return new FakeToken($name, null); }
-        return $this->isValid($value) ? new Token\ValueToken($name, $value) : null;
+        if (!$this->isValid($value)) { return null; }
+
+        $token = new Token\ValueToken($name, $value);
+        return $this->default !== 'null' ? $token : new Token\CompositeToken($token);
     }
 
     private function fallbackValue(FallbackReader $fallback): string

@@ -14,6 +14,7 @@ namespace Shudd3r\Skeletons\Tests\Replacements;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements\Tokens;
 use Shudd3r\Skeletons\Replacements\Token;
+use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Tests\Doubles;
 
@@ -22,14 +23,12 @@ class TokensTest extends TestCase
 {
     public function testForValidTokens_CompositeTokenMethod_ReturnCompositeToken()
     {
-        $tokens = $this->tokens(['foo' => 'foo-value', 'bar' => 'valid', 'baz' => 'null']);
+        $replacements = $this->replacements(['foo' => 'foo-value', 'bar' => 'valid', 'baz' => 'null']);
+        $tokens       = new Tokens(new Replacements($replacements), new Doubles\FakeReader());
 
-        $expectedToken = new Token\CompositeToken(...[
-            new Token\ValueToken('foo', 'foo-value'),
-            new Token\ValueToken('bar', 'valid'),
-            new Doubles\FakeToken('baz', null)
-        ]);
-        $this->assertEquals($expectedToken, $tokens->compositeToken());
+        $createToken = fn (string $name, Replacement $replacement) => $this->replacementToken($name, $replacement);
+        $expected    = new Token\CompositeToken(...array_map($createToken, array_keys($replacements), $replacements));
+        $this->assertEquals($expected, $tokens->compositeToken());
     }
 
     public function testForInvalidTokens_CompositeTokenMethod_ReturnsNull()
@@ -58,9 +57,18 @@ class TokensTest extends TestCase
 
     private function tokens(array $replacementValues): Tokens
     {
-        $create       = fn (?string $value) => $value ? new Doubles\FakeReplacement($value) : null;
-        $replacements = array_combine(array_keys($replacementValues), array_map($create, $replacementValues));
+        return new Tokens(new Replacements($this->replacements($replacementValues)), new Doubles\FakeReader());
+    }
 
-        return new Tokens(new Replacements($replacements), new Doubles\FakeReader());
+    private function replacements(array $replacementValues): array
+    {
+        $create = fn (?string $value) => $value ? new Doubles\FakeReplacement($value) : null;
+        return array_combine(array_keys($replacementValues), array_map($create, $replacementValues));
+    }
+
+    private function replacementToken(string $name, Replacement $replacement): ?Token
+    {
+        $value = $replacement->defaultValue(new Doubles\FakeRuntimeEnv(), new Doubles\FakeReader());
+        return $replacement->token($name, $value);
     }
 }
