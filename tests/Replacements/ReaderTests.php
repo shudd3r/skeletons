@@ -13,14 +13,13 @@ namespace Shudd3r\Skeletons\Tests\Replacements;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements;
-use Shudd3r\Skeletons\Replacements\Tokens;
 use Shudd3r\Skeletons\Replacements\Reader;
 use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
-abstract class TokensTests extends TestCase
+abstract class ReaderTests extends TestCase
 {
     /** <placeholder, <<fallback>, <option>, <prompt>> */
     protected const REPLACEMENT_PARAMS = [
@@ -43,30 +42,24 @@ abstract class TokensTests extends TestCase
 
     protected static Doubles\FakeRuntimeEnv $env;
 
-    public function testInvalidToken_ReturnsNull() {
-        $tokens = $this->tokens([], [], ['baz']);
-        $this->assertNull($tokens->compositeToken());
-        $this->assertSame($this->defaults(['baz' => null]), $tokens->placeholderValues());
-    }
-
-    protected function assertTokenValues(Tokens $tokens, array $expected): void
+    protected function assertTokenValues(array $expected, array $tokens): void
     {
-        $createToken   = fn($name, $value) => new Token\ValueToken($name, $value);
-        $expectedToken = new Token\CompositeToken(...array_map($createToken, array_keys($expected), $expected));
-        $this->assertEquals($expectedToken, $tokens->compositeToken());
-        $this->assertSame($expected, $tokens->placeholderValues());
-    }
+        $tokenFromValue = fn ($name, $value) => $value !== null ? new Token\ValueToken($name, $value) : null;
+        $tokenList      = array_map($tokenFromValue, array_keys($expected), $expected);
+        $expectedTokens = array_combine(array_keys($expected), $tokenList);
 
-    protected function tokens(array $inputs, array $options, array $removeDefaults = []): Tokens
-    {
-        return new Tokens($this->replacements($removeDefaults), $this->reader($inputs, $options));
+        $getValue       = fn (?Token\ValueToken $token) => $token ? $token->value() : null;
+        $tokenValues    = array_combine(array_keys($tokens), array_map($getValue, $tokens));
+
+        $this->assertEquals($expectedTokens, $tokens);
+        $this->assertSame($expected, $tokenValues);
     }
 
     abstract protected function reader(array $inputs, array $options): Reader;
 
     abstract protected function defaults(array $override = []): array;
 
-    protected function replacements(array $removeDefaults): Replacements
+    protected function replacements(array $removeDefaults = []): Replacements
     {
         $override     = fn(string $name, string $default) => in_array($name, $removeDefaults) ? null : $default;
         $defaults     = array_map($override, array_keys(self::REPLACEMENT_DEFAULTS), self::REPLACEMENT_DEFAULTS);
