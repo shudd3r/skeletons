@@ -48,7 +48,7 @@ abstract class ReaderTests extends TestCase
         $tokenList      = array_map($tokenFromValue, array_keys($expected), $expected);
         $expectedTokens = array_combine(array_keys($expected), $tokenList);
 
-        $getValue       = fn (?Token\ValueToken $token) => $token ? $token->value() : null;
+        $getValue       = fn (?Token $token) => $token ? $token->value() : null;
         $tokenValues    = array_combine(array_keys($tokens), array_map($getValue, $tokens));
 
         $this->assertEquals($expectedTokens, $tokens);

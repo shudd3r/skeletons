@@ -19,21 +19,13 @@ use Shudd3r\Skeletons\InputArgs;
 
 class FakeReader extends Reader
 {
-    private bool $returnsToken;
-
-    public function __construct(bool $returnsTokens = true)
+    public function __construct()
     {
-        $this->returnsToken = $returnsTokens;
         parent::__construct(new FakeRuntimeEnv(), new InputArgs([]));
-    }
-
-    public function tokens(Replacements $replacements): array
-    {
-        return ['placeholder' => $this->readToken('placeholder', new FakeReplacement())];
     }
 
     protected function readToken(string $name, Replacements\Replacement $replacement): ?Token
     {
-        return $this->returnsToken ? new Token\ValueToken('placeholder', 'foo') : null;
+        return $replacement->token($name, $replacement->defaultValue(new FakeRuntimeEnv(), $this));
     }
 }

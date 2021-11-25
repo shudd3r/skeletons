@@ -35,7 +35,9 @@ class Tokens
     {
         $values = [];
         foreach ($this->reader->tokens($this->replacements) as $name => $token) {
-            $values[$name] = $token ? $token->value() : null;
+            $value = $token ? $token->value() : null;
+            if ($token && $value === null) { continue; }
+            $values[$name] = $value;
         }
 
         return $values;
