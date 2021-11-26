@@ -67,7 +67,7 @@ class OriginalContents implements Token
 
         return count($values) === 1
             ? new ValueToken(self::PLACEHOLDER, $values[0])
-            : new ValueListToken(self::PLACEHOLDER, ...$values);
+            : new IterativeToken(self::PLACEHOLDER, ...$values);
     }
 
     private function trimmedContents(string $contents, string $prefix, string $postfix): string

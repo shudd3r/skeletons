@@ -15,7 +15,7 @@ use Shudd3r\Skeletons\Replacements\Token;
 use RuntimeException;
 
 
-class ValueListToken implements Token
+class IterativeToken implements Token
 {
     private string $placeholder;
     private array  $values;
