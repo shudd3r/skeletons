@@ -13,7 +13,7 @@ namespace Shudd3r\Skeletons\Replacements\Replacement;
 
 use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
+use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Closure;
 
@@ -76,9 +76,9 @@ class GenericReplacement implements Replacement
         return $this->validate ? ($this->validate)($value) : true;
     }
 
-    public function token(string $name, string $value): ?ValueToken
+    public function token(string $name, string $value): ?Token
     {
         if (!$this->isValid($value)) { return null; }
-        return $this->token ? ($this->token)($name, $value) : new ValueToken($name, $value);
+        return $this->token ? ($this->token)($name, $value) : new Token\BasicToken($name, $value);
     }
 }

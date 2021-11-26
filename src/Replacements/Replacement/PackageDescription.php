@@ -13,7 +13,7 @@ namespace Shudd3r\Skeletons\Replacements\Replacement;
 
 use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
+use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\RuntimeEnv;
 
 
@@ -41,9 +41,9 @@ class PackageDescription implements Replacement
         return $this->inputPrompt() . ' [format: non-empty string]';
     }
 
-    public function token(string $name, string $value): ?ValueToken
+    public function token(string $name, string $value): ?Token
     {
-        return $this->isValid($value) ? new ValueToken($name, $value) : null;
+        return $this->isValid($value) ? new Token\BasicToken($name, $value) : null;
     }
 
     public function isValid(string $value): bool

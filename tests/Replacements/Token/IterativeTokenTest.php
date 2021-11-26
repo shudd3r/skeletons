@@ -12,12 +12,18 @@
 namespace Shudd3r\Skeletons\Tests\Replacements\Token;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\Skeletons\Replacements\Token\ValueListToken;
+use Shudd3r\Skeletons\Replacements\Token\IterativeToken;
 use RuntimeException;
 
 
-class ValueListTokenTest extends TestCase
+class IterativeTokenTest extends TestCase
 {
+    public function testValueMethod_ReturnsNull()
+    {
+        $token = $this->token(['foo', 'bar']);
+        $this->assertNull($token->value());
+    }
+
     public function testPlaceholdersAreReplacedWithConsecutiveValues()
     {
         $template = '{replace}=1 {replace}=2 {replace}=3 {replace}=4';
@@ -45,8 +51,8 @@ class ValueListTokenTest extends TestCase
         ];
     }
 
-    private function token(array $values): ValueListToken
+    private function token(array $values): IterativeToken
     {
-        return new ValueListToken('replace', ...$values);
+        return new IterativeToken('replace', ...$values);
     }
 }

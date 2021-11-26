@@ -12,28 +12,20 @@
 namespace Shudd3r\Skeletons\Tests\Doubles;
 
 use Shudd3r\Skeletons\Replacements\Reader;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
+use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\InputArgs;
 
 
 class FakeReader extends Reader
 {
-    private bool $returnsToken;
-
-    public function __construct(bool $returnsTokens = true)
+    public function __construct()
     {
-        $this->returnsToken = $returnsTokens;
         parent::__construct(new FakeRuntimeEnv(), new InputArgs([]));
     }
 
-    public function tokens(Replacements $replacements): array
+    protected function readToken(string $name, Replacements\Replacement $replacement): ?Token
     {
-        return ['placeholder' => $this->readToken('placeholder', new FakeReplacement())];
-    }
-
-    protected function readToken(string $name, Replacements\Replacement $replacement): ?ValueToken
-    {
-        return $this->returnsToken ? new ValueToken('placeholder', 'foo') : null;
+        return $replacement->token($name, $replacement->defaultValue(new FakeRuntimeEnv(), $this));
     }
 }

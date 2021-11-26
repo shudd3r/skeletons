@@ -40,7 +40,7 @@ class FileGenerators implements Processors
     private function originalContentsToken(string $filename): ?Token
     {
         if (!$this->cache) {
-            $originalContentsToken = new Token\ValueToken(Token\OriginalContents::PLACEHOLDER, '');
+            $originalContentsToken = new Token\BasicToken(Token\OriginalContents::PLACEHOLDER, '');
             return new Token\CompositeToken($originalContentsToken, new Token\InitialContents());
         }
 

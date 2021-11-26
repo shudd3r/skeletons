@@ -12,7 +12,6 @@
 namespace Shudd3r\Skeletons\Replacements;
 
 use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
 use Shudd3r\Skeletons\RuntimeEnv;
 
 
@@ -28,5 +27,5 @@ interface Replacement
 
     public function isValid(string $value): bool;
 
-    public function token(string $name, string $value): ?ValueToken;
+    public function token(string $name, string $value): ?Token;
 }

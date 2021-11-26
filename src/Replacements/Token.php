@@ -15,4 +15,6 @@ namespace Shudd3r\Skeletons\Replacements;
 interface Token
 {
     public function replace(string $template): string;
+
+    public function value(): ?string;
 }

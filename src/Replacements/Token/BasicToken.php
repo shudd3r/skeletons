@@ -14,7 +14,7 @@ namespace Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\Replacements\Token;
 
 
-class ValueToken implements Token
+class BasicToken implements Token
 {
     private string $placeholder;
     private string $value;

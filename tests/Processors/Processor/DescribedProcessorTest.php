@@ -20,12 +20,12 @@ use Shudd3r\Skeletons\Tests\Doubles;
 class DescribedProcessorTest extends TestCase
 {
     private static Doubles\MockedTerminal $output;
-    private static Token\ValueToken       $token;
+    private static Token\BasicToken       $token;
 
     public static function setUpBeforeClass(): void
     {
         self::$output = new Doubles\MockedTerminal();
-        self::$token  = new Token\ValueToken('placeholder', 'value');
+        self::$token  = new Token\BasicToken('placeholder', 'value');
     }
 
     public function testForSuccessfulProcess_DisplaysOKStatus()

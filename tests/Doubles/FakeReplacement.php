@@ -13,7 +13,7 @@ namespace Shudd3r\Skeletons\Tests\Doubles;
 
 use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
+use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\RuntimeEnv;
 
 
@@ -58,12 +58,15 @@ class FakeReplacement implements Replacement
 
     public function isValid(string $value): bool
     {
-        return $value !== 'invalid' && (isset($this->default) || isset($this->fallback));
+        return $value !== 'invalid';
     }
 
-    public function token(string $name, string $value): ?ValueToken
+    public function token(string $name, string $value): ?Token
     {
-        return $this->isValid($value) ? new ValueToken($name, $value) : null;
+        if (!$this->isValid($value)) { return null; }
+
+        $token = new Token\BasicToken($name, $value);
+        return $this->default !== 'null' ? $token : new Token\CompositeToken($token);
     }
 
     private function fallbackValue(FallbackReader $fallback): string

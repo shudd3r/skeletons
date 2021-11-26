@@ -14,7 +14,6 @@ namespace Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
 
 
 abstract class Reader implements Reader\FallbackReader
@@ -32,6 +31,9 @@ abstract class Reader implements Reader\FallbackReader
         $this->args = $args;
     }
 
+    /**
+     * @return array<string, ?Token>
+     */
     public function tokens(Replacements $replacements): array
     {
         if ($this->tokens) { return $this->tokens; }
@@ -50,7 +52,7 @@ abstract class Reader implements Reader\FallbackReader
         return $token ? $token->value() : '';
     }
 
-    abstract protected function readToken(string $name, Replacement $replacement): ?ValueToken;
+    abstract protected function readToken(string $name, Replacement $replacement): ?Token;
 
     protected function commandLineOption(Replacement $replacement): ?string
     {
@@ -88,7 +90,7 @@ abstract class Reader implements Reader\FallbackReader
         return $this->env->metaData()->value($name) ?? '';
     }
 
-    private function token(string $name): ?ValueToken
+    private function token(string $name): ?Token
     {
         if (array_key_exists($name, $this->tokens)) { return $this->tokens[$name]; }
         $this->tokens[$name] = null;

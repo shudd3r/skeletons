@@ -12,20 +12,20 @@
 namespace Shudd3r\Skeletons\Tests\Replacements\Token;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
+use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 
 
-class ValueTokenTest extends TestCase
+class BasicTokenTest extends TestCase
 {
     public function testPlaceholderIsReplaced()
     {
-        $token = new ValueToken('replace', 'bar');
+        $token = new BasicToken('replace', 'bar');
         $this->assertSame('foo bar', $token->replace('foo {replace}'));
     }
 
     public function testValueMethod_ReturnsCorrectValue()
     {
-        $token = new ValueToken('foo', 'bar');
+        $token = new BasicToken('foo', 'bar');
         $this->assertSame('bar', $token->value());
     }
 }

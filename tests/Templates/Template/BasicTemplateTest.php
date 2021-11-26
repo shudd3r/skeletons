@@ -13,7 +13,7 @@ namespace Shudd3r\Skeletons\Tests\Templates\Template;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Templates\Template\BasicTemplate;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
+use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 
 
 class BasicTemplateTest extends TestCase
@@ -25,7 +25,7 @@ class BasicTemplateTest extends TestCase
             TPL;
 
         $template = new BasicTemplate($contents);
-        $token    = new ValueToken('placeholder.name', 'package/name');
+        $token    = new BasicToken('placeholder.name', 'package/name');
 
         $render = $template->render($token);
 

@@ -14,7 +14,7 @@ namespace Shudd3r\Skeletons\Tests\Replacements\Replacement;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements\Replacement\GenericReplacement;
 use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
+use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\Tests\Doubles;
 use Closure;
@@ -39,13 +39,13 @@ class GenericReplacementTest extends TestCase
         $this->assertNull($replacement->inputPrompt());
         $this->assertNull($replacement->optionName());
         $this->assertEmpty($replacement->description());
-        $this->assertEquals(new ValueToken('placeholder', 'value'), $replacement->token('placeholder', 'value'));
+        $this->assertEquals(new BasicToken('placeholder', 'value'), $replacement->token('placeholder', 'value'));
         $this->assertTrue($replacement->isValid('---anything---'));
     }
 
     public function testTokenCallback()
     {
-        $createdToken = new ValueToken('foo', 'bar');
+        $createdToken = new BasicToken('foo', 'bar');
         $token        = fn (string $name, string $value) => $createdToken;
         $replacement  = new GenericReplacement(self::$default, $token);
 
@@ -63,7 +63,7 @@ class GenericReplacementTest extends TestCase
 
     public function testForInvalidValue_TokenMethod_ReturnsNull()
     {
-        $createdToken = new ValueToken('foo', 'hardcoded');
+        $createdToken = new BasicToken('foo', 'hardcoded');
         $token        = fn (string $name, string $value) => $createdToken;
         $validate     = fn (string $value) => $value === 'valid';
         $replacement  = new GenericReplacement(self::$default, $token, $validate);

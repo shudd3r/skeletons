@@ -21,7 +21,7 @@ class SkeletonSynchronizationTest extends TestCase
 {
     public function testUnresolvedToken_ReturnsFalse()
     {
-        $tokens       = new Replacements\Tokens(new Replacements([]), new Doubles\FakeReader(false));
+        $tokens       = new Doubles\FakeTokens(false);
         $processor    = new Doubles\MockedProcessor(true);
         $precondition = new SkeletonSynchronization($tokens, $processor);
         $this->assertFalse($precondition->isFulfilled());
@@ -29,7 +29,7 @@ class SkeletonSynchronizationTest extends TestCase
 
     public function testResolvedToken_ReturnsStatusFromProcessor()
     {
-        $tokens       = new Replacements\Tokens(new Replacements([]), new Doubles\FakeReader(true));
+        $tokens       = new Doubles\FakeTokens(true);
         $processor    = new Doubles\MockedProcessor(true);
         $precondition = new SkeletonSynchronization($tokens, $processor);
         $this->assertTrue($precondition->isFulfilled());

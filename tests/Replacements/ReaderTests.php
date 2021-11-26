@@ -44,11 +44,11 @@ abstract class ReaderTests extends TestCase
 
     protected function assertTokenValues(array $expected, array $tokens): void
     {
-        $tokenFromValue = fn ($name, $value) => $value !== null ? new Token\ValueToken($name, $value) : null;
+        $tokenFromValue = fn ($name, $value) => $value !== null ? new Token\BasicToken($name, $value) : null;
         $tokenList      = array_map($tokenFromValue, array_keys($expected), $expected);
         $expectedTokens = array_combine(array_keys($expected), $tokenList);
 
-        $getValue       = fn (?Token\ValueToken $token) => $token ? $token->value() : null;
+        $getValue       = fn (?Token $token) => $token ? $token->value() : null;
         $tokenValues    = array_combine(array_keys($tokens), array_map($getValue, $tokens));
 
         $this->assertEquals($expectedTokens, $tokens);

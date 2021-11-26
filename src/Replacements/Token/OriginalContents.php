@@ -31,6 +31,11 @@ class OriginalContents implements Token
         return $token->replace($template);
     }
 
+    public function value(): ?string
+    {
+        return null;
+    }
+
     private function token(string $mask): Token
     {
         if (!$this->contents) { return $this->newTokenInstance(); }
@@ -56,13 +61,9 @@ class OriginalContents implements Token
 
     protected function newTokenInstance(array $values = null): Token
     {
-        if (!$values) {
-            return new ValueToken(self::PLACEHOLDER, '');
-        }
-
-        return count($values) === 1
-            ? new ValueToken(self::PLACEHOLDER, $values[0])
-            : new ValueListToken(self::PLACEHOLDER, ...$values);
+        return !$values || count($values) === 1
+            ? new BasicToken(self::PLACEHOLDER, $values[0] ?? '')
+            : new IterativeToken(self::PLACEHOLDER, ...$values);
     }
 
     private function trimmedContents(string $contents, string $prefix, string $postfix): string

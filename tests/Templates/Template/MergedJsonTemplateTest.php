@@ -24,7 +24,7 @@ class MergedJsonTemplateTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        self::$token = new Token\ValueToken('replace.me', 'replaced');
+        self::$token = new Token\BasicToken('replace.me', 'replaced');
         self::$files = new Fixtures\ExampleFiles('json-merge-example');
     }
 
@@ -188,10 +188,10 @@ class MergedJsonTemplateTest extends TestCase
     private function token(string $packageName, string $description, string $namespace, string $email): Token
     {
         return new Token\CompositeToken(
-            new Token\ValueToken('package.name', $packageName),
-            new Token\ValueToken('package.description', $description),
-            new Token\ValueToken('namespace.src.esc', $namespace),
-            new Token\ValueToken('author.email', $email)
+            new Token\BasicToken('package.name', $packageName),
+            new Token\BasicToken('package.description', $description),
+            new Token\BasicToken('namespace.src.esc', $namespace),
+            new Token\BasicToken('author.email', $email)
         );
     }
 }
