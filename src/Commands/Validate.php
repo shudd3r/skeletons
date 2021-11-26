@@ -22,7 +22,7 @@ class Validate extends Factory
     {
         $files     = $this->templates->generatedFiles($args);
         $dummies   = $this->templates->dummyFiles();
-        $tokens    = new Tokens($this->replacements, new Reader\ValidationReader($this->env, $args));
+        $tokens    = new Tokens($this->replacements, new Reader\DataReader($this->env, $args));
         $processor = $this->filesProcessor($files, $this->fileValidators());
 
         $metaDataExists = new Precondition\CheckFileExists($this->env->metaDataFile());

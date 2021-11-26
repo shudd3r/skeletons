@@ -15,18 +15,28 @@ use Shudd3r\Skeletons\Tests\Replacements\ReaderTests;
 use Shudd3r\Skeletons\Replacements\Reader;
 
 
-class ValidationReaderTest extends ReaderTests
+class DataReaderTest extends ReaderTests
 {
     /**
      * @dataProvider possibleReaderSetups
      * @param Reader $reader
      * @param array  $removeDefaults
      */
-    public function testTokensAreAlwaysBuiltWithMetaData(Reader $reader, array $removeDefaults = [])
+    public function testTokensAreBuiltWithMetaData(Reader $reader, array $removeDefaults = [])
     {
         $replacements = $this->replacements($removeDefaults);
         $expected     = $this->defaults();
         $this->assertTokenValues($expected, $reader->tokens($replacements));
+    }
+
+    public function testWithoutMetaDataValue_TokenIsBuiltWithDefaultValue()
+    {
+        $metaData = self::META_DATA;
+        unset($metaData['bar']);
+
+        $reader   = $this->reader([], [], $metaData);
+        $expected = $this->defaults(['bar' => 'bar (default)']);
+        $this->assertTokenValues($expected, $reader->tokens($this->replacements()));
     }
 
     public function possibleReaderSetups(): array
@@ -40,9 +50,9 @@ class ValidationReaderTest extends ReaderTests
         ];
     }
 
-    protected function reader(array $inputs, array $options): Reader
+    protected function reader(array $inputs, array $options, array $metaData = []): Reader
     {
-        return new Reader\ValidationReader($this->env($inputs, self::META_DATA), $this->args($options));
+        return new Reader\DataReader($this->env($inputs, $metaData ?: self::META_DATA), $this->args($options));
     }
 
     protected function defaults(array $override = []): array

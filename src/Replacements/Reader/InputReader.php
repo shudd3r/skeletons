@@ -16,10 +16,11 @@ use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Replacements\Token;
 
 
-class ValidationReader extends Reader
+class InputReader extends Reader
 {
     protected function readToken(string $name, Replacement $replacement): ?Token
     {
-        return $replacement->token($name, $this->metaDataValue($name));
+        $default = $this->commandLineOption($replacement) ?? $this->defaultValue($name, $replacement);
+        return $replacement->token($name, $this->inputString($replacement, $default));
     }
 }
