@@ -38,8 +38,10 @@ class PackageName implements Replacement
     {
         if (!$this->isValid($value)) { return null; }
 
-        $subToken = new Token\ValueToken($name . '.title', $this->titleName($value));
-        return new Token\CompositeValueToken($name, $value, $subToken);
+        return Token\CompositeToken::withValueToken(
+            new Token\ValueToken($name, $value),
+            new Token\ValueToken($name . '.title', $this->titleName($value))
+        );
     }
 
     public function isValid(string $value): bool

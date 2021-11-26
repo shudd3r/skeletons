@@ -60,8 +60,10 @@ class SrcNamespace implements Replacement
     {
         if (!$this->isValid($value)) { return null; }
 
-        $subToken = new Token\ValueToken($name . '.esc', str_replace('\\', '\\\\', $value));
-        return new Token\CompositeValueToken($name, $value, $subToken);
+        return Token\CompositeToken::withValueToken(
+            new Token\ValueToken($name, $value),
+            new Token\ValueToken($name . '.esc', str_replace('\\', '\\\\', $value))
+        );
     }
 
     private function namespaceFromComposer(RuntimeEnv $env): ?string
