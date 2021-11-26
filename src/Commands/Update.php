@@ -26,7 +26,7 @@ class Update extends Factory
         $cache            = new TokenCache();
         $validationTokens = new Tokens($this->replacements, new Reader\ValidationReader($this->env, $args));
         $validator        = $this->filesProcessor($files, $this->fileValidators($cache));
-        $updateTokens     = new Tokens($this->replacements, new Reader\UpdateReader($this->env, $args));
+        $updateTokens     = new Tokens($this->replacements, new Reader\InputReader($this->env, $args));
         $generator        = $this->filesProcessor($files, $this->fileGenerators($cache));
 
         $metaDataExists    = new Precondition\CheckFileExists($this->env->metaDataFile());

@@ -16,7 +16,7 @@ use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Replacements\Token;
 
 
-class UpdateReader extends Reader
+class InputReader extends Reader
 {
     protected function readToken(string $name, Replacement $replacement): ?Token
     {
