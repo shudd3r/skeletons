@@ -49,8 +49,7 @@ class InputArgs
 
     public function interactive(): bool
     {
-        if (!in_array($this->command, ['init', 'update'])) { return false; }
-        return !$this->arguments || $this->options['interactive'];
+        return $this->isInputCommand() && (!$this->arguments || $this->options['interactive']);
     }
 
     public function includeLocalFiles(): bool
@@ -60,7 +59,7 @@ class InputArgs
 
     public function valueOf(string $name): string
     {
-        return $this->arguments[$name] ?? '';
+        return $this->isInputCommand() ? $this->arguments[$name] ?? '' : '';
     }
 
     private function parseArgs(array $argv): void
@@ -89,5 +88,10 @@ class InputArgs
     {
         if (!isset($this->options[$name])) { return; }
         $this->options[$name] = true;
+    }
+
+    private function isInputCommand(): bool
+    {
+        return in_array($this->command, ['init', 'update']);
     }
 }
