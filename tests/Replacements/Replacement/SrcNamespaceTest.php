@@ -52,8 +52,8 @@ class SrcNamespaceTest extends TestCase
         $replacement = new SrcNamespace();
 
         $expected = Token\CompositeToken::withValueToken(
-            new Token\ValueToken('src.namespace', 'Source\\Namespace'),
-            new Token\ValueToken('src.namespace.esc', 'Source\\\\Namespace')
+            new Token\BasicToken('src.namespace', 'Source\\Namespace'),
+            new Token\BasicToken('src.namespace.esc', 'Source\\\\Namespace')
         );
 
         $this->assertEquals($expected, $replacement->token('src.namespace', 'Source\\Namespace'));

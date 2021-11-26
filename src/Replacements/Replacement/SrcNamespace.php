@@ -61,8 +61,8 @@ class SrcNamespace implements Replacement
         if (!$this->isValid($value)) { return null; }
 
         return Token\CompositeToken::withValueToken(
-            new Token\ValueToken($name, $value),
-            new Token\ValueToken($name . '.esc', str_replace('\\', '\\\\', $value))
+            new Token\BasicToken($name, $value),
+            new Token\BasicToken($name . '.esc', str_replace('\\', '\\\\', $value))
         );
     }
 

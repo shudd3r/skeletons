@@ -79,6 +79,6 @@ class GenericReplacement implements Replacement
     public function token(string $name, string $value): ?Token
     {
         if (!$this->isValid($value)) { return null; }
-        return $this->token ? ($this->token)($name, $value) : new Token\ValueToken($name, $value);
+        return $this->token ? ($this->token)($name, $value) : new Token\BasicToken($name, $value);
     }
 }

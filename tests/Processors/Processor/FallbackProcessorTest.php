@@ -13,7 +13,7 @@ namespace Shudd3r\Skeletons\Tests\Processors\Processor;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Processors\Processor\FallbackProcessor;
-use Shudd3r\Skeletons\Replacements\Token\ValueToken;
+use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
@@ -23,7 +23,7 @@ class FallbackProcessorTest extends TestCase
     {
         $fallback  = new Doubles\MockedProcessor(false);
         $processor = new FallbackProcessor(new Doubles\MockedProcessor(true), $fallback);
-        $this->assertTrue($processor->process(new ValueToken('foo', 'bar')));
+        $this->assertTrue($processor->process(new BasicToken('foo', 'bar')));
         $this->assertNull($fallback->passedToken());
     }
 
@@ -31,12 +31,12 @@ class FallbackProcessorTest extends TestCase
     {
         $fallback  = new Doubles\MockedProcessor(false);
         $processor = new FallbackProcessor(new Doubles\MockedProcessor(false), $fallback);
-        $this->assertFalse($processor->process($token = new ValueToken('foo', 'bar')));
+        $this->assertFalse($processor->process($token = new BasicToken('foo', 'bar')));
         $this->assertSame($token, $fallback->passedToken());
 
         $fallback  = new Doubles\MockedProcessor(true);
         $processor = new FallbackProcessor(new Doubles\MockedProcessor(false), $fallback);
-        $this->assertTrue($processor->process($token = new ValueToken('foo', 'bar')));
+        $this->assertTrue($processor->process($token = new BasicToken('foo', 'bar')));
         $this->assertSame($token, $fallback->passedToken());
     }
 }

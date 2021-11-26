@@ -13,15 +13,15 @@ namespace Shudd3r\Skeletons\Tests\Replacements;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements\TokenCache;
-use Shudd3r\Skeletons\Replacements\Token;
+use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 
 
 class TokenCacheTest extends TestCase
 {
     public function testGettingTokenFromCache()
     {
-        $initialToken = new Token\ValueToken('foo', 'one');
-        $addedToken   = new Token\ValueToken('bar', 'two');
+        $initialToken = new BasicToken('foo', 'one');
+        $addedToken   = new BasicToken('bar', 'two');
 
         $tokens = new TokenCache(['name' => $initialToken]);
         $tokens->add('foo/bar.php', $addedToken);

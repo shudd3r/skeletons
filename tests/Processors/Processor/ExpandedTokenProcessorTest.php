@@ -21,11 +21,11 @@ class ExpandedTokenProcessorTest extends TestCase
 {
     public function testSubsequentProcessor_ReceivesExpandedToken()
     {
-        $newToken     = new Token\ValueToken('foo', 'one');
+        $newToken     = new Token\BasicToken('foo', 'one');
         $subProcessor = new Doubles\MockedProcessor();
         $processor    = new ExpandedTokenProcessor($newToken, $subProcessor);
 
-        $this->assertTrue($processor->process($composedToken = new Token\ValueToken('bar', 'two')));
+        $this->assertTrue($processor->process($composedToken = new Token\BasicToken('bar', 'two')));
         $this->assertEquals(new Token\CompositeToken($composedToken, $newToken), $subProcessor->passedToken());
     }
 }

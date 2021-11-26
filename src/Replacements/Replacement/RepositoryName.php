@@ -53,7 +53,7 @@ class RepositoryName implements Replacement
 
     public function token(string $name, string $value): ?Token
     {
-        return $this->isValid($value) ? new Token\ValueToken($name, $value) : null;
+        return $this->isValid($value) ? new Token\BasicToken($name, $value) : null;
     }
 
     private function repositoryFromGitConfig(RuntimeEnv $env): ?string

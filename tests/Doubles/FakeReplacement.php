@@ -65,7 +65,7 @@ class FakeReplacement implements Replacement
     {
         if (!$this->isValid($value)) { return null; }
 
-        $token = new Token\ValueToken($name, $value);
+        $token = new Token\BasicToken($name, $value);
         return $this->default !== 'null' ? $token : new Token\CompositeToken($token);
     }
 

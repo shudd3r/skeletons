@@ -43,7 +43,7 @@ class PackageDescription implements Replacement
 
     public function token(string $name, string $value): ?Token
     {
-        return $this->isValid($value) ? new Token\ValueToken($name, $value) : null;
+        return $this->isValid($value) ? new Token\BasicToken($name, $value) : null;
     }
 
     public function isValid(string $value): bool

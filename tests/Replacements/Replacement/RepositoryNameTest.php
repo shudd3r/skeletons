@@ -73,7 +73,7 @@ class RepositoryNameTest extends TestCase
     public function testTokenMethodWithValidValue_ReturnsExpectedToken()
     {
         $replacement = new RepositoryName();
-        $expected    = new Token\ValueToken('repo.name', 'repository/name');
+        $expected    = new Token\BasicToken('repo.name', 'repository/name');
         $this->assertEquals($expected, $replacement->token('repo.name', 'repository/name'));
         $this->assertTrue($replacement->isValid('repository/name'));
     }

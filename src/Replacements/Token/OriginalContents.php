@@ -61,12 +61,8 @@ class OriginalContents implements Token
 
     protected function newTokenInstance(array $values = null): Token
     {
-        if (!$values) {
-            return new ValueToken(self::PLACEHOLDER, '');
-        }
-
-        return count($values) === 1
-            ? new ValueToken(self::PLACEHOLDER, $values[0])
+        return !$values || count($values) === 1
+            ? new BasicToken(self::PLACEHOLDER, $values[0] ?? '')
             : new IterativeToken(self::PLACEHOLDER, ...$values);
     }
 

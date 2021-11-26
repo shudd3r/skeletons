@@ -13,7 +13,7 @@ namespace Shudd3r\Skeletons\Tests\Processors\Processor;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Processors\Processor\GenerateFile;
-use Shudd3r\Skeletons\Replacements\Token;
+use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 use Shudd3r\Skeletons\Templates\Template;
 use Shudd3r\Skeletons\Environment\Files\File;
 
@@ -26,8 +26,7 @@ class GenerateFileTest extends TestCase
         $file      = new File\VirtualFile();
         $processor = new GenerateFile($template, $file);
 
-        $token = new Token\ValueToken('replace.me', 'rendered');
-        $this->assertTrue($processor->process($token));
+        $this->assertTrue($processor->process(new BasicToken('replace.me', 'rendered')));
         $this->assertSame('rendered string', $file->contents());
     }
 }

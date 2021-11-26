@@ -39,8 +39,8 @@ class PackageName implements Replacement
         if (!$this->isValid($value)) { return null; }
 
         return Token\CompositeToken::withValueToken(
-            new Token\ValueToken($name, $value),
-            new Token\ValueToken($name . '.title', $this->titleName($value))
+            new Token\BasicToken($name, $value),
+            new Token\BasicToken($name . '.title', $this->titleName($value))
         );
     }
 

@@ -28,7 +28,7 @@ class FakeTokens extends Tokens
 
     public function compositeToken(): ?Token
     {
-        return $this->returnsToken ? new Token\CompositeToken(new Token\ValueToken('foo', 'bar')) : null;
+        return $this->returnsToken ? new Token\CompositeToken(new Token\BasicToken('foo', 'bar')) : null;
     }
 
     public function placeholderValues(): array

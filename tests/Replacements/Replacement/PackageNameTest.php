@@ -51,8 +51,8 @@ class PackageNameTest extends TestCase
         $replacement = new PackageName();
 
         $expected = Token\CompositeToken::withValueToken(
-            new Token\ValueToken('package.name', 'package/name'),
-            new Token\ValueToken('package.name.title', 'Package/Name')
+            new Token\BasicToken('package.name', 'package/name'),
+            new Token\BasicToken('package.name.title', 'Package/Name')
         );
 
         $this->assertEquals($expected, $replacement->token('package.name', 'package/name'));

@@ -13,7 +13,7 @@ namespace Shudd3r\Skeletons\Tests\Replacements\Replacement;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements\Replacement\PackageDescription;
-use Shudd3r\Skeletons\Replacements\Token;
+use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
@@ -50,7 +50,7 @@ class PackageDescriptionTest extends TestCase
     public function testTokenMethodWithValidValue_ReturnsExpectedToken()
     {
         $replacement = new PackageDescription();
-        $expected    = new Token\ValueToken('token.name', 'package description');
+        $expected    = new BasicToken('token.name', 'package description');
         $this->assertEquals($expected, $replacement->token('token.name', 'package description'));
         $this->assertTrue($replacement->isValid('package description'));
     }

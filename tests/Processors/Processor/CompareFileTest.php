@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Processors\Processor\CompareFile;
 use Shudd3r\Skeletons\Environment\Files\Directory\VirtualDirectory;
 use Shudd3r\Skeletons\Environment\Files\File\VirtualFile;
-use Shudd3r\Skeletons\Replacements\Token;
+use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 use Shudd3r\Skeletons\Templates\Template;
 
 
@@ -24,7 +24,7 @@ class CompareFileTest extends TestCase
     public function testSuccessfulComparison_ReturnsTrue()
     {
         $template = new Template\BasicTemplate('{replace.me} contents');
-        $token    = new Token\ValueToken('replace.me', 'expected');
+        $token    = new BasicToken('replace.me', 'expected');
 
         $file      = new VirtualFile('foo.txt', 'expected contents');
         $processor = new CompareFile($template, $file);
@@ -34,7 +34,7 @@ class CompareFileTest extends TestCase
     public function testFailedComparison_ReturnsFalse()
     {
         $template = new Template\BasicTemplate('{replace.me} contents');
-        $token    = new Token\ValueToken('replace.me', 'unexpected');
+        $token    = new BasicToken('replace.me', 'unexpected');
 
         $file      = new VirtualFile('foo.txt', 'expected contents');
         $processor = new CompareFile($template, $file);
@@ -45,7 +45,7 @@ class CompareFileTest extends TestCase
     {
         $template = new Template\BasicTemplate('{replace.me} contents');
         $backup   = new VirtualDirectory();
-        $token    = new Token\ValueToken('replace.me', 'unexpected');
+        $token    = new BasicToken('replace.me', 'unexpected');
 
         $file      = new VirtualFile('foo.txt', null);
         $processor = new CompareFile($template, $file, $backup);
@@ -64,7 +64,7 @@ class CompareFileTest extends TestCase
         $template = new Template\BasicTemplate('');
         $file     = new VirtualFile('foo.txt', null);
         $backup   = new VirtualDirectory();
-        $token    = new Token\ValueToken('replace.me', 'expected');
+        $token    = new BasicToken('replace.me', 'expected');
 
         $processor = new CompareFile($template, $file, $backup);
         $this->assertFalse($processor->process($token));
