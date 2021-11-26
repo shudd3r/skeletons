@@ -20,6 +20,6 @@ class ValidationReader extends Reader
 {
     protected function readToken(string $name, Replacement $replacement): ?Token
     {
-        return $replacement->token($name, $this->metaDataValue($name) ?? $this->defaultValue($replacement));
+        return $replacement->token($name, $this->defaultValue($name, $replacement));
     }
 }

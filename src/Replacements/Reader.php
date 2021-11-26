@@ -80,14 +80,9 @@ abstract class Reader implements Reader\FallbackReader
         return $input;
     }
 
-    protected function defaultValue(Replacement $replacement): string
+    protected function defaultValue(string $name, Replacement $replacement): string
     {
-        return $replacement->defaultValue($this->env, $this);
-    }
-
-    protected function metaDataValue(string $name): ?string
-    {
-        return $this->env->metaData()->value($name);
+        return $this->env->metaData()->value($name) ?? $replacement->defaultValue($this->env, $this);
     }
 
     private function token(string $name): ?Token
