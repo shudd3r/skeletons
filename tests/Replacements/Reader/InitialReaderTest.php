@@ -97,7 +97,7 @@ class InitialReaderTest extends ReaderTests
         $this->assertTokenValues($expected, $reader->tokens($replacements));
     }
 
-    protected function reader(array $inputs, array $options): Reader
+    protected function reader(array $inputs, array $options, array $metaData = []): Reader
     {
         return new Reader\InitialReader($this->env($inputs), $this->args($options));
     }

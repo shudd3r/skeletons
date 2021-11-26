@@ -55,7 +55,7 @@ abstract class ReaderTests extends TestCase
         $this->assertSame($expected, $tokenValues);
     }
 
-    abstract protected function reader(array $inputs, array $options): Reader;
+    abstract protected function reader(array $inputs, array $options, array $metaData = []): Reader;
 
     abstract protected function defaults(array $override = []): array;
 

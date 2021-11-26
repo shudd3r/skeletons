@@ -24,6 +24,16 @@ class UpdateReaderTest extends ReaderTests
         $this->assertTokenValues($expected, $reader->tokens($this->replacements()));
     }
 
+    public function testWithoutNeitherMetaDataNorInput_TokensAreBuiltWithReplacementDefaultValues()
+    {
+        $metaData = self::META_DATA;
+        unset($metaData['foo']);
+
+        $reader   = $this->reader([], [], $metaData);
+        $expected = $this->defaults(['foo' => 'foo (default)']);
+        $this->assertTokenValues($expected, $reader->tokens($this->replacements()));
+    }
+
     public function testWithOptionValues_TokensAreBuiltWithMatchingOptionValue()
     {
         $reader   = $this->reader([], ['optBar=bar (option)']);
@@ -45,9 +55,9 @@ class UpdateReaderTest extends ReaderTests
         $this->assertTokenValues($expected, $reader->tokens($this->replacements()));
     }
 
-    protected function reader(array $inputs, array $options): Reader
+    protected function reader(array $inputs, array $options, array $metaData = []): Reader
     {
-        return new Reader\UpdateReader($this->env($inputs, self::META_DATA), $this->args($options));
+        return new Reader\UpdateReader($this->env($inputs, $metaData ?: self::META_DATA), $this->args($options));
     }
 
     protected function defaults(array $override = []): array
