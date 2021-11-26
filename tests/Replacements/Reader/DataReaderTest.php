@@ -15,7 +15,7 @@ use Shudd3r\Skeletons\Tests\Replacements\ReaderTests;
 use Shudd3r\Skeletons\Replacements\Reader;
 
 
-class ValidationReaderTest extends ReaderTests
+class DataReaderTest extends ReaderTests
 {
     /**
      * @dataProvider possibleReaderSetups
@@ -52,7 +52,7 @@ class ValidationReaderTest extends ReaderTests
 
     protected function reader(array $inputs, array $options, array $metaData = []): Reader
     {
-        return new Reader\ValidationReader($this->env($inputs, $metaData ?: self::META_DATA), $this->args($options));
+        return new Reader\DataReader($this->env($inputs, $metaData ?: self::META_DATA), $this->args($options));
     }
 
     protected function defaults(array $override = []): array
