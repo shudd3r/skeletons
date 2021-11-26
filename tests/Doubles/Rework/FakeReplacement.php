@@ -27,6 +27,7 @@ class FakeReplacement implements Replacement
 
     public function token(string $name, Source $source): ?Token
     {
+        if (strpos($this->value, 'get-') === 0) { $this->value = $source->tokenValueOf(substr($this->value, 4)); }
         return new Token\BasicToken($name, $this->value);
     }
 
