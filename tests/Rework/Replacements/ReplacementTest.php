@@ -139,6 +139,14 @@ class ReplacementTest extends TestCase
             DESC;
 
         $this->assertSame(str_replace("\n", PHP_EOL, $expected), $replacement->description('foo'));
+
+        $replacement = $replacement->withInputArg('veryLongArgumentName');
+        $expected    = <<<DESC
+              veryLongArgumentName This value replaces {foo} placeholder.
+                          Foo formatting doesn't matter,
+                          unless its value is literally 'invalid'.
+            DESC;
+        $this->assertSame(str_replace("\n", PHP_EOL, $expected), $replacement->description('foo'));
     }
 
     private function assertToken(string $value, Replacement $replacement, Source $source): void

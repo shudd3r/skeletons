@@ -32,7 +32,7 @@ abstract class Replacement
 
         $description = $this->description ?: 'Unspecified replacement for {%s} placeholder';
         $lines       = explode("\n", str_replace('%s', $name, $description));
-        $argInfo     = '  ' . str_pad($this->argumentName, 12) . array_shift($lines);
+        $argInfo     = '  ' . str_pad($this->argumentName, 11) . ' ' . array_shift($lines);
 
         foreach ($lines as $line) {
             $argInfo .= PHP_EOL . '              ' . $line;
