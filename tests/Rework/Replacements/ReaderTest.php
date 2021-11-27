@@ -53,9 +53,9 @@ class ReaderTest extends TestCase
         $reader = $this->reader();
 
         $replacements = new Replacements([
-            'foo' => new Doubles\Rework\FakeReplacement('get-bar'),
+            'foo' => new Doubles\Rework\FakeReplacement('bar', true),
             'bar' => new Doubles\Rework\FakeReplacement('bar value'),
-            'baz' => new Doubles\Rework\FakeReplacement('get-foo')
+            'baz' => new Doubles\Rework\FakeReplacement('foo', true)
         ]);
 
         $expected = [
@@ -71,9 +71,9 @@ class ReaderTest extends TestCase
         $reader = $this->reader();
 
         $replacements = new Replacements([
-            'foo' => new Doubles\Rework\FakeReplacement('get-baz'),
+            'foo' => new Doubles\Rework\FakeReplacement('baz', true),
             'bar' => new Doubles\Rework\FakeReplacement('bar value'),
-            'baz' => new Doubles\Rework\FakeReplacement('get-foo')
+            'baz' => new Doubles\Rework\FakeReplacement('foo', true)
         ]);
 
         $expected = [

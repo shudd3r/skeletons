@@ -13,26 +13,47 @@ namespace Shudd3r\Skeletons\Tests\Doubles\Rework;
 
 use Shudd3r\Skeletons\Rework\Replacements\Replacement;
 use Shudd3r\Skeletons\Rework\Replacements\Source;
-use Shudd3r\Skeletons\Replacements\Token;
 
 
-class FakeReplacement implements Replacement
+class FakeReplacement extends Replacement
 {
     private string $value;
+    private bool   $isFallback;
 
-    public function __construct(string $value = '')
+    public function __construct(string $value = '', bool $isFallback = false)
     {
-        $this->value = $value;
+        $this->value      = $value;
+        $this->isFallback = $isFallback;
     }
 
-    public function token(string $name, Source $source): ?Token
+    public function withDescription(string $description): self
     {
-        if (strpos($this->value, 'get-') === 0) { $this->value = $source->tokenValueOf(substr($this->value, 4)); }
-        return new Token\BasicToken($name, $this->value);
+        $clone = clone $this;
+        $clone->description = $description;
+        return $clone;
     }
 
-    public function description(): string
+    public function withPrompt(string $inputPrompt): self
     {
-        return $this->value;
+        $clone = clone $this;
+        $clone->inputPrompt = $inputPrompt;
+        return $clone;
+    }
+
+    public function withInputArg(string $argumentName): self
+    {
+        $clone = clone $this;
+        $clone->argumentName = $argumentName;
+        return $clone;
+    }
+
+    protected function isValid(string $value): bool
+    {
+        return $value !== 'invalid';
+    }
+
+    protected function resolvedValue(Source $source): string
+    {
+        return $this->isFallback ? $source->tokenValueOf($this->value) : $this->value;
     }
 }

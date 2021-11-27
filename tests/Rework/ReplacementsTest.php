@@ -38,13 +38,17 @@ class ReplacementsTest extends TestCase
 
     public function testInfoMethod_ReturnsFilteredArrayOfDescriptions()
     {
-        $replacements = new Replacements([
-            'foo' => new FakeReplacement('This is foo'),
-            'bar' => new FakeReplacement(''),
-            'baz' => new FakeReplacement('This is baz')
+        $replacement = new FakeReplacement();
+        $replacements = new Replacements($replacementArray = [
+            'foo' => $replacement->withInputArg('fooArg')->withDescription('This is foo'),
+            'bar' => $replacement->withDescription('No argument - no description'),
+            'baz' => $replacement->withInputArg('bazArg')->withDescription("This is baz")
         ]);
 
-        $expected = ['foo' => 'This is foo', 'baz' => 'This is baz'];
+        $expected = [
+            'foo' => $replacementArray['foo']->description(),
+            'baz' => $replacementArray['baz']->description()
+        ];
         $this->assertSame($expected, $replacements->info());
     }
 }
