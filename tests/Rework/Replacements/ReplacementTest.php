@@ -110,31 +110,35 @@ class ReplacementTest extends TestCase
         $this->assertNull($replacement->token('foo', $source));
     }
 
-    public function testWithoutArgumentNameOrEmptyDescriptionProperty_Description_ReturnsEmptyString()
+    public function testWithoutArgumentName_Description_ReturnsEmptyString()
     {
         $replacement = $this->replacement()->withDescription('This is Foo');
-        $this->assertEmpty($replacement->description());
+        $this->assertEmpty($replacement->description('foo'));
 
+    }
+
+    public function testWithoutDefinedDescriptionProperty_Description_ReturnsDefaultPlaceholderInfo()
+    {
         $replacement = $this->replacement()->withInputArg('fooArg');
-        $this->assertEmpty($replacement->description());
+        $this->assertStringContainsString('{foo}', $replacement->description('foo'));
     }
 
     public function testDescriptionFormatting()
     {
         $description = <<<DESC
-            This value is foo.
+            This value replaces {%s} placeholder.
             Foo formatting doesn't matter,
             unless its value is literally 'invalid'.
             DESC;
 
         $replacement = $this->replacement()->withInputArg('fooArg')->withDescription($description);
         $expected    = <<<DESC
-              fooArg      This value is foo.
+              fooArg      This value replaces {foo} placeholder.
                           Foo formatting doesn't matter,
                           unless its value is literally 'invalid'.
             DESC;
 
-        $this->assertSame(str_replace("\n", PHP_EOL, $expected), $replacement->description());
+        $this->assertSame(str_replace("\n", PHP_EOL, $expected), $replacement->description('foo'));
     }
 
     private function assertToken(string $value, Replacement $replacement, Source $source): void

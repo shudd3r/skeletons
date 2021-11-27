@@ -46,8 +46,8 @@ class ReplacementsTest extends TestCase
         ]);
 
         $expected = [
-            'foo' => $replacementArray['foo']->description(),
-            'baz' => $replacementArray['baz']->description()
+            $replacementArray['foo']->description('foo'),
+            $replacementArray['baz']->description('baz')
         ];
         $this->assertSame($expected, $replacements->info());
     }

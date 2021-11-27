@@ -36,7 +36,8 @@ class Replacements
 
     public function info(): array
     {
-        $describe = fn (Replacement $replacement): ?string =>  $replacement->description() ?: null;
-        return array_filter(array_map($describe, $this->replacements));
+        $describe = fn (string $name, Replacement $replacement): ?string =>  $replacement->description($name) ?: null;
+        $argsInfo = array_map($describe, $this->placeholders(), $this->replacements);
+        return array_values(array_filter($argsInfo));
     }
 }

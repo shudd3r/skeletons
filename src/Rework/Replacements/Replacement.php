@@ -26,17 +26,19 @@ abstract class Replacement
         return $this->isValid($value) ? $this->tokenInstance($name, $value) : null;
     }
 
-    final public function description(): string
+    final public function description(string $name): string
     {
-        if (!$this->argumentName || !$this->description) { return ''; }
-        $lines = explode("\n", $this->description);
+        if (!$this->argumentName) { return ''; }
 
-        $description = '  ' . str_pad($this->argumentName, 12) . array_shift($lines);
+        $description = $this->description ?: 'Unspecified replacement for {%s} placeholder';
+        $lines       = explode("\n", str_replace('%s', $name, $description));
+        $argInfo     = '  ' . str_pad($this->argumentName, 12) . array_shift($lines);
+
         foreach ($lines as $line) {
-            $description .= PHP_EOL . '              ' . $line;
+            $argInfo .= PHP_EOL . '              ' . $line;
         }
 
-        return $description;
+        return $argInfo;
     }
 
     abstract protected function isValid(string $value): bool;
