@@ -22,7 +22,7 @@ use Exception;
 
 class Application
 {
-    private const VERSION = '0.1';
+    private const VERSION = '0.2.0';
 
     private EnvSetup $envSetup;
     private AppSetup $appSetup;
