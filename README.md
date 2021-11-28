@@ -9,11 +9,28 @@
 Skeleton packages are used to maintain **consistent structure**
 of document (license, readme etc.) and dev environment files
 **across multiple packages**. This library allows building
-skeleton package scripts with following features:
+skeleton package scripts that allow:
 - Generating package skeleton from template
 - Verifying synchronization of existing project with chosen
   template (as a part of [_CI_](https://en.wikipedia.org/wiki/Continuous_integration) process)
-- Updating template placeholders in existing project
+- Updating template placeholders used in existing package files
+
+Scripting features:
+- Template placeholders can be chosen by skeleton creators.
+- Each placeholder is assigned to `Replacement` abstraction that manages validation,
+  input channels & resolving its (default) value.
+- Replacement may also provide subtypes for defined placeholder (like escaped slashes for namespace).
+- `GenericReplacement` for simple replacements and fluent builder interface for easier instantiation.
+- Placeholders for original content with optional default mockup value.
+- Possibility to customize template handling for individual files
+  through `Template` & `Template\Factory` abstractions.
+- Synchronization allows regenerating missing & divergent files.
+- Safe file operations - overwritten files are saved in backup directory.
+- Filename extension directives that allow:
+  - including files that could affect deployed skeleton files,
+  - handling "local" files, that are not (or cannot be) part of published package,
+  - using initial "mockup" files that can be removed or developed without breaking skeleton synchronization,
+  - automatic adding/removing dummy files that ensure directory existence (`.gitkeep`)
 
 ### Basic Usage
 > :warning: See [**shudd3r/skeleton-example**](https://github.com/shudd3r/skeleton-example)
@@ -222,16 +239,3 @@ This custom template can handle normalization of `.json` files
 like `composer.json`. The way it works cannot be briefly described,
 so check out [`MergedJsonTemplateTest`](tests/Templates/Template/MergedJsonTemplateTest.php)
 for details.
-
-### TODO features
-- [x] `sync` command - generating divergent (with backup) & missing files
-- [x] Handling `.gitattributes` in templates (blocking package import)
-- [x] Initial "example files" - removed later, so ignored by validation
-- [x] Handling untracked "dev files" like git hooks, IDE setup, etc.
-- [x] `help` command
-- [x] Add GenericReplacement for simple user-defined replacements
-- [x] Add procedure removing init dummy files like `.gitkeep` or example
-  files when original package files exist in directory
-- [x] Add procedure checking existence of dummy-initialized directories
-- [ ] Additive placeholder updates (new author = expand list in composer.json)
-- [x] Error codes & final message depending on exit code
