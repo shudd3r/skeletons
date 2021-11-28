@@ -41,12 +41,14 @@ abstract class Replacement
         return $argInfo;
     }
 
-    abstract protected function isValid(string $value): bool;
-
     protected function tokenInstance($name, $value): Token
     {
         return new Token\BasicToken($name, $value);
     }
+
+    abstract protected function isValid(string $value): bool;
+
+    abstract protected function resolvedValue(Source $source): string;
 
     private function value(string $name, Source $source): string
     {
@@ -69,6 +71,4 @@ abstract class Replacement
 
         return $source->metaValueOf($name) ?? $this->resolvedValue($source);
     }
-
-    abstract protected function resolvedValue(Source $source): string;
 }
