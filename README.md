@@ -8,12 +8,29 @@
 
 Skeleton packages are used to maintain **consistent structure**
 of document (license, readme etc.) and dev environment files
-**across multiple packages**. This library allows building
-skeleton package scripts with following features:
-- Generating package skeleton from template
+**across multiple packages**. This library allows building skeleton
+package scripts capable of:
+- Generating package skeleton from template files
 - Verifying synchronization of existing project with chosen
-  template (as a part of [_CI_](https://en.wikipedia.org/wiki/Continuous_integration) process)
-- Updating template placeholders in existing project
+  template as a part of [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) process
+- Updating template placeholder values used in existing package files
+
+#### Scripting features:
+- Template placeholders can be chosen by skeleton creators.
+- Each placeholder is assigned to `Replacement` abstraction that manages validation,
+  providing & resolving placeholder's (default) value.
+- Replacement may also provide subtypes for defined placeholder (e.g. escaped slashes for `{namespace}`).
+- `GenericReplacement` for simple replacements and fluent builder interface for easier instantiation.
+- Placeholders for `{original.content}` with optional default mockup value.
+- Possibility to customize template handling for individual files
+  through `Template` & `Template\Factory` abstractions.
+- Synchronization that allows regenerating missing & divergent files.
+- Safe file operations - overwritten files are copied into backup directory.
+- Filename extension directives that allow:
+  - including (deactivating) files that could affect deployed skeleton files (e.g. `.gitignore`),
+  - handling "local" files, that are not (or cannot be) part of published package,
+  - using initial "mockup" files that can be removed or developed without breaking skeleton synchronization,
+  - automatic adding/removing dummy files that ensure directory existence (`.gitkeep`)
 
 ### Basic Usage
 > :warning: See [**shudd3r/skeleton-example**](https://github.com/shudd3r/skeleton-example)
@@ -49,66 +66,67 @@ Following sections will cover template & script files in more details.
 Entire script that uses this library might look like
 attached [docs/script-example](docs/script-example) file.
 
-##### Setup steps
+##### Setup steps:
 - Instantiate input arguments and application:
-```php
-namespace Shudd3r\Skeletons;
-
-use Shudd3r\Skeletons\Environment\Files\Directory\LocalDirectory;
-
-$args = new InputArgs($argv);
-
-$package  = new LocalDirectory(get_cwd());
-$template = new LocalDirectory(__DIR__ . '/template');
-$app      = new Application($package, $template);
-```
+  ```php
+  namespace Shudd3r\Skeletons;
+  
+  use Shudd3r\Skeletons\Environment\Files\Directory\LocalDirectory;
+  
+  $args = new InputArgs($argv);
+  
+  $package  = new LocalDirectory(get_cwd());
+  $template = new LocalDirectory(__DIR__ . '/template');
+  $app      = new Application($package, $template);
+  ```
 
 - Add [`Replacement`](src/Replacements/Replacement.php) definitions
   for placeholders used in templates:
-```php
-use Shudd3r\Skeletons\Replacements\Replacement;
-
-$app->replacement('package.name')->add(new Replacement\PackageName());
-$app->replacement('repository.name')->add(new Replacement\RepositoryName('package.name'));
-$app->replacement('package.description')->add(new Replacement\PackageDescription('package.name'));
-$app->replacement('namespace.src')->add(new Replacement\SrcNamespace('package.name'));
-```
-Simple replacement definitions don't need to be implemented - [`GenericReplacement`](src/Replacements/Replacement/GenericReplacement.php)
-can be used:
-```php
-use Shudd3r\Skeletons\Replacements\Replacement\GenericReplacement;
-
-$default  = fn () => 'default@example.com';
-$validate = fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL);
-
-$app->replacement('author.email')
-    ->add(new GenericReplacement($default, null, $validate, 'Your email address', 'email'));
-```
-It can also be built using fluent builder invoked with `build()` method:
-```php
-$app->replacement('author.email')
-    ->build(fn () => 'default@example.com')
-    ->optionName('email')
-    ->inputPrompt('Your email address')
-    ->validate(fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL));
-```
+  ```php
+  use Shudd3r\Skeletons\Replacements\Replacement;
+  
+  $app->replacement('package.name')->add(new Replacement\PackageName());
+  $app->replacement('repository.name')->add(new Replacement\RepositoryName('package.name'));
+  $app->replacement('package.description')->add(new Replacement\PackageDescription('package.name'));
+  $app->replacement('namespace.src')->add(new Replacement\SrcNamespace('package.name'));
+  ```
+  Simple replacement definitions don't need to be implemented - [`GenericReplacement`](src/Replacements/Replacement/GenericReplacement.php)
+  can be used:
+  ```php
+  use Shudd3r\Skeletons\Replacements\Replacement\GenericReplacement;
+  
+  $default  = fn () => 'default@example.com';
+  $validate = fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL);
+  
+  $app->replacement('author.email')
+      ->add(new GenericReplacement($default, null, $validate, 'Your email address', 'email'));
+  ```
+  It can also be built using fluent builder invoked with `build()` method:
+  ```php
+  $app->replacement('author.email')
+      ->build(fn () => 'default@example.com')
+      ->optionName('email')
+      ->inputPrompt('Your email address')
+      ->validate(fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL));
+  ```
 
 - Define custom [`Templates\Factory`](src/Templates/Factory.php)
   objects for selected template files<sup>*</sup>:
-```php
-use Shudd3r\Skeletons\Templates\Factory;
+  ```php
+  use Shudd3r\Skeletons\Templates\Factory;
+  
+  $app->template('composer.json')->add(new Factory\MergedJsonFactory($args->command() === 'update'));
+  ```
+  <sup>*Template that defines dynamic keys for `MergedJsonTemplate`
+  (in case of `composer.json` it would usually be `namespace` placeholder)
+  requires different merging algorithm for updates. If template doesn't use
+  dynamic keys, boolean parameter is not required.</sup>
 
-$app->template('composer.json')->add(new Factory\MergedJsonFactory($args->command() === 'update'));
-```
 - Run application with `InputArgs`:
-```php
-$exitCode = $app->run($args);
-exit($exitCode);
-```
-<sup>*Template that defines dynamic keys for `MergedJsonTemplate`
-(in case of `composer.json` it would usually be `namespace` placeholder)
-requires different merging algorithm for updates. If template doesn't use
-dynamic keys, boolean parameter is not required.</sup>
+  ```php
+  $exitCode = $app->run($args);
+  exit($exitCode);
+  ```
 
 ### Command line usage
 ```
@@ -143,7 +161,7 @@ would update package description:
 ```bash
 vendor/bin/script-example update desc="New package description"
 ```
-With both `--interactive` option and placeholder arguments are provided,
+When both `--interactive` option and placeholder arguments are provided,
 valid argument values will become default for empty input.
 
 ### Template files
@@ -191,7 +209,7 @@ and [`PackageName`](src/Replacements/Replacement/PackageName.php)
 covers `{placeholder.title}` subtype, that gives package name
 with capitalized segments.
 
-###### Original Content placeholder
+##### Original Content placeholder
 `{original.content}` is a special built-in placeholder that
 represents places where project specific text might appear.
 It's useful especially for README files, where skeleton cannot
@@ -214,24 +232,17 @@ sections might be defined as follows:
 
 #### Custom Template processing
 Some files that change dynamically throughout project lifetime
-cannot be handled in a generic way (like README).
+cannot be handled in a simple, text expanding way like, for example, `README.md` file.
 This is where custom templates might be used.
 
-##### Merged Json Template
-This custom template can handle normalization of `.json` files
-like `composer.json`. The way it works cannot be briefly described,
-so check out [`MergedJsonTemplateTest`](tests/Templates/Template/MergedJsonTemplateTest.php)
-for details.
+As for now this package provides only one file-based template:
 
-### TODO features
-- [x] `sync` command - generating divergent (with backup) & missing files
-- [x] Handling `.gitattributes` in templates (blocking package import)
-- [x] Initial "example files" - removed later, so ignored by validation
-- [x] Handling untracked "dev files" like git hooks, IDE setup, etc.
-- [x] `help` command
-- [x] Add GenericReplacement for simple user-defined replacements
-- [x] Add procedure removing init dummy files like `.gitkeep` or example
-  files when original package files exist in directory
-- [x] Add procedure checking existence of dummy-initialized directories
-- [ ] Additive placeholder updates (new author = expand list in composer.json)
-- [x] Error codes & final message depending on exit code
+##### Merged Json Template
+This custom template can handle normalization & merging of generated `.json`
+template files with corresponding files existing in developed package like `composer.json`.
+In short, skeleton file can define order of keys, but doesn't have to specify their values.
+It will also ensure same order of keys in repeating (list) structures.
+_Adding key in the wrong position will require synchronization_ which will merge & normalize
+skeleton with existing file (and create backup copy).
+For details check out [`MergedJsonTemplateTest`](tests/Templates/Template/MergedJsonTemplateTest.php)
+file.
