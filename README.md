@@ -232,11 +232,17 @@ sections might be defined as follows:
 
 #### Custom Template processing
 Some files that change dynamically throughout project lifetime
-cannot be handled in a generic way like, for example, `README.md` file.
+cannot be handled in a simple, text expanding way like, for example, `README.md` file.
 This is where custom templates might be used.
 
+As for now this package provides only one file-based template:
+
 ##### Merged Json Template
-This custom template can handle normalization of `.json` files
-like `composer.json`. The way it works cannot be briefly described,
-so check out [`MergedJsonTemplateTest`](tests/Templates/Template/MergedJsonTemplateTest.php)
-for details.
+This custom template can handle normalization & merging of generated `.json`
+template files with corresponding files existing in developed package like `composer.json`.
+In short, skeleton file can define order of keys, but doesn't have to specify their values.
+It will also ensure same order of keys in repeating (list) structures.
+_Adding key in the wrong position will require synchronization_ which will merge & normalize
+skeleton with existing file (and create backup copy).
+For details check out [`MergedJsonTemplateTest`](tests/Templates/Template/MergedJsonTemplateTest.php)
+file.
