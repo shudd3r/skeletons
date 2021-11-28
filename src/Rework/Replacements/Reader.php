@@ -85,6 +85,11 @@ class Reader implements Source
         return $this->env->package()->file($filename)->contents();
     }
 
+    public function packagePath(): string
+    {
+        return $this->env->package()->path();
+    }
+
     public function tokenValueOf(string $name): string
     {
         $token = $this->token($name);

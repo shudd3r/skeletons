@@ -27,5 +27,7 @@ interface Source
 
     public function fileContents(string $filename): string;
 
+    public function packagePath(): string;
+
     public function tokenValueOf(string $name): string;
 }
