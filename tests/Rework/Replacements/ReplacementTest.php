@@ -12,115 +12,90 @@
 namespace Shudd3r\Skeletons\Tests\Rework\Replacements;
 
 use PHPUnit\Framework\TestCase;
-use Shudd3r\Skeletons\Rework\Replacements\Replacement;
-use Shudd3r\Skeletons\Rework\Replacements\Source;
-use Shudd3r\Skeletons\Rework\Replacements\Reader;
+use Shudd3r\Skeletons\Tests\Doubles\Rework\FakeReplacement as Replacement;
+use Shudd3r\Skeletons\Tests\Doubles\Rework\FakeSource as Source;
 use Shudd3r\Skeletons\Replacements\Token\BasicToken;
-use Shudd3r\Skeletons\RuntimeEnv;
-use Shudd3r\Skeletons\InputArgs;
-use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class ReplacementTest extends TestCase
 {
     public function testWithoutDefinedInputSourceAndMetaValue_Token_ReturnsTokenWithResolvedValue()
     {
-        $replacement = $this->replacement();
-        $source      = $this->source();
-        $this->assertToken('resolved value', $replacement, $source);
+        $source = Source::create();
+        $this->assertToken('resolved value', $this->replacement(), $source);
     }
 
     public function testWithMetaValue_Token_ReturnsTokenWithThatValue()
     {
-        $replacement = $this->replacement();
-        $env         = new Doubles\FakeRuntimeEnv();
-        $source      = $this->source($env);
-        $env->metaData()->save(['foo' => 'meta value']);
-        $this->assertToken('meta value', $replacement, $source);
+        $source = Source::create(['foo' => 'meta value']);
+        $this->assertToken('meta value', $this->replacement(), $source);
     }
 
     public function testWithArgumentName_Token_ReturnsTokenWithValidInputArgument()
     {
         $replacement = $this->replacement()->withInputArg('fooArg');
-        $env         = new Doubles\FakeRuntimeEnv();
-        $source      = $this->source($env, ['fooArg=arg value']);
-        $env->metaData()->save(['foo' => 'meta value']);
+
+        $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'arg value']);
         $this->assertToken('arg value', $replacement, $source);
 
-        $source = $this->source($env, ['fooArg=invalid']);
+        $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'invalid']);
         $this->assertToken('meta value', $replacement, $source);
 
-        $source = $this->source(null, ['fooArg=invalid']);
+        $source = Source::create([], ['fooArg' => 'invalid']);
         $this->assertToken('resolved value', $replacement, $source);
     }
 
     public function testWithInputPromptProperty_Token_ReturnsTokenUsingInputEntry()
     {
-        $replacement = $this->replacement()->withPrompt('Give foo');
-        $env         = new Doubles\FakeRuntimeEnv();
-        $source      = $this->source($env);
-        $env->input()->addInput('input value');
-        $this->assertToken('input value', $replacement, $source);
-        $this->assertSame(['  > Give foo [default: resolved value]:'], $env->output()->messagesSent());
+        $source = Source::create()->withInputStrings('input value');
+        $this->assertToken('input value', $this->replacement()->withPrompt('Give foo'), $source);
+        $this->assertSame('  > Give foo [default: resolved value]:', $source->promptUsed());
     }
 
     public function testForEmptyInput_Token_ReturnsTokenWithDefaultValue()
     {
         $replacement = $this->replacement()->withPrompt('Give foo');
-        $source      = $this->source();
+
+        $source = Source::create();
         $this->assertToken('resolved value', $replacement, $source);
+        $this->assertSame('  > Give foo [default: resolved value]:', $source->promptUsed());
 
-        $env    = new Doubles\FakeRuntimeEnv();
-        $source = $this->source($env);
-        $env->metaData()->save(['foo' => 'meta value']);
+        $source = Source::create(['foo' => 'meta value']);
         $this->assertToken('meta value', $replacement, $source);
-        $this->assertSame(['  > Give foo [default: meta value]:'], $env->output()->messagesSent());
+        $this->assertSame('  > Give foo [default: meta value]:', $source->promptUsed());
 
-        $replacement = $replacement->withInputArg('fooArg');
-        $source      = $this->source($env, ['fooArg=arg value']);
-        $this->assertToken('arg value', $replacement, $source);
-        $this->assertSame(['  > Give foo [default: arg value]:'], $env->output()->messagesSent());
+        $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'arg value']);
+        $this->assertToken('arg value', $replacement->withInputArg('fooArg'), $source);
+        $this->assertSame('  > Give foo [default: arg value]:', $source->promptUsed());
     }
 
     public function testForInvalidDefaultValueAndEmptyInput_Token_ReturnsTokenWithEmptyString()
     {
-        $replacement = $this->replacement(false)->withPrompt('Give foo');
-        $env         = new Doubles\FakeRuntimeEnv();
-        $source      = $this->source($env);
-        $this->assertToken('', $replacement, $source);
-        $this->assertSame(['  > Give foo:'], $env->output()->messagesSent());
+        $source = Source::create();
+        $this->assertToken('', $this->replacement(false)->withPrompt('Give foo'), $source);
+        $this->assertSame('  > Give foo:', $source->promptUsed());
     }
 
     public function testForInvalidValue_Token_ReturnsNull()
     {
-        $replacement = $this->replacement(false);
-        $source      = $this->source();
-        $this->assertNull($replacement->token('foo', $source));
+        $source = Source::create();
+        $this->assertNull($this->replacement(false)->token('foo', $source));
 
-        $replacement = $this->replacement();
-        $env         = new Doubles\FakeRuntimeEnv();
-        $source      = $this->source($env);
-        $env->metaData()->save(['foo' => 'invalid']);
-        $this->assertNull($replacement->token('foo', $source));
+        $source = Source::create(['foo' => 'invalid']);
+        $this->assertNull($this->replacement()->token('foo', $source));
 
-        $replacement = $replacement->withPrompt('Give foo');
-        $env         = new Doubles\FakeRuntimeEnv();
-        $source      = $this->source($env);
-        $env->input()->addInput('invalid', 'invalid', 'invalid');
-        $this->assertNull($replacement->token('foo', $source));
+        $source = Source::create()->withInputStrings('invalid');
+        $this->assertNull($this->replacement()->withPrompt('Give foo')->token('foo', $source));
     }
 
     public function testWithoutArgumentName_Description_ReturnsEmptyString()
     {
-        $replacement = $this->replacement()->withDescription('This is Foo');
-        $this->assertEmpty($replacement->description('foo'));
-
+        $this->assertEmpty($this->replacement()->withDescription('This is Foo')->description('foo'));
     }
 
     public function testWithoutDefinedDescriptionProperty_Description_ReturnsDefaultPlaceholderInfo()
     {
-        $replacement = $this->replacement()->withInputArg('fooArg');
-        $this->assertStringContainsString('{foo}', $replacement->description('foo'));
+        $this->assertStringContainsString('{foo}', $this->replacement()->withInputArg('fooArg')->description('foo'));
     }
 
     public function testDescriptionFormatting()
@@ -154,16 +129,8 @@ class ReplacementTest extends TestCase
         $this->assertEquals(new BasicToken('foo', $value), $replacement->token('foo', $source));
     }
 
-    private function replacement(bool $valid = true): Doubles\Rework\FakeReplacement
+    private function replacement(bool $valid = true): Replacement
     {
-        return new Doubles\Rework\FakeReplacement($valid ? 'resolved value' : 'invalid');
-    }
-
-    private function source(?RuntimeEnv $env = null, array $args = []): Source
-    {
-        return new Reader(
-            $env ?? new Doubles\FakeRuntimeEnv(),
-            new InputArgs(array_merge(['script', 'init', '-i'], $args))
-        );
+        return new Replacement($valid ? 'resolved value' : 'invalid');
     }
 }

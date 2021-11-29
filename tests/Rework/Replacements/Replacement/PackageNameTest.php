@@ -13,13 +13,8 @@ namespace Shudd3r\Skeletons\Tests\Rework\Replacements\Replacement;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Rework\Replacements\Replacement\PackageName;
-use Shudd3r\Skeletons\Rework\Replacements\Source;
-use Shudd3r\Skeletons\Rework\Replacements\Reader;
+use Shudd3r\Skeletons\Tests\Doubles\Rework\FakeSource as Source;
 use Shudd3r\Skeletons\Replacements\Token;
-use Shudd3r\Skeletons\Environment\Files;
-use Shudd3r\Skeletons\RuntimeEnv;
-use Shudd3r\Skeletons\InputArgs;
-use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class PackageNameTest extends TestCase
@@ -27,26 +22,25 @@ class PackageNameTest extends TestCase
     public function testWithoutEnoughDataToResolveValue_TokenMethod_ReturnsNull()
     {
         $replacement = new PackageName();
-        $source      = $this->source();
+
+        $source = Source::create();
         $this->assertNull($replacement->token('foo', $source));
     }
 
     public function testForPackageDirectoryWithParentDirectory_TokenValueIsResolvedFromPackageDirectoryPath()
     {
         $replacement = new PackageName();
-        $package     = new Files\Directory\VirtualDirectory('path/to/directory/package');
-        $env         = new Doubles\FakeRuntimeEnv($package);
-        $source      = $this->source($env);
+
+        $source = Source::create()->withPackagePath('/path/to/directory/package');
         $this->assertToken('directory/package', $replacement->token('foo', $source));
     }
 
     public function testWithPackageNameInComposerJsonFile_TokenValueIsResolvedWithComposerJsonData()
     {
         $replacement = new PackageName();
-        $package     = new Files\Directory\VirtualDirectory('path/to/directory/package');
-        $env         = new Doubles\FakeRuntimeEnv($package);
-        $source      = $this->source($env);
-        $env->package()->addFile('composer.json', '{"name": "composer/package-name"}');
+
+        $source = Source::create()->withPackagePath('/path/to/directory/package')
+                                  ->withComposerData(['name' => 'composer/package-name']);
         $this->assertToken('composer/package-name', $replacement->token('foo', $source));
     }
 
@@ -59,9 +53,8 @@ class PackageNameTest extends TestCase
     public function testResolvedTokenValue_IsValidated(string $invalid, string $valid)
     {
         $replacement = new PackageName();
-        $env         = new Doubles\FakeRuntimeEnv();
-        $source      = $this->source($env);
-        $env->metaData()->save(['foo' => $valid, 'bar' => $invalid]);
+
+        $source = Source::create(['foo' => $valid, 'bar' => $invalid]);
         $this->assertToken($valid, $replacement->token('foo', $source));
         $this->assertNull($replacement->token('bar', $source));
     }
@@ -83,13 +76,5 @@ class PackageNameTest extends TestCase
         );
 
         $this->assertEquals($expected, $token);
-    }
-
-    private function source(?RuntimeEnv $env = null): Source
-    {
-        return new Reader(
-            $env ?? new Doubles\FakeRuntimeEnv(new Files\Directory\VirtualDirectory('/foo')),
-            new InputArgs(['script', 'init', '-i'])
-        );
     }
 }

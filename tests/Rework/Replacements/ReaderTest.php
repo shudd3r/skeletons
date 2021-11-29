@@ -14,6 +14,8 @@ namespace Shudd3r\Skeletons\Tests\Rework\Replacements;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Rework\Replacements;
 use Shudd3r\Skeletons\Replacements\Token\BasicToken;
+use Shudd3r\Skeletons\Environment\Files\Directory;
+use Shudd3r\Skeletons\Environment\Files\Paths;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Tests\Doubles;
@@ -21,6 +23,8 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class ReaderTest extends TestCase
 {
+    use Paths;
+
     public function testTokensMethod_ReturnsTokensFromReplacements()
     {
         $reader = $this->reader();
@@ -107,7 +111,8 @@ class ReaderTest extends TestCase
 
     public function testSourceDataMethods()
     {
-        $env    = new Doubles\FakeRuntimeEnv();
+        $path   = $this->normalized('/path/to/package/directory', DIRECTORY_SEPARATOR, true);
+        $env    = new Doubles\FakeRuntimeEnv(new Directory\VirtualDirectory($path));
         $reader = $this->reader($env);
 
         $env->package()->addFile('foo.file', 'foo-file-contents');
@@ -117,6 +122,7 @@ class ReaderTest extends TestCase
         $this->assertSame('foo-file-contents', $reader->fileContents('foo.file'));
         $this->assertSame('', $reader->fileContents('not.file'));
         $this->assertSame($env->composer(), $reader->composer());
+        $this->assertSame($path, $reader->packagePath());
         $this->assertSame('foo-meta-value', $reader->metaValueOf('foo'));
         $this->assertNull($reader->metaValueOf('bar'));
     }
