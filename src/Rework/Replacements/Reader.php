@@ -51,7 +51,7 @@ abstract class Reader implements Source
 
     abstract public function commandArgument(string $argumentName): string;
 
-    abstract public function inputString(string $prompt, Closure $isValid): string;
+    abstract public function inputString(string $prompt, Closure $isValid): ?string;
 
     final public function metaValueOf(string $name): ?string
     {

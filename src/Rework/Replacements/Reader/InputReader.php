@@ -22,9 +22,9 @@ class InputReader extends Reader
         return $this->args->valueOf($argumentName);
     }
 
-    public function inputString(string $prompt, Closure $isValid): string
+    public function inputString(string $prompt, Closure $isValid): ?string
     {
-        if (!$this->args->interactive()) { return ''; }
+        if (!$this->args->interactive()) { return null; }
 
         $input = $this->env->input()->value($prompt);
         $retry = 2;

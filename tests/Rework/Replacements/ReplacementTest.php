@@ -31,18 +31,10 @@ class ReplacementTest extends TestCase
         $this->assertToken('meta value', $this->replacement(), $source);
     }
 
-    public function testWithArgumentName_Token_ReturnsTokenWithValidInputArgument()
+    public function testWithArgumentName_Token_ReturnsTokenWithInputArgument()
     {
-        $replacement = $this->replacement()->withInputArg('fooArg');
-
         $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'arg value']);
-        $this->assertToken('arg value', $replacement, $source);
-
-        $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'invalid']);
-        $this->assertToken('meta value', $replacement, $source);
-
-        $source = Source::create([], ['fooArg' => 'invalid']);
-        $this->assertToken('resolved value', $replacement, $source);
+        $this->assertToken('arg value', $this->replacement()->withInputArg('fooArg'), $source);
     }
 
     public function testWithInputPromptProperty_Token_ReturnsTokenUsingInputEntry()
@@ -50,6 +42,17 @@ class ReplacementTest extends TestCase
         $source = Source::create()->withInputStrings('input value');
         $this->assertToken('input value', $this->replacement()->withPrompt('Give foo'), $source);
         $this->assertSame('  > Give foo [default: resolved value]:', $source->promptUsed());
+    }
+
+    public function testForInvalidArgumentValueWithoutInteractiveInput_Token_ReturnsNull()
+    {
+        $replacement = $this->replacement()->withInputArg('fooArg');
+
+        $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'invalid']);
+        $this->assertNull($replacement->token('foo', $source), 'Non-input type Replacement');
+
+        $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'invalid', 'i' => false]);
+        $this->assertNull($replacement->withPrompt('Give foo')->token('foo', $source), 'Non-interactive mode');
     }
 
     public function testForEmptyInput_Token_ReturnsTokenWithDefaultValue()
@@ -67,6 +70,15 @@ class ReplacementTest extends TestCase
         $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'arg value']);
         $this->assertToken('arg value', $replacement->withInputArg('fooArg'), $source);
         $this->assertSame('  > Give foo [default: arg value]:', $source->promptUsed());
+    }
+
+    public function testInvalidArgumentValueForInteractiveInput_IsIgnoredForDefault()
+    {
+        $replacement = $this->replacement()->withPrompt('Give foo');
+
+        $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'invalid']);
+        $this->assertToken('meta value', $replacement->withInputArg('fooArg'), $source);
+        $this->assertSame('  > Give foo [default: meta value]:', $source->promptUsed());
     }
 
     public function testForInvalidDefaultValueAndEmptyInput_Token_ReturnsTokenWithEmptyString()

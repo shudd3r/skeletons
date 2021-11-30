@@ -52,23 +52,17 @@ abstract class Replacement
 
     private function value(string $name, Source $source): string
     {
-        $default = $this->defaultValue($name, $source);
-        if (!$this->inputPrompt) { return $default; }
+        $argValue = $this->argumentName ? $source->commandArgument($this->argumentName) : '';
+        $validArg = $argValue && $this->isValid($argValue);
+        $default  = $validArg ? $argValue : $source->metaValueOf($name) ?? $this->resolvedValue($source);
+
+        if (!$this->inputPrompt) { return $argValue ?: $default; }
         if (!$this->isValid($default)) { $default = ''; }
 
         $prompt  = '  > ' . $this->inputPrompt . ($default ? ' [default: ' . $default . ']' : '') . ':';
-        $isValid = fn (string $value) => ($default && !$value) || $this->isValid($value);
+        $isValid = fn (string $value) => (!$value && $default) || $this->isValid($value);
 
-        return $source->inputString($prompt, $isValid) ?: $default;
-    }
-
-    private function defaultValue(string $name, Source $source): string
-    {
-        if ($this->argumentName) {
-            $value = $source->commandArgument($this->argumentName);
-            if ($this->isValid($value)) { return $value; }
-        }
-
-        return $source->metaValueOf($name) ?? $this->resolvedValue($source);
+        $input = $source->inputString($prompt, $isValid) ?? $argValue ?: $default;
+        return $input ?: $default;
     }
 }

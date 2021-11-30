@@ -19,7 +19,7 @@ interface Source
 {
     public function commandArgument(string $argumentName): string;
 
-    public function inputString(string $prompt, Closure $isValid): string;
+    public function inputString(string $prompt, Closure $isValid): ?string;
 
     public function metaValueOf(string $name): ?string;
 
