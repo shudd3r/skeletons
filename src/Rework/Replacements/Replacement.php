@@ -57,7 +57,7 @@ abstract class Replacement
         if (!$this->isValid($default)) { $default = ''; }
 
         $prompt  = '  > ' . $this->inputPrompt . ($default ? ' [default: ' . $default . ']' : '') . ':';
-        $isValid = fn (string $value) => $this->isValid($value);
+        $isValid = fn (string $value) => ($default && !$value) || $this->isValid($value);
 
         return $source->inputString($prompt, $isValid) ?: $default;
     }

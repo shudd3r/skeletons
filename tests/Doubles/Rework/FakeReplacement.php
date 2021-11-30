@@ -14,12 +14,14 @@ namespace Shudd3r\Skeletons\Tests\Doubles\Rework;
 use Shudd3r\Skeletons\Rework\Replacements\Replacement;
 use Shudd3r\Skeletons\Rework\Replacements\Source;
 use Shudd3r\Skeletons\Replacements\Token;
+use Closure;
 
 
 class FakeReplacement extends Replacement
 {
-    private string $value;
-    private bool   $isFallback;
+    private string   $value;
+    private bool     $isFallback;
+    private ?Closure $validate = null;
 
     public function __construct(string $value = '', bool $isFallback = false)
     {
@@ -53,6 +55,13 @@ class FakeReplacement extends Replacement
         return $clone;
     }
 
+    public function withValidation(Closure $isValid): self
+    {
+        $clone = clone $this;
+        $clone->validate = $isValid;
+        return $clone;
+    }
+
     protected function tokenInstance($name, $value): Token
     {
         $token = parent::tokenInstance($name, $value);
@@ -61,7 +70,7 @@ class FakeReplacement extends Replacement
 
     protected function isValid(string $value): bool
     {
-        return $value !== 'invalid';
+        return $this->validate ? ($this->validate)($value) : $value !== 'invalid';
     }
 
     protected function resolvedValue(Source $source): string

@@ -76,6 +76,15 @@ class ReplacementTest extends TestCase
         $this->assertSame('  > Give foo:', $source->promptUsed());
     }
 
+    public function testForInvalidEmptyInputAndValidDefaultValue_Token_ReturnsTokenWithDefaultValue()
+    {
+        $replacement = $this->replacement()->withPrompt('Give foo');
+
+        $isValid = fn (string $value) => !empty($value);
+        $source  = Source::create(['foo' => 'meta value']);
+        $this->assertToken('meta value', $replacement->withValidation($isValid), $source);
+    }
+
     public function testForInvalidValue_Token_ReturnsNull()
     {
         $source = Source::create();
