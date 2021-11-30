@@ -26,6 +26,11 @@ class FakeReplacement extends Replacement
         $this->isFallback = $isFallback;
     }
 
+    public static function create(string $value = '', bool $isFallback = false): self
+    {
+        return new self($value, $isFallback);
+    }
+
     public function withDescription(string $description): self
     {
         $clone = clone $this;
