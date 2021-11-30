@@ -86,27 +86,6 @@ class ReaderTest extends TestCase
         $this->assertEquals($expected, $reader->tokens($replacements));
     }
 
-    public function testInputStringMethod_ReturnsValidInputGivenWithinRetryLimit()
-    {
-        $env    = new Doubles\FakeRuntimeEnv();
-        $reader = $this->reader($env);
-
-        $input   = $env->input();
-        $isValid = fn (string $value) => $value !== 'invalid';
-
-        $input->addInput('input string');
-        $this->assertSame('input string', $reader->inputString('Give value for foo:', $isValid));
-        $this->assertSame(['Give value for foo:'], $input->messagesSent());
-
-        $input->reset()->addInput('invalid', 'invalid', 'valid value');
-        $this->assertSame('valid value', $reader->inputString('Give value for foo:', $isValid));
-
-        $input->reset()->addInput('invalid', 'invalid', 'invalid', 'valid value');
-        $this->assertSame('invalid', $reader->inputString('Give value for foo:', $isValid));
-        $messages = $input->messagesSent();
-        $this->assertStringContainsString('Invalid value', array_pop($messages));
-    }
-
     public function testSourceDataMethods()
     {
         $path   = $this->normalized('/path/to/package/directory', DIRECTORY_SEPARATOR, true);
@@ -123,26 +102,6 @@ class ReaderTest extends TestCase
         $this->assertSame($path, $reader->packagePath());
         $this->assertSame('foo-meta-value', $reader->metaValueOf('foo'));
         $this->assertNull($reader->metaValueOf('bar'));
-    }
-
-    public function testCommandArgument_ReturnsInputArgSourceValue()
-    {
-        $reader = $this->reader(null, ['command', 'init', 'fooArg=foo command line value']);
-
-        $this->assertSame('foo command line value', $reader->commandArgument('fooArg'));
-        $this->assertSame('', $reader->commandArgument('notArg'));
-    }
-
-    public function testForNonUserInputCommands_InputSourceValues_ReturnEmptyString()
-    {
-        $env    = new Doubles\FakeRuntimeEnv();
-        $reader = $this->reader($env, ['script', 'command', '-i', 'fooArg=foo value']);
-
-        $env->input()->addInput('input string');
-        $isValid = fn (string $value) => $value !== 'invalid';
-
-        $this->assertSame('', $reader->inputString('Input prompt:', $isValid));
-        $this->assertSame('', $reader->commandArgument('fooArg'));
     }
 
     private function reader(?Doubles\FakeRuntimeEnv $env = null, array $args = null): Replacements\Reader

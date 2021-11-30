@@ -15,6 +15,7 @@ use Shudd3r\Skeletons\Rework\Replacements\Reader;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\Tests\Doubles;
+use Closure;
 
 
 class FakeReader extends Reader
@@ -22,5 +23,16 @@ class FakeReader extends Reader
     public function __construct(?RuntimeEnv $env = null, array $args = [])
     {
         parent::__construct($env ?? new Doubles\FakeRuntimeEnv(), new InputArgs($args));
+    }
+
+    public function commandArgument(string $argumentName): string
+    {
+        return $this->args->valueOf($argumentName);
+    }
+
+    public function inputString(string $prompt, Closure $isValid): string
+    {
+        $value = $this->env->input()->value($prompt);
+        return $isValid($value) ? $value : '';
     }
 }

@@ -19,10 +19,10 @@ use Shudd3r\Skeletons\Replacements\Token;
 use Closure;
 
 
-class Reader implements Source
+abstract class Reader implements Source
 {
-    private RuntimeEnv $env;
-    private InputArgs  $args;
+    protected RuntimeEnv $env;
+    protected InputArgs  $args;
 
     private Replacements $replacements;
 
@@ -37,7 +37,7 @@ class Reader implements Source
     /**
      * @return array<string, ?Token>
      */
-    public function tokens(Replacements $replacements): array
+    final public function tokens(Replacements $replacements): array
     {
         if ($this->tokens) { return $this->tokens; }
         $this->replacements = $replacements;
@@ -49,48 +49,31 @@ class Reader implements Source
         return $this->tokens;
     }
 
-    public function commandArgument(string $argumentName): string
-    {
-        return $this->args->valueOf($argumentName);
-    }
+    abstract public function commandArgument(string $argumentName): string;
 
-    public function inputString(string $prompt, Closure $isValid): string
-    {
-        if (!$this->args->interactive()) { return ''; }
+    abstract public function inputString(string $prompt, Closure $isValid): string;
 
-        $input = $this->env->input()->value($prompt);
-        $retry = 2;
-        while (!$isValid($input) && $retry--) {
-            $retryInfo = $retry === 0 ? 'once more' : 'again';
-            $this->env->output()->send('    Invalid value. Try ' . $retryInfo . PHP_EOL);
-            $input = $this->env->input()->value($prompt);
-        }
-
-        if ($retry < 0) { $this->sendAbortMessage(); }
-        return $input;
-    }
-
-    public function metaValueOf(string $name): ?string
+    final public function metaValueOf(string $name): ?string
     {
         return $this->env->metaData()->value($name);
     }
 
-    public function composer(): ComposerJsonData
+    final public function composer(): ComposerJsonData
     {
         return $this->env->composer();
     }
 
-    public function fileContents(string $filename): string
+    final public function fileContents(string $filename): string
     {
         return $this->env->package()->file($filename)->contents();
     }
 
-    public function packagePath(): string
+    final public function packagePath(): string
     {
         return $this->env->package()->path();
     }
 
-    public function tokenValueOf(string $name): string
+    final public function tokenValueOf(string $name): string
     {
         $token = $this->token($name);
         return $token ? $token->value() : '';
@@ -102,15 +85,5 @@ class Reader implements Source
         $this->tokens[$name] = null;
         $replacement = $this->replacements->replacement($name);
         return $replacement ? $this->tokens[$name] = $replacement->token($name, $this) : null;
-    }
-
-    private function sendAbortMessage(): void
-    {
-        $abortMessage = <<<ABORT
-            Invalid value. Try `help` command for information on this value format.
-            Aborting...
-        
-        ABORT;
-        $this->env->output()->send($abortMessage);
     }
 }
