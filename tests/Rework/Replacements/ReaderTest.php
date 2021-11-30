@@ -16,8 +16,6 @@ use Shudd3r\Skeletons\Rework\Replacements;
 use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 use Shudd3r\Skeletons\Environment\Files\Directory;
 use Shudd3r\Skeletons\Environment\Files\Paths;
-use Shudd3r\Skeletons\RuntimeEnv;
-use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
@@ -129,8 +127,7 @@ class ReaderTest extends TestCase
 
     public function testCommandArgument_ReturnsInputArgSourceValue()
     {
-        $args   = new InputArgs(['command', 'init', 'fooArg=foo command line value']);
-        $reader = $this->reader(null, $args);
+        $reader = $this->reader(null, ['command', 'init', 'fooArg=foo command line value']);
 
         $this->assertSame('foo command line value', $reader->commandArgument('fooArg'));
         $this->assertSame('', $reader->commandArgument('notArg'));
@@ -138,9 +135,8 @@ class ReaderTest extends TestCase
 
     public function testForNonUserInputCommands_InputSourceValues_ReturnEmptyString()
     {
-        $env  = new Doubles\FakeRuntimeEnv();
-        $args = new InputArgs(['script', 'command', '-i', 'fooArg=foo value']);
-        $reader = $this->reader($env, $args);
+        $env    = new Doubles\FakeRuntimeEnv();
+        $reader = $this->reader($env, ['script', 'command', '-i', 'fooArg=foo value']);
 
         $env->input()->addInput('input string');
         $isValid = fn (string $value) => $value !== 'invalid';
@@ -149,11 +145,8 @@ class ReaderTest extends TestCase
         $this->assertSame('', $reader->commandArgument('fooArg'));
     }
 
-    private function reader(?RuntimeEnv $env = null, InputArgs $args = null): Replacements\Reader
+    private function reader(?Doubles\FakeRuntimeEnv $env = null, array $args = null): Replacements\Reader
     {
-        return new Replacements\Reader(
-            $env ?? new Doubles\FakeRuntimeEnv(),
-            $args ?? new InputArgs(['command', 'update', '-i'])
-        );
+        return new Doubles\Rework\FakeReader($env, $args ?: ['command', 'update', '-i']);
     }
 }

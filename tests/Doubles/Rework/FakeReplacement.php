@@ -13,6 +13,7 @@ namespace Shudd3r\Skeletons\Tests\Doubles\Rework;
 
 use Shudd3r\Skeletons\Rework\Replacements\Replacement;
 use Shudd3r\Skeletons\Rework\Replacements\Source;
+use Shudd3r\Skeletons\Replacements\Token;
 
 
 class FakeReplacement extends Replacement
@@ -50,6 +51,12 @@ class FakeReplacement extends Replacement
         $clone = clone $this;
         $clone->argumentName = $argumentName;
         return $clone;
+    }
+
+    protected function tokenInstance($name, $value): Token
+    {
+        $token = parent::tokenInstance($name, $value);
+        return $value === 'null' ? new Token\CompositeToken($token) : $token;
     }
 
     protected function isValid(string $value): bool
