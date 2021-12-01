@@ -4,7 +4,7 @@ namespace Shudd3r\Skeletons\Commands;
 
 use Shudd3r\Skeletons\Commands;
 use Shudd3r\Skeletons\RuntimeEnv;
-use Shudd3r\Skeletons\Replacements;
+use Shudd3r\Skeletons\Rework\Replacements;
 use Shudd3r\Skeletons\InputArgs;
 
 
@@ -62,9 +62,9 @@ class Help implements Commands
 
     private function replacementsInfo(): string
     {
-        $message = implode(PHP_EOL . '    ', $this->replacements->info());
+        $message = implode(PHP_EOL, $this->replacements->info());
         return $message
-            ? PHP_EOL . 'Available <arguments> for placeholder <values>:' . PHP_EOL . '    ' . $message
+            ? PHP_EOL . 'Available <arguments> for placeholder <values>:' . PHP_EOL . $message
             : PHP_EOL . 'No available <arguments> for placeholder <values>';
     }
 }

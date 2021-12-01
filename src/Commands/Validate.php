@@ -12,8 +12,8 @@
 namespace Shudd3r\Skeletons\Commands;
 
 use Shudd3r\Skeletons\InputArgs;
-use Shudd3r\Skeletons\Replacements\Reader;
-use Shudd3r\Skeletons\Replacements\Tokens;
+use Shudd3r\Skeletons\Rework\Replacements\Reader;
+use Shudd3r\Skeletons\Rework\Replacements\Tokens;
 
 
 class Validate extends Factory

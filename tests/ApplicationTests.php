@@ -14,7 +14,7 @@ namespace Shudd3r\Skeletons\Tests;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Application;
 use Shudd3r\Skeletons\InputArgs;
-use Shudd3r\Skeletons\Replacements\Replacement;
+use Shudd3r\Skeletons\Rework\Replacements\Replacement;
 use Shudd3r\Skeletons\Templates\Factory\MergedJsonFactory;
 use Shudd3r\Skeletons\Environment\Files\Directory;
 use Shudd3r\Skeletons\Environment\Files\File;
@@ -65,13 +65,17 @@ class ApplicationTests extends TestCase
     {
         $app = new Application($packageDir, self::$skeleton, self::$terminal->reset());
 
-        $app->replacement(self::PACKAGE_NAME)->add(new Replacement\PackageName());
-        $app->replacement(self::REPO_NAME)->add(new Replacement\RepositoryName(self::PACKAGE_NAME));
-        $app->replacement(self::PACKAGE_DESC)->add(new Replacement\PackageDescription(self::PACKAGE_NAME));
-        $app->replacement(self::SRC_NAMESPACE)->add(new Replacement\SrcNamespace(self::PACKAGE_NAME));
+        $app->replacement(self::PACKAGE_NAME)
+            ->add(new Replacement\PackageName());
+        $app->replacement(self::REPO_NAME)
+            ->add(new Replacement\RepositoryName(self::PACKAGE_NAME));
+        $app->replacement(self::PACKAGE_DESC)
+            ->add(new Replacement\PackageDescription(self::PACKAGE_NAME));
+        $app->replacement(self::SRC_NAMESPACE)
+            ->add(new Replacement\SrcNamespace(self::PACKAGE_NAME));
         $app->replacement(self::AUTHOR_EMAIL)
             ->build(fn () => 'default@example.com')
-            ->optionName('email')
+            ->argumentName('email')
             ->inputPrompt('Your email address')
             ->validate(fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL));
 
@@ -82,7 +86,7 @@ class ApplicationTests extends TestCase
 
     protected function args(string ...$args): InputArgs
     {
-        return new InputArgs(array_merge(['script-name'], $args));
+        return new InputArgs(['script-name', ...$args]);
     }
 
     protected function snapshot(Directory $directory): array

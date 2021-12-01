@@ -104,6 +104,7 @@ class InitializationTest extends ApplicationTests
         $expected = $this->snapshot($package);
 
         $args    = $this->initArgs;
+        $args[1] = '-l';
         $args[3] = 'package=invalid-package-name';
         $this->assertSame(6, $app->run($this->args(...$args)));
         $this->assertSame($expected, $this->snapshot($package));
