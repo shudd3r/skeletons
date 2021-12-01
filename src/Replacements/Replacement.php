@@ -11,21 +11,10 @@
 
 namespace Shudd3r\Skeletons\Replacements;
 
-use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
-use Shudd3r\Skeletons\RuntimeEnv;
-
 
 interface Replacement
 {
-    public function optionName(): ?string;
+    public function token(string $name, Source $source): ?Token;
 
-    public function inputPrompt(): ?string;
-
-    public function description(): string;
-
-    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string;
-
-    public function isValid(string $value): bool;
-
-    public function token(string $name, string $value): ?Token;
+    public function description(string $name): string;
 }

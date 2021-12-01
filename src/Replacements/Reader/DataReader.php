@@ -11,15 +11,19 @@
 
 namespace Shudd3r\Skeletons\Replacements\Reader;
 
-use Shudd3r\Skeletons\Replacements\Reader;
-use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Replacements\Token;
+Use Shudd3r\Skeletons\Replacements\Reader;
+use Closure;
 
 
 class DataReader extends Reader
 {
-    protected function readToken(string $name, Replacement $replacement): ?Token
+    public function commandArgument(string $argumentName): string
     {
-        return $replacement->token($name, $this->defaultValue($name, $replacement));
+        return '';
+    }
+
+    public function inputString(string $prompt, Closure $isValid): string
+    {
+        return '';
     }
 }

@@ -40,9 +40,11 @@ class MockedTerminal extends Terminal
         return $this->errorCode;
     }
 
-    public function addInput(string $input): void
+    public function addInput(string ...$inputs): void
     {
-        $this->inputStrings[] = $input;
+        foreach ($inputs as $input) {
+            $this->inputStrings[] = $input;
+        }
     }
 
     public function messagesSent(): array

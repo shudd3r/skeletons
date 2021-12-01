@@ -71,9 +71,9 @@ class AppIntegrationTest extends ApplicationTests
     public function testWithoutInput_ReplacementsAreResolvedFromDefaultsAndFallbacks()
     {
         $package = self::$files->directory('not/exists/package/directory');
-        $app = $this->app($package);
+        $app     = $this->app($package);
 
-        $app->metaFile('dev/meta-date.json');
+        $app->metaFile('dev/meta-data.json');
         $expected = [
             self::PACKAGE_NAME  => 'package/directory',
             self::REPO_NAME     => 'input/repo',
@@ -86,7 +86,7 @@ class AppIntegrationTest extends ApplicationTests
         $this->addInputs(array_merge($expected, $emptyInputs));
 
         $app->run($this->args('init', '-i'));
-        $this->assertSame($expected, json_decode($package->file('dev/meta-date.json')->contents(), true));
+        $this->assertSame($expected, json_decode($package->file('dev/meta-data.json')->contents(), true));
     }
 
     public function testDisplaysSkeletonNameInScriptHeader()
@@ -107,6 +107,6 @@ class AppIntegrationTest extends ApplicationTests
 
     private function addInputs(array $inputs): void
     {
-        array_walk($inputs, fn (string $inputValue) => self::$terminal->addInput($inputValue));
+        self::$terminal->addInput(...array_values($inputs));
     }
 }

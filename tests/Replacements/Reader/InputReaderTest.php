@@ -11,93 +11,41 @@
 
 namespace Shudd3r\Skeletons\Tests\Replacements\Reader;
 
-use Shudd3r\Skeletons\Tests\Replacements\ReaderTests;
-use Shudd3r\Skeletons\Replacements\Reader;
+use PHPUnit\Framework\TestCase;
+use Shudd3r\Skeletons\Replacements\Reader\InputReader;
+use Shudd3r\Skeletons\InputArgs;
+use Shudd3r\Skeletons\Tests\Doubles;
 
 
-class InputReaderTest extends ReaderTests
+class InputReaderTest extends TestCase
 {
-    public function testWithoutInputValues_TokensAreBuiltWithDefaultReplacementValues()
+    public function testCommandArgument_ReturnsInputArgSourceValue()
     {
-        $reader   = $this->reader([], []);
-        $expected = $this->defaults();
-        $this->assertTokenValues($expected, $reader->tokens($this->replacements()));
+        $env    = new Doubles\FakeRuntimeEnv();
+        $reader = new InputReader($env, new InputArgs(['command', 'update', 'fooArg=foo command line value']));
+
+        $this->assertSame('foo command line value', $reader->commandArgument('fooArg'));
+        $this->assertSame('', $reader->commandArgument('notArg'));
     }
 
-    public function testWithoutInputValuesButWithExistingMetaData_TokensAreBuiltWithMetaDataValues()
+    public function testInputStringMethod_ReturnsValidInputGivenWithinRetryLimit()
     {
-        $reader = $this->reader([], [], self::META_DATA);
-        $this->assertTokenValues(self::META_DATA, $reader->tokens($this->replacements()));
-    }
+        $env    = new Doubles\FakeRuntimeEnv();
+        $reader = new InputReader($env, new InputArgs(['script', 'update']));
 
-    public function testWithOptionValues_TokensAreBuiltWithMatchingOptionValue()
-    {
-        $reader   = $this->reader([], ['optBaz=baz (option)']);
-        $expected = $this->defaults(['baz' => 'baz (option)']);
-        $this->assertTokenValues($expected, $reader->tokens($this->replacements()));
-    }
+        $input   = $env->input();
+        $isValid = fn (string $value) => $value !== 'invalid';
 
-    public function testWhenNotEmptyInteractiveInputValueIsGiven_TokenIsBuiltWithThatValue()
-    {
-        $reader   = $this->reader(['', 'baz (input)'], ['-i']);
-        $expected = $this->defaults(['baz' => 'baz (input)']);
-        $this->assertTokenValues($expected, $reader->tokens($this->replacements()));
-    }
+        $input->addInput('input string');
+        $this->assertSame('input string', $reader->inputString('Give value for foo:', $isValid));
+        $this->assertSame(['Give value for foo:'], $input->messagesSent());
 
-    public function testOptionValue_BecomesDefaultForEmptyInput()
-    {
-        $reader   = $this->reader([], ['-i', 'optFoo=foo (option)']);
-        $expected = $this->defaults(['foo' => 'foo (option)']);
-        $this->assertTokenValues($expected, $reader->tokens($this->replacements()));
-    }
+        $input->reset()->addInput('invalid', 'invalid', 'valid value');
+        $this->assertSame('valid value', $reader->inputString('Give value for foo:', $isValid));
 
-    public function testInvalidInteractiveInput_IsRetriedUntilValid()
-    {
-        $reader   = $this->reader(['invalid', 'invalid', 'finally valid'], ['-i', 'optFoo=foo (option)']);
-        $expected = $this->defaults(['foo' => 'finally valid']);
-        $this->assertTokenValues($expected, $reader->tokens($this->replacements()));
-    }
-
-    public function testInvalidInteractiveInput_AfterTwoRetries_UsesInvalidValueAndStopsIteration()
-    {
-        $reader   = $this->reader(['invalid', 'invalid', 'invalid', 'finally valid'], ['-i', 'optFoo=foo (option)']);
-        $expected = ['foo' => null];
-        $this->assertTokenValues($expected, $reader->tokens($this->replacements()));
-    }
-
-    public function testWithUnresolvedDefaultValues_TokenDefaultsComeFromFallbackTokenValues()
-    {
-        $reader   = $this->reader([], []);
-        $expected = $this->defaults(['bar' => 'foo (default)']);
-        $this->assertTokenValues($expected, $reader->tokens($this->replacements(['bar'])));
-
-        $reader   = $this->reader([], []);
-        $expected = $this->defaults(['foo' => 'bar (default)']);
-        $this->assertTokenValues($expected, $reader->tokens($this->replacements(['foo'])));
-
-        $reader   = $this->reader([], ['optBar=bar (option)']);
-        $expected = $this->defaults(['foo' => 'bar (option)', 'bar' => 'bar (option)']);
-        $this->assertTokenValues($expected, $reader->tokens($this->replacements(['foo'])));
-
-        $reader   = $this->reader(['foo (input)'], ['-i', 'optFoo=foo (option)']);
-        $expected = $this->defaults(['foo' => 'foo (input)', 'bar' => 'foo (input)']);
-        $this->assertTokenValues($expected, $reader->tokens($this->replacements(['bar'])));
-    }
-
-    public function testWithCircularFallbackReferences_FallbackValuesResolveToEmptyString()
-    {
-        $reader   = $this->reader([], []);
-        $expected = $this->defaults(['foo' => '', 'bar' => '']);
-        $this->assertTokenValues($expected, $reader->tokens($this->replacements(['foo', 'bar'])));
-    }
-
-    protected function reader(array $inputs, array $options, array $metaData = []): Reader
-    {
-        return new Reader\InputReader($this->env($inputs, $metaData), $this->args($options));
-    }
-
-    protected function defaults(array $override = []): array
-    {
-        return array_merge(self::REPLACEMENT_DEFAULTS, $override);
+        $input->reset()->addInput('invalid', 'invalid', 'invalid', 'valid value');
+        $this->assertSame('invalid', $reader->inputString('Give value for foo:', $isValid));
+        $messages = $input->messagesSent();
+        $this->assertStringContainsString('Invalid value', array_pop($messages));
     }
 }

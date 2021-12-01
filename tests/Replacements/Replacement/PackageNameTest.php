@@ -13,50 +13,35 @@ namespace Shudd3r\Skeletons\Tests\Replacements\Replacement;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements\Replacement\PackageName;
+use Shudd3r\Skeletons\Tests\Doubles\FakeSource as Source;
 use Shudd3r\Skeletons\Replacements\Token;
-use Shudd3r\Skeletons\Environment\Files\Directory;
-use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class PackageNameTest extends TestCase
 {
-    public function testInputNames()
+    public function testWithoutEnoughDataToResolveValue_TokenMethod_ReturnsNull()
     {
         $replacement = new PackageName();
-        $this->assertSame('package', $replacement->optionName());
-        $this->assertSame('Packagist package name', $replacement->inputPrompt());
-        $this->assertSame('Packagist package name [format: <vendor>/<package>]', $replacement->description());
+
+        $source = Source::create();
+        $this->assertNull($replacement->token('foo', $source));
     }
 
-    public function testWithPackageNameInComposerJson_DefaultValue_IsReadFromComposerJson()
+    public function testForPackageDirectoryWithParentDirectory_TokenValueIsResolvedFromPackageDirectoryPath()
     {
         $replacement = new PackageName();
-        $fallback    = new Doubles\FakeFallbackReader();
-        $env         = new Doubles\FakeRuntimeEnv();
-        $env->package()->addFile('composer.json', '{"name": "composer/package"}');
 
-        $this->assertSame('composer/package', $replacement->defaultValue($env, $fallback));
+        $source = Source::create()->withPackagePath('/path/to/directory/package');
+        $this->assertToken('directory/package', $replacement->token('foo', $source));
     }
 
-    public function testWithoutPackageNameInComposerJson_DefaultValue_IsResolvedFromDirectoryStructure()
-    {
-        $replacement = new PackageName();
-        $fallback    = new Doubles\FakeFallbackReader();
-        $env         = new Doubles\FakeRuntimeEnv(new Directory\VirtualDirectory('www/dev/project/directory'));
-        $this->assertSame('project/directory', $replacement->defaultValue($env, $fallback));
-    }
-
-    public function testTokenMethodWithValidValue_ReturnsExpectedToken()
+    public function testWithPackageNameInComposerJsonFile_TokenValueIsResolvedWithComposerJsonData()
     {
         $replacement = new PackageName();
 
-        $expected = Token\CompositeToken::withValueToken(
-            new Token\BasicToken('package.name', 'package/name'),
-            new Token\BasicToken('package.name.title', 'Package/Name')
-        );
-
-        $this->assertEquals($expected, $replacement->token('package.name', 'package/name'));
-        $this->assertTrue($replacement->isValid('package/name'));
+        $source = Source::create()->withPackagePath('/path/to/directory/package')
+                                  ->withComposerData(['name' => 'composer/package-name']);
+        $this->assertToken('composer/package-name', $replacement->token('foo', $source));
     }
 
     /**
@@ -65,15 +50,13 @@ class PackageNameTest extends TestCase
      * @param string $invalid
      * @param string $valid
      */
-    public function testTokenFactoryMethods_ValidatesValue(string $invalid, string $valid)
+    public function testResolvedTokenValue_IsValidated(string $invalid, string $valid)
     {
         $replacement = new PackageName();
 
-        $this->assertFalse($replacement->isValid($invalid));
-        $this->assertNull($replacement->token('package.name', $invalid));
-
-        $this->assertTrue($replacement->isValid($valid));
-        $this->assertInstanceOf(Token::class, $replacement->token('package.name', $valid));
+        $source = Source::create(['foo' => $valid, 'bar' => $invalid]);
+        $this->assertToken($valid, $replacement->token('foo', $source));
+        $this->assertNull($replacement->token('bar', $source));
     }
 
     public function valueExamples(): array
@@ -82,5 +65,16 @@ class PackageNameTest extends TestCase
             ['-Packa-ge1/na.me', 'Packa-ge1/na.me'],
             ['1Package000_/na_Me', '1Package000/na_Me']
         ];
+    }
+
+    private function assertToken(string $value, Token $token): void
+    {
+        [$vendor, $package] = explode('/', $value);
+        $expected = Token\CompositeToken::withValueToken(
+            new Token\BasicToken('foo', $value),
+            new Token\BasicToken('foo.title', ucfirst($vendor) . '/' . ucfirst($package))
+        );
+
+        $this->assertEquals($expected, $token);
     }
 }

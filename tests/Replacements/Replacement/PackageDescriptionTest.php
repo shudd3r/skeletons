@@ -13,52 +13,51 @@ namespace Shudd3r\Skeletons\Tests\Replacements\Replacement;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements\Replacement\PackageDescription;
-use Shudd3r\Skeletons\Replacements\Token\BasicToken;
-use Shudd3r\Skeletons\Tests\Doubles;
+use Shudd3r\Skeletons\Tests\Doubles\FakeSource as Source;
+use Shudd3r\Skeletons\Replacements\Token;
 
 
 class PackageDescriptionTest extends TestCase
 {
-    public function testInputNames()
+    public function testWithoutDataToResolveValue_TokenMethod_ReturnsNull()
     {
-        $replacement = new PackageDescription();
-        $this->assertSame('desc', $replacement->optionName());
-        $this->assertSame('Package description', $replacement->inputPrompt());
-        $this->assertSame('Package description [format: non-empty string]', $replacement->description());
+        $replacement = new PackageDescription('bar');
+
+        $source = Source::create();
+        $this->assertNull($replacement->token('foo', $source));
     }
 
-    public function testWithDescriptionInComposerJson_DefaultValue_IsReadFromComposerJson()
+    public function testWithFallbackValue_TokenValueIsResolvedFromThatValue()
     {
-        $replacement = new PackageDescription();
-        $fallback    = new Doubles\FakeFallbackReader();
-        $env         = new Doubles\FakeRuntimeEnv();
-        $env->package()->addFile('composer.json', '{"description": "composer json description"}');
+        $replacement = new PackageDescription('bar');
 
-        $this->assertSame('composer json description', $replacement->defaultValue($env, $fallback));
+        $source = Source::create()->withFallbackTokenValue('bar', 'bar value');
+        $this->assertToken('bar value package', $replacement->token('foo', $source));
     }
 
-    public function testWithoutDescriptionInComposerJson_DefaultValue_IsResolvedFromFallbackReplacement()
+    public function testWithDescriptionInComposerJsonFile_TokenValueIsResolvedWithComposerData()
     {
-        $replacement = new PackageDescription('fallback.token');
-        $fallback    = new Doubles\FakeFallbackReader(['fallback.token' => 'fallback value']);
-        $env         = new Doubles\FakeRuntimeEnv();
-        $env->package()->addFile('composer.json', '{"name": "composer/package"}');
+        $replacement = new PackageDescription('bar');
 
-        $this->assertSame('fallback value package', $replacement->defaultValue($env, $fallback));
+        $source = Source::create()->withFallbackTokenValue('bar', 'bar value')
+                                  ->withComposerData(['description' => 'Package description']);
+        $this->assertToken('Package description', $replacement->token('foo', $source));
     }
 
-    public function testTokenMethodWithValidValue_ReturnsExpectedToken()
+    public function testForTokenValueResolvedToEmptyString_TokenMethod_ReturnsNull()
     {
-        $replacement = new PackageDescription();
-        $expected    = new BasicToken('token.name', 'package description');
-        $this->assertEquals($expected, $replacement->token('token.name', 'package description'));
-        $this->assertTrue($replacement->isValid('package description'));
+        $replacement = new PackageDescription('bar');
+
+        $source = Source::create()->withFallbackTokenValue('bar', 'bar value')
+                                  ->withComposerData(['description' => '']);
+        $this->assertNull($replacement->token('foo', $source));
+
+        $source = Source::create()->withFallbackTokenValue('bar', '');
+        $this->assertNull($replacement->token('foo', $source));
     }
 
-    public function testEmptyValue_IsInvalid()
+    private function assertToken(string $value, Token $token): void
     {
-        $replacement = new PackageDescription();
-        $this->assertFalse($replacement->isValid(''));
-        $this->assertNull($replacement->token('token.name', ''));
+        $this->assertEquals(new Token\BasicToken('foo', $value), $token);
     }
 }

@@ -11,57 +11,41 @@
 
 namespace Shudd3r\Skeletons\Replacements\Replacement;
 
-use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
-use Shudd3r\Skeletons\Replacements\Token;
-use Shudd3r\Skeletons\RuntimeEnv;
+use Shudd3r\Skeletons\Replacements\StandardReplacement;
+use Shudd3r\Skeletons\Replacements\Source;
 
 
-class RepositoryName implements Replacement
+class RepositoryName extends StandardReplacement
 {
-    private string $fallbackName;
+    protected ?string $inputPrompt  = 'Remote git repository name';
+    protected ?string $argumentName = 'repo';
+    protected string  $description  = <<<'DESC'
+        Remote git repository name [format: <owner>/<repository>]
+        Replaces {%s} placeholder
+        DESC;
 
-    public function __construct(string $fallbackName = '')
+    private string $fallbackPlaceholder;
+
+    public function __construct(string $fallbackPlaceholder = '')
     {
-        $this->fallbackName = $fallbackName;
+        $this->fallbackPlaceholder = $fallbackPlaceholder;
     }
 
-    public function optionName(): ?string
-    {
-        return 'repo';
-    }
-
-    public function inputPrompt(): ?string
-    {
-        return 'Github repository name';
-    }
-
-    public function description(): string
-    {
-        return $this->inputPrompt() . ' [format: <owner>/<repository>]';
-    }
-
-    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string
-    {
-        return $this->repositoryFromGitConfig($env) ?? $this->fallbackValue($fallback);
-    }
-
-    public function isValid(string $value): bool
+    protected function isValid(string $value): bool
     {
         return (bool) preg_match('#^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}/[a-z0-9_.-]{1,100}$#iD', $value);
     }
 
-    public function token(string $name, string $value): ?Token
+    protected function resolvedValue(Source $source): string
     {
-        return $this->isValid($value) ? new Token\BasicToken($name, $value) : null;
+        return $this->repositoryFromGitConfig($source->fileContents('.git/config')) ?? $this->fallbackValue($source);
     }
 
-    private function repositoryFromGitConfig(RuntimeEnv $env): ?string
+    private function repositoryFromGitConfig(string $gitConfig): ?string
     {
-        $gitConfig = $env->package()->file('.git/config');
-        if (!$gitConfig->exists()) { return null; }
+        if (!$gitConfig) { return null; }
 
-        $config = parse_ini_string($gitConfig->contents(), true);
+        $config = parse_ini_string($gitConfig, true);
         if (!$url = $this->remoteUrl($config)) { return null; }
 
         $path = str_replace(':', '/', $url);
@@ -81,8 +65,8 @@ class RepositoryName implements Replacement
         return null;
     }
 
-    private function fallbackValue(FallbackReader $fallback): string
+    private function fallbackValue(Source $source): string
     {
-        return $this->fallbackName ? $fallback->valueOf($this->fallbackName) : '';
+        return $this->fallbackPlaceholder ? $source->tokenValueOf($this->fallbackPlaceholder) : '';
     }
 }

@@ -24,20 +24,20 @@ class BuildSetup
     }
 
     /**
-     * @param Closure $token fn (string $placeholder, string $value) => ?ValueToken
+     * @param Closure $isValid fn (string $value) => bool
      */
-    public function token(Closure $token): self
+    public function validate(Closure $isValid): self
     {
-        $this->builder->token($token);
+        $this->builder->validate($isValid);
         return $this;
     }
 
     /**
-     * @param Closure $validate fn (string $value) => bool
+     * @param Closure $token fn (string $placeholder, string $value) => Token
      */
-    public function validate(Closure $validate): self
+    public function token(Closure $token): self
     {
-        $this->builder->validate($validate);
+        $this->builder->token($token);
         return $this;
     }
 
@@ -47,9 +47,9 @@ class BuildSetup
         return $this;
     }
 
-    public function optionName(string $optionName): self
+    public function argumentName(string $argumentName): self
     {
-        $this->builder->optionName($optionName);
+        $this->builder->argumentName($argumentName);
         return $this;
     }
 

@@ -13,69 +13,50 @@ namespace Shudd3r\Skeletons\Tests\Replacements\Replacement;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements\Replacement\RepositoryName;
+use Shudd3r\Skeletons\Tests\Doubles\FakeSource as Source;
 use Shudd3r\Skeletons\Replacements\Token;
-use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class RepositoryNameTest extends TestCase
 {
-    public function testInputNames()
+    public function testWithoutDataToResolveValue_TokenMethod_ReturnsNull()
     {
-        $replacement = new RepositoryName();
-        $this->assertSame('repo', $replacement->optionName());
-        $this->assertSame('Github repository name', $replacement->inputPrompt());
-        $this->assertSame('Github repository name [format: <owner>/<repository>]', $replacement->description());
+        $replacement = new RepositoryName('bar');
+
+        $source = Source::create();
+        $this->assertNull($replacement->token('foo', $source));
     }
 
-    public function testWithoutGitConfigFile_DefaultValue_IsResolvedFromFallbackReplacement()
+    public function testWithValidFallbackValue_TokenValueIsResolvedFromThatValue()
     {
-        $replacement = new RepositoryName('fallback.name');
-        $fallback    = new Doubles\FakeFallbackReader(['fallback.name' => 'fallback/name']);
-        $env         = new Doubles\FakeRuntimeEnv();
+        $replacement = new RepositoryName('bar');
 
-        $this->assertSame('fallback/name', $replacement->defaultValue($env, $fallback));
+        $source = Source::create()->withFallbackTokenValue('bar', 'not repository name');
+        $this->assertNull($replacement->token('foo', $source));
+
+        $source = Source::create()->withFallbackTokenValue('bar', 'package/name');
+        $this->assertToken('package/name', $replacement->token('foo', $source));
     }
 
-    public function testWithoutRemoteRepositoriesInGitConfig_DefaultValue_IsResolvedFromFallbackReplacement()
+    public function testWithGitConfigWithRemoteDefinitions_TokenValueIsResolvedFromMostAccurateOne()
     {
-        $replacement = new RepositoryName('fallback.name');
-        $fallback    = new Doubles\FakeFallbackReader(['fallback.name' => 'fallback/name']);
-        $env         = new Doubles\FakeRuntimeEnv();
-        $env->package()->addFile('.git/config', $this->config());
+        $replacement = new RepositoryName('bar');
 
-        $this->assertSame('fallback/name', $replacement->defaultValue($env, $fallback));
-    }
+        $source     = Source::create()->withFallbackTokenValue('bar', 'fallback/name');
+        $remoteList = [
+            '--none--' => ['fallback/name', ''],
+            'first'    => ['some/repo', 'git@github.com:some/repo.git'],
+            'second'   => ['some/repo', 'git@github.com:other/repo.git'],
+            'origin'   => ['orig/repo', 'https://github.com/orig/repo.git'],
+            'upstream' => ['master/ssh-repo', 'git@github.com:master/ssh-repo.git']
+        ];
 
-    public function testWithRemoteRepositoriesInGitConfig_DefaultValue_IsReadWithCorrectPriority()
-    {
-        $replacement = new RepositoryName();
-        $env         = new Doubles\FakeRuntimeEnv();
-        $fallback    = new Doubles\FakeFallbackReader();
-        $gitConfig   = $env->package()->file('.git/config');
-
-        $remotes = ['foo' => 'git@github.com:some/repo.git'];
-        $gitConfig->write($this->config($remotes));
-        $this->assertSame('some/repo', $replacement->defaultValue($env, $fallback));
-
-        $remotes += ['second' => 'git@github.com:other/repo.git'];
-        $gitConfig->write($this->config($remotes));
-        $this->assertSame('some/repo', $replacement->defaultValue($env, $fallback));
-
-        $remotes += ['origin' => 'https://github.com/orig/repo.git'];
-        $gitConfig->write($this->config($remotes));
-        $this->assertSame('orig/repo', $replacement->defaultValue($env, $fallback));
-
-        $remotes += ['upstream' => 'git@github.com:master/ssh-repo.git'];
-        $gitConfig->write($this->config($remotes));
-        $this->assertSame('master/ssh-repo', $replacement->defaultValue($env, $fallback));
-    }
-
-    public function testTokenMethodWithValidValue_ReturnsExpectedToken()
-    {
-        $replacement = new RepositoryName();
-        $expected    = new Token\BasicToken('repo.name', 'repository/name');
-        $this->assertEquals($expected, $replacement->token('repo.name', 'repository/name'));
-        $this->assertTrue($replacement->isValid('repository/name'));
+        $remotes = [];
+        foreach ($remoteList as $name => [$expected, $uri]) {
+            if ($uri) { $remotes += [$name => $uri]; }
+            $source = $source->withFileContents('.git/config', $this->config($remotes));
+            $this->assertToken($expected, $replacement->token('foo', $source));
+        }
     }
 
     /**
@@ -84,20 +65,18 @@ class RepositoryNameTest extends TestCase
      * @param string $invalid
      * @param string $valid
      */
-    public function testTokenFactoryMethods_ValidatesValue(string $invalid, string $valid)
+    public function testResolvedTokenValue_IsValidated(string $invalid, string $valid)
     {
         $replacement = new RepositoryName();
 
-        $this->assertFalse($replacement->isValid($invalid));
-        $this->assertNull($replacement->token('repo.name', $invalid));
-
-        $this->assertTrue($replacement->isValid($valid));
-        $this->assertInstanceOf(Token::class, $replacement->token('repo.name', $valid));
+        $source = Source::create(['foo' => $valid, 'bar' => $invalid]);
+        $this->assertToken($valid, $replacement->token('foo', $source));
+        $this->assertNull($replacement->token('bar', $source));
     }
 
     public function valueExamples(): array
     {
-        $name = function (int $length) { return str_pad('x', $length, 'x'); };
+        $name = function (int $length) { return str_repeat('x', $length); };
 
         $longAccount  = $name(40) . '/name';
         $shortAccount = $name(39) . '/name';
@@ -114,13 +93,18 @@ class RepositoryNameTest extends TestCase
         ];
     }
 
+    private function assertToken(string $value, Token $token): void
+    {
+        $this->assertEquals(new Token\BasicToken('foo', $value), $token);
+    }
+
     private function config(array $remotes = []): string
     {
         $remoteConfig = '';
-        foreach ($remotes as $name => $url) {
+        foreach ($remotes as $name => $uri) {
             $remoteConfig .= <<<INI
                 [remote "$name"]
-                    url = $url
+                    url = $uri
                     fetch = +refs/heads/*:refs/remotes/$name/*
                 
                 INI;

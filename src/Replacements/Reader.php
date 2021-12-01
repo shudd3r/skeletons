@@ -14,12 +14,14 @@ namespace Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements;
+use Shudd3r\Skeletons\Replacements\Data\ComposerJsonData;
+use Closure;
 
 
-abstract class Reader implements Reader\FallbackReader
+abstract class Reader implements Source
 {
-    private RuntimeEnv $env;
-    private InputArgs  $args;
+    protected RuntimeEnv $env;
+    protected InputArgs  $args;
 
     private Replacements $replacements;
 
@@ -34,7 +36,7 @@ abstract class Reader implements Reader\FallbackReader
     /**
      * @return array<string, ?Token>
      */
-    public function tokens(Replacements $replacements): array
+    final public function tokens(Replacements $replacements): array
     {
         if ($this->tokens) { return $this->tokens; }
         $this->replacements = $replacements;
@@ -46,65 +48,41 @@ abstract class Reader implements Reader\FallbackReader
         return $this->tokens;
     }
 
-    public function valueOf(string $name): string
+    abstract public function commandArgument(string $argumentName): string;
+
+    abstract public function inputString(string $prompt, Closure $isValid): ?string;
+
+    final public function metaValueOf(string $name): ?string
+    {
+        return $this->env->metaData()->value($name);
+    }
+
+    final public function composer(): ComposerJsonData
+    {
+        return $this->env->composer();
+    }
+
+    final public function fileContents(string $filename): string
+    {
+        return $this->env->package()->file($filename)->contents();
+    }
+
+    final public function packagePath(): string
+    {
+        return $this->env->package()->path();
+    }
+
+    final public function tokenValueOf(string $name): string
     {
         $token = $this->token($name);
         return $token ? $token->value() : '';
-    }
-
-    abstract protected function readToken(string $name, Replacement $replacement): ?Token;
-
-    protected function commandLineOption(Replacement $replacement): ?string
-    {
-        $optionName = $replacement->optionName();
-        return $optionName ? $this->args->valueOf($optionName) ?: null : null;
-    }
-
-    protected function inputString(Replacement $replacement, string $default): string
-    {
-        $prompt = $replacement->inputPrompt();
-        if (!$prompt || !$this->args->interactive()) { return $default; }
-
-        if (!$replacement->isValid($default)) { $default = null; }
-        $prompt = $default ? $prompt . ' [default: `' . $default . '`]: ' : $prompt . ': ';
-
-        $input = $this->fallbackInput($prompt, $default);
-        $retry = 2;
-        while (!$replacement->isValid($input) && $retry--) {
-            $retryInfo = $retry === 0 ? 'once more' : 'again';
-            $this->env->output()->send('    Invalid value. Try ' . $retryInfo . PHP_EOL);
-            $input = $this->fallbackInput($prompt, $default);
-        }
-
-        if ($retry < 0) { $this->sendAbortMessage(); }
-        return $input;
-    }
-
-    protected function defaultValue(string $name, Replacement $replacement): string
-    {
-        return $this->env->metaData()->value($name) ?? $replacement->defaultValue($this->env, $this);
     }
 
     private function token(string $name): ?Token
     {
         if (array_key_exists($name, $this->tokens)) { return $this->tokens[$name]; }
         $this->tokens[$name] = null;
-        return $this->tokens[$name] = $this->readToken($name, $this->replacements->replacement($name));
-    }
-
-    private function fallbackInput(string $prompt, ?string $default): string
-    {
-        $value = $this->env->input()->value('  > ' . $prompt);
-        return !$value && $default !== null ? $default : $value;
-    }
-
-    private function sendAbortMessage(): void
-    {
-        $abortMessage = <<<ABORT
-            Invalid value. Try `help` command for information on this value format.
-            Aborting...
-        
-        ABORT;
-        $this->env->output()->send($abortMessage);
+        $replacement = $this->replacements->replacement($name);
+        return $replacement ? $this->tokens[$name] = $replacement->token($name, $this) : null;
     }
 }

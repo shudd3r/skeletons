@@ -90,14 +90,14 @@ class InputArgsTest extends TestCase
 
     public function testArgumentValues()
     {
-        $argv = ['script', 'command', 'none', 'value=foo', '--notArg=foo', 'empty=', 'withSpace=foo bar baz'];
+        $argv = ['script', 'init', 'none', 'foo=value', '--notArg=foo', 'empty=', 'withSpaces=foo bar baz'];
         $args = new InputArgs($argv);
         $this->assertSame('', $args->valueOf('undefined'));
         $this->assertSame('', $args->valueOf('notArg'));
         $this->assertSame('', $args->valueOf('--notArg'));
         $this->assertSame('', $args->valueOf('none'));
         $this->assertSame('', $args->valueOf('empty'));
-        $this->assertSame('foo', $args->valueOf('value'));
-        $this->assertSame('foo bar baz', $args->valueOf('withSpace'));
+        $this->assertSame('value', $args->valueOf('foo'));
+        $this->assertSame('foo bar baz', $args->valueOf('withSpaces'));
     }
 }

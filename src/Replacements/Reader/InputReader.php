@@ -11,16 +11,40 @@
 
 namespace Shudd3r\Skeletons\Replacements\Reader;
 
-use Shudd3r\Skeletons\Replacements\Reader;
-use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Replacements\Token;
+Use Shudd3r\Skeletons\Replacements\Reader;
+use Closure;
 
 
 class InputReader extends Reader
 {
-    protected function readToken(string $name, Replacement $replacement): ?Token
+    public function commandArgument(string $argumentName): string
     {
-        $default = $this->commandLineOption($replacement) ?? $this->defaultValue($name, $replacement);
-        return $replacement->token($name, $this->inputString($replacement, $default));
+        return $this->args->valueOf($argumentName);
+    }
+
+    public function inputString(string $prompt, Closure $isValid): ?string
+    {
+        if (!$this->args->interactive()) { return null; }
+
+        $input = $this->env->input()->value($prompt);
+        $retry = 2;
+        while (!$isValid($input) && $retry--) {
+            $retryInfo = $retry === 0 ? 'once more' : 'again';
+            $this->env->output()->send('    Invalid value. Try ' . $retryInfo . PHP_EOL);
+            $input = $this->env->input()->value($prompt);
+        }
+
+        if ($retry < 0) { $this->sendAbortMessage(); }
+        return $input;
+    }
+
+    private function sendAbortMessage(): void
+    {
+        $abortMessage = <<<ABORT
+            Invalid value. Try `help` command for information on this value format.
+            Aborting...
+        
+        ABORT;
+        $this->env->output()->send($abortMessage);
     }
 }

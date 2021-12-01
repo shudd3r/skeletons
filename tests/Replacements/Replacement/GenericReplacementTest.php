@@ -13,78 +13,44 @@ namespace Shudd3r\Skeletons\Tests\Replacements\Replacement;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements\Replacement\GenericReplacement;
-use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
-use Shudd3r\Skeletons\Replacements\Token\BasicToken;
-use Shudd3r\Skeletons\RuntimeEnv;
-use Shudd3r\Skeletons\Tests\Doubles;
-use Closure;
+use Shudd3r\Skeletons\Tests\Doubles\FakeSource as Source;
+use Shudd3r\Skeletons\Replacements\Token;
 
 
 class GenericReplacementTest extends TestCase
 {
-    private static Closure $default;
-
-    public static function setUpBeforeClass(): void
+    public function testWithoutOtherDataSourceDefined_TokenIsBuiltWithResolvedValue()
     {
-        self::$default = fn (RuntimeEnv $env, FallbackReader $fallback) => 'ok';
+        $resolvedValue = fn (Source $source) => $source->metaValueOf('placeholder');
+        $replacement   = new GenericReplacement($resolvedValue);
+
+        $source = Source::create(['placeholder' => 'value from source']);
+        $this->assertToken('value from source', $replacement->token('foo', $source));
     }
 
-    public function testInstanceWithDefaultValueOnly()
+    public function testWithValidationCallback_TokenValueIsValidated()
     {
-        $replacement = new GenericReplacement(self::$default);
+        $resolvedValue = fn (Source $source) => $source->metaValueOf('placeholder');
+        $isValid       = fn (string $value) => $value !== 'invalid value';
+        $replacement   = new GenericReplacement($resolvedValue, $isValid);
 
-        $env      = new Doubles\FakeRuntimeEnv();
-        $fallback = new Doubles\FakeFallbackReader();
-        $this->assertSame('ok', $replacement->defaultValue($env, $fallback));
-        $this->assertNull($replacement->inputPrompt());
-        $this->assertNull($replacement->optionName());
-        $this->assertEmpty($replacement->description());
-        $this->assertEquals(new BasicToken('placeholder', 'value'), $replacement->token('placeholder', 'value'));
-        $this->assertTrue($replacement->isValid('---anything---'));
+        $source = Source::create(['placeholder' => 'invalid value']);
+        $this->assertNull($replacement->token('foo', $source));
     }
 
-    public function testTokenCallback()
+    public function testWithTokenInstanceCallback_TokenIsCreatedWithThatCallback()
     {
-        $createdToken = new BasicToken('foo', 'bar');
-        $token        = fn (string $name, string $value) => $createdToken;
-        $replacement  = new GenericReplacement(self::$default, $token);
+        $resolvedValue = fn (Source $source) => $source->metaValueOf('placeholder');
+        $isValid       = fn (string $value) => $value === 'valid value';
+        $tokenInstance = fn (string $name, string $value) => new Token\BasicToken($name, 'modified+' . $value);
+        $replacement   = new GenericReplacement($resolvedValue, $isValid, $tokenInstance);
 
-        $this->assertSame($createdToken, $replacement->token('placeholder', 'value'));
+        $source = Source::create(['placeholder' => 'valid value']);
+        $this->assertToken('modified+valid value', $replacement->token('foo', $source));
     }
 
-    public function testValidateCallback()
+    private function assertToken(string $value, Token $token): void
     {
-        $validate    = fn (string $value) => $value === 'foo';
-        $replacement = new GenericReplacement(self::$default, null, $validate);
-
-        $this->assertTrue($replacement->isValid('foo'));
-        $this->assertFalse($replacement->isValid('bar'));
-    }
-
-    public function testForInvalidValue_TokenMethod_ReturnsNull()
-    {
-        $createdToken = new BasicToken('foo', 'hardcoded');
-        $token        = fn (string $name, string $value) => $createdToken;
-        $validate     = fn (string $value) => $value === 'valid';
-        $replacement  = new GenericReplacement(self::$default, $token, $validate);
-
-        $this->assertSame($createdToken, $replacement->token('placeholder', 'valid'));
-        $this->assertNull($replacement->token('placeholder', 'foo'));
-    }
-
-    public function testInputOptions()
-    {
-        $replacement = new GenericReplacement(self::$default, null, null, 'Give value', 'option', 'This is option');
-
-        $this->assertSame('Give value', $replacement->inputPrompt());
-        $this->assertSame('option', $replacement->optionName());
-        $this->assertSame('This is option', $replacement->description());
-    }
-
-    public function testDescriptionFallback()
-    {
-        $replacement = new GenericReplacement(self::$default, null, null, 'Give value', 'option');
-
-        $this->assertSame($replacement->inputPrompt(), $replacement->description());
+        $this->assertEquals(new Token\BasicToken('foo', $value), $token);
     }
 }

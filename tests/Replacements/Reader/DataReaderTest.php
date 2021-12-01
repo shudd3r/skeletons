@@ -11,52 +11,23 @@
 
 namespace Shudd3r\Skeletons\Tests\Replacements\Reader;
 
-use Shudd3r\Skeletons\Tests\Replacements\ReaderTests;
-use Shudd3r\Skeletons\Replacements\Reader;
+use PHPUnit\Framework\TestCase;
+use Shudd3r\Skeletons\Replacements\Reader\DataReader;
+use Shudd3r\Skeletons\InputArgs;
+use Shudd3r\Skeletons\Tests\Doubles;
 
 
-class DataReaderTest extends ReaderTests
+class DataReaderTest extends TestCase
 {
-    /**
-     * @dataProvider possibleReaderSetups
-     * @param Reader $reader
-     * @param array  $removeDefaults
-     */
-    public function testTokensAreBuiltWithMetaData(Reader $reader, array $removeDefaults = [])
+    public function testUserInputMethods_InputSourceValues_ReturnEmptyString()
     {
-        $replacements = $this->replacements($removeDefaults);
-        $expected     = $this->defaults();
-        $this->assertTokenValues($expected, $reader->tokens($replacements));
-    }
+        $env    = new Doubles\FakeRuntimeEnv();
+        $reader = new DataReader($env, new InputArgs(['script', 'command', '-i', 'fooArg=foo value']));
 
-    public function testWithoutMetaDataValue_TokenIsBuiltWithDefaultValue()
-    {
-        $metaData = self::META_DATA;
-        unset($metaData['bar']);
+        $env->input()->addInput('input string');
+        $isValid = fn (string $value) => $value !== 'invalid';
 
-        $reader   = $this->reader([], [], $metaData);
-        $expected = $this->defaults(['bar' => 'bar (default)']);
-        $this->assertTokenValues($expected, $reader->tokens($this->replacements()));
-    }
-
-    public function possibleReaderSetups(): array
-    {
-        return [
-            'no input'        => [$this->reader([], [])],
-            'active fallback' => [$this->reader([], []), ['foo']],
-            'cli option'      => [$this->reader([], ['optFoo' => 'foo (option)'])],
-            'terminal input'  => [$this->reader(['foo (input)'], [])],
-            'terminal & cli'  => [$this->reader(['foo (input)'], ['optBar' => 'bar (option)'])],
-        ];
-    }
-
-    protected function reader(array $inputs, array $options, array $metaData = []): Reader
-    {
-        return new Reader\DataReader($this->env($inputs, $metaData ?: self::META_DATA), $this->args($options));
-    }
-
-    protected function defaults(array $override = []): array
-    {
-        return array_merge(self::META_DATA, $override);
+        $this->assertSame('', $reader->inputString('Input prompt:', $isValid));
+        $this->assertSame('', $reader->commandArgument('fooArg'));
     }
 }

@@ -68,7 +68,6 @@ class TokensTest extends TestCase
 
     private function replacementToken(string $name, Replacement $replacement): ?Token
     {
-        $value = $replacement->defaultValue(new Doubles\FakeRuntimeEnv(), new Doubles\FakeReader());
-        return $replacement->token($name, $value);
+        return $replacement->token($name, new Doubles\FakeReader());
     }
 }

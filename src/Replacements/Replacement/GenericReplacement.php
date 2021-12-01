@@ -11,74 +11,54 @@
 
 namespace Shudd3r\Skeletons\Replacements\Replacement;
 
-use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
+use Shudd3r\Skeletons\Replacements\StandardReplacement;
+use Shudd3r\Skeletons\Replacements\Source;
 use Shudd3r\Skeletons\Replacements\Token;
-use Shudd3r\Skeletons\RuntimeEnv;
 use Closure;
 
 
-class GenericReplacement implements Replacement
+class GenericReplacement extends StandardReplacement
 {
-    private Closure  $default;
-    private ?Closure $token;
-    private ?Closure $validate;
-    private ?string  $optionName;
-    private ?string  $inputPrompt;
-    private ?string  $description;
+    private Closure  $resolvedValue;
+    private ?Closure $isValid;
+    private ?Closure $tokenInstance;
 
     /**
-     * @param Closure  $default     fn (RuntimeEnv, FallbackReader) => string
-     * @param ?Closure $token       fn (string, string) => ?ValueToken
-     * @param ?Closure $validate    fn (string) => bool
+     * @param Closure  $resolvedValue fn (Source) => string
+     * @param ?Closure $isValid       fn (string) => bool
+     * @param ?Closure $tokenInstance fn (string, string) => Token
      * @param ?string  $inputPrompt
-     * @param ?string  $optionName
+     * @param ?string  $argumentName
      * @param ?string  $description
      */
     public function __construct(
-        Closure $default,
-        ?Closure $token = null,
-        ?Closure $validate = null,
+        Closure $resolvedValue,
+        ?Closure $isValid = null,
+        ?Closure $tokenInstance = null,
         ?string $inputPrompt = null,
-        ?string $optionName = null,
+        ?string $argumentName = null,
         ?string $description = null
     ) {
-        $this->default     = $default;
-        $this->token       = $token;
-        $this->validate    = $validate;
-        $this->optionName  = $optionName;
-        $this->inputPrompt = $inputPrompt;
-        $this->description = $description;
+        $this->resolvedValue = $resolvedValue;
+        $this->isValid       = $isValid;
+        $this->tokenInstance = $tokenInstance;
+        $this->argumentName  = $argumentName;
+        $this->inputPrompt   = $inputPrompt;
+        $this->description   = $description ?? '';
     }
 
-    public function optionName(): ?string
+    protected function tokenInstance($name, $value): Token
     {
-        return $this->optionName;
+        return $this->tokenInstance ? ($this->tokenInstance)($name, $value) : parent::tokenInstance($name, $value);
     }
 
-    public function inputPrompt(): ?string
+    protected function isValid(string $value): bool
     {
-        return $this->inputPrompt;
+        return $this->isValid ? ($this->isValid)($value) : true;
     }
 
-    public function description(): string
+    protected function resolvedValue(Source $source): string
     {
-        return $this->description ?? $this->inputPrompt ?? '';
-    }
-
-    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string
-    {
-        return ($this->default)($env, $fallback);
-    }
-
-    public function isValid(string $value): bool
-    {
-        return $this->validate ? ($this->validate)($value) : true;
-    }
-
-    public function token(string $name, string $value): ?Token
-    {
-        if (!$this->isValid($value)) { return null; }
-        return $this->token ? ($this->token)($name, $value) : new Token\BasicToken($name, $value);
+        return ($this->resolvedValue)($source);
     }
 }

@@ -11,55 +11,40 @@
 
 namespace Shudd3r\Skeletons\Replacements\Replacement;
 
-use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
-use Shudd3r\Skeletons\Replacements\Token;
-use Shudd3r\Skeletons\RuntimeEnv;
+use Shudd3r\Skeletons\Replacements\StandardReplacement;
+use Shudd3r\Skeletons\Replacements\Source;
 
 
-class PackageDescription implements Replacement
+class PackageDescription extends StandardReplacement
 {
-    private string $fallbackName;
+    protected ?string $inputPrompt  = 'Package description';
+    protected ?string $argumentName = 'desc';
+    protected string  $description  = <<<'DESC'
+        Package description [format: non-empty string]
+        Replaces {%s} placeholder
+        DESC;
 
-    public function __construct(string $fallbackName = '')
+    private string $fallbackPlaceholder;
+
+    public function __construct(string $fallbackPlaceholder = '')
     {
-        $this->fallbackName = $fallbackName;
+        $this->fallbackPlaceholder = $fallbackPlaceholder;
     }
 
-    public function optionName(): ?string
-    {
-        return 'desc';
-    }
-
-    public function inputPrompt(): ?string
-    {
-        return 'Package description';
-    }
-
-    public function description(): string
-    {
-        return $this->inputPrompt() . ' [format: non-empty string]';
-    }
-
-    public function token(string $name, string $value): ?Token
-    {
-        return $this->isValid($value) ? new Token\BasicToken($name, $value) : null;
-    }
-
-    public function isValid(string $value): bool
+    protected function isValid(string $value): bool
     {
         return !empty($value);
     }
 
-    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string
+    protected function resolvedValue(Source $source): string
     {
-        return $env->composer()->value('description') ?? $this->descriptionFromFallbackValue($fallback);
+        return $source->composer()->value('description') ??  $this->fallbackDescription($source);
     }
 
-    private function descriptionFromFallbackValue(FallbackReader $fallback): string
+    private function fallbackDescription(Source $source): string
     {
-        if (!$this->fallbackName) { return ''; }
-        $fallbackValue = $fallback->valueOf($this->fallbackName);
+        if (!$this->fallbackPlaceholder) { return ''; }
+        $fallbackValue = $source->tokenValueOf($this->fallbackPlaceholder);
         return $fallbackValue ? $fallbackValue . ' package' : '';
     }
 }

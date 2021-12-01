@@ -77,20 +77,23 @@ class AppSetupTest extends TestCase
         $setup = new AppSetup();
 
         $replacement = new ReplacementSetup($setup, 'first.placeholder');
-        $replacement->add(new Doubles\FakeReplacement(null, null, 'opt1'));
+        $replacement->add(Doubles\FakeReplacement::create()->withInputArg('opt1'));
 
         $replacement = new ReplacementSetup($setup, 'second.placeholder');
-        $replacement->build($dummy = fn () => 'dummy')->optionName('opt2');
+        $replacement->build($dummy = fn () => 'dummy')->argumentName('opt2');
 
         $replacement = new ReplacementSetup($setup, 'third.placeholder');
-        $replacement->add(new Doubles\FakeReplacement(null, null, 'opt3'));
+        $replacement->add(Doubles\FakeReplacement::create()->withInputArg('opt3'));
 
         $replacements = $setup->replacements();
         $expectedReplacement = new Replacement\GenericReplacement($dummy, null, null, null, 'opt2');
         $this->assertEquals($expectedReplacement, $replacements->replacement('second.placeholder'));
 
-        $placeholderOrder = array_keys($replacements->info());
-        $this->assertSame(['first.placeholder', 'second.placeholder', 'third.placeholder'], $placeholderOrder);
+        $placeholderOrder = ['opt1', 'opt2', 'opt3'];
+        foreach ($replacements->info() as $argumentDescription) {
+            $argument = trim(substr($argumentDescription, 0, 14));
+            $this->assertSame(array_shift($placeholderOrder), $argument);
+        }
     }
 
     public function testOverwritingDefinedReplacement_ThrowsException()

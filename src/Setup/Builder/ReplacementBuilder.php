@@ -12,46 +12,44 @@
 namespace Shudd3r\Skeletons\Setup\Builder;
 
 use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
-use Shudd3r\Skeletons\RuntimeEnv;
+use Shudd3r\Skeletons\Replacements\Source;
 use Closure;
 
 
 class ReplacementBuilder
 {
-    private Closure  $default;
-    private ?Closure $token       = null;
-    private ?Closure $validate    = null;
-    private ?string  $optionName  = null;
-    private ?string  $inputPrompt = null;
-    private ?string  $description = null;
+    private Closure  $resolvedValue;
+    private ?Closure $isValid       = null;
+    private ?Closure $tokenInstance = null;
+    private ?string  $inputPrompt   = null;
+    private ?string  $argumentName  = null;
+    private string   $description   = '';
 
     /**
-     * @see RuntimeEnv
-     * @see FallbackReader
+     * @param Closure $resolvedValue fn (Source) => string
      *
-     * @param Closure  $default fn (RuntimeEnv, FallbackReader) => string
+     * @see Source
      */
-    public function __construct(Closure $default)
+    public function __construct(Closure $resolvedValue)
     {
-        $this->default = $default;
+        $this->resolvedValue = $resolvedValue;
     }
 
     /**
-     * @param Closure $token fn (string $placeholder, string $value) => ?ValueToken
+     * @param Closure $isValid fn (string $value) => bool
      */
-    public function token(Closure $token): self
+    public function validate(Closure $isValid): self
     {
-        $this->token = $token;
+        $this->isValid = $isValid;
         return $this;
     }
 
     /**
-     * @param Closure $validate fn (string $value) => bool
+     * @param Closure $tokenInstance fn (string $placeholder, string $value) => Token
      */
-    public function validate(Closure $validate): self
+    public function token(Closure $tokenInstance): self
     {
-        $this->validate = $validate;
+        $this->tokenInstance = $tokenInstance;
         return $this;
     }
 
@@ -61,9 +59,9 @@ class ReplacementBuilder
         return $this;
     }
 
-    public function optionName(string $optionName): self
+    public function argumentName(string $argumentName): self
     {
-        $this->optionName = $optionName;
+        $this->argumentName = $argumentName;
         return $this;
     }
 
@@ -76,11 +74,11 @@ class ReplacementBuilder
     public function build(): Replacement
     {
         return new Replacement\GenericReplacement(
-            $this->default,
-            $this->token,
-            $this->validate,
+            $this->resolvedValue,
+            $this->isValid,
+            $this->tokenInstance,
             $this->inputPrompt,
-            $this->optionName,
+            $this->argumentName,
             $this->description
         );
     }

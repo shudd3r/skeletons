@@ -12,20 +12,27 @@
 namespace Shudd3r\Skeletons\Tests\Doubles;
 
 use Shudd3r\Skeletons\Replacements\Reader;
-use Shudd3r\Skeletons\Replacements\Token;
-use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\InputArgs;
+use Shudd3r\Skeletons\RuntimeEnv;
+use Shudd3r\Skeletons\Tests\Doubles;
+use Closure;
 
 
 class FakeReader extends Reader
 {
-    public function __construct()
+    public function __construct(?RuntimeEnv $env = null, array $args = [])
     {
-        parent::__construct(new FakeRuntimeEnv(), new InputArgs([]));
+        parent::__construct($env ?? new Doubles\FakeRuntimeEnv(), new InputArgs($args));
     }
 
-    protected function readToken(string $name, Replacements\Replacement $replacement): ?Token
+    public function commandArgument(string $argumentName): string
     {
-        return $replacement->token($name, $replacement->defaultValue(new FakeRuntimeEnv(), $this));
+        return $this->args->valueOf($argumentName);
+    }
+
+    public function inputString(string $prompt, Closure $isValid): string
+    {
+        $value = $this->env->input()->value($prompt);
+        return $isValid($value) ? $value : '';
     }
 }

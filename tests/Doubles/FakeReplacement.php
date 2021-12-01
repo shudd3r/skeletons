@@ -11,66 +11,70 @@
 
 namespace Shudd3r\Skeletons\Tests\Doubles;
 
-use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
+use Shudd3r\Skeletons\Replacements\StandardReplacement;
+use Shudd3r\Skeletons\Replacements\Source;
 use Shudd3r\Skeletons\Replacements\Token;
-use Shudd3r\Skeletons\RuntimeEnv;
+use Closure;
 
 
-class FakeReplacement implements Replacement
+class FakeReplacement extends StandardReplacement
 {
-    private ?string $default;
-    private ?string $option;
-    private ?string $prompt;
-    private ?string $fallback;
+    private string   $value;
+    private bool     $isFallback;
+    private ?Closure $validate = null;
 
-    public function __construct(
-        ?string $default  = null,
-        ?string $fallback = null,
-        ?string $option   = 'option',
-        ?string $prompt   = 'Provide value'
-    ) {
-        $this->default  = $default;
-        $this->fallback = $fallback;
-        $this->option   = $option;
-        $this->prompt   = $prompt;
+    public function __construct(string $value = '', bool $isFallback = false)
+    {
+        $this->value      = $value;
+        $this->isFallback = $isFallback;
     }
 
-    public function optionName(): ?string
+    public static function create(string $value = '', bool $isFallback = false): self
     {
-        return $this->option;
+        return new self($value, $isFallback);
     }
 
-    public function inputPrompt(): ?string
+    public function withDescription(string $description): self
     {
-        return $this->prompt;
+        $clone = clone $this;
+        $clone->description = $description;
+        return $clone;
     }
 
-    public function description(): string
+    public function withPrompt(string $inputPrompt): self
     {
-        return $this->prompt . ' [format: anything]';
+        $clone = clone $this;
+        $clone->inputPrompt = $inputPrompt;
+        return $clone;
     }
 
-    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string
+    public function withInputArg(string $argumentName): self
     {
-        return $this->default ?? $this->fallbackValue($fallback);
+        $clone = clone $this;
+        $clone->argumentName = $argumentName;
+        return $clone;
     }
 
-    public function isValid(string $value): bool
+    public function withValidation(Closure $isValid): self
     {
-        return $value !== 'invalid';
+        $clone = clone $this;
+        $clone->validate = $isValid;
+        return $clone;
     }
 
-    public function token(string $name, string $value): ?Token
+    protected function tokenInstance($name, $value): Token
     {
-        if (!$this->isValid($value)) { return null; }
-
-        $token = new Token\BasicToken($name, $value);
-        return $this->default !== 'null' ? $token : new Token\CompositeToken($token);
+        $token = parent::tokenInstance($name, $value);
+        return $value === 'null' ? new Token\CompositeToken($token) : $token;
     }
 
-    private function fallbackValue(FallbackReader $fallback): string
+    protected function isValid(string $value): bool
     {
-        return $this->fallback ? $fallback->valueOf($this->fallback) : '';
+        return $this->validate ? ($this->validate)($value) : $value !== 'invalid';
+    }
+
+    protected function resolvedValue(Source $source): string
+    {
+        return $this->isFallback ? $source->tokenValueOf($this->value) : $this->value;
     }
 }

@@ -11,52 +11,41 @@
 
 namespace Shudd3r\Skeletons\Replacements\Replacement;
 
-use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
+use Shudd3r\Skeletons\Replacements\StandardReplacement;
+use Shudd3r\Skeletons\Replacements\Source;
 use Shudd3r\Skeletons\Replacements\Token;
-use Shudd3r\Skeletons\RuntimeEnv;
 
 
-class PackageName implements Replacement
+class PackageName extends StandardReplacement
 {
-    public function optionName(): ?string
-    {
-        return 'package';
-    }
+    protected ?string $inputPrompt  = 'Packagist package name';
+    protected ?string $argumentName = 'package';
+    protected string  $description  = <<<'DESC'
+        Packagist package name [format: <vendor>/<package>]
+        Replaces {%s} placeholder with its value directly
+        and {%s.title} with its capitalized version
+        DESC;
 
-    public function inputPrompt(): ?string
+    protected function tokenInstance($name, $value): Token
     {
-        return 'Packagist package name';
-    }
-
-    public function description(): string
-    {
-        return $this->inputPrompt() . ' [format: <vendor>/<package>]';
-    }
-
-    public function token(string $name, string $value): ?Token
-    {
-        if (!$this->isValid($value)) { return null; }
-
         return Token\CompositeToken::withValueToken(
             new Token\BasicToken($name, $value),
             new Token\BasicToken($name . '.title', $this->titleName($value))
         );
     }
 
-    public function isValid(string $value): bool
+    protected function isValid(string $value): bool
     {
         return (bool) preg_match('#^[a-z0-9](?:[_.-]?[a-z0-9]+)*/[a-z0-9](?:[_.-]?[a-z0-9]+)*$#iD', $value);
     }
 
-    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string
+    protected function resolvedValue(Source $source): string
     {
-        return $env->composer()->value('name') ?? $this->directoryFallback($env);
+        return $source->composer()->value('name') ?? $this->directoryFallback($source->packagePath());
     }
 
-    private function directoryFallback(RuntimeEnv $env): string
+    private function directoryFallback(string $path): string
     {
-        $path = $env->package()->path();
         return $path ? basename(dirname($path)) . '/' . basename($path) : '';
     }
 

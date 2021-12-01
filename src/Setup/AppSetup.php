@@ -14,6 +14,7 @@ namespace Shudd3r\Skeletons\Setup;
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Setup\Builder\ReplacementBuilder;
+use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\Templates;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\Exception;
@@ -76,7 +77,7 @@ class AppSetup
 
     private function validatePlaceholder(string $placeholder): void
     {
-        if ($placeholder === Replacements\Token\OriginalContents::PLACEHOLDER) {
+        if ($placeholder === Token\OriginalContents::PLACEHOLDER) {
             $message = "Overwritten built-in `$placeholder` replacement placeholder - use different name";
             throw new Exception\ReplacementOverwriteException($message);
         }

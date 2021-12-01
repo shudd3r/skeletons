@@ -11,42 +11,37 @@
 
 namespace Shudd3r\Skeletons\Replacements\Replacement;
 
-use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Replacements\Reader\FallbackReader;
+use Shudd3r\Skeletons\Replacements\StandardReplacement;
+use Shudd3r\Skeletons\Replacements\Source;
 use Shudd3r\Skeletons\Replacements\Token;
-use Shudd3r\Skeletons\RuntimeEnv;
 
 
-class SrcNamespace implements Replacement
+class SrcNamespace extends StandardReplacement
 {
-    private string $fallbackName;
+    protected ?string $inputPrompt  = 'Source files namespace';
+    protected ?string $argumentName = 'ns';
+    protected string  $description  = <<<'DESC'
+        Source files namespace [format: <Vendor>\\<Package>]
+        Replaces {%s} placeholder with its value directly
+        and {%s.esc} with escaped slashes variant
+        DESC;
 
-    public function __construct(string $fallbackName = '')
+    private string $fallbackPlaceholder;
+
+    public function __construct(string $fallbackPlaceholder = '')
     {
-        $this->fallbackName = $fallbackName;
+        $this->fallbackPlaceholder = $fallbackPlaceholder;
     }
 
-    public function optionName(): ?string
+    protected function tokenInstance($name, $value): Token
     {
-        return 'ns';
+        return Token\CompositeToken::withValueToken(
+            new Token\BasicToken($name, $value),
+            new Token\BasicToken($name . '.esc', str_replace('\\', '\\\\', $value))
+        );
     }
 
-    public function inputPrompt(): ?string
-    {
-        return 'Source files namespace';
-    }
-
-    public function description(): string
-    {
-        return $this->inputPrompt() . ' [format: <vendor>\\<namespace>]';
-    }
-
-    public function defaultValue(RuntimeEnv $env, FallbackReader $fallback): string
-    {
-        return $this->namespaceFromComposer($env) ?? $this->namespaceFromFallbackValue($fallback);
-    }
-
-    public function isValid(string $value): bool
+    protected function isValid(string $value): bool
     {
         foreach (explode('\\', $value) as $label) {
             $isValidLabel = (bool) preg_match('#^[a-z_\x7f-\xff][a-z0-9_\x7f-\xff]*$#Di', $label);
@@ -56,27 +51,23 @@ class SrcNamespace implements Replacement
         return true;
     }
 
-    public function token(string $name, string $value): ?Token
+    protected function resolvedValue(Source $source): string
     {
-        if (!$this->isValid($value)) { return null; }
-
-        return Token\CompositeToken::withValueToken(
-            new Token\BasicToken($name, $value),
-            new Token\BasicToken($name . '.esc', str_replace('\\', '\\\\', $value))
-        );
+        return $this->namespaceFromComposer($source) ?? $this->namespaceFromFallbackValue($source);
     }
 
-    private function namespaceFromComposer(RuntimeEnv $env): ?string
+    private function namespaceFromComposer(Source $source): ?string
     {
-        if (!$psr = $env->composer()->array('autoload.psr-4')) { return null; }
+        $composer = $source->composer();
+        if (!$psr = $composer->array('autoload.psr-4')) { return null; }
         $namespace = array_search('src/', $psr, true);
 
         return $namespace ? rtrim($namespace, '\\') : null;
     }
 
-    private function namespaceFromFallbackValue(FallbackReader $fallback): string
+    private function namespaceFromFallbackValue(Source $source): string
     {
-        $fallbackValue = $this->fallbackName ? $fallback->valueOf($this->fallbackName) : '';
+        $fallbackValue = $this->fallbackPlaceholder ? $source->tokenValueOf($this->fallbackPlaceholder) : '';
         if (!$fallbackValue) { return ''; }
 
         [$vendor, $package] = explode('/', $fallbackValue) + ['', ''];

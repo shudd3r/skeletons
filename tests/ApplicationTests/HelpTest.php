@@ -40,9 +40,12 @@ class HelpTest extends ApplicationTests
     public function testWithDefinedReplacementOptions_DisplaysArgsInfo()
     {
         $app = $this->dummyApp();
-        $app->replacement('foo.test')->add(new Doubles\FakeReplacement(null, null, 'foo', 'Option Foo'));
-        $app->replacement('bar.test')->add(new Doubles\FakeReplacement(null, null, null, 'Option Bar'));
-        $app->replacement('baz.test')->add(new Doubles\FakeReplacement(null, null, 'baz', 'Option Baz'));
+        $app->replacement('foo.test')
+            ->add(Doubles\FakeReplacement::create()->withInputArg('foo')->withDescription('Option Foo...'));
+        $app->replacement('bar.test')
+            ->add(Doubles\FakeReplacement::create()->withDescription('Option Bar'));
+        $app->replacement('baz.test')
+            ->add(Doubles\FakeReplacement::create()->withInputArg('baz')->withDescription('Option Baz...'));
 
         $this->assertSame(0, $app->run($this->args('help')));
 
@@ -54,8 +57,8 @@ class HelpTest extends ApplicationTests
 
         $expectedEnd = <<<HELP
             Available <arguments> for placeholder <values>:
-                foo       Option Foo [format: anything]
-                baz       Option Baz [format: anything]
+              foo         Option Foo...
+              baz         Option Baz...
             
             HELP;
 

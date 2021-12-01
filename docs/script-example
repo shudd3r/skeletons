@@ -44,7 +44,7 @@ $app->replacement('package.description')->add(new Replacement\PackageDescription
 $app->replacement('namespace.src')->add(new Replacement\SrcNamespace('package.name'));
 $app->replacement('author.email')
     ->build(fn () => 'default@example.com')
-    ->optionName('email')
+    ->argumentName('email')
     ->inputPrompt('Your email address')
     ->validate(fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL));
 

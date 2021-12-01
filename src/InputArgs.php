@@ -49,8 +49,7 @@ class InputArgs
 
     public function interactive(): bool
     {
-        if (!in_array($this->command, ['init', 'update'])) { return false; }
-        return !$this->arguments || $this->options['interactive'];
+        return in_array($this->command, ['init', 'update']) && (!$this->arguments || $this->options['interactive']);
     }
 
     public function includeLocalFiles(): bool

@@ -13,51 +13,42 @@ namespace Shudd3r\Skeletons\Tests\Replacements\Replacement;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements\Replacement\SrcNamespace;
+use Shudd3r\Skeletons\Tests\Doubles\FakeSource as Source;
 use Shudd3r\Skeletons\Replacements\Token;
-use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class SrcNamespaceTest extends TestCase
 {
-    public function testInputNames()
+    public function testWithoutEnoughDataToResolveValue_TokenMethod_ReturnsNull()
     {
-        $replacement = new SrcNamespace();
-        $this->assertSame('ns', $replacement->optionName());
-        $this->assertSame('Source files namespace', $replacement->inputPrompt());
-        $this->assertSame('Source files namespace [format: <vendor>\\<namespace>]', $replacement->description());
+        $replacement = new SrcNamespace('bar');
+
+        $source = Source::create();
+        $this->assertNull($replacement->token('foo', $source));
     }
 
-    public function testWithSrcNamespaceInComposerJson_DefaultValue_IsReadFromComposerJson()
+    public function testWithCorrectFallbackValue_TokenValueIsResolvedFromFallback()
     {
-        $replacement = new SrcNamespace();
-        $fallback    = new Doubles\FakeFallbackReader();
-        $env         = new Doubles\FakeRuntimeEnv();
-        $env->package()->addFile('composer.json', $this->composerData());
+        $replacement = new SrcNamespace('bar');
 
-        $this->assertSame('Composer\\Namespace', $replacement->defaultValue($env, $fallback));
+        $source = Source::create()->withFallbackTokenValue('bar', 'invalid fallback value');
+        $this->assertNull($replacement->token('foo', $source));
+
+        $source = Source::create()->withFallbackTokenValue('bar', 'fallback/package-name');
+        $this->assertToken('Fallback\\PackageName', $replacement->token('foo', $source));
     }
 
-    public function testWithoutSrcNamespaceInComposerJson_DefaultValue_IsResolvedFromFallbackReplacement()
+    public function testWithMatchingNamespaceInComposerJsonFile_TokenValueIsResolvedWithComposerData()
     {
-        $replacement = new SrcNamespace('fallback.name');
-        $fallback    = new Doubles\FakeFallbackReader(['fallback.name' => 'fallback/name']);
-        $env         = new Doubles\FakeRuntimeEnv();
-        $env->package()->addFile('composer.json', $this->composerData(false));
+        $replacement  = new SrcNamespace('bar');
+        $composerData = fn (string $directory) => ['autoload' => ['psr-4' => ['Composer\\Namespace\\' => $directory]]];
+        $source       = Source::create()->withFallbackTokenValue('bar', 'fallback/package-name');
 
-        $this->assertSame('Fallback\\Name', $replacement->defaultValue($env, $fallback));
-    }
+        $source = $source->withComposerData($composerData('app/'));
+        $this->assertToken('Fallback\\PackageName', $replacement->token('foo', $source));
 
-    public function testTokenMethodWithValidValue_ReturnsExpectedToken()
-    {
-        $replacement = new SrcNamespace();
-
-        $expected = Token\CompositeToken::withValueToken(
-            new Token\BasicToken('src.namespace', 'Source\\Namespace'),
-            new Token\BasicToken('src.namespace.esc', 'Source\\\\Namespace')
-        );
-
-        $this->assertEquals($expected, $replacement->token('src.namespace', 'Source\\Namespace'));
-        $this->assertTrue($replacement->isValid('Source\\Namespace'));
+        $source = $source->withComposerData($composerData('src/'));
+        $this->assertToken('Composer\\Namespace', $replacement->token('foo', $source));
     }
 
     /**
@@ -66,15 +57,13 @@ class SrcNamespaceTest extends TestCase
      * @param string $invalid
      * @param string $valid
      */
-    public function testTokenFactoryMethod_ValidatesValue(string $invalid, string $valid)
+    public function testResolvedTokenValue_IsValidated(string $invalid, string $valid)
     {
         $replacement = new SrcNamespace();
 
-        $this->assertFalse($replacement->isValid($invalid));
-        $this->assertNull($replacement->token('package.name', $invalid));
-
-        $this->assertTrue($replacement->isValid($valid));
-        $this->assertInstanceOf(Token::class, $replacement->token('package.name', $valid));
+        $source = Source::create(['foo' => $valid, 'bar' => $invalid]);
+        $this->assertToken($valid, $replacement->token('foo', $source));
+        $this->assertNull($replacement->token('bar', $source));
     }
 
     public function valueExamples(): array
@@ -86,15 +75,13 @@ class SrcNamespaceTest extends TestCase
         ];
     }
 
-    private function composerData(bool $withAutoload = true): string
+    private function assertToken(string $value, Token $token): void
     {
-        $srcNamespace = $withAutoload ? ['Composer\\Namespace\\' => 'src/'] : [];
-        $namespaces   = ['Some\\Namespace\\' => 'not/src/'] + $srcNamespace;
-        $composer     = [
-            'name' => 'package/name',
-            'autoload' => ['psr-4' => $namespaces]
-        ];
+        $expected = Token\CompositeToken::withValueToken(
+            new Token\BasicToken('foo', $value),
+            new Token\BasicToken('foo.esc', str_replace('\\', '\\\\', $value))
+        );
 
-        return json_encode($composer);
+        $this->assertEquals($expected, $token);
     }
 }
