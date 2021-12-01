@@ -13,7 +13,6 @@ namespace Shudd3r\Skeletons\Tests\Commands\Precondition;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Commands\Precondition\SkeletonSynchronization;
-use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 

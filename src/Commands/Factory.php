@@ -15,7 +15,7 @@ use Shudd3r\Skeletons\Commands;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\Templates;
-use Shudd3r\Skeletons\Rework\Replacements;
+use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\TokenCache;
 use Shudd3r\Skeletons\Processors;
 use Shudd3r\Skeletons\Processors\Processor;

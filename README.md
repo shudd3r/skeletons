@@ -99,13 +99,13 @@ attached [docs/script-example](docs/script-example) file.
   $validate = fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL);
   
   $app->replacement('author.email')
-      ->add(new GenericReplacement($default, null, $validate, 'Your email address', 'email'));
+      ->add(new GenericReplacement($default, $validate, null, 'Your email address', 'email'));
   ```
   It can also be built using fluent builder invoked with `build()` method:
   ```php
   $app->replacement('author.email')
       ->build(fn () => 'default@example.com')
-      ->optionName('email')
+      ->argumentName('email')
       ->inputPrompt('Your email address')
       ->validate(fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL));
   ```

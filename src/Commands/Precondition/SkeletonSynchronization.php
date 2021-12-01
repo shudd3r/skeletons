@@ -12,7 +12,7 @@
 namespace Shudd3r\Skeletons\Commands\Precondition;
 
 use Shudd3r\Skeletons\Commands\Precondition;
-use Shudd3r\Skeletons\Rework\Replacements\Tokens;
+use Shudd3r\Skeletons\Replacements\Tokens;
 use Shudd3r\Skeletons\Processors\Processor;
 
 

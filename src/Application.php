@@ -12,8 +12,8 @@
 namespace Shudd3r\Skeletons;
 
 use Shudd3r\Skeletons\Setup\EnvSetup;
-use Shudd3r\Skeletons\Rework\Setup\AppSetup;
-use Shudd3r\Skeletons\Rework\Setup\ReplacementSetup;
+use Shudd3r\Skeletons\Setup\AppSetup;
+use Shudd3r\Skeletons\Setup\ReplacementSetup;
 use Shudd3r\Skeletons\Setup\TemplateSetup;
 use Shudd3r\Skeletons\Environment\Files\Directory;
 use Shudd3r\Skeletons\Environment\Terminal;

@@ -41,11 +41,11 @@ class HelpTest extends ApplicationTests
     {
         $app = $this->dummyApp();
         $app->replacement('foo.test')
-            ->add(Doubles\Rework\FakeReplacement::create()->withInputArg('foo')->withDescription('Option Foo...'));
+            ->add(Doubles\FakeReplacement::create()->withInputArg('foo')->withDescription('Option Foo...'));
         $app->replacement('bar.test')
-            ->add(Doubles\Rework\FakeReplacement::create()->withDescription('Option Bar'));
+            ->add(Doubles\FakeReplacement::create()->withDescription('Option Bar'));
         $app->replacement('baz.test')
-            ->add(Doubles\Rework\FakeReplacement::create()->withInputArg('baz')->withDescription('Option Baz...'));
+            ->add(Doubles\FakeReplacement::create()->withInputArg('baz')->withDescription('Option Baz...'));
 
         $this->assertSame(0, $app->run($this->args('help')));
 
