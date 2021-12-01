@@ -11,13 +11,13 @@
 
 namespace Shudd3r\Skeletons\Tests\Doubles;
 
-use Shudd3r\Skeletons\Replacements\Replacement;
+use Shudd3r\Skeletons\Replacements\StandardReplacement;
 use Shudd3r\Skeletons\Replacements\Source;
 use Shudd3r\Skeletons\Replacements\Token;
 use Closure;
 
 
-class FakeReplacement extends Replacement
+class FakeReplacement extends StandardReplacement
 {
     private string   $value;
     private bool     $isFallback;

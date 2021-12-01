@@ -11,11 +11,11 @@
 
 namespace Shudd3r\Skeletons\Replacements\Replacement;
 
-use Shudd3r\Skeletons\Replacements\Replacement;
+use Shudd3r\Skeletons\Replacements\StandardReplacement;
 use Shudd3r\Skeletons\Replacements\Source;
 
 
-class PackageDescription extends Replacement
+class PackageDescription extends StandardReplacement
 {
     protected ?string $inputPrompt  = 'Package description';
     protected ?string $argumentName = 'desc';

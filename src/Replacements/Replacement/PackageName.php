@@ -11,12 +11,12 @@
 
 namespace Shudd3r\Skeletons\Replacements\Replacement;
 
-use Shudd3r\Skeletons\Replacements\Replacement;
+use Shudd3r\Skeletons\Replacements\StandardReplacement;
 use Shudd3r\Skeletons\Replacements\Source;
 use Shudd3r\Skeletons\Replacements\Token;
 
 
-class PackageName extends Replacement
+class PackageName extends StandardReplacement
 {
     protected ?string $inputPrompt  = 'Packagist package name';
     protected ?string $argumentName = 'package';

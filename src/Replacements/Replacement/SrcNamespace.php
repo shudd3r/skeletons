@@ -11,13 +11,12 @@
 
 namespace Shudd3r\Skeletons\Replacements\Replacement;
 
-use Shudd3r\Skeletons\Replacements\Data\ComposerJsonData;
-use Shudd3r\Skeletons\Replacements\Replacement;
+use Shudd3r\Skeletons\Replacements\StandardReplacement;
 use Shudd3r\Skeletons\Replacements\Source;
 use Shudd3r\Skeletons\Replacements\Token;
 
 
-class SrcNamespace extends Replacement
+class SrcNamespace extends StandardReplacement
 {
     protected ?string $inputPrompt  = 'Source files namespace';
     protected ?string $argumentName = 'ns';
@@ -54,11 +53,12 @@ class SrcNamespace extends Replacement
 
     protected function resolvedValue(Source $source): string
     {
-        return $this->namespaceFromComposer($source->composer()) ?? $this->namespaceFromFallbackValue($source);
+        return $this->namespaceFromComposer($source) ?? $this->namespaceFromFallbackValue($source);
     }
 
-    private function namespaceFromComposer(ComposerJsonData $composer): ?string
+    private function namespaceFromComposer(Source $source): ?string
     {
+        $composer = $source->composer();
         if (!$psr = $composer->array('autoload.psr-4')) { return null; }
         $namespace = array_search('src/', $psr, true);
 

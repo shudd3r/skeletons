@@ -17,7 +17,7 @@ use Shudd3r\Skeletons\Tests\Doubles\FakeSource as Source;
 use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 
 
-class ReplacementTest extends TestCase
+class StandardReplacementTest extends TestCase
 {
     public function testWithoutDefinedInputSourceAndMetaValue_Token_ReturnsTokenWithResolvedValue()
     {

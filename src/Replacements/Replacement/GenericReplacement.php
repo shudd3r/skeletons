@@ -11,13 +11,13 @@
 
 namespace Shudd3r\Skeletons\Replacements\Replacement;
 
-use Shudd3r\Skeletons\Replacements\Replacement;
+use Shudd3r\Skeletons\Replacements\StandardReplacement;
 use Shudd3r\Skeletons\Replacements\Source;
 use Shudd3r\Skeletons\Replacements\Token;
 use Closure;
 
 
-class GenericReplacement extends Replacement
+class GenericReplacement extends StandardReplacement
 {
     private Closure  $resolvedValue;
     private ?Closure $isValid;
