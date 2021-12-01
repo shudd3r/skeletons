@@ -11,7 +11,6 @@
 
 namespace Shudd3r\Skeletons\Setup;
 
-use Shudd3r\Skeletons\Setup\AppSetup;
 use Shudd3r\Skeletons\Templates\Factory;
 
 

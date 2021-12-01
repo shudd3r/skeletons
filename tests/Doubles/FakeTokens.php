@@ -14,7 +14,6 @@ namespace Shudd3r\Skeletons\Tests\Doubles;
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\Replacements\Tokens;
-use Shudd3r\Skeletons\Tests\Doubles\FakeReader;
 
 
 class FakeTokens extends Tokens

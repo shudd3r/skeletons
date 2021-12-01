@@ -48,7 +48,7 @@ class SrcNamespaceTest extends TestCase
         $this->assertToken('Fallback\\PackageName', $replacement->token('foo', $source));
 
         $source = $source->withComposerData($composerData('src/'));
-        $this->assertToken('Composer\\Namespace', $token = $replacement->token('foo', $source));
+        $this->assertToken('Composer\\Namespace', $replacement->token('foo', $source));
     }
 
     /**

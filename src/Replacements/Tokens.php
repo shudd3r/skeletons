@@ -12,7 +12,6 @@
 namespace Shudd3r\Skeletons\Replacements;
 
 use Shudd3r\Skeletons\Replacements;
-use Shudd3r\Skeletons\Replacements\Token;
 
 
 class Tokens

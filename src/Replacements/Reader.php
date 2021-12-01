@@ -15,7 +15,6 @@ use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\Data\ComposerJsonData;
-use Shudd3r\Skeletons\Replacements\Token;
 use Closure;
 
 

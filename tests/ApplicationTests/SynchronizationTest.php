@@ -12,7 +12,6 @@
 namespace Shudd3r\Skeletons\Tests\ApplicationTests;
 
 use Shudd3r\Skeletons\Tests\ApplicationTests;
-use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class SynchronizationTest extends ApplicationTests
