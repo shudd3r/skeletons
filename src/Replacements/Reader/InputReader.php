@@ -22,19 +22,20 @@ class InputReader extends Reader
         return $this->args->valueOf($argumentName);
     }
 
-    public function inputString(string $prompt, Closure $isValid): ?string
+    public function inputString(string $prompt, Closure $isValid = null, int $tries = 3): ?string
     {
         if (!$this->args->interactive()) { return null; }
 
         $input = $this->env->input()->value($prompt);
-        $retry = 2;
-        while (!$isValid($input) && $retry--) {
-            $retryInfo = $retry === 0 ? 'once more' : 'again';
+        if (!$isValid) { return $input; }
+
+        while (!$isValid($input) && --$tries) {
+            $retryInfo = $tries === 1 ? 'once more' : 'again';
             $this->env->output()->send('    Invalid value. Try ' . $retryInfo . PHP_EOL);
             $input = $this->env->input()->value($prompt);
         }
 
-        if ($retry < 0) { $this->sendAbortMessage(); }
+        if (!$tries) { $this->sendAbortMessage(); }
         return $input;
     }
 

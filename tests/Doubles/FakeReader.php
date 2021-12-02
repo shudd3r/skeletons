@@ -30,7 +30,7 @@ class FakeReader extends Reader
         return $this->args->valueOf($argumentName);
     }
 
-    public function inputString(string $prompt, Closure $isValid): string
+    public function inputString(string $prompt, Closure $isValid = null, int $tries = 0): string
     {
         $value = $this->env->input()->value($prompt);
         return $isValid($value) ? $value : '';

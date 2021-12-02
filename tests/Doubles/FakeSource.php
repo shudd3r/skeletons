@@ -45,7 +45,7 @@ class FakeSource implements Source
         return $this->commandArgs[$argumentName] ?? '';
     }
 
-    public function inputString(string $prompt, Closure $isValid): ?string
+    public function inputString(string $prompt, Closure $isValid = null, int $tries = 0): ?string
     {
         if (isset($this->commandArgs['i']) && !$this->commandArgs['i']) { return null; }
         $this->promptUsed = $prompt;

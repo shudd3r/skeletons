@@ -17,6 +17,7 @@ abstract class StandardReplacement implements Replacement
     protected ?string $inputPrompt  = null;
     protected ?string $argumentName = null;
     protected string  $description  = '';
+    protected int     $inputTries   = 3;
 
     final public function token(string $name, Source $source): ?Token
     {
@@ -60,7 +61,7 @@ abstract class StandardReplacement implements Replacement
         $prompt  = '  > ' . $this->inputPrompt . ($default ? ' [default: ' . $default . ']' : '') . ':';
         $isValid = fn (string $value) => (!$value && $default) || $this->isValid($value);
 
-        $input = $source->inputString($prompt, $isValid) ?? $argValue ?: $default;
+        $input = $source->inputString($prompt, $isValid, $this->inputTries) ?? $argValue ?: $default;
         return $input ?: $default;
     }
 }
