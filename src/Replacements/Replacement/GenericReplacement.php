@@ -19,46 +19,46 @@ use Closure;
 
 class GenericReplacement extends StandardReplacement
 {
-    private Closure  $resolvedValue;
-    private ?Closure $isValid;
-    private ?Closure $tokenInstance;
+    private Closure  $resolveValue;
+    private ?Closure $validate;
+    private ?Closure $createToken;
 
     /**
-     * @param Closure  $resolvedValue fn (Source) => string
-     * @param ?Closure $isValid       fn (string) => bool
-     * @param ?Closure $tokenInstance fn (string, string) => Token
+     * @param Closure  $resolveValue fn (Source) => string
+     * @param ?Closure $validate     fn (string) => bool
+     * @param ?Closure $createToken  fn (string, string) => Token
      * @param ?string  $inputPrompt
      * @param ?string  $argumentName
      * @param ?string  $description
      */
     public function __construct(
-        Closure $resolvedValue,
-        ?Closure $isValid = null,
-        ?Closure $tokenInstance = null,
+        Closure $resolveValue,
+        ?Closure $validate = null,
+        ?Closure $createToken = null,
         ?string $inputPrompt = null,
         ?string $argumentName = null,
         ?string $description = null
     ) {
-        $this->resolvedValue = $resolvedValue;
-        $this->isValid       = $isValid;
-        $this->tokenInstance = $tokenInstance;
-        $this->argumentName  = $argumentName;
-        $this->inputPrompt   = $inputPrompt;
-        $this->description   = $description ?? '';
+        $this->resolveValue = $resolveValue;
+        $this->validate     = $validate;
+        $this->createToken  = $createToken;
+        $this->argumentName = $argumentName;
+        $this->inputPrompt  = $inputPrompt;
+        $this->description  = $description ?? '';
     }
 
     protected function tokenInstance($name, $value): Token
     {
-        return $this->tokenInstance ? ($this->tokenInstance)($name, $value) : parent::tokenInstance($name, $value);
+        return $this->createToken ? ($this->createToken)($name, $value) : parent::tokenInstance($name, $value);
     }
 
     protected function isValid(string $value): bool
     {
-        return $this->isValid ? ($this->isValid)($value) : true;
+        return $this->validate ? ($this->validate)($value) : true;
     }
 
     protected function resolvedValue(Source $source): string
     {
-        return ($this->resolvedValue)($source);
+        return ($this->resolveValue)($source);
     }
 }

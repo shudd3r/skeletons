@@ -99,29 +99,29 @@ class VirtualDirectory implements Directory
 
         $this->exists = true;
         $this->files[$filename] = new VirtualFile($filename, $contents, $this);
-        $this->updateSubdirectories($filename, fn ($targetFile) => $targetFile->write($contents));
+        $this->updateSubdirectories($filename, fn (File $file) => $file->write($contents));
     }
 
     public function removeFile(string $filename): void
     {
         unset($this->files[$filename]);
-        $this->updateSubdirectories($filename, fn ($targetFile) => $targetFile->remove());
+        $this->updateSubdirectories($filename, fn (File $file) => $file->remove());
     }
 
     public function updateIndex(VirtualFile $file): void
     {
         $filename = $file->name();
         $this->files[$filename] ??= $file;
-        $this->updateSubdirectories($filename, fn ($targetFile) => $targetFile->write($file->contents()));
+        $this->updateSubdirectories($filename, fn (File $newFile) => $newFile->write($file->contents()));
     }
 
-    private function updateSubdirectories(string $filename, Closure $procedure): void
+    private function updateSubdirectories(string $filename, Closure $updateFileState): void
     {
         if (!strpos($filename, '/')) { return; }
         foreach ($this->subdirectories as $name => $directory) {
             if (strpos($filename, $name . '/') !== 0) { continue; }
             $relativeName = substr($filename, strlen($name) + 1);
-            $procedure($directory->file($relativeName));
+            $updateFileState($directory->file($relativeName));
         }
     }
 

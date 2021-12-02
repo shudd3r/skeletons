@@ -35,13 +35,13 @@ class ReplacementSetup
     }
 
     /**
-     * @param Closure $resolvedValue fn (Source) => string
+     * @param Closure $resolveValue fn (Source) => string
      *
      * @see Source
      */
-    public function build(Closure $resolvedValue): BuildSetup
+    public function build(Closure $resolveValue): BuildSetup
     {
-        $builder = new ReplacementBuilder($resolvedValue);
+        $builder = new ReplacementBuilder($resolveValue);
         $this->setup->addBuilder($this->placeholder, $builder);
         return new BuildSetup($builder);
     }

@@ -24,20 +24,20 @@ class BuildSetup
     }
 
     /**
-     * @param Closure $isValid fn (string $value) => bool
+     * @param Closure $validate fn (string $value) => bool
      */
-    public function validate(Closure $isValid): self
+    public function validate(Closure $validate): self
     {
-        $this->builder->validate($isValid);
+        $this->builder->validate($validate);
         return $this;
     }
 
     /**
-     * @param Closure $token fn (string $placeholder, string $value) => Token
+     * @param Closure $createToken fn (string $placeholder, string $value) => Token
      */
-    public function token(Closure $token): self
+    public function token(Closure $createToken): self
     {
-        $this->builder->token($token);
+        $this->builder->token($createToken);
         return $this;
     }
 

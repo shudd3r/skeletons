@@ -55,10 +55,10 @@ class FakeReplacement extends StandardReplacement
         return $clone;
     }
 
-    public function withValidation(Closure $isValid): self
+    public function withValidation(Closure $validate): self
     {
         $clone = clone $this;
-        $clone->validate = $isValid;
+        $clone->validate = $validate;
         return $clone;
     }
 

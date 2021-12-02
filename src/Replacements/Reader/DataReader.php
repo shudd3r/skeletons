@@ -22,7 +22,7 @@ class DataReader extends Reader
         return null;
     }
 
-    public function inputString(string $prompt, Closure $isValid = null, int $tries = 1): ?string
+    public function inputString(string $prompt, Closure $validate = null, int $tries = 1): ?string
     {
         return null;
     }

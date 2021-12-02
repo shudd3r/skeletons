@@ -18,38 +18,38 @@ use Closure;
 
 class ReplacementBuilder
 {
-    private Closure  $resolvedValue;
-    private ?Closure $isValid       = null;
-    private ?Closure $tokenInstance = null;
-    private ?string  $inputPrompt   = null;
-    private ?string  $argumentName  = null;
-    private string   $description   = '';
+    private Closure  $resolveValue;
+    private ?Closure $validate     = null;
+    private ?Closure $createToken  = null;
+    private ?string  $inputPrompt  = null;
+    private ?string  $argumentName = null;
+    private string   $description  = '';
 
     /**
-     * @param Closure $resolvedValue fn (Source) => string
+     * @param Closure $resolveValue fn (Source) => string
      *
      * @see Source
      */
-    public function __construct(Closure $resolvedValue)
+    public function __construct(Closure $resolveValue)
     {
-        $this->resolvedValue = $resolvedValue;
+        $this->resolveValue = $resolveValue;
     }
 
     /**
-     * @param Closure $isValid fn (string $value) => bool
+     * @param Closure $validate fn (string $value) => bool
      */
-    public function validate(Closure $isValid): self
+    public function validate(Closure $validate): self
     {
-        $this->isValid = $isValid;
+        $this->validate = $validate;
         return $this;
     }
 
     /**
-     * @param Closure $tokenInstance fn (string $placeholder, string $value) => Token
+     * @param Closure $createToken fn (string $placeholder, string $value) => Token
      */
-    public function token(Closure $tokenInstance): self
+    public function token(Closure $createToken): self
     {
-        $this->tokenInstance = $tokenInstance;
+        $this->createToken = $createToken;
         return $this;
     }
 
@@ -74,9 +74,9 @@ class ReplacementBuilder
     public function build(): Replacement
     {
         return new Replacement\GenericReplacement(
-            $this->resolvedValue,
-            $this->isValid,
-            $this->tokenInstance,
+            $this->resolveValue,
+            $this->validate,
+            $this->createToken,
             $this->inputPrompt,
             $this->argumentName,
             $this->description

@@ -20,13 +20,10 @@ interface Source
     public function commandArgument(string $argumentName): ?string;
 
     /**
-     * @param string       $prompt
-     * @param Closure|null $isValid fn (string) => bool
-     * @param int          $tries   Number of attempts to provide valid value (0 - unlimited)
-     *
-     * @return string|null
+     * @param Closure|null $validate fn (string) => bool
+     * @param int          $tries    Number of attempts to provide valid value (0 - unlimited)
      */
-    public function inputString(string $prompt, Closure $isValid = null, int $tries = 1): ?string;
+    public function inputString(string $prompt, Closure $validate = null, int $tries = 1): ?string;
 
     public function metaValueOf(string $name): ?string;
 
