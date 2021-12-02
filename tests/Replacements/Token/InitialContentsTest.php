@@ -53,6 +53,20 @@ class InitialContentsTest extends TestCase
         $this->assertSame($expected, $token->replace($template));
     }
 
+    public function testSingleNewLineNextToMultilinePlaceholderDelimiter_IsIgnored()
+    {
+        $token = new InitialContents();
+
+        [$contents, $expected] = $this->multilineExample();
+
+        $template = $this->template($contents);
+        $this->assertSame($expected, $token->replace($template));
+
+        $contents = str_replace(['>>>', "\n<<<"], [">>>\r", "\r\n<<<"], $contents);
+        $template = $this->template($contents);
+        $this->assertSame($expected, $token->replace($template));
+    }
+
     /**
      * @dataProvider replaceWithInitialValue
      * @param string $template
@@ -103,7 +117,7 @@ class InitialContentsTest extends TestCase
             and the next one. Here it ends >>>
             TPL;
 
-        $utf          = ['ᚻᛖ ᛒᚢᛞᛖ ᚩᚾ', '⠍⠊⠣⠞ ⠙⠁⠧⠑ ⠃⠑', '😁Hello!😥', 'Οὐχὶ ταὐτὰ παρίστατ', 'αίგაიቢያዩት ይስቅა', '🌞'];
+        $utf            = ['ᚻᛖ ᛒᚢᛞᛖ ᚩᚾ', '⠍⠊⠣⠞ ⠙⠁⠧⠑ ⠃⠑', '😁Hello!😥', 'Οὐχὶ ταὐτὰ παρίστατ', 'αίგაიቢያዩት ይስቅა', '🌞'];
         $utfTemplate    = $utf[0] . $template($utf[1]) . $utf[2] . $template($utf[3]) . $utf[4] . $template($utf[5]);
         $utfRender      = implode('', $utf);
         $utfPlaceholder = $utf[0] . $orig . $utf[2] . $orig . $utf[4] . $orig;
@@ -137,5 +151,28 @@ class InitialContentsTest extends TestCase
     {
         $realPlaceholders = [InitialContents::CONTENT_START, InitialContents::CONTENT_END];
         return str_replace(['{start>>>', '<<<end}'], $realPlaceholders, $template);
+    }
+
+    private function multilineExample(): array
+    {
+        $contents = <<<'TPL'
+            This template part cannot change
+            {start>>>
+            
+            ...but here you can write anything
+            <<<end}
+            Again.
+            This content is mandatory. DO NOT REMOVE!
+            TPL;
+
+        $expected = <<<'TPL'
+            This template part cannot change
+            
+            ...but here you can write anything
+            Again.
+            This content is mandatory. DO NOT REMOVE!
+            TPL;
+
+        return [$contents, $expected];
     }
 }

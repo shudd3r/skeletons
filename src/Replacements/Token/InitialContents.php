@@ -53,7 +53,7 @@ class InitialContents implements Token
     private function pattern(): string
     {
         $capture = $this->initialize ? '(.+?)' : '.+?';
-        $pattern = preg_quote(self::CONTENT_START) . $capture . preg_quote(self::CONTENT_END);
+        $pattern = preg_quote(self::CONTENT_START) . '(?:\n|\r\n)?' . $capture . '(?:\n|\r\n)?' . preg_quote(self::CONTENT_END);
 
         return '#' . $pattern . '#s';
     }
