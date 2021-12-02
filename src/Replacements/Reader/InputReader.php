@@ -17,7 +17,7 @@ use Closure;
 
 class InputReader extends Reader
 {
-    public function commandArgument(string $argumentName): string
+    public function commandArgument(string $argumentName): ?string
     {
         return $this->args->valueOf($argumentName);
     }

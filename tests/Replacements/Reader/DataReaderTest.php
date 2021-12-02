@@ -28,6 +28,6 @@ class DataReaderTest extends TestCase
         $isValid = fn (string $value) => $value !== 'invalid';
 
         $this->assertNull($reader->inputString('Input prompt:', $isValid));
-        $this->assertSame('', $reader->commandArgument('fooArg'));
+        $this->assertNull($reader->commandArgument('fooArg'));
     }
 }

@@ -17,7 +17,7 @@ use Closure;
 
 interface Source
 {
-    public function commandArgument(string $argumentName): string;
+    public function commandArgument(string $argumentName): ?string;
 
     /**
      * @param string       $prompt

@@ -25,7 +25,7 @@ class InputReaderTest extends TestCase
         $reader = new InputReader($env, new InputArgs(['command', 'update', 'fooArg=foo command line value']));
 
         $this->assertSame('foo command line value', $reader->commandArgument('fooArg'));
-        $this->assertSame('', $reader->commandArgument('notArg'));
+        $this->assertNull($reader->commandArgument('notArg'));
     }
 
     public function testForNonInteractiveCommand_InputStringMethod_ReturnsNull()

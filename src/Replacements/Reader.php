@@ -48,7 +48,7 @@ abstract class Reader implements Source
         return $this->tokens;
     }
 
-    abstract public function commandArgument(string $argumentName): string;
+    abstract public function commandArgument(string $argumentName): ?string;
 
     abstract public function inputString(string $prompt, Closure $isValid = null, int $tries = 1): ?string;
 

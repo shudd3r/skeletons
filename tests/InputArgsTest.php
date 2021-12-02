@@ -92,9 +92,9 @@ class InputArgsTest extends TestCase
     {
         $argv = ['script', 'init', 'none', 'foo=value', '--notArg=foo', 'empty=', 'withSpaces=foo bar baz'];
         $args = new InputArgs($argv);
-        $this->assertSame('', $args->valueOf('undefined'));
-        $this->assertSame('', $args->valueOf('notArg'));
-        $this->assertSame('', $args->valueOf('--notArg'));
+        $this->assertSame(null, $args->valueOf('undefined'));
+        $this->assertSame(null, $args->valueOf('notArg'));
+        $this->assertSame(null, $args->valueOf('--notArg'));
         $this->assertSame('', $args->valueOf('none'));
         $this->assertSame('', $args->valueOf('empty'));
         $this->assertSame('value', $args->valueOf('foo'));
