@@ -25,14 +25,15 @@ class FakeReader extends Reader
         parent::__construct($env ?? new Doubles\FakeRuntimeEnv(), new InputArgs($args));
     }
 
-    public function commandArgument(string $argumentName): string
+    public function commandArgument(string $argumentName): ?string
     {
         return $this->args->valueOf($argumentName);
     }
 
-    public function inputString(string $prompt, Closure $isValid = null, int $tries = 0): string
+    public function inputString(string $prompt, Closure $isValid = null, int $tries = 0): ?string
     {
+        if (!$this->args->interactive()) { return null; }
         $value = $this->env->input()->value($prompt);
-        return $isValid($value) ? $value : '';
+        return !$isValid || $isValid($value) ? $value : '';
     }
 }

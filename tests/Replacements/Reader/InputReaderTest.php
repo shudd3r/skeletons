@@ -22,9 +22,12 @@ class InputReaderTest extends TestCase
     public function testCommandArgument_ReturnsInputArgSourceValue()
     {
         $env    = new Doubles\FakeRuntimeEnv();
-        $reader = new InputReader($env, new InputArgs(['command', 'update', 'fooArg=foo command line value']));
+        $args   = new InputArgs(['command', 'update', 'fooArg=foo command line value', 'barArg=', 'bazArg']);
+        $reader = new InputReader($env, $args);
 
         $this->assertSame('foo command line value', $reader->commandArgument('fooArg'));
+        $this->assertSame('', $reader->commandArgument('barArg'));
+        $this->assertSame('', $reader->commandArgument('bazArg'));
         $this->assertNull($reader->commandArgument('notArg'));
     }
 

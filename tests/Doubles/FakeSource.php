@@ -40,9 +40,9 @@ class FakeSource implements Source
         return new self($metaData, $commandArgs);
     }
 
-    public function commandArgument(string $argumentName): string
+    public function commandArgument(string $argumentName): ?string
     {
-        return $this->commandArgs[$argumentName] ?? '';
+        return $this->commandArgs[$argumentName] ?? null;
     }
 
     public function inputString(string $prompt, Closure $isValid = null, int $tries = 0): ?string

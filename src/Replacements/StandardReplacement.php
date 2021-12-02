@@ -51,17 +51,17 @@ abstract class StandardReplacement implements Replacement
 
     private function value(string $name, Source $source): string
     {
-        $argValue = $this->argumentName ? $source->commandArgument($this->argumentName) : '';
-        $validArg = $argValue && $this->isValid($argValue);
+        $argValue = $this->argumentName ? $source->commandArgument($this->argumentName) : null;
+        $validArg = $argValue !== null && $this->isValid($argValue);
         $default  = $validArg ? $argValue : $source->metaValueOf($name) ?? $this->resolvedValue($source);
 
-        if (!$this->inputPrompt) { return $argValue ?: $default; }
+        if (!$this->inputPrompt) { return $argValue ?? $default; }
         if (!$this->isValid($default)) { $default = ''; }
 
         $prompt  = '  > ' . $this->inputPrompt . ($default ? ' [default: ' . $default . ']' : '') . ':';
         $isValid = fn (string $value) => (!$value && $default) || $this->isValid($value);
 
-        $input = $source->inputString($prompt, $isValid, $this->inputTries) ?? $argValue ?: $default;
+        $input = $source->inputString($prompt, $isValid, $this->inputTries) ?? $argValue ?? $default;
         return $input ?: $default;
     }
 }
