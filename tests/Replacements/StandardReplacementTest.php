@@ -35,6 +35,9 @@ class StandardReplacementTest extends TestCase
     {
         $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'arg value']);
         $this->assertToken('arg value', $this->replacement()->withInputArg('fooArg'), $source);
+
+        $source = Source::create(['foo' => 'meta value'], ['emptyArg' => '']);
+        $this->assertToken('', $this->replacement()->withInputArg('emptyArg'), $source);
     }
 
     public function testWithInputPromptProperty_Token_ReturnsTokenUsingInputEntry()

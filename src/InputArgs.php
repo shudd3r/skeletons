@@ -57,9 +57,9 @@ class InputArgs
         return $this->options['local'];
     }
 
-    public function valueOf(string $name): string
+    public function valueOf(string $name): ?string
     {
-        return $this->arguments[$name] ?? '';
+        return $this->arguments[$name] ?? null;
     }
 
     private function parseArgs(array $argv): void

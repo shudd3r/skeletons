@@ -17,9 +17,16 @@ use Closure;
 
 interface Source
 {
-    public function commandArgument(string $argumentName): string;
+    public function commandArgument(string $argumentName): ?string;
 
-    public function inputString(string $prompt, Closure $isValid): ?string;
+    /**
+     * @param string       $prompt
+     * @param Closure|null $isValid fn (string) => bool
+     * @param int          $tries   Number of attempts to provide valid value (0 - unlimited)
+     *
+     * @return string|null
+     */
+    public function inputString(string $prompt, Closure $isValid = null, int $tries = 1): ?string;
 
     public function metaValueOf(string $name): ?string;
 

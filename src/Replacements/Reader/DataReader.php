@@ -17,13 +17,13 @@ use Closure;
 
 class DataReader extends Reader
 {
-    public function commandArgument(string $argumentName): string
+    public function commandArgument(string $argumentName): ?string
     {
-        return '';
+        return null;
     }
 
-    public function inputString(string $prompt, Closure $isValid): string
+    public function inputString(string $prompt, Closure $isValid = null, int $tries = 1): ?string
     {
-        return '';
+        return null;
     }
 }
