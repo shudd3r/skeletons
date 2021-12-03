@@ -11,7 +11,9 @@
 
 namespace Shudd3r\Skeletons\Tests\Doubles;
 
+use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements;
+use Shudd3r\Skeletons\Replacements\Reader;
 use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\Replacements\Tokens;
 
@@ -23,7 +25,7 @@ class FakeTokens extends Tokens
     public function __construct(bool $returnsToken = true)
     {
         $this->returnsToken = $returnsToken;
-        parent::__construct(new Replacements([]), new FakeReader());
+        parent::__construct(new Replacements([]), new Reader\InputReader(new FakeRuntimeEnv(), new InputArgs([])));
     }
 
     public function compositeToken(): ?Token

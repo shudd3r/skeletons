@@ -12,6 +12,7 @@
 namespace Shudd3r\Skeletons\Tests\Replacements;
 
 use PHPUnit\Framework\TestCase;
+use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 use Shudd3r\Skeletons\Environment\Files\Directory;
@@ -106,6 +107,9 @@ class ReaderTest extends TestCase
 
     private function reader(?Doubles\FakeRuntimeEnv $env = null, array $args = null): Replacements\Reader
     {
-        return new Doubles\FakeReader($env, $args ?: ['command', 'update', '-i']);
+        return new Replacements\Reader\DataReader(
+            $env ?? new Doubles\FakeRuntimeEnv(),
+            new InputArgs($args ?: ['command', 'update', '-i'])
+        );
     }
 }
