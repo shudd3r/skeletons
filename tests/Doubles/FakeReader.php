@@ -18,7 +18,7 @@ use Shudd3r\Skeletons\Tests\Doubles;
 use Closure;
 
 
-class FakeReader extends Reader
+class FakeReader extends Reader\InputReader
 {
     public function __construct(?RuntimeEnv $env = null, array $args = [])
     {

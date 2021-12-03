@@ -40,12 +40,21 @@ class FakeSource implements Source
         return new self($metaData, $commandArgs);
     }
 
+    public function sendMessage(string $message): void
+    {
+    }
+
+    public function inputValue(string $prompt): ?string
+    {
+        return $this->inputString($prompt);
+    }
+
     public function commandArgument(string $argumentName): ?string
     {
         return $this->commandArgs[$argumentName] ?? null;
     }
 
-    public function inputString(string $prompt, Closure $validate = null, int $tries = 0): ?string
+    public function inputString(string $prompt, Closure $validate = null, int $tries = 1): ?string
     {
         if (isset($this->commandArgs['i']) && !$this->commandArgs['i']) { return null; }
         $this->promptUsed = $prompt;

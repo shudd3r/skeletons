@@ -17,6 +17,10 @@ use Closure;
 
 interface Source
 {
+    public function sendMessage(string $message): void;
+
+    public function inputValue(string $prompt): ?string;
+
     public function commandArgument(string $argumentName): ?string;
 
     /**

@@ -30,4 +30,27 @@ class DataReaderTest extends TestCase
         $this->assertNull($reader->inputString('Input prompt:', $isValid));
         $this->assertNull($reader->commandArgument('fooArg'));
     }
+
+    public function testInputValueMethod_ReturnsNullWithoutPromptDisplay()
+    {
+        $env    = new Doubles\FakeRuntimeEnv();
+        $reader = $this->reader($env);
+
+        $this->assertNull($reader->inputValue('Enter foo'));
+        $this->assertEmpty($env->output()->messagesSent());
+    }
+
+    public function testSendMessageMethod_hasNoEffect()
+    {
+        $env    = new Doubles\FakeRuntimeEnv();
+        $reader = $this->reader($env);
+
+        $reader->sendMessage('Hello world!');
+        $this->assertEmpty($env->output()->messagesSent());
+    }
+
+    private function reader(Doubles\FakeRuntimeEnv $env): DataReader
+    {
+        return new DataReader($env, new InputArgs(['script', 'update', '-i', 'fooArg=foo value']));
+    }
 }

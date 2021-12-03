@@ -17,6 +17,17 @@ use Closure;
 
 class InputReader extends Reader
 {
+    public function sendMessage(string $message): void
+    {
+        $this->env->output()->send('    ' . $this->formattedMessage($message));
+    }
+
+    public function inputValue(string $prompt): ?string
+    {
+        if (!$this->args->interactive()) { return null; }
+        return $this->env->input()->value('  > ' . $this->formattedMessage($prompt) . ':');
+    }
+
     public function commandArgument(string $argumentName): ?string
     {
         return $this->args->valueOf($argumentName);
@@ -47,5 +58,10 @@ class InputReader extends Reader
         
         ABORT;
         $this->env->output()->send($abortMessage);
+    }
+
+    private function formattedMessage(string $message): string
+    {
+        return str_replace("\n", PHP_EOL . '    ', $message);
     }
 }

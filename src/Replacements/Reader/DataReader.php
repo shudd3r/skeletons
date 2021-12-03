@@ -17,6 +17,15 @@ use Closure;
 
 class DataReader extends Reader
 {
+    public function sendMessage(string $message): void
+    {
+    }
+
+    public function inputValue(string $prompt): ?string
+    {
+        return null;
+    }
+
     public function commandArgument(string $argumentName): ?string
     {
         return null;
