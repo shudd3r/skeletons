@@ -58,10 +58,18 @@ abstract class StandardReplacement implements Replacement
         if (!$this->inputPrompt) { return $argValue ?? $default; }
         if (!$this->isValid($default)) { $default = ''; }
 
-        $prompt  = '  > ' . $this->inputPrompt . ($default ? ' [default: ' . $default . ']' : '') . ':';
-        $isValid = fn (string $value) => (!$value && $default) || $this->isValid($value);
+        $prompt = $this->inputPrompt . ($default ? ' [default: ' . $default . ']' : '');
+        $input  = $source->inputValue($prompt);
+        if ($input === null) { return $argValue ?? $default; }
 
-        $input = $source->inputString($prompt, $isValid, $this->inputTries) ?? $argValue ?? $default;
+        $tries   = $this->inputTries;
+        $isValid = fn (string $value) => (!$value && $default) || $this->isValid($value);
+        while (!$isValid($input) && --$tries) {
+            $retryInfo = $tries === 1 ? 'once more' : 'again';
+            $source->sendMessage('Invalid value. Try ' . $retryInfo . PHP_EOL);
+            $input = $source->inputValue($prompt);
+        }
+
         return $input ?: $default;
     }
 }
