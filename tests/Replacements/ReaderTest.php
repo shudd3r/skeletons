@@ -30,12 +30,14 @@ class ReaderTest extends TestCase
 
         $replacements = new Replacements([
             'foo' => new Doubles\FakeReplacement('foo-value'),
-            'bar' => new Doubles\FakeReplacement('bar-value')
+            'bar' => new Doubles\FakeReplacement('invalid'),
+            'baz' => new Doubles\FakeReplacement('baz-value'),
         ]);
 
         $expected = [
             'foo' => new BasicToken('foo', 'foo-value'),
-            'bar' => new BasicToken('bar', 'bar-value')
+            'bar' => null,
+            'baz' => new BasicToken('baz', 'baz-value'),
         ];
         $this->assertEquals($expected, $reader->tokens($replacements));
     }
@@ -109,7 +111,7 @@ class ReaderTest extends TestCase
     {
         return new Replacements\Reader\DataReader(
             $env ?? new Doubles\FakeRuntimeEnv(),
-            new InputArgs($args ?: ['command', 'update', '-i'])
+            new InputArgs($args ?: ['script', 'command'])
         );
     }
 }

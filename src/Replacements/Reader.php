@@ -41,7 +41,10 @@ abstract class Reader implements Source
         $this->replacements = $replacements;
 
         foreach ($this->replacements->placeholders() as $name) {
-            if (!$this->token($name) && $this->args->interactive()) { break; }
+            if (!$this->token($name) && $this->args->interactive()) {
+                $this->sendMessage('Aborting...');
+                break;
+            }
         }
 
         return $this->tokens;

@@ -13,12 +13,36 @@ namespace Shudd3r\Skeletons\Tests\Replacements\Reader;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Replacements\Reader\InputReader;
+use Shudd3r\Skeletons\Replacements\Token\BasicToken;
+use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
 class InputReaderTest extends TestCase
 {
+    public function testForInvalidTokenInInteractiveMode_TokensMethod_ReturnsAtFirstNullValue()
+    {
+        $env    = new Doubles\FakeRuntimeEnv();
+        $reader = $this->reader($env);
+
+        $replacements = new Replacements([
+            'foo' => new Doubles\FakeReplacement('foo-value'),
+            'bar' => new Doubles\FakeReplacement('invalid'),
+            'baz' => new Doubles\FakeReplacement('baz-value'),
+        ]);
+
+        $expected = [
+            'foo' => new BasicToken('foo', 'foo-value'),
+            'bar' => null
+        ];
+
+        $this->assertEquals($expected, $reader->tokens($replacements));
+
+        $messages = $env->output()->messagesSent();
+        $this->assertSame('Aborting...', trim($messages[0]));
+    }
+
     public function testCommandArgument_ReturnsInputArgSourceValue()
     {
         $env    = new Doubles\FakeRuntimeEnv();
@@ -63,6 +87,7 @@ class InputReaderTest extends TestCase
         $expected = <<<'MSG'
                 Hello world!
                 This is second line of the message
+            
             MSG;
 
         $reader->sendMessage($message);

@@ -66,8 +66,12 @@ abstract class StandardReplacement implements Replacement
         $isValid = fn (string $value) => (!$value && $default) || $this->isValid($value);
         while (!$isValid($input) && --$tries) {
             $retryInfo = $tries === 1 ? 'once more' : 'again';
-            $source->sendMessage('Invalid value. Try ' . $retryInfo . PHP_EOL);
+            $source->sendMessage('Invalid value. Try ' . $retryInfo);
             $input = $source->inputValue($prompt);
+        }
+
+        if (!$tries) {
+            $source->sendMessage('Invalid value. Try `help` command for information on this value format.');
         }
 
         return $input ?: $default;

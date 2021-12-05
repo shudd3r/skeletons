@@ -26,7 +26,8 @@ class FakeSource implements Source
     private array  $fileContents = [];
     private string $packagePath  = '/package';
 
-    private string $promptUsed = '';
+    private string $promptUsed   = '';
+    private array  $messagesSent = [];
 
     public function __construct(array $metaData = [], array $commandArgs = [])
     {
@@ -41,6 +42,7 @@ class FakeSource implements Source
 
     public function sendMessage(string $message): void
     {
+        $this->messagesSent[] = $message;
     }
 
     public function inputValue(string $prompt): ?string
@@ -114,5 +116,10 @@ class FakeSource implements Source
     {
         $this->tokenValues[$tokenName] = $value;
         return $this;
+    }
+
+    public function messagesSent(): array
+    {
+        return $this->messagesSent;
     }
 }

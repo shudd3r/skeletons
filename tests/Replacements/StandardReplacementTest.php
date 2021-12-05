@@ -110,6 +110,13 @@ class StandardReplacementTest extends TestCase
 
         $source = Source::create()->withInputStrings('invalid', 'invalid', 'invalid');
         $this->assertNull($this->replacement()->withPrompt('Give foo')->token('foo', $source));
+
+        $expectedMessages = [
+            'Invalid value. Try again',
+            'Invalid value. Try once more',
+            'Invalid value. Try `help` command for information on this value format.'
+        ];
+        $this->assertSame($expectedMessages, $source->messagesSent());
     }
 
     public function testWithoutArgumentName_Description_ReturnsEmptyString()

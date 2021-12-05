@@ -18,7 +18,7 @@ class InputReader extends Reader
 {
     public function sendMessage(string $message): void
     {
-        $this->env->output()->send('    ' . $this->formattedMessage($message));
+        $this->env->output()->send('    ' . $this->formattedMessage($message) . PHP_EOL);
     }
 
     public function inputValue(string $prompt): ?string
