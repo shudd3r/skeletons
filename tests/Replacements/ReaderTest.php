@@ -12,6 +12,7 @@
 namespace Shudd3r\Skeletons\Tests\Replacements;
 
 use PHPUnit\Framework\TestCase;
+use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 use Shudd3r\Skeletons\Environment\Files\Directory;
@@ -29,12 +30,14 @@ class ReaderTest extends TestCase
 
         $replacements = new Replacements([
             'foo' => new Doubles\FakeReplacement('foo-value'),
-            'bar' => new Doubles\FakeReplacement('bar-value')
+            'bar' => new Doubles\FakeReplacement('invalid'),
+            'baz' => new Doubles\FakeReplacement('baz-value'),
         ]);
 
         $expected = [
             'foo' => new BasicToken('foo', 'foo-value'),
-            'bar' => new BasicToken('bar', 'bar-value')
+            'bar' => null,
+            'baz' => new BasicToken('baz', 'baz-value'),
         ];
         $this->assertEquals($expected, $reader->tokens($replacements));
     }
@@ -106,6 +109,9 @@ class ReaderTest extends TestCase
 
     private function reader(?Doubles\FakeRuntimeEnv $env = null, array $args = null): Replacements\Reader
     {
-        return new Doubles\FakeReader($env, $args ?: ['command', 'update', '-i']);
+        return new Replacements\Reader\DataReader(
+            $env ?? new Doubles\FakeRuntimeEnv(),
+            new InputArgs($args ?: ['script', 'command'])
+        );
     }
 }

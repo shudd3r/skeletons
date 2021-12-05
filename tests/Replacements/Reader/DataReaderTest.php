@@ -19,15 +19,34 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class DataReaderTest extends TestCase
 {
-    public function testUserInputMethods_InputSourceValues_ReturnEmptyString()
+    public function testCommandArgumentMethod_ReturnsNull()
     {
         $env    = new Doubles\FakeRuntimeEnv();
         $reader = new DataReader($env, new InputArgs(['script', 'command', '-i', 'fooArg=foo value']));
 
-        $env->input()->addInput('input string');
-        $isValid = fn (string $value) => $value !== 'invalid';
-
-        $this->assertNull($reader->inputString('Input prompt:', $isValid));
         $this->assertNull($reader->commandArgument('fooArg'));
+    }
+
+    public function testInputValueMethod_ReturnsNullWithoutPromptDisplay()
+    {
+        $env    = new Doubles\FakeRuntimeEnv();
+        $reader = $this->reader($env);
+
+        $this->assertNull($reader->inputValue('Enter foo'));
+        $this->assertEmpty($env->output()->messagesSent());
+    }
+
+    public function testSendMessageMethod_hasNoEffect()
+    {
+        $env    = new Doubles\FakeRuntimeEnv();
+        $reader = $this->reader($env);
+
+        $reader->sendMessage('Hello world!');
+        $this->assertEmpty($env->output()->messagesSent());
+    }
+
+    private function reader(Doubles\FakeRuntimeEnv $env): DataReader
+    {
+        return new DataReader($env, new InputArgs(['script', 'update', '-i', 'fooArg=foo value']));
     }
 }

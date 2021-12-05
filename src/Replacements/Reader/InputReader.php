@@ -12,40 +12,37 @@
 namespace Shudd3r\Skeletons\Replacements\Reader;
 
 Use Shudd3r\Skeletons\Replacements\Reader;
-use Closure;
 
 
 class InputReader extends Reader
 {
+    public function sendMessage(string $message): void
+    {
+        $this->env->output()->send('    ' . $this->formattedMessage($message) . PHP_EOL);
+    }
+
+    public function inputValue(string $prompt): ?string
+    {
+        if (!$this->args->interactive()) { return null; }
+        return $this->env->input()->value('  > ' . $this->formattedMessage($prompt) . ':');
+    }
+
     public function commandArgument(string $argumentName): ?string
     {
         return $this->args->valueOf($argumentName);
     }
 
-    public function inputString(string $prompt, Closure $validate = null, int $tries = 3): ?string
+    protected function readTokens(array $tokenNames): void
     {
-        if (!$this->args->interactive()) { return null; }
-
-        $input = $this->env->input()->value($prompt);
-        if (!$validate) { return $input; }
-
-        while (!$validate($input) && --$tries) {
-            $retryInfo = $tries === 1 ? 'once more' : 'again';
-            $this->env->output()->send('    Invalid value. Try ' . $retryInfo . PHP_EOL);
-            $input = $this->env->input()->value($prompt);
+        foreach ($tokenNames as $name) {
+            if ($this->token($name) || !$this->args->interactive()) { continue; }
+            $this->sendMessage('Aborting...');
+            break;
         }
-
-        if (!$tries) { $this->sendAbortMessage(); }
-        return $input;
     }
 
-    private function sendAbortMessage(): void
+    private function formattedMessage(string $message): string
     {
-        $abortMessage = <<<ABORT
-            Invalid value. Try `help` command for information on this value format.
-            Aborting...
-        
-        ABORT;
-        $this->env->output()->send($abortMessage);
+        return str_replace("\n", PHP_EOL . '    ', $message);
     }
 }

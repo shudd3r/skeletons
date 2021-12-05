@@ -12,17 +12,20 @@
 namespace Shudd3r\Skeletons\Replacements\Reader;
 
 Use Shudd3r\Skeletons\Replacements\Reader;
-use Closure;
 
 
 class DataReader extends Reader
 {
-    public function commandArgument(string $argumentName): ?string
+    public function sendMessage(string $message): void
+    {
+    }
+
+    public function inputValue(string $prompt): ?string
     {
         return null;
     }
 
-    public function inputString(string $prompt, Closure $validate = null, int $tries = 1): ?string
+    public function commandArgument(string $argumentName): ?string
     {
         return null;
     }

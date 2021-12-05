@@ -12,18 +12,15 @@
 namespace Shudd3r\Skeletons\Replacements;
 
 use Shudd3r\Skeletons\Replacements\Data\ComposerJsonData;
-use Closure;
 
 
 interface Source
 {
-    public function commandArgument(string $argumentName): ?string;
+    public function sendMessage(string $message): void;
 
-    /**
-     * @param Closure|null $validate fn (string) => bool
-     * @param int          $tries    Number of attempts to provide valid value (0 - unlimited)
-     */
-    public function inputString(string $prompt, Closure $validate = null, int $tries = 1): ?string;
+    public function inputValue(string $prompt): ?string;
+
+    public function commandArgument(string $argumentName): ?string;
 
     public function metaValueOf(string $name): ?string;
 

@@ -14,7 +14,6 @@ namespace Shudd3r\Skeletons\Tests\Doubles;
 use Shudd3r\Skeletons\Replacements\Source;
 use Shudd3r\Skeletons\Replacements\Data\ComposerJsonData;
 use Shudd3r\Skeletons\Environment\Files\File\VirtualFile;
-use Closure;
 
 
 class FakeSource implements Source
@@ -27,7 +26,8 @@ class FakeSource implements Source
     private array  $fileContents = [];
     private string $packagePath  = '/package';
 
-    private string $promptUsed = '';
+    private string $promptUsed   = '';
+    private array  $messagesSent = [];
 
     public function __construct(array $metaData = [], array $commandArgs = [])
     {
@@ -40,16 +40,21 @@ class FakeSource implements Source
         return new self($metaData, $commandArgs);
     }
 
-    public function commandArgument(string $argumentName): ?string
+    public function sendMessage(string $message): void
     {
-        return $this->commandArgs[$argumentName] ?? null;
+        $this->messagesSent[] = $message;
     }
 
-    public function inputString(string $prompt, Closure $validate = null, int $tries = 0): ?string
+    public function inputValue(string $prompt): ?string
     {
         if (isset($this->commandArgs['i']) && !$this->commandArgs['i']) { return null; }
         $this->promptUsed = $prompt;
         return array_shift($this->inputStrings) ?: '';
+    }
+
+    public function commandArgument(string $argumentName): ?string
+    {
+        return $this->commandArgs[$argumentName] ?? null;
     }
 
     public function metaValueOf(string $name): ?string
@@ -111,5 +116,10 @@ class FakeSource implements Source
     {
         $this->tokenValues[$tokenName] = $value;
         return $this;
+    }
+
+    public function messagesSent(): array
+    {
+        return $this->messagesSent;
     }
 }
