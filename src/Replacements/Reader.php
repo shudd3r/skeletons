@@ -38,14 +38,9 @@ abstract class Reader implements Source
     final public function tokens(Replacements $replacements): array
     {
         if ($this->tokens) { return $this->tokens; }
-        $this->replacements = $replacements;
 
-        foreach ($this->replacements->placeholders() as $name) {
-            if (!$this->token($name) && $this->args->interactive()) {
-                $this->sendMessage('Aborting...');
-                break;
-            }
-        }
+        $this->replacements = $replacements;
+        $this->readTokens($this->replacements->placeholders());
 
         return $this->tokens;
     }
@@ -82,7 +77,12 @@ abstract class Reader implements Source
         return $token ? $token->value() : '';
     }
 
-    private function token(string $name): ?Token
+    protected function readTokens(array $tokenNames): void
+    {
+        array_walk($tokenNames, fn (string $name) => $this->token($name));
+    }
+
+    final protected function token(string $name): ?Token
     {
         if (array_key_exists($name, $this->tokens)) { return $this->tokens[$name]; }
         $this->tokens[$name] = null;

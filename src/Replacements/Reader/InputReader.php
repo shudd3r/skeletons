@@ -32,6 +32,15 @@ class InputReader extends Reader
         return $this->args->valueOf($argumentName);
     }
 
+    protected function readTokens(array $tokenNames): void
+    {
+        foreach ($tokenNames as $name) {
+            if ($this->token($name) || !$this->args->interactive()) { continue; }
+            $this->sendMessage('Aborting...');
+            break;
+        }
+    }
+
     private function formattedMessage(string $message): string
     {
         return str_replace("\n", PHP_EOL . '    ', $message);
