@@ -12,7 +12,6 @@
 namespace Shudd3r\Skeletons\Replacements\Reader;
 
 Use Shudd3r\Skeletons\Replacements\Reader;
-use Closure;
 
 
 class InputReader extends Reader
@@ -31,33 +30,6 @@ class InputReader extends Reader
     public function commandArgument(string $argumentName): ?string
     {
         return $this->args->valueOf($argumentName);
-    }
-
-    public function inputString(string $prompt, Closure $validate = null, int $tries = 3): ?string
-    {
-        if (!$this->args->interactive()) { return null; }
-
-        $input = $this->env->input()->value($prompt);
-        if (!$validate) { return $input; }
-
-        while (!$validate($input) && --$tries) {
-            $retryInfo = $tries === 1 ? 'once more' : 'again';
-            $this->env->output()->send('    Invalid value. Try ' . $retryInfo . PHP_EOL);
-            $input = $this->env->input()->value($prompt);
-        }
-
-        if (!$tries) { $this->sendAbortMessage(); }
-        return $input;
-    }
-
-    private function sendAbortMessage(): void
-    {
-        $abortMessage = <<<ABORT
-            Invalid value. Try `help` command for information on this value format.
-            Aborting...
-        
-        ABORT;
-        $this->env->output()->send($abortMessage);
     }
 
     private function formattedMessage(string $message): string

@@ -15,7 +15,6 @@ use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\Data\ComposerJsonData;
-use Closure;
 
 
 abstract class Reader implements Source
@@ -53,8 +52,6 @@ abstract class Reader implements Source
     abstract public function inputValue(string $prompt): ?string;
 
     abstract public function commandArgument(string $argumentName): ?string;
-
-    abstract public function inputString(string $prompt, Closure $validate = null, int $tries = 1): ?string;
 
     final public function metaValueOf(string $name): ?string
     {

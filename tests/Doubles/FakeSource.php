@@ -14,7 +14,6 @@ namespace Shudd3r\Skeletons\Tests\Doubles;
 use Shudd3r\Skeletons\Replacements\Source;
 use Shudd3r\Skeletons\Replacements\Data\ComposerJsonData;
 use Shudd3r\Skeletons\Environment\Files\File\VirtualFile;
-use Closure;
 
 
 class FakeSource implements Source
@@ -46,19 +45,14 @@ class FakeSource implements Source
 
     public function inputValue(string $prompt): ?string
     {
-        return $this->inputString($prompt);
+        if (isset($this->commandArgs['i']) && !$this->commandArgs['i']) { return null; }
+        $this->promptUsed = $prompt;
+        return array_shift($this->inputStrings) ?: '';
     }
 
     public function commandArgument(string $argumentName): ?string
     {
         return $this->commandArgs[$argumentName] ?? null;
-    }
-
-    public function inputString(string $prompt, Closure $validate = null, int $tries = 1): ?string
-    {
-        if (isset($this->commandArgs['i']) && !$this->commandArgs['i']) { return null; }
-        $this->promptUsed = $prompt;
-        return array_shift($this->inputStrings) ?: '';
     }
 
     public function metaValueOf(string $name): ?string
