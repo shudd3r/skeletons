@@ -25,7 +25,7 @@ class Initialize extends Factory
         $files     = $this->templates->generatedFiles($args);
         $backup    = new Files\ReflectedFiles($this->env->backup(), $files);
         $dummies   = $this->templates->dummyFiles();
-        $tokens    = new Tokens($this->replacements, new Reader\InputReader($this->env, $args));
+        $tokens    = new Tokens($this->replacements, new Reader($this->env, $args));
         $processor = $this->filesProcessor($files, $this->mismatchedFileGenerators());
 
         $noMetaDataFile    = new Precondition\CheckFileExists($this->env->metaDataFile(), false);

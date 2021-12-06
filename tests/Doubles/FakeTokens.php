@@ -25,7 +25,7 @@ class FakeTokens extends Tokens
     public function __construct(bool $returnsToken = true)
     {
         $this->returnsToken = $returnsToken;
-        parent::__construct(new Replacements([]), new Reader\InputReader(new FakeRuntimeEnv(), new InputArgs([])));
+        parent::__construct(new Replacements([]), new Reader(new FakeRuntimeEnv(), new InputArgs([])));
     }
 
     public function compositeToken(): ?Token

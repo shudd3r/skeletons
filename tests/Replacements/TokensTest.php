@@ -74,6 +74,6 @@ class TokensTest extends TestCase
 
     private function reader(): Replacements\Reader
     {
-        return new Replacements\Reader\DataReader(new Doubles\FakeRuntimeEnv(), new InputArgs([]));
+        return new Replacements\Reader(new Doubles\FakeRuntimeEnv(), new InputArgs([]), false);
     }
 }

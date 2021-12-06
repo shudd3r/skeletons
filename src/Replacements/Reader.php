@@ -17,25 +17,27 @@ use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\Data\ComposerJsonData;
 
 
-abstract class Reader implements Source
+final class Reader implements Source
 {
-    protected RuntimeEnv $env;
-    protected InputArgs  $args;
+    private RuntimeEnv $env;
+    private InputArgs  $args;
+    private bool       $input;
 
     private Replacements $replacements;
 
     private array $tokens = [];
 
-    public function __construct(RuntimeEnv $env, InputArgs $args)
+    public function __construct(RuntimeEnv $env, InputArgs $args, bool $userInput = true)
     {
-        $this->env  = $env;
-        $this->args = $args;
+        $this->env   = $env;
+        $this->args  = $args;
+        $this->input = $userInput;
     }
 
     /**
      * @return array<string, ?Token>
      */
-    final public function tokens(Replacements $replacements): array
+    public function tokens(Replacements $replacements): array
     {
         if ($this->tokens) { return $this->tokens; }
 
@@ -45,48 +47,69 @@ abstract class Reader implements Source
         return $this->tokens;
     }
 
-    abstract public function sendMessage(string $message): void;
+    public function sendMessage(string $message): void
+    {
+        if (!$this->input) { return; }
+        $this->env->output()->send('    ' . $this->formattedMessage($message) . PHP_EOL);
+    }
 
-    abstract public function inputValue(string $prompt): ?string;
+    public function inputValue(string $prompt): ?string
+    {
+        if (!$this->input || !$this->args->interactive()) { return null; }
+        return $this->env->input()->value('  > ' . $this->formattedMessage($prompt) . ':');
+    }
 
-    abstract public function commandArgument(string $argumentName): ?string;
+    public function commandArgument(string $argumentName): ?string
+    {
+        return $this->input ? $this->args->valueOf($argumentName) : null;
+    }
 
-    final public function metaValueOf(string $name): ?string
+    public function metaValueOf(string $name): ?string
     {
         return $this->env->metaData()->value($name);
     }
 
-    final public function composer(): ComposerJsonData
+    public function composer(): ComposerJsonData
     {
         return $this->env->composer();
     }
 
-    final public function fileContents(string $filename): string
+    public function fileContents(string $filename): string
     {
         return $this->env->package()->file($filename)->contents();
     }
 
-    final public function packagePath(): string
+    public function packagePath(): string
     {
         return $this->env->package()->path();
     }
 
-    final public function tokenValueOf(string $name): string
+    public function tokenValueOf(string $name): string
     {
         $token = $this->token($name);
         return $token ? $token->value() : '';
     }
 
-    protected function readTokens(array $tokenNames): void
+    private function readTokens(array $tokenNames): void
     {
-        array_walk($tokenNames, fn (string $name) => $this->token($name));
+        $abortOnError = $this->input && $this->args->interactive();
+        foreach ($tokenNames as $name) {
+            if ($this->token($name) || !$abortOnError) { continue; }
+            $this->sendMessage('Aborting...');
+            break;
+        }
     }
 
-    final protected function token(string $name): ?Token
+    private function token(string $name): ?Token
     {
         if (array_key_exists($name, $this->tokens)) { return $this->tokens[$name]; }
         $this->tokens[$name] = null;
         $replacement = $this->replacements->replacement($name);
         return $replacement ? $this->tokens[$name] = $replacement->token($name, $this) : null;
+    }
+
+    private function formattedMessage(string $message): string
+    {
+        return str_replace("\n", PHP_EOL . '    ', $message);
     }
 }
