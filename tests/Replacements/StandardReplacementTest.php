@@ -40,14 +40,7 @@ class StandardReplacementTest extends TestCase
         $this->assertToken('', $this->replacement()->withInputArg('emptyArg'), $source);
     }
 
-    public function testWithInputPromptProperty_Token_ReturnsTokenUsingInputEntry()
-    {
-        $source = Source::create()->withInputStrings('input value');
-        $this->assertToken('input value', $this->replacement()->withPrompt('Give foo'), $source);
-        $this->assertSame('Give foo [default: resolved value]', $source->promptUsed());
-    }
-
-    public function testForInvalidArgumentValueWithoutInteractiveInput_Token_ReturnsNull()
+    public function testForInvalidArgument_Token_ReturnsNull()
     {
         $replacement = $this->replacement()->withInputArg('fooArg');
 
@@ -55,67 +48,121 @@ class StandardReplacementTest extends TestCase
         $this->assertNull($replacement->token('foo', $source), 'Non-input type Replacement');
 
         $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'invalid', 'i' => false]);
-        $this->assertNull($replacement->withPrompt('Give foo')->token('foo', $source), 'Non-interactive mode');
+        $this->assertNull($replacement->withPrompt('Enter foo')->token('foo', $source), 'Non-interactive mode');
+    }
+
+    public function testWithInputPromptProperty_Token_ReturnsTokenUsingInputEntry()
+    {
+        $source = Source::create()->withInputStrings('input value');
+        $this->assertToken('input value', $this->replacement('default value')->withPrompt('Enter foo'), $source);
+        $this->assertSame('Enter foo [default: default value]', $source->promptUsed());
     }
 
     public function testForEmptyInput_Token_ReturnsTokenWithDefaultValue()
     {
-        $replacement = $this->replacement()->withPrompt('Give foo');
+        $replacement = $this->replacement()->withPrompt('Enter foo');
 
         $source = Source::create();
         $this->assertToken('resolved value', $replacement, $source);
-        $this->assertSame('Give foo [default: resolved value]', $source->promptUsed());
+        $this->assertSame('Enter foo [default: resolved value]', $source->promptUsed());
 
         $source = Source::create(['foo' => 'meta value']);
         $this->assertToken('meta value', $replacement, $source);
-        $this->assertSame('Give foo [default: meta value]', $source->promptUsed());
+        $this->assertSame('Enter foo [default: meta value]', $source->promptUsed());
 
         $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'arg value']);
         $this->assertToken('arg value', $replacement->withInputArg('fooArg'), $source);
-        $this->assertSame('Give foo [default: arg value]', $source->promptUsed());
+        $this->assertSame('Enter foo [default: arg value]', $source->promptUsed());
     }
 
-    public function testInvalidArgumentValueForInteractiveInput_IsIgnoredForDefault()
+    public function testForInteractiveInput_EmptyDefaultValue_IsNotDisplayed()
     {
-        $replacement = $this->replacement()->withPrompt('Give foo');
+        $replacement = $this->replacement('')->withPrompt('Enter foo');
+
+        $source = Source::create()->withInputStrings('input value');
+        $this->assertToken('input value', $replacement, $source);
+        $this->assertSame('Enter foo', $source->promptUsed());
+    }
+
+    public function testForInteractiveInput_InvalidValueCannotBeDefault()
+    {
+        $replacement = $this->replacement('invalid')->withPrompt('Enter foo');
+
+        $source = Source::create();
+        $this->assertToken('', $replacement, $source);
+        $this->assertSame('Enter foo', $source->promptUsed());
+
+        $source = Source::create(['foo' => 'invalid']);
+        $this->assertToken('', $replacement, $source);
+        $this->assertSame('Enter foo', $source->promptUsed());
+
+        $source = Source::create(['foo' => 'invalid'], ['fooArg' => 'invalid']);
+        $this->assertToken('', $replacement->withInputArg('fooArg'), $source);
+        $this->assertSame('Enter foo', $source->promptUsed());
+    }
+
+    public function testForInteractiveInput_InvalidArgumentValueIsIgnored()
+    {
+        $replacement = $this->replacement()->withPrompt('Enter foo')->withInputArg('fooArg');
+
+        $source = Source::create([], ['fooArg' => 'invalid']);
+        $this->assertToken('resolved value', $replacement, $source);
 
         $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'invalid']);
-        $this->assertToken('meta value', $replacement->withInputArg('fooArg'), $source);
-        $this->assertSame('Give foo [default: meta value]', $source->promptUsed());
-    }
-
-    public function testForInvalidDefaultValueAndEmptyInput_Token_ReturnsTokenWithEmptyString()
-    {
-        $source = Source::create();
-        $this->assertToken('', $this->replacement(false)->withPrompt('Give foo'), $source);
-        $this->assertSame('Give foo', $source->promptUsed());
-    }
-
-    public function testForInvalidEmptyInputAndValidDefaultValue_Token_ReturnsTokenWithDefaultValue()
-    {
-        $replacement = $this->replacement()->withPrompt('Give foo');
-
-        $isValid = fn (string $value) => !empty($value);
-        $source  = Source::create(['foo' => 'meta value']);
-        $this->assertToken('meta value', $replacement->withValidation($isValid), $source);
+        $this->assertToken('meta value', $replacement, $source);
     }
 
     public function testForInvalidValue_Token_ReturnsNull()
     {
+        $replacement = $this->replacement('invalid');
+
         $source = Source::create();
-        $this->assertNull($this->replacement(false)->token('foo', $source));
+        $this->assertNull($replacement->token('foo', $source));
 
-        $source = Source::create(['foo' => 'invalid']);
-        $this->assertNull($this->replacement()->token('foo', $source));
+        $source = Source::create(['foo' => 'invalid'], ['fooArg' => 'invalid'])->withInputStrings('invalid');
+        $this->assertNull($replacement->token('foo', $source));
+        $this->assertNull($replacement->withInputArg('fooArg')->token('foo', $source));
+        $this->assertNull($replacement->withPrompt('Enter foo', 1)->token('foo', $source));
 
-        $source = Source::create()->withInputStrings('invalid', 'invalid', 'invalid');
-        $this->assertNull($this->replacement()->withPrompt('Give foo')->token('foo', $source));
+        $expectedMessages = ['Invalid value. Try `help` command for information on this value format.'];
+        $this->assertSame($expectedMessages, $source->messagesSent());
+    }
+
+    public function testForInteractiveInput_ValidValueWithinRetryLimit_ReturnsToken()
+    {
+        $replacement = $this->replacement();
+
+        $source = Source::create()->withInputStrings('invalid', 'invalid', 'input value');
+        $this->assertToken('input value', $replacement->withPrompt('Enter foo', 4), $source);
+
+        $expectedMessages = ['Invalid value. Try again', 'Invalid value. Try again'];
+        $this->assertSame($expectedMessages, $source->messagesSent());
+    }
+
+    public function testForInteractiveInput_InvalidValuesExceedingRetryLimit_ReturnNull()
+    {
+        $replacement = $this->replacement();
+
+        $source = Source::create()->withInputStrings('invalid', 'invalid', 'invalid', 'invalid', 'input value');
+        $this->assertNull($replacement->withPrompt('Enter foo', 4)->token('foo', $source));
 
         $expectedMessages = [
+            'Invalid value. Try again',
             'Invalid value. Try again',
             'Invalid value. Try once more',
             'Invalid value. Try `help` command for information on this value format.'
         ];
+        $this->assertSame($expectedMessages, $source->messagesSent());
+    }
+
+    public function testForInteractiveInputWithoutRetryLimit_InputIsRepeatedUntilValidValueIsGiven()
+    {
+        $replacement = $this->replacement();
+
+        $source = Source::create()->withInputStrings('invalid', 'invalid', 'invalid', 'invalid', 'input value');
+        $this->assertToken('input value', $replacement->withPrompt('Enter foo', 0), $source);
+
+        $expectedMessages = array_fill(0, 4, 'Invalid value. Try again');
         $this->assertSame($expectedMessages, $source->messagesSent());
     }
 
@@ -160,8 +207,9 @@ class StandardReplacementTest extends TestCase
         $this->assertEquals(new BasicToken('foo', $value), $replacement->token('foo', $source));
     }
 
-    private function replacement(bool $valid = true): Replacement
+    private function replacement(string $value = 'resolved value', int $retry = 3): Replacement
     {
-        return new Replacement($valid ? 'resolved value' : 'invalid');
+
+        return new Replacement($value);
     }
 }

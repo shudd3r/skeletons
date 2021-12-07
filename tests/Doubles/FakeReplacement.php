@@ -41,10 +41,11 @@ class FakeReplacement extends StandardReplacement
         return $clone;
     }
 
-    public function withPrompt(string $inputPrompt): self
+    public function withPrompt(string $inputPrompt, int $tries = 3): self
     {
         $clone = clone $this;
         $clone->inputPrompt = $inputPrompt;
+        $clone->inputTries  = $tries;
         return $clone;
     }
 
