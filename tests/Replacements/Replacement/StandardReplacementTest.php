@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Tests\Replacements;
+namespace Shudd3r\Skeletons\Tests\Replacements\Replacement;
 
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Tests\Doubles\FakeReplacement as Replacement;

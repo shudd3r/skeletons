@@ -11,10 +11,10 @@
 
 namespace Shudd3r\Skeletons\Tests\Doubles;
 
-use Shudd3r\Skeletons\Replacements\StandardReplacement;
+use Closure;
+use Shudd3r\Skeletons\Replacements\Replacement\StandardReplacement;
 use Shudd3r\Skeletons\Replacements\Source;
 use Shudd3r\Skeletons\Replacements\Token;
-use Closure;
 
 
 class FakeReplacement extends StandardReplacement

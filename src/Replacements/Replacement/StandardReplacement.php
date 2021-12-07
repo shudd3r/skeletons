@@ -9,7 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Shudd3r\Skeletons\Replacements;
+namespace Shudd3r\Skeletons\Replacements\Replacement;
+
+use Shudd3r\Skeletons\Replacements\Replacement;
+use Shudd3r\Skeletons\Replacements\Source;
+use Shudd3r\Skeletons\Replacements\Token;
 
 
 abstract class StandardReplacement implements Replacement
