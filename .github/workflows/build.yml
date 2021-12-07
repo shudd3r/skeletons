@@ -55,57 +55,13 @@ jobs:
           COVERALLS_RUN_LOCALLY: 1
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
-  lowest-build:
-    name: "Lowest build tests"
-    runs-on: ${{ matrix.operating-system }}
-    strategy:
-      matrix:
-        operating-system: ['ubuntu-latest']
-        php-versions: ['7.4']
-    env:
-      extensions: dom, json, libxml, mbstring, pdo_sqlite, soap, xml, xmlwriter
-      key: cache-v1
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v2
-      - name: "Setup PHP extensions cache environment"
-        id: cache-env
-        uses: shivammathur/cache-extensions@v1
-        with:
-          php-version: ${{ matrix.php-versions }}
-          extensions: ${{ env.extensions }}
-          key: ${{ env.key }}
-      - name: "Cache PHP extensions"
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.cache-env.outputs.dir }}
-          key: ${{ steps.cache-env.outputs.key }}
-          restore-keys: ${{ steps.cache-env.outputs.key }}
-      - name: "Install PHP with extensions"
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-versions }}
-          coverage: none
-          extensions: ${{ env.extensions }}
-          ini-values: assert.exception=1, zend.assertions=1
-      - name: "Setup composer cache"
-        uses: actions/cache@v2
-        with:
-          path: ~/.composer/cache
-          key: ${{ runner.os }}-composer-lowest-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-composer-lowest-
-      - name: "Install lowest dependencies"
-        run: composer update --no-interaction --no-ansi --no-progress --prefer-stable --prefer-lowest
-      - name: "Run PhpUnit tests"
-        run: vendor/bin/phpunit --no-coverage
-
   php-os-builds:
     name: "PHP 8 tests"
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
         operating-system: ['ubuntu-latest', 'windows-latest', 'macos-latest']
-        php-versions: ['8.0']
+        php-versions: ['8.0', '8.1']
     env:
       extensions: pcov, dom, json, libxml, mbstring, pdo_sqlite, soap, xml, xmlwriter
       key: cache-v1
