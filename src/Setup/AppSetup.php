@@ -50,7 +50,7 @@ class AppSetup
 
     public function templates(RuntimeEnv $env): Templates
     {
-        return new Templates($env, $this->templateFiles($env), $this->templates);
+        return new Templates($env->package(), $this->templateFiles($env), $this->templates);
     }
 
     public function addReplacement(string $placeholder, Replacement $replacement): void

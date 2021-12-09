@@ -19,14 +19,14 @@ use Shudd3r\Skeletons\Templates\TemplateFiles;
 
 class Templates
 {
-    private RuntimeEnv    $env;
+    private Files         $package;
     private TemplateFiles $files;
     private array         $factories;
 
-    public function __construct(RuntimeEnv $env, TemplateFiles $files, array $factories)
+    public function __construct(Files $package, TemplateFiles $templates, array $factories)
     {
-        $this->env       = $env;
-        $this->files     = $files;
+        $this->package   = $package;
+        $this->files     = $templates;
         $this->factories = $factories;
     }
 
@@ -34,7 +34,7 @@ class Templates
     {
         $factory  = $this->factory($filename);
         $template = $this->files->file($filename);
-        $package  = $this->env->package()->file($filename);
+        $package  = $this->package->file($filename);
         return $factory ? $factory->template($template, $package) : new Template\BasicTemplate($template->contents());
     }
 
@@ -43,7 +43,7 @@ class Templates
         $types = $args->command() === 'init' ? ['orig', 'init'] : ['orig'];
         if ($args->includeLocalFiles()) { $types[] = 'local'; }
 
-        return new Files\ReflectedFiles($this->env->package(), $this->files->files($types));
+        return new Files\ReflectedFiles($this->package, $this->files->files($types));
     }
 
     public function dummyFiles(): Files
