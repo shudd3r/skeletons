@@ -32,9 +32,10 @@ class Templates
 
     public function template(string $filename): Template
     {
-        $factory = $this->factory($filename);
-        $file    = $this->files->file($filename);
-        return $factory ? $factory->template($file, $this->env) : new Template\BasicTemplate($file->contents());
+        $factory  = $this->factory($filename);
+        $template = $this->files->file($filename);
+        $package  = $this->env->package()->file($filename);
+        return $factory ? $factory->template($template, $package) : new Template\BasicTemplate($template->contents());
     }
 
     public function generatedFiles(InputArgs $args): Files

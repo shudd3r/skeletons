@@ -12,10 +12,9 @@
 namespace Shudd3r\Skeletons\Templates;
 
 use Shudd3r\Skeletons\Environment\Files\File;
-use Shudd3r\Skeletons\RuntimeEnv;
 
 
 interface Factory
 {
-    public function template(File $template, RuntimeEnv $env): Template;
+    public function template(File $template, File $package): Template;
 }
