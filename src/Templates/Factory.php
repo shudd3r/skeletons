@@ -11,10 +11,8 @@
 
 namespace Shudd3r\Skeletons\Templates;
 
-use Shudd3r\Skeletons\Environment\Files\File;
-
 
 interface Factory
 {
-    public function template(File $template, File $package): Template;
+    public function template(Contents $contents): Template;
 }

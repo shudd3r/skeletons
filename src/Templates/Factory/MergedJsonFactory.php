@@ -12,8 +12,8 @@
 namespace Shudd3r\Skeletons\Templates\Factory;
 
 use Shudd3r\Skeletons\Templates\Factory;
-use Shudd3r\Skeletons\Environment\Files\File;
 use Shudd3r\Skeletons\Templates\Template;
+use Shudd3r\Skeletons\Templates\Contents;
 
 
 class MergedJsonFactory implements Factory
@@ -41,11 +41,11 @@ class MergedJsonFactory implements Factory
         $this->dynamicKeyUpdate = $dynamicKeyUpdate;
     }
 
-    public function template(File $template, File $package): Template
+    public function template(Contents $contents): Template
     {
         return new Template\MergedJsonTemplate(
-            new Template\BasicTemplate($template->contents()),
-            $package->contents(),
+            new Template\BasicTemplate($contents->template()),
+            $contents->package(),
             $this->dynamicKeyUpdate
         );
     }

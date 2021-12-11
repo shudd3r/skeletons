@@ -11,6 +11,7 @@
 
 namespace Shudd3r\Skeletons;
 
+use Shudd3r\Skeletons\Templates\Contents;
 use Shudd3r\Skeletons\Templates\Template;
 use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Templates\Factory;
@@ -33,9 +34,9 @@ class Templates
     public function template(string $filename): Template
     {
         $factory  = $this->factory($filename);
-        $template = $this->files->file($filename);
-        $package  = $this->package->file($filename);
-        return $factory ? $factory->template($template, $package) : new Template\BasicTemplate($template->contents());
+        $contents = new Contents($filename, $this->files, $this->package);
+
+        return $factory ? $factory->template($contents) : new Template\BasicTemplate($contents->template());
     }
 
     public function generatedFiles(InputArgs $args): Files
