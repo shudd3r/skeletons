@@ -49,7 +49,7 @@ $app->replacement('author.email')
     ->validate(fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL));
 
 // Define custom template factories for selected files
-$app->template('composer.json')->add(new Factory\MergedJsonFactory($args->command() === 'update'));
+$app->template('composer.json')->factory(new Factory\MergedJsonFactory($args->command() === 'update'));
 
 $exitCode = $app->run($args);
 exit($exitCode);

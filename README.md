@@ -115,7 +115,7 @@ attached [docs/script-example](docs/script-example) file.
   ```php
   use Shudd3r\Skeletons\Templates\Factory;
   
-  $app->template('composer.json')->add(new Factory\MergedJsonFactory($args->command() === 'update'));
+  $app->template('composer.json')->factory(new Factory\MergedJsonFactory($args->command() === 'update'));
   ```
   <sup>*Template that defines dynamic keys for `MergedJsonTemplate`
   (in case of `composer.json` it would usually be `namespace` placeholder)

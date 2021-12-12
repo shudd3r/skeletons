@@ -25,7 +25,7 @@ class TemplateSetup
         $this->filename = $filename;
     }
 
-    public function add(Factory $template): void
+    public function factory(Factory $template): void
     {
         $this->setup->addTemplate($this->filename, $template);
     }

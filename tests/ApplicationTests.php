@@ -79,7 +79,7 @@ class ApplicationTests extends TestCase
             ->inputPrompt('Your email address')
             ->validate(fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL));
 
-        $app->template('composer.json')->add(new MergedJsonFactory($isUpdate));
+        $app->template('composer.json')->factory(new MergedJsonFactory($isUpdate));
 
         return $app;
     }
