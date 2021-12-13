@@ -12,6 +12,7 @@
 namespace Shudd3r\Skeletons\Setup;
 
 use Shudd3r\Skeletons\Templates\Factory;
+use Shudd3r\Skeletons\Templates\Contents;
 
 
 class TemplateSetup
@@ -25,8 +26,8 @@ class TemplateSetup
         $this->filename = $filename;
     }
 
-    public function factory(Factory $template): void
+    public function factory(Factory $factory): void
     {
-        $this->setup->addTemplate($this->filename, $template);
+        $this->setup->addTemplate($this->filename, fn (Contents $contents) => $factory->template($contents));
     }
 }

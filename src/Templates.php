@@ -11,18 +11,20 @@
 
 namespace Shudd3r\Skeletons;
 
-use Shudd3r\Skeletons\Templates\Contents;
-use Shudd3r\Skeletons\Templates\Template;
 use Shudd3r\Skeletons\Environment\Files;
-use Shudd3r\Skeletons\Templates\Factory;
 use Shudd3r\Skeletons\Templates\TemplateFiles;
+use Shudd3r\Skeletons\Templates\Template;
+use Shudd3r\Skeletons\Templates\Contents;
+use Closure;
 
 
 class Templates
 {
     private Files         $package;
     private TemplateFiles $files;
-    private array         $factories;
+
+    /** @var Closure[] fn (Contents) => Template */
+    private array $factories;
 
     public function __construct(Files $package, TemplateFiles $templates, array $factories)
     {
@@ -33,10 +35,8 @@ class Templates
 
     public function template(string $filename): Template
     {
-        $factory  = $this->factory($filename);
-        $contents = new Contents($filename, $this->files, $this->package);
-
-        return $factory ? $factory->template($contents) : new Template\BasicTemplate($contents->template());
+        $create = $this->factories[$filename] ?? fn (Contents $c) => new Template\BasicTemplate($c->template());
+        return $create(new Contents($filename, $this->files, $this->package));
     }
 
     public function generatedFiles(InputArgs $args): Files
@@ -50,10 +50,5 @@ class Templates
     public function dummyFiles(): Files
     {
         return $this->files->files(['dummy']);
-    }
-
-    private function factory(string $filename): ?Factory
-    {
-        return $this->factories[$filename] ?? null;
     }
 }
