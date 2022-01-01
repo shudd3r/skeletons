@@ -14,6 +14,8 @@ namespace Shudd3r\Skeletons\Tests\Setup;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Setup\AppSetup;
 use Shudd3r\Skeletons\Setup\ReplacementSetup;
+use Shudd3r\Skeletons\Setup\TemplateSetup;
+use Shudd3r\Skeletons\Templates\Contents;
 use Shudd3r\Skeletons\Replacements\Replacement;
 use Shudd3r\Skeletons\Environment\Files\Directory;
 use Shudd3r\Skeletons\Environment\Files\File;
@@ -120,6 +122,21 @@ class AppSetupTest extends TestCase
         $setup->addTemplate('file.txt', fn () => null);
         $this->expectException(Exception\TemplateOverwriteException::class);
         $setup->addTemplate('file.txt', fn () => null);
+    }
+
+    public function testTemplateSetup_CanDefineCustomTemplate_UsingEitherTemplateFactoryOrClosure()
+    {
+        $setup   = new AppSetup();
+        $factory = new Doubles\FakeTemplateFactory();
+
+        $template = new TemplateSetup($setup, 'factory.tpl.file');
+        $template->factory($factory);
+
+        $template = new TemplateSetup($setup, 'closure.tpl.file');
+        $template->callback(fn (Contents $contents) => $factory->template($contents));
+
+        $templates = $setup->templates(new Doubles\FakeRuntimeEnv());
+        $this->assertSame($templates->template('factory.tpl.file'), $templates->template('closure.tpl.file'));
     }
 
     public function testReplacementSetupBuildForExistingPlaceholder_ThrowsException()
