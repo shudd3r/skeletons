@@ -35,7 +35,7 @@ class TemplateSetup
     /**
      * @param Closure $createTemplate fn (Contents) => Template
      */
-    public function callback(Closure $createTemplate): void
+    public function createWith(Closure $createTemplate): void
     {
         $this->setup->addTemplate($this->filename, $createTemplate);
     }

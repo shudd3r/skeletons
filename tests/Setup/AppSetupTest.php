@@ -133,7 +133,7 @@ class AppSetupTest extends TestCase
         $template->factory($factory);
 
         $template = new TemplateSetup($setup, 'closure.tpl.file');
-        $template->callback(fn (Contents $contents) => $factory->template($contents));
+        $template->createWith(fn (Contents $contents) => $factory->template($contents));
 
         $templates = $setup->templates(new Doubles\FakeRuntimeEnv());
         $this->assertSame($templates->template('factory.tpl.file'), $templates->template('closure.tpl.file'));
