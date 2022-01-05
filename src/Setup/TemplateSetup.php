@@ -11,7 +11,6 @@
 
 namespace Shudd3r\Skeletons\Setup;
 
-use Shudd3r\Skeletons\Templates\Factory;
 use Shudd3r\Skeletons\Templates\Contents;
 use Closure;
 
@@ -27,12 +26,9 @@ class TemplateSetup
         $this->filename = $filename;
     }
 
-    public function factory(Factory $factory): void
-    {
-        $this->setup->addTemplate($this->filename, fn (Contents $contents) => $factory->template($contents));
-    }
-
     /**
+     * @see Contents
+     *
      * @param Closure $createTemplate fn (Contents) => Template
      */
     public function createWith(Closure $createTemplate): void
