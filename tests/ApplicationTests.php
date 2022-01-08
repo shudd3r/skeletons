@@ -15,7 +15,8 @@ use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Application;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\Replacements\Replacement;
-use Shudd3r\Skeletons\Templates\Factory\MergedJsonFactory;
+use Shudd3r\Skeletons\Templates\Contents;
+use Shudd3r\Skeletons\Templates\Template;
 use Shudd3r\Skeletons\Environment\Files\Directory;
 use Shudd3r\Skeletons\Environment\Files\File;
 
@@ -79,7 +80,13 @@ class ApplicationTests extends TestCase
             ->inputPrompt('Your email address')
             ->validate(fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL));
 
-        $app->template('composer.json')->add(new MergedJsonFactory($isUpdate));
+        $app->template('composer.json')->createWith(
+            fn (Contents $contents) => new Template\MergedJsonTemplate(
+                new Template\BasicTemplate($contents->template()),
+                $contents->package(),
+                $isUpdate
+            )
+        );
 
         return $app;
     }

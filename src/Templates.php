@@ -11,30 +11,32 @@
 
 namespace Shudd3r\Skeletons;
 
-use Shudd3r\Skeletons\Templates\Template;
 use Shudd3r\Skeletons\Environment\Files;
-use Shudd3r\Skeletons\Templates\Factory;
 use Shudd3r\Skeletons\Templates\TemplateFiles;
+use Shudd3r\Skeletons\Templates\Template;
+use Shudd3r\Skeletons\Templates\Contents;
+use Closure;
 
 
 class Templates
 {
-    private RuntimeEnv    $env;
+    private Files         $package;
     private TemplateFiles $files;
-    private array         $factories;
 
-    public function __construct(RuntimeEnv $env, TemplateFiles $files, array $factories)
+    /** @var Closure[] fn (Contents) => Template */
+    private array $factories;
+
+    public function __construct(Files $package, TemplateFiles $templates, array $factories)
     {
-        $this->env       = $env;
-        $this->files     = $files;
+        $this->package   = $package;
+        $this->files     = $templates;
         $this->factories = $factories;
     }
 
     public function template(string $filename): Template
     {
-        $factory = $this->factory($filename);
-        $file    = $this->files->file($filename);
-        return $factory ? $factory->template($file, $this->env) : new Template\BasicTemplate($file->contents());
+        $create = $this->factories[$filename] ?? fn (Contents $c) => new Template\BasicTemplate($c->template());
+        return $create(new Contents($filename, $this->files, $this->package));
     }
 
     public function generatedFiles(InputArgs $args): Files
@@ -42,16 +44,11 @@ class Templates
         $types = $args->command() === 'init' ? ['orig', 'init'] : ['orig'];
         if ($args->includeLocalFiles()) { $types[] = 'local'; }
 
-        return new Files\ReflectedFiles($this->env->package(), $this->files->files($types));
+        return new Files\ReflectedFiles($this->package, $this->files->files($types));
     }
 
     public function dummyFiles(): Files
     {
         return $this->files->files(['dummy']);
-    }
-
-    private function factory(string $filename): ?Factory
-    {
-        return $this->factories[$filename] ?? null;
     }
 }

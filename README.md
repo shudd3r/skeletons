@@ -23,7 +23,7 @@ package scripts capable of:
 - `GenericReplacement` for simple replacements and fluent builder interface for easier instantiation.
 - Placeholders for `{original.content}` with optional default mockup value.
 - Possibility to customize template handling for individual files
-  through `Template` & `Template\Factory` abstractions.
+  through `Template` abstraction.
 - Synchronization that allows regenerating missing & divergent files.
 - Safe file operations - overwritten files are copied into backup directory.
 - Filename extension directives that allow:
@@ -110,12 +110,19 @@ attached [docs/script-example](docs/script-example) file.
       ->validate(fn (string $value) => $value === filter_var($value, FILTER_VALIDATE_EMAIL));
   ```
 
-- Define custom [`Templates\Factory`](src/Templates/Factory.php)
-  objects for selected template files<sup>*</sup>:
+- Setup custom [`Templates\Template`](src/Templates/Template.php)
+  instantiation for selected template files<sup>*</sup>:
   ```php
-  use Shudd3r\Skeletons\Templates\Factory;
+  use Shudd3r\Skeletons\Templates\Contents;
+  use Shudd3r\Skeletons\Templates\Template;
   
-  $app->template('composer.json')->add(new Factory\MergedJsonFactory($args->command() === 'update'));
+  $app->template('composer.json')->createWith(
+      fn (Contents $contents) => new Template\MergedJsonTemplate(
+          new Template\BasicTemplate($contents->template()),
+          $contents->package(),
+          $args->command() === 'update'
+      )
+  );
   ```
   <sup>*Template that defines dynamic keys for `MergedJsonTemplate`
   (in case of `composer.json` it would usually be `namespace` placeholder)

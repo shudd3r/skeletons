@@ -18,6 +18,7 @@ use Shudd3r\Skeletons\Replacements\Token;
 use Shudd3r\Skeletons\Templates;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\Exception;
+use Closure;
 
 
 class AppSetup
@@ -37,7 +38,7 @@ class AppSetup
     /** @var ReplacementBuilder[] */
     private array $builders = [];
 
-    /** @var Templates\Factory[]  */
+    /** @var Closure[] fn (Contents) => Template */
     private array $templates = [];
 
     public function replacements(): Replacements
@@ -50,7 +51,7 @@ class AppSetup
 
     public function templates(RuntimeEnv $env): Templates
     {
-        return new Templates($env, $this->templateFiles($env), $this->templates);
+        return new Templates($env->package(), $this->templateFiles($env), $this->templates);
     }
 
     public function addReplacement(string $placeholder, Replacement $replacement): void
@@ -66,13 +67,13 @@ class AppSetup
         $this->builders[$placeholder]     = $builder;
     }
 
-    public function addTemplate(string $filename, Templates\Factory $template): void
+    public function addTemplate(string $filename, Closure $createTemplate): void
     {
         if (isset($this->templates[$filename])) {
             $message = "Duplicated definition of `$filename` template";
             throw new Exception\TemplateOverwriteException($message);
         }
-        $this->templates[$filename] = $template;
+        $this->templates[$filename] = $createTemplate;
     }
 
     private function validatePlaceholder(string $placeholder): void

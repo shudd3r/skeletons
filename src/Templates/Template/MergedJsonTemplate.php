@@ -19,13 +19,31 @@ class MergedJsonTemplate implements Template
 {
     private Template $template;
     private string   $jsonString;
-    private bool     $synchronized;
+    private bool     $isSynchronized;
 
-    public function __construct(Template $template, string $jsonString, bool $synchronized)
+    /**
+     * $isSynchronized parameter should be set to true when updating
+     * templates with dynamic keys (containing placeholders) because
+     * valid schema is required.
+     *
+     * Otherwise, merging algorithm would not be able to distinguish
+     * missing key in original file (with additional key that is not
+     * present in the template schema) from updated key that should
+     * replace the old one.
+     *
+     * When synchronization can be assumed algorithm can treat keys
+     * positionally recognizing mismatched key at current position
+     * as an old value of updated schema that should be replaced.
+     *
+     * @param Template $template
+     * @param string   $jsonString
+     * @param bool     $isSynchronized
+     */
+    public function __construct(Template $template, string $jsonString, bool $isSynchronized)
     {
-        $this->template     = $template;
-        $this->jsonString   = $jsonString;
-        $this->synchronized = $synchronized;
+        $this->template       = $template;
+        $this->jsonString     = $jsonString;
+        $this->isSynchronized = $isSynchronized;
     }
 
     public function render(Token $token): string
@@ -69,7 +87,7 @@ class MergedJsonTemplate implements Template
             if ($mergedValue === null) { continue; }
 
             $merged[$key] = $mergedValue;
-            $usedKey = $this->synchronized ? array_key_first($package) : $key;
+            $usedKey = $this->isSynchronized ? array_key_first($package) : $key;
             unset($package[$usedKey]);
         }
 
@@ -83,7 +101,7 @@ class MergedJsonTemplate implements Template
     private function mergedListItems(array $items, array $package): ?array
     {
         $template = $this->extractedFirstItemTemplate($items);
-        if ($this->synchronized) {
+        if ($this->isSynchronized) {
             $package = array_slice($package, count($items));
         }
 

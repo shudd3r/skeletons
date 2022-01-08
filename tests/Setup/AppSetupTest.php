@@ -117,9 +117,9 @@ class AppSetupTest extends TestCase
     {
         $setup = new AppSetup();
 
-        $setup->addTemplate('file.txt', new Doubles\FakeTemplateFactory());
+        $setup->addTemplate('file.txt', fn () => null);
         $this->expectException(Exception\TemplateOverwriteException::class);
-        $setup->addTemplate('file.txt', new Doubles\FakeTemplateFactory());
+        $setup->addTemplate('file.txt', fn () => null);
     }
 
     public function testReplacementSetupBuildForExistingPlaceholder_ThrowsException()
