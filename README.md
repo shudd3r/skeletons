@@ -124,10 +124,10 @@ attached [docs/script-example](docs/script-example) file.
       )
   );
   ```
-  <sup>*Template that defines dynamic keys for `MergedJsonTemplate`
+  <sup>*Template that defines dynamic keys for [`MergedJsonTemplate`](src/Templates/Template/MergedJsonTemplate.php)
   (in case of `composer.json` it would usually be `namespace` placeholder)
   requires different merging algorithm for updates. If template doesn't use
-  dynamic keys, boolean parameter is not required.</sup>
+  dynamic keys, its third (boolean flag) parameter is not required.</sup>
 
 - Run application with `InputArgs`:
   ```php
@@ -140,20 +140,19 @@ attached [docs/script-example](docs/script-example) file.
 vendor\bin\script-name <command> [<options>] [<argument>=<value>]
 ```
 Available `<command>` values:
-- `init`: generate file structure from skeleton template (with backup on overwrite)
-- `check`: verify project synchronization with used skeleton
-- `update`: change current placeholder values (synchronized package required)
-- `sync`: generate missing & mismatched skeleton files (with backup on overwrite)
-- `help`: display help similar to this section
+- `init`: generates file structure from skeleton template (with backup on overwrite)
+- `check`: verifies project synchronization with used skeleton
+- `update`: changes current placeholder values (synchronized package required)
+- `sync`: generates missing & mismatched skeleton files (with backup on overwrite)
+- `help`: displays help similar to this section
 
 Application `<options>`:
 - `-i`, `--interactive`: allows providing placeholder values for `init` or `update`
   command via interactive shell. When no `<argument>=<value>` is provided interactive
   mode is implicitly switched on.
-- `-l`, `--local`: may be used to include files that are not deployed to remote
-  repository if skeleton defines them (like git hooks or IDE settings). This option
-  may be used for all file operations - initialization, validation, synchronization
-  and updates.
+- `-l`, `--local`: may be used to include files not deployed to remote repository
+  if skeleton defines them (like git hooks or IDE settings). This option may be used
+  for all file operations - initialization, validation, synchronization and updates.
 
 Available `<argument>` names depend on placeholders configured in application.
 Currently, built-in placeholders can receive their values from following arguments:
@@ -183,7 +182,7 @@ a suffix to their names:
 - `.sk_init` - files generated at initialization only, not verified.
   Usually used for example files.
 - `.sk_dummy` - similar to init files, but serving as temporary
-  directory placeholder (usually `.gitkeeep`). Can be removed only
+  directory placeholder (usually `.gitkeep`). Can be removed only
   when other files in same directory are present. `init`, `update`
   & `sync` operations will remove redundant or add essential dummy
   files.
@@ -193,7 +192,7 @@ a suffix to their names:
   updated, but not verified on remote environments.
 - `.sk_file` - deactivates files processed by remote workflows.
   For example `.gitignore` file cannot be safely deployed as a part
-  of skeleton, because it could make other skeleton files untracked. 
+  of skeleton, because it would exclude its local files.
 - `.sk_dir` - similar to `.sk_file` in context of directories.
   For example `.git` directory cannot be deployed. Such directory
   is expected to contain `.sk_local` or `.sk_init` files.
@@ -201,11 +200,11 @@ a suffix to their names:
 #### Placeholders
 Placeholder consists of its name surrounded by curly braces.
 Script defines what kind of replacement given placeholder
-represents:
+represents. For example, application configured the following
+way will replace `{namespace.src}` with given namespace value:
 ```php
 $app->replacement('namespace.src')->add(new Replacement\SrcNamespace());
 ```
-Application will replace `{namespace.src}` with given namespace value.
 
 ##### Placeholder subtypes
 Replacement, beside direct value may define its subtypes.
@@ -226,7 +225,7 @@ single template file can use this placeholder multiple times.
 For example README file that is expected to contain concrete
 sections might be defined as follows:
 ```markdown
-![{package.name} logo]({original.content>>>https://www.example.com/images/default-logo.png<<<original.content})
+![{package.name} logo]({original.content>>>https://www.example.com/images/mockup-logo.png<<<original.content})
 # {package.name.title}
 ### {package.desc}
 {original.content>>>...Extended description here...<<<original.content}
@@ -238,8 +237,8 @@ sections might be defined as follows:
 ```
 
 #### Custom Template processing
-Some files that change dynamically throughout project lifetime
-cannot be handled in a simple, text expanding way like, for example, `README.md` file.
+Some files that change dynamically throughout project lifetime cannot be
+handled in a simple, text expanding way like, for example,`README.md` file.
 This is where custom templates might be used.
 
 As for now this package provides only one file-based template:
