@@ -20,7 +20,7 @@ class UpdateTest extends ApplicationTests
         'update',
         '--local',
         'repo=updated/repo',
-        'package=updated/package-name',
+        'package=Updated/Package-Name',
         'desc=Updated package description',
         'ns=Package\Updated',
         'email=updated@example.com'

@@ -212,8 +212,8 @@ For example [`SrcNamespace`](src/Replacements/Replacement/SrcNamespace.php)
 replacement defined above will also replace `{namespace.src.esc}`
 with escaped backslashes (needed for `composer.json` file),
 and [`PackageName`](src/Replacements/Replacement/PackageName.php)
-covers `{placeholder.title}` subtype, that gives package name
-with capitalized segments.
+covers `{placeholder.composer}` subtype that gives normalized,
+packagist package name in lowercase.
 
 ##### Original Content placeholder
 `{original.content}` is a special built-in placeholder that
@@ -226,11 +226,11 @@ For example README file that is expected to contain concrete
 sections might be defined as follows:
 ```markdown
 ![{package.name} logo]({original.content>>>https://www.example.com/images/mockup-logo.png<<<original.content})
-# {package.name.title}
+# {package.name}
 ### {package.desc}
 {original.content>>>...Extended description here...<<<original.content}
 ### Installation
-    composer require {package.name}
+    composer require {package.name.composer}
 {original.content}
 ### Basic Usage
 {original.content>>>...<<<original.content}

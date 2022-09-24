@@ -75,9 +75,9 @@ class AppIntegrationTest extends ApplicationTests
 
         $app->metaFile('dev/meta-data.json');
         $expected = [
-            self::PACKAGE_NAME  => 'package/directory',
+            self::PACKAGE_NAME  => 'Package/Directory',
             self::REPO_NAME     => 'input/repo',
-            self::PACKAGE_DESC  => 'package/directory package',
+            self::PACKAGE_DESC  => 'Package/Directory package',
             self::SRC_NAMESPACE => 'Input\\Namespace',
             self::AUTHOR_EMAIL  => 'default@example.com'
         ];

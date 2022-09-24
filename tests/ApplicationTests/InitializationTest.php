@@ -21,7 +21,7 @@ class InitializationTest extends ApplicationTests
         'init',
         '-il',
         'repo=initial/repo',
-        'package=initial/package-name',
+        'package=Initial/Package-Name',
         'desc=Initial package description',
         'ns=Package\Initial',
         'email=initial@example.com'

@@ -19,60 +19,86 @@ use Shudd3r\Skeletons\Replacements\Token;
 
 class PackageNameTest extends TestCase
 {
+    private static PackageName $replacement;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::$replacement = new PackageName();
+    }
+
     public function testWithoutEnoughDataToResolveValue_TokenMethod_ReturnsNull()
     {
-        $replacement = new PackageName();
-
-        $source = Source::create();
-        $this->assertNull($replacement->token('foo', $source));
+        $this->assertNull(self::$replacement->token('foo', Source::create()));
     }
 
     public function testForPackageDirectoryWithParentDirectory_TokenValueIsResolvedFromPackageDirectoryPath()
     {
-        $replacement = new PackageName();
-
         $source = Source::create()->withPackagePath('/path/to/directory/package');
-        $this->assertToken('directory/package', $replacement->token('foo', $source));
+        $this->assertToken('Directory/Package', self::$replacement->token('foo', $source));
     }
 
     public function testWithPackageNameInComposerJsonFile_TokenValueIsResolvedWithComposerJsonData()
     {
-        $replacement = new PackageName();
-
         $source = Source::create()->withPackagePath('/path/to/directory/package')
-                                  ->withComposerData(['name' => 'composer/package-name']);
-        $this->assertToken('composer/package-name', $replacement->token('foo', $source));
+                                  ->withComposerData(['name' => 'composer/package']);
+        $this->assertToken('Composer/Package', self::$replacement->token('foo', $source));
     }
 
     /**
-     * @dataProvider valueExamples
-     *
-     * @param string $invalid
-     * @param string $valid
+     * @dataProvider validReplacementValues
+     * @param string $original
+     * @param string $capitalized
      */
-    public function testResolvedTokenValue_IsValidated(string $invalid, string $valid)
+    public function testValuesResolvedForDefault_AreCapitalized(string $original, string $capitalized)
     {
-        $replacement = new PackageName();
+        $fromDirectory = Source::create()->withPackagePath('/path/to/' . $original);
+        $this->assertToken($capitalized, self::$replacement->token('foo', $fromDirectory));
 
-        $source = Source::create(['foo' => $valid, 'bar' => $invalid]);
-        $this->assertToken($valid, $replacement->token('foo', $source));
-        $this->assertNull($replacement->token('bar', $source));
+        $fromComposer = Source::create()->withComposerData(['name' => $original]);
+        $this->assertToken($capitalized, self::$replacement->token('foo', $fromComposer));
     }
 
-    public function valueExamples(): array
+    /**
+     * @dataProvider validReplacementValues
+     *
+     * @param string $baseValue
+     */
+    public function testDirectSourceValue_IsNotCapitalized(string $baseValue)
+    {
+        $source = Source::create(['foo' => $baseValue]);
+        $this->assertToken($baseValue, self::$replacement->token('foo', $source));
+    }
+
+    /**
+     * @dataProvider invalidReplacementValues
+     * @param string $invalidValue
+     */
+    public function testForInvalidSourceValue_TokenMethod_ReturnsNull(string $invalidValue)
+    {
+        $source = Source::create(['foo' => $invalidValue]);
+        $this->assertNull(self::$replacement->token('foo', $source));
+    }
+
+    public function validReplacementValues(): array
     {
         return [
-            ['-Packa-ge1/na.me', 'Packa-ge1/na.me'],
-            ['1Package000_/na_Me', '1Package000/na_Me']
+            'no changes needed'     => ['PackageAuthor/NoChange', 'PackageAuthor/NoChange'],
+            'segments only'         => ['package/name', 'Package/Name'],
+            'segments & separators' => ['package.vendor/name_test-value', 'Package.Vendor/Name_Test-Value'],
+            'starts with number'    => ['1package000/namE', '1package000/NamE']
         ];
     }
 
-    private function assertToken(string $value, Token $token): void
+    public function invalidReplacementValues(): array
     {
-        [$vendor, $package] = explode('/', $value);
+        return [['-Packa-ge1/na.me'], ['1Package000_/na_Me'], ['package/na-me-']];
+    }
+
+    private function assertToken(string $packageName, Token $token): void
+    {
         $expected = Token\CompositeToken::withValueToken(
-            new Token\BasicToken('foo', $value),
-            new Token\BasicToken('foo.title', ucfirst($vendor) . '/' . ucfirst($package))
+            new Token\BasicToken('foo', $packageName),
+            new Token\BasicToken('foo.composer', strtolower($packageName))
         );
 
         $this->assertEquals($expected, $token);

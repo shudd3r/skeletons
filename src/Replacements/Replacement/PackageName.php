@@ -17,19 +17,20 @@ use Shudd3r\Skeletons\Replacements\Token;
 
 class PackageName extends StandardReplacement
 {
-    protected ?string $inputPrompt  = 'Packagist package name';
+    protected ?string $inputPrompt  = 'Package name';
     protected ?string $argumentName = 'package';
     protected string  $description  = <<<'DESC'
-        Packagist package name [format: <vendor>/<package>]
-        Replaces {%s} placeholder with its value directly
-        and {%s.title} with its capitalized version
+        Package name [format: <vendor>/<package>]
+        Replaces {%s} placeholder with its value directly, and
+        {%s.composer} with its packagist normalized, lowercase
+        version.
         DESC;
 
     protected function tokenInstance($name, $value): Token
     {
         return Token\CompositeToken::withValueToken(
             new Token\BasicToken($name, $value),
-            new Token\BasicToken($name . '.title', $this->titleName($value))
+            new Token\BasicToken($name . '.composer', strtolower($value))
         );
     }
 
@@ -40,7 +41,8 @@ class PackageName extends StandardReplacement
 
     protected function resolvedValue(Source $source): string
     {
-        return $source->composer()->value('name') ?? $this->directoryFallback($source->packagePath());
+        $packageName = $source->composer()->value('name') ?? $this->directoryFallback($source->packagePath());
+        return $this->capitalized($packageName);
     }
 
     private function directoryFallback(string $path): string
@@ -48,9 +50,15 @@ class PackageName extends StandardReplacement
         return $path ? basename(dirname($path)) . '/' . basename($path) : '';
     }
 
-    private function titleName(string $value): string
+    private function capitalized(string $value): string
     {
-        [$vendor, $package] = explode('/', $value);
-        return ucfirst($vendor) . '/' . ucfirst($package);
+        $value = ucfirst($value);
+        foreach (['/', '-', '.', '_'] as $separator) {
+            $words = explode($separator, $value);
+            if (count($words) === 1) { continue; }
+            $value = implode($separator, array_map(fn (string $word) => ucfirst($word), $words));
+        }
+
+        return $value;
     }
 }

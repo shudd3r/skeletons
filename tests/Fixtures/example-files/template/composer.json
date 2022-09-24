@@ -1,5 +1,5 @@
 {
-    "name": "{package.name}",
+    "name": "{package.name.composer}",
     "description": "{package.description}",
     "type": null,
     "license": null,

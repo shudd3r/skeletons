@@ -1,4 +1,4 @@
-# Updated/Package-name
+# Updated/Package-Name
 [![Latest Stable Version](https://poser.pugx.org/updated/package-name/version)](https://packagist.org/packages/updated/package-name)
 [![Build status](https://github.com/updated/repo/workflows/build/badge.svg)](https://github.com/updated/repo/actions)
 [![Coverage status](https://coveralls.io/repos/github/updated/repo/badge.svg?branch=develop)](https://coveralls.io/github/updated/repo?branch=develop)
