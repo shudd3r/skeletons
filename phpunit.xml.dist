@@ -2,7 +2,7 @@
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
-    cacheResult="false"
+    cacheResultFile=".dev/temp/.phpunit.result.cache"
     colors="true"
     bootstrap="vendor/autoload.php"
 >
@@ -11,7 +11,7 @@
     </php>
 
     <testsuites>
-        <testsuite name="Shudd3r Skeletons tests">
+        <testsuite name="Shudd3r/Skeletons tests">
             <directory>./tests/</directory>
             <exclude>./tests/Fixtures</exclude>
         </testsuite>
