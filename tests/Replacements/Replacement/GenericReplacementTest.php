@@ -25,7 +25,7 @@ class GenericReplacementTest extends TestCase
         $replacement   = new GenericReplacement($resolvedValue);
 
         $source = Source::create(['placeholder' => 'value from source']);
-        $this->assertToken('value from source', $replacement->token('foo', $source));
+        $this->assertToken('value from source', $replacement, $source);
     }
 
     public function testWithValidationCallback_TokenValueIsValidated()
@@ -46,11 +46,12 @@ class GenericReplacementTest extends TestCase
         $replacement   = new GenericReplacement($resolvedValue, $isValid, $tokenInstance);
 
         $source = Source::create(['placeholder' => 'valid value']);
-        $this->assertToken('modified+valid value', $replacement->token('foo', $source));
+        $this->assertToken('modified+valid value', $replacement, $source);
     }
 
-    private function assertToken(string $value, Token $token): void
+    private function assertToken(string $value, GenericReplacement $replacement, Source $source): void
     {
+        $token = $replacement->token('foo', $source);
         $this->assertEquals(new Token\BasicToken('foo', $value), $token);
     }
 }

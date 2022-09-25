@@ -19,45 +19,44 @@ use Shudd3r\Skeletons\Replacements\Token;
 
 class PackageDescriptionTest extends TestCase
 {
+    private static PackageDescription $replacement;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::$replacement = new PackageDescription('bar');
+    }
+
     public function testWithoutDataToResolveValue_TokenMethod_ReturnsNull()
     {
-        $replacement = new PackageDescription('bar');
-
-        $source = Source::create();
-        $this->assertNull($replacement->token('foo', $source));
+        $this->assertNull(self::$replacement->token('foo', Source::create()));
     }
 
     public function testWithFallbackValue_TokenValueIsResolvedFromThatValue()
     {
-        $replacement = new PackageDescription('bar');
-
         $source = Source::create()->withFallbackTokenValue('bar', 'bar value');
-        $this->assertToken('bar value package', $replacement->token('foo', $source));
+        $this->assertToken('bar value package', $source);
     }
 
     public function testWithDescriptionInComposerJsonFile_TokenValueIsResolvedWithComposerData()
     {
-        $replacement = new PackageDescription('bar');
-
         $source = Source::create()->withFallbackTokenValue('bar', 'bar value')
                                   ->withComposerData(['description' => 'Package description']);
-        $this->assertToken('Package description', $replacement->token('foo', $source));
+        $this->assertToken('Package description', $source);
     }
 
     public function testForTokenValueResolvedToEmptyString_TokenMethod_ReturnsNull()
     {
-        $replacement = new PackageDescription('bar');
-
         $source = Source::create()->withFallbackTokenValue('bar', 'bar value')
                                   ->withComposerData(['description' => '']);
-        $this->assertNull($replacement->token('foo', $source));
+        $this->assertNull(self::$replacement->token('foo', $source));
 
         $source = Source::create()->withFallbackTokenValue('bar', '');
-        $this->assertNull($replacement->token('foo', $source));
+        $this->assertNull(self::$replacement->token('foo', $source));
     }
 
-    private function assertToken(string $value, Token $token): void
+    private function assertToken(string $value, Source $source): void
     {
+        $token = self::$replacement->token('foo', $source);
         $this->assertEquals(new Token\BasicToken('foo', $value), $token);
     }
 }

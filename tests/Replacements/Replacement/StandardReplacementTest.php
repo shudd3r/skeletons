@@ -21,8 +21,7 @@ class StandardReplacementTest extends TestCase
 {
     public function testWithoutDefinedInputSourceAndMetaValue_Token_ReturnsTokenWithResolvedValue()
     {
-        $source = Source::create();
-        $this->assertToken('resolved value', $this->replacement(), $source);
+        $this->assertToken('resolved value', $this->replacement(), Source::create());
     }
 
     public function testWithMetaValue_Token_ReturnsTokenWithThatValue()
@@ -207,9 +206,8 @@ class StandardReplacementTest extends TestCase
         $this->assertEquals(new BasicToken('foo', $value), $replacement->token('foo', $source));
     }
 
-    private function replacement(string $value = 'resolved value', int $retry = 3): Replacement
+    private function replacement(string $value = 'resolved value'): Replacement
     {
-
         return new Replacement($value);
     }
 }

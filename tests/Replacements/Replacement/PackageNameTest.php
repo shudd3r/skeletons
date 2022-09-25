@@ -34,14 +34,14 @@ class PackageNameTest extends TestCase
     public function testForPackageDirectoryWithParentDirectory_TokenValueIsResolvedFromPackageDirectoryPath()
     {
         $source = Source::create()->withPackagePath('/path/to/directory/package');
-        $this->assertToken('Directory/Package', self::$replacement->token('foo', $source));
+        $this->assertToken('Directory/Package', $source);
     }
 
     public function testWithPackageNameInComposerJsonFile_TokenValueIsResolvedWithComposerJsonData()
     {
         $source = Source::create()->withPackagePath('/path/to/directory/package')
                                   ->withComposerData(['name' => 'composer/package']);
-        $this->assertToken('Composer/Package', self::$replacement->token('foo', $source));
+        $this->assertToken('Composer/Package', $source);
     }
 
     /**
@@ -51,11 +51,8 @@ class PackageNameTest extends TestCase
      */
     public function testValuesResolvedForDefault_AreCapitalized(string $original, string $capitalized)
     {
-        $fromDirectory = Source::create()->withPackagePath('/path/to/' . $original);
-        $this->assertToken($capitalized, self::$replacement->token('foo', $fromDirectory));
-
-        $fromComposer = Source::create()->withComposerData(['name' => $original]);
-        $this->assertToken($capitalized, self::$replacement->token('foo', $fromComposer));
+        $this->assertToken($capitalized, Source::create()->withPackagePath('/path/to/' . $original));
+        $this->assertToken($capitalized, Source::create()->withComposerData(['name' => $original]));
     }
 
     /**
@@ -65,8 +62,7 @@ class PackageNameTest extends TestCase
      */
     public function testDirectSourceValue_IsNotCapitalized(string $baseValue)
     {
-        $source = Source::create(['foo' => $baseValue]);
-        $this->assertToken($baseValue, self::$replacement->token('foo', $source));
+        $this->assertToken($baseValue, Source::create(['foo' => $baseValue]));
     }
 
     /**
@@ -94,8 +90,9 @@ class PackageNameTest extends TestCase
         return [['-Packa-ge1/na.me'], ['1Package000_/na_Me'], ['package/na-me-']];
     }
 
-    private function assertToken(string $packageName, Token $token): void
+    private function assertToken(string $packageName, Source $source): void
     {
+        $token    = self::$replacement->token('foo', $source);
         $expected = Token\CompositeToken::withValueToken(
             new Token\BasicToken('foo', $packageName),
             new Token\BasicToken('foo.composer', strtolower($packageName))

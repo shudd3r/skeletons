@@ -19,30 +19,29 @@ use Shudd3r\Skeletons\Replacements\Token;
 
 class RepositoryNameTest extends TestCase
 {
+    private static RepositoryName $replacement;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::$replacement = new RepositoryName('bar');
+    }
+
     public function testWithoutDataToResolveValue_TokenMethod_ReturnsNull()
     {
-        $replacement = new RepositoryName('bar');
-
-        $source = Source::create();
-        $this->assertNull($replacement->token('foo', $source));
+        $this->assertNull(self::$replacement->token('foo', Source::create()));
     }
 
     public function testWithValidFallbackValue_TokenValueIsResolvedFromThatValue()
     {
-        $replacement = new RepositoryName('bar');
-
         $source = Source::create()->withFallbackTokenValue('bar', 'not repository name');
-        $this->assertNull($replacement->token('foo', $source));
+        $this->assertNull(self::$replacement->token('foo', $source));
 
         $source = Source::create()->withFallbackTokenValue('bar', 'package/name');
-        $this->assertToken('package/name', $replacement->token('foo', $source));
+        $this->assertToken('package/name', $source);
     }
 
     public function testWithGitConfigWithRemoteDefinitions_TokenValueIsResolvedFromMostAccurateOne()
     {
-        $replacement = new RepositoryName('bar');
-
-        $source     = Source::create()->withFallbackTokenValue('bar', 'fallback/name');
         $remoteList = [
             '--none--' => ['fallback/name', ''],
             'first'    => ['some/repo', 'git@github.com:some/repo.git'],
@@ -52,10 +51,11 @@ class RepositoryNameTest extends TestCase
         ];
 
         $remotes = [];
+        $source  = Source::create()->withFallbackTokenValue('bar', 'fallback/name');
         foreach ($remoteList as $name => [$expected, $uri]) {
             if ($uri) { $remotes += [$name => $uri]; }
             $source = $source->withFileContents('.git/config', $this->config($remotes));
-            $this->assertToken($expected, $replacement->token('foo', $source));
+            $this->assertToken($expected, $source);
         }
     }
 
@@ -67,11 +67,10 @@ class RepositoryNameTest extends TestCase
      */
     public function testResolvedTokenValue_IsValidated(string $invalid, string $valid)
     {
-        $replacement = new RepositoryName();
-
         $source = Source::create(['foo' => $valid, 'bar' => $invalid]);
-        $this->assertToken($valid, $replacement->token('foo', $source));
-        $this->assertNull($replacement->token('bar', $source));
+        $this->assertToken($valid, $source);
+        $this->assertNull(self::$replacement->token('bar', $source));
+        $this->assertNull(self::$replacement->token('bar-fallback', $source));
     }
 
     public function valueExamples(): array
@@ -93,8 +92,9 @@ class RepositoryNameTest extends TestCase
         ];
     }
 
-    private function assertToken(string $value, Token $token): void
+    private function assertToken(string $value, Source $source): void
     {
+        $token = self::$replacement->token('foo', $source);
         $this->assertEquals(new Token\BasicToken('foo', $value), $token);
     }
 
