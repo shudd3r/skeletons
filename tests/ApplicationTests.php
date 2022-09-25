@@ -29,14 +29,14 @@ class ApplicationTests extends TestCase
     protected const REPO_NAME     = 'repository.name';
     protected const AUTHOR_EMAIL  = 'author.email';
 
-    protected static Fixtures\ExampleFiles      $files;
-    protected static Directory\VirtualDirectory $skeleton;
-    protected static Doubles\MockedTerminal     $terminal;
+    protected static Fixtures\ExampleFiles    $files;
+    protected static Directory\LocalDirectory $skeleton;
+    protected static Doubles\MockedTerminal   $terminal;
 
     public static function setUpBeforeClass(): void
     {
         self::$files    = new Fixtures\ExampleFiles('example-files');
-        self::$skeleton = self::$files->directory('template');
+        self::$skeleton = new Directory\LocalDirectory(dirname(__DIR__) . '/example/template');
         self::$terminal = new Doubles\MockedTerminal();
     }
 

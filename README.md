@@ -173,7 +173,7 @@ valid argument values will become default for empty input.
 Project file structure controlled by skeleton will
 reflect template directory, and placeholders within
 its files will be replaced.
-Check out template directory in [example skeleton tests](tests/Fixtures/example-files/template)
+Check out template directory in [example skeleton package](example/template)
 
 #### Directive suffixes
 Behavior of some template files can be modified by adding
