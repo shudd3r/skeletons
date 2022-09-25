@@ -63,8 +63,7 @@ Following sections will cover template & script files in more details.
 - Publish skeleton package
 
 #### Executable script file
-Entire script that uses this library might look like
-attached [docs/script-example](docs/script-example) file.
+Entire script that uses this library might look like attached [example-skeleton](example/example-skeleton) file.
 
 ##### Setup steps:
 - Instantiate input arguments and application:
@@ -162,10 +161,10 @@ Currently, built-in placeholders can receive their values from following argumen
 - `ns`: project's main namespace
 
 Values that contain spaces should be surrounded with double quotes.
-For example following command for [script-example](docs/script-example)
-would update package description:
+For example following command for [example-skeleton](example/example-skeleton)
+script would update package description:
 ```bash
-vendor/bin/script-example update desc="New package description"
+vendor/bin/example-skeleton update desc="New package description"
 ```
 When both `--interactive` option and placeholder arguments are provided,
 valid argument values will become default for empty input.
@@ -174,7 +173,7 @@ valid argument values will become default for empty input.
 Project file structure controlled by skeleton will
 reflect template directory, and placeholders within
 its files will be replaced.
-Template directory example can be found [here](tests/Fixtures/example-files/template)
+Check out template directory in [example skeleton tests](tests/Fixtures/example-files/template)
 
 #### Directive suffixes
 Behavior of some template files can be modified by adding
