@@ -15,7 +15,40 @@ package scripts capable of:
   template as a part of [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) process
 - Updating template placeholder values used in existing package files
 
-#### Scripting features:
+### Basic Usage
+Before diving into details you can learn some basics about skeleton
+scripts by browsing files (or playing with to some extent) embedded
+[skeleton example package](example).
+
+Neither applications nor libraries will use this package directly,
+but as a command line tool of the skeleton package they were built
+with (dev dependency). To avoid conflicts it is released as a
+standalone package that doesn't use any production dependencies,
+and php version compatibility is the only limitation.
+
+#### Skeleton package
+Here's a list of main steps to create and use skeleton package - following
+sections will cover template & script files in more details:
+- Install this library as a dependency of your skeleton package
+  using [Composer](https://getcomposer.org/) command:
+  ```bash
+  composer require shudd3r/skeletons
+  ```
+- Create template directory with your skeleton [template files](#template-files)
+- Add CLI executable [script file](#executable-script-file) and `"bin"` directive
+  in `composer.json` pointing to that file:
+  ```json
+  {
+    "bin": ["my-skeleton-script"]
+  }
+  ```
+- Publish skeleton package and require it as a **dev dependency** in your projects
+- Use skeleton as their desired file structure through [CLI commands](#command-line-usage)
+
+### Executable script file
+Entire script that uses this library might look like attached [example-skeleton](example/example-skeleton) file.
+
+##### Scripting features:
 - Template placeholders can be chosen by skeleton creators.
 - Each placeholder is assigned to `Replacement` abstraction that manages validation,
   providing & resolving placeholder's (default) value.
@@ -31,39 +64,6 @@ package scripts capable of:
   - handling "local" files, that are not (or cannot be) part of published package,
   - using initial "mockup" files that can be removed or developed without breaking skeleton synchronization,
   - automatic adding/removing dummy files that ensure directory existence (`.gitkeep`)
-
-### Basic Usage
-> :warning: See [**shudd3r/skeleton-example**](https://github.com/shudd3r/skeleton-example)
-> repository if you got the general idea of using skeleton scripts
-> and prefer learning basics from "default example" that uses built-in
-> features only and simplified command parsing.
-
-Neither applications nor libraries will use this package directly,
-but as a command line tool of the skeleton package they were built
-with (dev dependency). To avoid conflicts it is released as a
-standalone package that doesn't use any production dependencies,
-and php version compatibility is the only limitation.
-
-#### Creating skeleton package
-Simplified steps with example script and arbitrary chosen names.
-Following sections will cover template & script files in more details.
-- Install this library as a dependency of your skeleton package
-  using [Composer](https://getcomposer.org/) command:
-  ```bash
-  composer require shudd3r/skeletons
-  ```
-- Add `template` directory with your skeleton [template files](#template-files)
-- Add CLI executable `my-skeleton` [script file](#executable-script-file)
-- Add `"bin"` directive to composer.json pointing to that script
-  ```json
-  {
-    "bin": ["my-skeleton"]
-  }
-  ```
-- Publish skeleton package
-
-#### Executable script file
-Entire script that uses this library might look like attached [example-skeleton](example/example-skeleton) file.
 
 ##### Setup steps:
 - Instantiate input arguments and application:
