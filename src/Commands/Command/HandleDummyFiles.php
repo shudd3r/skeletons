@@ -53,11 +53,11 @@ class HandleDummyFiles implements Command
             $dirname    = dirname($systemPath);
             $count      = count($this->package->subdirectory($dirname)->fileList());
 
-            if ($count === 1) { continue; }
             if ($count === 0) {
                 $index['missing'][] = $filename;
                 continue;
             }
+            if ($count === 1 || !$this->package->file($filename)->exists()) { continue; }
 
             if (!isset($index['redundant'][$dirname])) {
                 $index['redundant'][$dirname] = $filename;

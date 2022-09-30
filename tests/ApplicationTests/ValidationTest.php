@@ -61,4 +61,17 @@ class ValidationTest extends ApplicationTests
         $app->run($this->args('check'));
         $this->assertSame(1, $app->run($this->args('check')));
     }
+
+    public function testPackageWithoutRedundantDummyFiles_IsValid()
+    {
+        $package = self::$files->directory('package-synchronized');
+        $app     = $this->app($package);
+
+        $package->addFile('docs/SOMETHING.md');
+        $package->addFile('docs/README.md');
+        $package->removeFile('docs/.gitkeep');
+        $this->assertFalse($package->file('docs/.gitkeep')->exists());
+        $app->run($this->args('check'));
+        $this->assertSame(0, $app->run($this->args('check')));
+    }
 }
