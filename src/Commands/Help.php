@@ -33,8 +33,11 @@ class Help implements Commands
                             'update' using interactive shell
                             If no <argument>=<value> is provided interactive
                             mode for these commands is turned on by default
-          -r, --remote      May be used so that only deployable skeleton
-                            files were processed
+          -l, --local       This option enables processing of skeleton's local
+                            dev environment files that are not deployed with the
+                            package (like IDE config, git hooks etc.).
+                            This option shouldn't be used for package validation
+                            in remote repository context.
         %s
 
         HELP;

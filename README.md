@@ -152,6 +152,7 @@ Application `<options>`:
 - `-l`, `--local`: may be used to include files not deployed to remote repository
   if skeleton defines them (like git hooks or IDE settings). This option may be used
   for all file operations - initialization, validation, synchronization and updates.
+  See `.sk_local` template filename suffix in [Directive suffixes](#directive-suffixes).
 
 Available `<argument>` names depend on placeholders configured in application.
 Currently, built-in placeholders can receive their values from following arguments:
@@ -191,7 +192,7 @@ a suffix to their names:
   updated, but not verified on remote environments.
 - `.sk_file` - deactivates files processed by remote workflows.
   For example `.gitignore` file cannot be safely deployed as a part
-  of skeleton, because it would exclude its local files.
+  of skeleton, because it might exclude some of its files.
 - `.sk_dir` - similar to `.sk_file` in context of directories.
   For example `.git` directory cannot be deployed. Such directory
   is expected to contain `.sk_local` or `.sk_init` files.
