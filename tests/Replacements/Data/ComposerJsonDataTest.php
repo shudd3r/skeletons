@@ -33,6 +33,9 @@ class ComposerJsonDataTest extends TestCase
         $this->assertSame($data['name'], $composer->value('name'));
         $this->assertSame($data['arrays']['first'], $composer->array('arrays.first'));
         $this->assertSame($data['strings']['value1'], $composer->value('strings.value1'));
+        $this->assertSame($data['objects'][1], $composer->array('objects.1'));
+        $this->assertSame($data['objects'][0], $composer->array('objects.0'));
+        $this->assertSame($data['objects'][0]['foo'], $composer->value('objects.0.foo'));
     }
 
     public function testMissingData_ReturnsNull()
@@ -105,6 +108,10 @@ class ComposerJsonDataTest extends TestCase
             'strings' => [
                 'value1' => 'one',
                 'value2' => 'two'
+            ],
+            'objects' => [
+                ['foo' => 'first.foo'],
+                ['foo' => 'second.foo']
             ]
         ];
 

@@ -40,7 +40,8 @@ class ComposerJsonData
     private function readValue(array $keys, callable $validType)
     {
         $value = &$this->data;
-        while ($key = array_shift($keys)) {
+        while ($keys) {
+            $key = array_shift($keys);
             if (!is_array($value)) {
                 throw new RuntimeException('Invalid composer data query');
             }
