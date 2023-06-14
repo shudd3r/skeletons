@@ -11,10 +11,10 @@ jobs:
         php-versions: ['7.4']
     env:
       extensions: pcov, dom, json, libxml, mbstring, pdo_sqlite, soap, xml, xmlwriter
-      key: cache-v1
+      key: cache-v3
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: "Setup PHP extensions cache environment"
         id: cache-env
         uses: shivammathur/cache-extensions@v1
@@ -23,7 +23,7 @@ jobs:
           extensions: ${{ env.extensions }}
           key: ${{ env.key }}
       - name: "Cache PHP extensions"
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.cache-env.outputs.dir }}
           key: ${{ steps.cache-env.outputs.key }}
@@ -38,7 +38,7 @@ jobs:
       - name: "Validate composer.json"
         run: composer validate
       - name: "Setup composer cache"
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.composer/cache
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
@@ -61,15 +61,15 @@ jobs:
     strategy:
       matrix:
         operating-system: ['ubuntu-latest', 'windows-latest', 'macos-latest']
-        php-versions: ['8.0', '8.1']
+        php-versions: ['8.0', '8.1', '8.2']
     env:
       extensions: pcov, dom, json, libxml, mbstring, pdo_sqlite, soap, xml, xmlwriter
-      key: cache-v1
+      key: cache-v3
     steps:
       - name: "Turn off git EOL conversion"
         run: git config --global core.autocrlf false
       - name: "Checkout"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: "Setup PHP extensions cache environment"
         id: cache-env
         uses: shivammathur/cache-extensions@v1
@@ -78,7 +78,7 @@ jobs:
           extensions: ${{ env.extensions }}
           key: ${{ env.key }}
       - name: "Cache PHP extensions"
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.cache-env.outputs.dir }}
           key: ${{ steps.cache-env.outputs.key }}
@@ -91,7 +91,7 @@ jobs:
           extensions: ${{ env.extensions }}
           ini-values: assert.exception=1, zend.assertions=1
       - name: "Setup composer cache"
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.composer/cache
           key: ${{ runner.os }}-php${{ matrix.php-versions }}-composer-${{ hashFiles('**/composer.json') }}
