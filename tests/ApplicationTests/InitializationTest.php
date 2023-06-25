@@ -64,9 +64,9 @@ class InitializationTest extends ApplicationTests
         $template = self::$files->directory();
         $app      = new Application($package, $template, self::$terminal->reset());
 
-        $template->addFile('.gitkeep');
+        $template->addFile('empty.txt');
         $app->run($this->args(...$this->initArgs));
-        $this->assertTrue($package->file('.gitkeep')->exists());
+        $this->assertTrue($package->file('empty.txt')->exists());
     }
 
     public function testInitializationWithExistingMetaDataFile_AbortsExecutionWithoutSideEffects()

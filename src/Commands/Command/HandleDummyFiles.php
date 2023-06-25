@@ -44,7 +44,6 @@ class HandleDummyFiles implements Command
     private function fileIndex(): array
     {
         $index = ['redundant' => [], 'missing' => []];
-        $multiple = [];
         foreach ($this->dummies->fileList() as $file) {
             $filename = $file->name();
             if (!strpos($filename, '/')) { continue; }
@@ -58,21 +57,10 @@ class HandleDummyFiles implements Command
                 continue;
             }
             if ($count === 1 || !$this->package->file($filename)->exists()) { continue; }
-
-            if (!isset($index['redundant'][$dirname])) {
-                $index['redundant'][$dirname] = $filename;
-                continue;
-            }
-
-            $multiple[$dirname] ??= [$index['redundant'][$dirname]];
-            $multiple[$dirname][] = $filename;
-            if (count($multiple[$dirname]) === $count) { unset($index['redundant'][$dirname], $multiple[$dirname]); }
+            $index['redundant'][] = $filename;
         }
 
-        return [
-            'redundant' => $this->mergeMultipleFiles(array_values($index['redundant']), $multiple),
-            'missing'   => $index['missing']
-        ];
+        return $index;
     }
 
     private function handleRedundantFiles(array $redundantFiles): void
@@ -136,15 +124,5 @@ class HandleDummyFiles implements Command
         
         ERROR;
         $this->output->send($errorMessage, 1);
-    }
-
-    private function mergeMultipleFiles(array $filenames, array $multiple): array
-    {
-        foreach ($multiple as $files) {
-            foreach ($files as $filename) {
-                $filenames[] = $filename;
-            }
-        }
-        return $filenames;
     }
 }
