@@ -13,19 +13,18 @@ namespace Shudd3r\Skeletons\Commands\Command;
 
 use Shudd3r\Skeletons\Commands\Command;
 use Shudd3r\Skeletons\Environment\Files\Directory;
-use Shudd3r\Skeletons\Environment\Files;
+use Shudd3r\Skeletons\Templates\DummyFiles;
 use Shudd3r\Skeletons\Environment\Output;
+use Shudd3r\Skeletons\Environment\Files\File;
 
 
 class ValidateDummyFiles implements Command
 {
-    use Files\Paths;
+    private Directory  $package;
+    private DummyFiles $dummies;
+    private Output     $output;
 
-    private Directory $package;
-    private Files     $dummies;
-    private Output    $output;
-
-    public function __construct(Directory $package, Files $dummies, Output $output)
+    public function __construct(Directory $package, DummyFiles $dummies, Output $output)
     {
         $this->package = $package;
         $this->dummies = $dummies;
@@ -34,38 +33,16 @@ class ValidateDummyFiles implements Command
 
     public function execute(): void
     {
-        $fileIndex = $this->fileIndex();
-        $this->showMissingFiles($fileIndex['missing']);
-        $this->showRedundantFiles($fileIndex['redundant']);
+        $fileIndex = $this->dummies->verifiedFiles($this->package);
+        $this->showMissingFiles($fileIndex->missingFiles());
+        $this->showRedundantFiles($fileIndex->redundantFiles());
     }
 
-    private function fileIndex(): array
+    private function showRedundantFiles(array $files): void
     {
-        $index = ['redundant' => [], 'missing' => []];
-        foreach ($this->dummies->fileList() as $file) {
-            $filename = $file->name();
-            if (!strpos($filename, '/')) { continue; }
-
-            $systemPath = $this->normalized($filename, DIRECTORY_SEPARATOR);
-            $dirname    = dirname($systemPath);
-            $count      = count($this->package->subdirectory($dirname)->fileList());
-
-            if ($count === 0) {
-                $index['missing'][] = $filename;
-                continue;
-            }
-            if ($count === 1 || !$this->package->file($filename)->exists()) { continue; }
-            $index['redundant'][] = $filename;
-        }
-
-        return $index;
-    }
-
-    private function showRedundantFiles(array $redundantFiles): void
-    {
-        if (!$redundantFiles) { return; }
+        if (!$files) { return; }
         $this->output->send('- Redundant dummy files found:' . PHP_EOL);
-        $this->displayFilenames($redundantFiles);
+        $this->displayFilenames($files);
         $errorMessage = <<<ERROR
           These dummy files are no longer needed.
           You can remove them automatically with `sync` command.
@@ -74,11 +51,11 @@ class ValidateDummyFiles implements Command
         $this->output->send($errorMessage, 1);
     }
 
-    private function showMissingFiles(array $missingFiles): void
+    private function showMissingFiles(array $files): void
     {
-        if (!$missingFiles) { return; }
+        if (!$files) { return; }
         $this->output->send('- Missing dummy files for required directories:' . PHP_EOL);
-        $this->displayFilenames($missingFiles);
+        $this->displayFilenames($files);
         $errorMessage = <<<ERROR
           Directories that contain these files are required by skeleton,
           and dummy files are necessary to make empty directories deployable.
@@ -88,10 +65,9 @@ class ValidateDummyFiles implements Command
         $this->output->send($errorMessage, 1);
     }
 
-    private function displayFilenames(array $filenames): void
+    private function displayFilenames(array $files): void
     {
-        foreach ($filenames as $filename) {
-            $this->output->send('    ' . $filename . PHP_EOL);
-        }
+        $displayFilename = fn (File $file) => $this->output->send('    ' . $file->name() . PHP_EOL);
+        array_walk($files, $displayFilename);
     }
 }

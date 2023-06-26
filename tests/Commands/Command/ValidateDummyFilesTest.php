@@ -14,6 +14,7 @@ namespace Shudd3r\Skeletons\Tests\Commands\Command;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Commands\Command;
 use Shudd3r\Skeletons\Environment\Files;
+use Shudd3r\Skeletons\Templates\DummyFiles;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
@@ -97,6 +98,6 @@ class ValidateDummyFilesTest extends TestCase
 
     private function command(Files\Directory $directory, Files $files): Command
     {
-        return new Command\ValidateDummyFiles($directory, $files, self::$terminal->reset());
+        return new Command\ValidateDummyFiles($directory, new DummyFiles($files), self::$terminal->reset());
     }
 }

@@ -22,7 +22,6 @@ class Update extends Factory
     public function command(InputArgs $args): Command
     {
         $files            = $this->templates->generatedFiles($args);
-        $dummies          = $this->templates->dummyFiles();
         $cache            = new TokenCache();
         $validationTokens = new Tokens($this->replacements, new Reader($this->env, $args, false));
         $validator        = $this->filesProcessor($files, $this->fileValidators($cache));
@@ -44,7 +43,7 @@ class Update extends Factory
         $generateFiles = new Command\ProcessTokens($updateTokens, $generator, $this->output);
         $command       = new Command\CommandSequence(
             $this->commandInfo($generateFiles, 'Updating skeleton files:'),
-            new Command\HandleDummyFiles($this->env->package(), $dummies, $this->output),
+            new Command\HandleDummyFiles($this->env->package(), $this->dummyFiles(), $this->output),
             $this->commandInfo($saveMetaData, 'Updating meta data file (`' . $this->metaFile . '`)')
         );
 

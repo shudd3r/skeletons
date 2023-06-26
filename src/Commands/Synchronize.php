@@ -24,7 +24,6 @@ class Synchronize extends Factory
     {
         $files     = $this->templates->generatedFiles($args);
         $backup    = new Files\ReflectedFiles($this->env->backup(), $files);
-        $dummies   = $this->templates->dummyFiles();
         $tokens    = new Tokens($this->replacements, new Reader($this->env, $args, false));
         $processor = $this->filesProcessor($files, $this->mismatchedFileGenerators());
 
@@ -40,7 +39,7 @@ class Synchronize extends Factory
         $generateFiles = new Command\ProcessTokens($tokens, $processor, $this->output);
         $command       = new Command\CommandSequence(
             $this->commandInfo($generateFiles, 'Generating missing or mismatched skeleton files (with backup):'),
-            new Command\HandleDummyFiles($this->env->package(), $dummies, $this->output)
+            new Command\HandleDummyFiles($this->env->package(), $this->dummyFiles(), $this->output)
         );
 
         return new Command\ProtectedCommand($command, $preconditions, $this->output);

@@ -13,19 +13,18 @@ namespace Shudd3r\Skeletons\Commands\Command;
 
 use Shudd3r\Skeletons\Commands\Command;
 use Shudd3r\Skeletons\Environment\Files\Directory;
-use Shudd3r\Skeletons\Environment\Files;
+use Shudd3r\Skeletons\Templates\DummyFiles;
 use Shudd3r\Skeletons\Environment\Output;
+use Shudd3r\Skeletons\Environment\Files\File;
 
 
 class HandleDummyFiles implements Command
 {
-    use Files\Paths;
+    private Directory  $package;
+    private DummyFiles $dummies;
+    private Output     $output;
 
-    private Directory $package;
-    private Files     $dummies;
-    private Output    $output;
-
-    public function __construct(Directory $package, Files $dummies, Output $output)
+    public function __construct(Directory $package, DummyFiles $dummies, Output $output)
     {
         $this->package = $package;
         $this->dummies = $dummies;
@@ -34,56 +33,31 @@ class HandleDummyFiles implements Command
 
     public function execute(): void
     {
-        $fileIndex = $this->fileIndex();
-        $this->addMissingFiles($fileIndex['missing']);
-        $this->removeRedundantFiles($fileIndex['redundant']);
+        $fileIndex = $this->dummies->verifiedFiles($this->package);
+        $this->addFiles($fileIndex->missingFiles());
+        $this->removeFiles($fileIndex->redundantFiles());
     }
 
-    private function fileIndex(): array
+    private function addFiles(array $files): void
     {
-        $index = ['redundant' => [], 'missing' => []];
-        foreach ($this->dummies->fileList() as $file) {
-            $filename = $file->name();
-            if (!strpos($filename, '/')) { continue; }
-
-            $systemPath = $this->normalized($filename, DIRECTORY_SEPARATOR);
-            $dirname    = dirname($systemPath);
-            $count      = count($this->package->subdirectory($dirname)->fileList());
-
-            if ($count === 0) {
-                $index['missing'][] = $filename;
-                continue;
-            }
-            if ($count === 1 || !$this->package->file($filename)->exists()) { continue; }
-            $index['redundant'][] = $filename;
-        }
-
-        return $index;
-    }
-
-    private function removeRedundantFiles(array $redundantFiles): void
-    {
-        if (!$redundantFiles) { return; }
-        $this->output->send('- Removing redundant dummy files:' . PHP_EOL);
-        foreach ($redundantFiles as $filename) {
-            $this->displayFilename($filename);
-            $this->package->file($filename)->remove();
-        }
-    }
-
-    private function addMissingFiles(array $missingFiles): void
-    {
-        if (!$missingFiles) { return; }
+        if (!$files) { return; }
         $this->output->send('- Creating dummy files for required directories:' . PHP_EOL);
-
-        foreach ($missingFiles as $filename) {
-            $this->displayFilename($filename);
-            $this->package->file($filename)->write($this->dummies->file($filename)->contents());
-        }
+        $addFile = fn (File $file) => $this->package->file($this->displayFilename($file))->write($file->contents());
+        array_walk($files, $addFile);
     }
 
-    private function displayFilename(string $filename): void
+    private function removeFiles(array $files): void
     {
+        if (!$files) { return; }
+        $this->output->send('- Removing redundant dummy files:' . PHP_EOL);
+        $removeFile = fn (File $file) => $this->package->file($this->displayFilename($file))->remove();
+        array_walk($files, $removeFile);
+    }
+
+    private function displayFilename(File $file): string
+    {
+        $filename = $file->name();
         $this->output->send('    ' . $filename . PHP_EOL);
+        return $filename;
     }
 }
