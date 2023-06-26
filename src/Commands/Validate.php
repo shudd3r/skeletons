@@ -35,7 +35,7 @@ class Validate extends Factory
         $processTokens = new Command\ProcessTokens($tokens, $processor, $this->output);
         $command       = new Command\CommandSequence(
             $this->commandInfo($processTokens, 'Checking skeleton files synchronization:'),
-            new Command\HandleDummyFiles($this->env->package(), $dummies, $this->output, true)
+            new Command\ValidateDummyFiles($this->env->package(), $dummies, $this->output)
         );
 
         return new Command\ProtectedCommand($command, $precondition, $this->output);

@@ -17,7 +17,7 @@ use Shudd3r\Skeletons\Environment\Files;
 use Shudd3r\Skeletons\Environment\Output;
 
 
-class HandleDummyFiles implements Command
+class ValidateDummyFiles implements Command
 {
     use Files\Paths;
 
@@ -35,8 +35,8 @@ class HandleDummyFiles implements Command
     public function execute(): void
     {
         $fileIndex = $this->fileIndex();
-        $this->addMissingFiles($fileIndex['missing']);
-        $this->removeRedundantFiles($fileIndex['redundant']);
+        $this->showMissingFiles($fileIndex['missing']);
+        $this->showRedundantFiles($fileIndex['redundant']);
     }
 
     private function fileIndex(): array
@@ -61,29 +61,37 @@ class HandleDummyFiles implements Command
         return $index;
     }
 
-    private function removeRedundantFiles(array $redundantFiles): void
+    private function showRedundantFiles(array $redundantFiles): void
     {
         if (!$redundantFiles) { return; }
-        $this->output->send('- Removing redundant dummy files:' . PHP_EOL);
-        foreach ($redundantFiles as $filename) {
-            $this->displayFilename($filename);
-            $this->package->file($filename)->remove();
-        }
+        $this->output->send('- Redundant dummy files found:' . PHP_EOL);
+        $this->displayFilenames($redundantFiles);
+        $errorMessage = <<<ERROR
+          These dummy files are no longer needed.
+          You can remove them automatically with `sync` command.
+        
+        ERROR;
+        $this->output->send($errorMessage, 1);
     }
 
-    private function addMissingFiles(array $missingFiles): void
+    private function showMissingFiles(array $missingFiles): void
     {
         if (!$missingFiles) { return; }
-        $this->output->send('- Creating dummy files for required directories:' . PHP_EOL);
-
-        foreach ($missingFiles as $filename) {
-            $this->displayFilename($filename);
-            $this->package->file($filename)->write($this->dummies->file($filename)->contents());
-        }
+        $this->output->send('- Missing dummy files for required directories:' . PHP_EOL);
+        $this->displayFilenames($missingFiles);
+        $errorMessage = <<<ERROR
+          Directories that contain these files are required by skeleton,
+          and dummy files are necessary to make empty directories deployable.
+          You can create them automatically with `sync` command.
+        
+        ERROR;
+        $this->output->send($errorMessage, 1);
     }
 
-    private function displayFilename(string $filename): void
+    private function displayFilenames(array $filenames): void
     {
-        $this->output->send('    ' . $filename . PHP_EOL);
+        foreach ($filenames as $filename) {
+            $this->output->send('    ' . $filename . PHP_EOL);
+        }
     }
 }

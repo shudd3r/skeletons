@@ -26,45 +26,10 @@ class HandleDummyFilesTest extends TestCase
         self::$terminal = new Doubles\MockedTerminal();
     }
 
-    public function testNoInvalidDummiesInCheckMode_SendNoOutput()
-    {
-        $directory = $this->directory(['foo/.gitkeep', 'file1.txt', 'bar/file2.txt']);
-        $dummies   = $this->directory(['foo/.gitkeep', 'bar/.gitkeep']);
-
-        $this->command($directory, $dummies, true)->execute();
-        $this->assertEmpty(self::$terminal->messagesSent());
-        $this->assertSame(0, self::$terminal->exitCode());
-    }
-
-    public function testRedundantDummiesInCheckMode_SendFileListAndErrorMessage()
-    {
-        $directory = $this->directory(['foo/.gitkeep', 'foo/orig.txt']);
-        $dummies   = $this->directory(['foo/.gitkeep']);
-
-        $this->command($directory, $dummies, true)->execute();
-        $this->assertStringContainsString('foo/.gitkeep', implode('', self::$terminal->messagesSent()));
-        $this->assertNotSame(0, self::$terminal->exitCode());
-    }
-
-    public function testMissingDummiesInCheckMode_SendFileListAndErrorMessage()
-    {
-        $directory = $this->directory(['foo/.gitkeep']);
-        $dummies   = $this->directory(['foo/.gitkeep', 'bar/.gitkeep']);
-
-        $this->command($directory, $dummies, true)->execute();
-        $this->assertNotSame(0, self::$terminal->exitCode());
-        $this->assertStringContainsString('bar/.gitkeep', implode('', self::$terminal->messagesSent()));
-        $this->assertFiles($directory, ['foo/.gitkeep']);
-    }
-
     public function testDummyInRootDirectory_IsIgnored()
     {
         $directory = $this->directory();
         $dummies   = $this->directory(['.gitkeep']);
-
-        $this->command($directory, $dummies, true)->execute();
-        $this->assertEmpty(self::$terminal->messagesSent());
-        $this->assertSame(0, self::$terminal->exitCode());
 
         $this->command($directory, $dummies)->execute();
         $this->assertCount(0, $directory->fileList());
@@ -75,10 +40,6 @@ class HandleDummyFilesTest extends TestCase
     {
         $directory = $this->directory(['foo/.gitkeep', 'bar/.gitkeep', 'bar/file.txt']);
         $dummies   = $this->directory(['foo/.gitkeep']);
-
-        $this->command($directory, $dummies, true)->execute();
-        $this->assertEmpty(self::$terminal->messagesSent());
-        $this->assertSame(0, self::$terminal->exitCode());
 
         $this->command($directory, $dummies)->execute();
         $this->assertCount(3, $directory->fileList());
@@ -94,7 +55,6 @@ class HandleDummyFilesTest extends TestCase
         $messageStream = implode(',', self::$terminal->messagesSent());
         $this->assertStringContainsString('foo/.gitkeep', $messageStream);
         $this->assertStringContainsString('bar/.gitkeep', $messageStream);
-        $this->assertSame(0, self::$terminal->exitCode());
         $this->assertFiles($directory, ['foo/file1.txt', 'bar/file2.txt']);
     }
 
@@ -113,7 +73,6 @@ class HandleDummyFilesTest extends TestCase
         $dummies   = $this->directory(['foo/bar/.gitkeep']);
 
         $this->command($directory, $dummies)->execute();
-
         $this->assertFiles($directory, array_merge($files, ['foo/bar/.gitkeep']));
     }
 
@@ -138,18 +97,18 @@ class HandleDummyFilesTest extends TestCase
         $this->assertSame([], $expected);
     }
 
-    private function directory(array $subdirectories = []): Files\Directory
+    private function directory(array $filenames = []): Files\Directory
     {
         $directory = new Files\Directory\VirtualDirectory();
-        foreach ($subdirectories as $file) {
-            $directory->addFile($file);
+        foreach ($filenames as $filename) {
+            $directory->addFile($filename);
         }
 
         return $directory;
     }
 
-    private function command(Files\Directory $directory, Files $files, bool $validate = false): Command
+    private function command(Files\Directory $directory, Files $files): Command
     {
-        return new Command\HandleDummyFiles($directory, $files, self::$terminal->reset(), $validate);
+        return new Command\HandleDummyFiles($directory, $files, self::$terminal->reset());
     }
 }
