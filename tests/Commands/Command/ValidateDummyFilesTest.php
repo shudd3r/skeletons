@@ -36,53 +36,44 @@ class ValidateDummyFilesTest extends TestCase
         $this->assertOutput(0);
     }
 
-    public function testRedundantDummies_SendsFileListWithErrorCode()
-    {
-        $directory = $this->directory(['foo/.gitkeep', 'foo/orig.txt']);
-        $dummies   = $this->directory(['foo/.gitkeep']);
-
-        $this->command($directory, $dummies)->execute();
-        $this->assertOutput(1, ['foo/.gitkeep']);
-    }
-
     public function testMissingDummiesInCheckMode_SendsFileListWithErrorCode()
     {
         $directory = $this->directory(['foo/.gitkeep']);
+        $dummies   = $this->directory(['foo/.gitkeep', 'bar/.gitkeep', '.baz/.gitkeep']);
+
+        $this->command($directory, $dummies)->execute();
+        $this->assertOutput(1, ['Missing', 'bar/.gitkeep', '.baz/.gitkeep', 'create']);
+    }
+
+    public function testRedundantDummies_SendsFileListWithErrorCode()
+    {
+        $directory = $this->directory(['foo/.gitkeep', 'foo/file.txt', 'bar/.gitkeep', 'bar/baz/file.txt']);
         $dummies   = $this->directory(['foo/.gitkeep', 'bar/.gitkeep']);
 
         $this->command($directory, $dummies)->execute();
-        $this->assertOutput(1, ['bar/.gitkeep']);
+        $this->assertOutput(1, ['Redundant', 'foo/.gitkeep', 'bar/.gitkeep', 'remove']);
     }
 
-    public function testDummyInRootDirectory_IsIgnored()
+    public function testListingBothMissingAndRedundantDummyFiles()
     {
-        $directory = $this->directory();
-        $dummies   = $this->directory(['.gitkeep']);
+        $directory = $this->directory(['root.txt', 'foo/file.txt', 'foo/.gitkeep']);
+        $dummies   = $this->directory(['foo/.gitkeep', 'bar/.gitkeep']);
 
         $this->command($directory, $dummies)->execute();
-        $this->assertOutput(0);
+        $this->assertOutput(1, ['Missing', 'bar/.gitkeep', 'create', 'Redundant', 'foo/.gitkeep', 'remove']);
     }
 
-    public function testNonTemplateDummies_AreIgnored()
-    {
-        $directory = $this->directory(['foo/.gitkeep', 'bar/.gitkeep', 'bar/file.txt']);
-        $dummies   = $this->directory(['foo/.gitkeep']);
-
-        $this->command($directory, $dummies)->execute();
-        $this->assertOutput(0);
-    }
-
-    private function assertOutput(int $exitCode, array $filenames = [])
+    private function assertOutput(int $exitCode, array $strings = [])
     {
         $this->assertSame($exitCode, self::$terminal->exitCode());
-        if (!$filenames) {
-            $this->assertEmpty(self::$terminal->messagesSent());
+        $messages = self::$terminal->messagesSent();
+        if (!$strings) {
+            $this->assertEmpty($messages);
             return;
         }
 
-        $output = implode('', self::$terminal->messagesSent());
-        foreach ($filenames as $filename) {
-            $this->assertStringContainsString($filename, $output);
+        foreach ($strings as $index => $string) {
+            $this->assertStringContainsString($string, $messages[$index]);
         }
     }
 

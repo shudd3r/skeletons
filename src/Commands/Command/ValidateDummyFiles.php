@@ -38,19 +38,6 @@ class ValidateDummyFiles implements Command
         $this->showRedundantFiles($fileIndex->redundantFiles());
     }
 
-    private function showRedundantFiles(array $files): void
-    {
-        if (!$files) { return; }
-        $this->output->send('- Redundant dummy files found:' . PHP_EOL);
-        $this->displayFilenames($files);
-        $errorMessage = <<<ERROR
-          These dummy files are no longer needed.
-          You can remove them automatically with `sync` command.
-        
-        ERROR;
-        $this->output->send($errorMessage, 1);
-    }
-
     private function showMissingFiles(array $files): void
     {
         if (!$files) { return; }
@@ -60,6 +47,19 @@ class ValidateDummyFiles implements Command
           Directories that contain these files are required by skeleton,
           and dummy files are necessary to make empty directories deployable.
           You can create them automatically with `sync` command.
+        
+        ERROR;
+        $this->output->send($errorMessage, 1);
+    }
+
+    private function showRedundantFiles(array $files): void
+    {
+        if (!$files) { return; }
+        $this->output->send('- Redundant dummy files found:' . PHP_EOL);
+        $this->displayFilenames($files);
+        $errorMessage = <<<ERROR
+          These dummy files are no longer needed.
+          You can remove them automatically with `sync` command.
         
         ERROR;
         $this->output->send($errorMessage, 1);
