@@ -78,6 +78,31 @@ class DummyFilesTest extends TestCase
         $this->assertFiles(['bar/baz/.gitkeep'], $verified->redundantFiles());
     }
 
+    /** @dataProvider redundantTemplateFiles */
+    public function testRedundantDummyFilesInTemplate_AreIgnored(array $template, string $relevant)
+    {
+        $dummies = $this->dummies($template);
+
+        $verified = $dummies->verifiedFiles($this->directory());
+        $this->assertFiles([$relevant], $verified->missingFiles());
+
+        $verified = $dummies->verifiedFiles($this->directory($template));
+        $this->assertEmpty($verified->missingFiles());
+        $this->assertEmpty($verified->redundantFiles());
+
+        $verified = $dummies->verifiedFiles($this->directory([$relevant, $relevant . '.added']));
+        $this->assertEmpty($verified->missingFiles());
+        $this->assertFiles([$relevant], $verified->redundantFiles());
+    }
+
+    public static function redundantTemplateFiles(): array
+    {
+        return [
+            [['foo/.gitkeep', 'foo/bar/.gitkeep'], 'foo/bar/.gitkeep'],
+            [['foo/bar/.gitkeep', 'foo/.gitkeep'], 'foo/bar/.gitkeep']
+        ];
+    }
+
     private function assertFiles(array $filenames, array $fileList): void
     {
         $getFilename = fn (Files\File $file) => $file->name();

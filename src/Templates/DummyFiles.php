@@ -28,21 +28,34 @@ class DummyFiles
     {
         $redundantFiles = [];
         $missingFiles   = [];
+        foreach ($this->relevantDummyFiles() as $directory => $file) {
+            $count       = count($package->subdirectory($directory)->fileList());
+            $isMissing   = $count === 0;
+            $isRedundant = $count > 1 && $package->file($file->name())->exists();
+
+            if (!$isMissing && !$isRedundant) { continue; }
+            $isMissing ? array_push($missingFiles, $file) : array_push($redundantFiles, $file);
+        }
+
+        return new VerifiedDummyFiles($redundantFiles, $missingFiles);
+    }
+
+    /** @return array<string, Files\File> */
+    private function relevantDummyFiles(): array
+    {
+        $files = [];
         foreach ($this->files->fileList() as $file) {
             $filename  = $file->name();
             $directory = dirname($filename);
             if ($directory === '.') { continue; }
-            $count = count($package->subdirectory($directory)->fileList());
 
-            if ($count === 0) {
-                $missingFiles[] = $file;
-                continue;
+            foreach ($files as $listedDirectory => $listedFile) {
+                if (strpos($directory, $listedDirectory) === 0) { unset($files[$listedDirectory]); }
+                if (strpos($listedDirectory, $directory) === 0) { continue 2; }
             }
 
-            if ($count === 1 || !$package->file($filename)->exists()) { continue; }
-            $redundantFiles[] = $file;
+            $files[$directory] = $file;
         }
-
-        return new VerifiedDummyFiles($redundantFiles, $missingFiles);
+        return $files;
     }
 }

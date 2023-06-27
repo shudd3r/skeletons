@@ -19,23 +19,21 @@ class VerifiedDummyFiles
     private array $redundantFiles;
     private array $missingFiles;
 
+    /**
+     * @param File[] $redundantFiles
+     * @param File[] $missingFiles
+     */
     public function __construct(array $redundantFiles, array $missingFiles)
     {
         $this->redundantFiles = $redundantFiles;
         $this->missingFiles   = $missingFiles;
     }
 
-    /**
-     * @return File[]
-     */
     public function redundantFiles(): array
     {
         return $this->redundantFiles;
     }
 
-    /**
-     * @return File[]
-     */
     public function missingFiles(): array
     {
         return $this->missingFiles;
