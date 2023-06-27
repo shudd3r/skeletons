@@ -181,13 +181,6 @@ Behavior of some template files can be modified by adding
 a suffix to their names:
 - `.sk_init` - files generated at initialization only, not verified.
   Usually used for example files.
-- `.sk_dummy` - similar to init files, but serving as temporary
-  directory placeholder (usually `.gitkeep`). Can be removed only
-  when other files in same directory are present. `init`, `update`
-  & `sync` operations will remove redundant or add essential dummy
-  files.
-  Also note that package with redundant or missing dummy files will
-  be **marked as invalid** by `check` operation.
 - `.sk_local` - untracked, local dev environment files. Generated &
   updated, but not verified on remote environments.
 - `.sk_file` - deactivates files processed by remote workflows.
@@ -196,6 +189,23 @@ a suffix to their names:
 - `.sk_dir` - similar to `.sk_file` in context of directories.
   For example `.git` directory cannot be deployed. Such directory
   is expected to contain `.sk_local` or `.sk_init` files.
+
+#### Empty directories
+Empty directories cannot be committed, but by convention `.gitkeep` dummy
+files may be used to enforce directory structure when no files are specified.
+Dummy files should be removed when other files in required directory are
+present.
+
+Skeleton script will _create essential_ or _remove redundant_ `.gitkeep` files
+with `init`, `update` & `sync` command, but package with redundant or missing
+dummy files will be **marked as invalid** by `check` operation. Contents of these
+files are not validated and [placeholders are not replaced](tests/Fixtures/example-files/package-after-sync/src/.gitkeep).
+
+> In [example template](example/template) `src` and `tests` directories are
+required, but on initialization `src/Example.php` and `tests/ExampleTest.php`
+files will be created and `.gitkeep` file will be ignored, but when these
+files are removed (and no other file is added) `.gitkeep` will become necessary
+and `sync` command should be used to keep package compliant with the template.
 
 #### Placeholders
 Placeholder consists of its name surrounded by curly braces.

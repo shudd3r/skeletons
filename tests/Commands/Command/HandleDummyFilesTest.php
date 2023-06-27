@@ -14,6 +14,7 @@ namespace Shudd3r\Skeletons\Tests\Commands\Command;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Commands\Command;
 use Shudd3r\Skeletons\Environment\Files;
+use Shudd3r\Skeletons\Templates\DummyFiles;
 use Shudd3r\Skeletons\Tests\Doubles;
 
 
@@ -26,154 +27,79 @@ class HandleDummyFilesTest extends TestCase
         self::$terminal = new Doubles\MockedTerminal();
     }
 
-    public function testNoInvalidDummiesInCheckMode_SendNoOutput()
+    public function testWithoutRedundantOrMissingDummyFiles_CommandExecutesWithoutSideEffects()
     {
-        $directory = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
-        $dummies   = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
+        $directory = $this->directory($files = ['root.txt', 'foo/file.txt', 'bar/.gitkeep']);
+        $dummies   = $this->directory(['foo/.gitkeep', 'bar/.gitkeep']);
 
-        $this->command($directory, $dummies, true)->execute();
+        $this->command($directory, $dummies)->execute();
+        $this->assertFiles($files, $directory);
+        $this->assertMessages();
+    }
 
-        $this->assertEmpty(self::$terminal->messagesSent());
+    public function testMissingDummyFiles_AreCreatedWithTemplateContents()
+    {
+        $directory = $this->directory(['foo/orig0.txt']);
+        $dummies   = $this->directory(['foo/bar/.gitkeep', 'baz/.gitkeep']);
+        $dummies->file('baz/.gitkeep')->write($contents = 'Baz directory is required');
+
+        $this->command($directory, $dummies)->execute();
+        $this->assertFiles(['foo/orig0.txt', 'foo/bar/.gitkeep', 'baz/.gitkeep'], $directory);
+        $this->assertMessages(['Creating', 'foo/bar/.gitkeep', 'baz/.gitkeep']);
+        $this->assertSame($contents, $directory->file('baz/.gitkeep')->contents());
+    }
+
+    public function testRedundantDummyFiles_AreRemoved()
+    {
+        $directory = $this->directory(['foo/.gitkeep', 'foo/file1.txt', 'bar/.gitkeep', 'bar/file2.txt']);
+        $dummies   = $this->directory(['foo/.gitkeep', 'bar/.gitkeep']);
+
+        $this->command($directory, $dummies)->execute();
+        $this->assertFiles(['foo/file1.txt', 'bar/file2.txt'], $directory);
+        $this->assertMessages(['Removing', 'foo/.gitkeep', 'bar/.gitkeep']);
+    }
+
+    public function testHandlingBothMissingAndRedundantDummies()
+    {
+        $directory = $this->directory(['foo/file1.txt', 'foo/.gitkeep', 'bar/file2.txt']);
+        $dummies   = $this->directory(['foo/.gitkeep', 'bar/baz/.gitkeep']);
+
+        $this->command($directory, $dummies)->execute();
+        $this->assertFiles(['foo/file1.txt', 'bar/file2.txt', 'bar/baz/.gitkeep'], $directory);
+        $this->assertMessages(['Creating', 'bar/baz/.gitkeep', 'Removing', 'foo/.gitkeep']);
+    }
+
+    private function assertFiles(array $filenames, Files\Directory $directory): void
+    {
+        $getFilename = fn (Files\File $file) => $file->name();
+        $this->assertEquals($filenames, array_map($getFilename, $directory->fileList()));
+    }
+
+    private function assertMessages(array $strings = []): void
+    {
         $this->assertSame(0, self::$terminal->exitCode());
-    }
-
-    public function testRedundantDummiesInCheckMode_SendFileListAndErrorMessage()
-    {
-        $directory = $this->directory(['foo/dummy0.txt', 'foo/dummy1.txt', 'foo/orig.txt']);
-        $dummies   = $this->directory(['foo/dummy0.txt', 'foo/dummy1.txt']);
-
-        $this->command($directory, $dummies, true)->execute();
-
-        $messageStream = implode('', self::$terminal->messagesSent());
-        $this->assertStringContainsString('foo/dummy1.txt', $messageStream);
-        $this->assertNotSame(0, self::$terminal->exitCode());
-    }
-
-    public function testMissingDummiesInCheckMode_SendFileListAndErrorMessage()
-    {
-        $directory = $this->directory(['foo/dummy0.txt']);
-        $dummies   = $this->directory(['foo/dummy0.txt', 'bar/dummy1.txt']);
-
-        $this->command($directory, $dummies, true)->execute();
-
-        $messageStream = implode('', self::$terminal->messagesSent());
-        $this->assertNotSame(0, self::$terminal->exitCode());
-        $this->assertStringContainsString('bar/dummy1.txt', $messageStream);
-        $this->assertFiles($directory, ['foo/dummy0.txt']);
-    }
-
-    public function testDummiesInRootDirectory_AreIgnored()
-    {
-        $directory = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
-        $dummies   = $this->directory(['dummy0.txt', 'dummy1.txt', 'dummy2.txt']);
-
-        $this->command($directory, $dummies)->execute();
-
-        $this->assertCount(3, $directory->fileList());
-        $this->assertEmpty(self::$terminal->messagesSent());
-    }
-
-    public function testDummiesWithOriginalFileInSameDirectory_AreRemovedAndFileListIsSent()
-    {
-        $directory = $this->directory(['foo/dummy1.txt', 'foo/dummy2.txt', 'foo/orig.txt']);
-        $dummies   = $this->directory(['foo/dummy1.txt', 'foo/dummy2.txt']);
-
-        $this->command($directory, $dummies)->execute();
-
-        $messageStream = implode('', self::$terminal->messagesSent());
-        $this->assertStringContainsString('foo/dummy1.txt', $messageStream);
-        $this->assertStringContainsString('foo/dummy2.txt', $messageStream);
-        $this->assertSame(0, self::$terminal->exitCode());
-        $this->assertFiles($directory, ['foo/orig.txt']);
-    }
-
-    public function testDummiesWithOriginalFilesInSubdirectories_AreRemoved()
-    {
-        $directory = $this->directory(['foo/dummy.txt', 'foo/bar/orig.txt']);
-        $dummies   = $this->directory(['foo/dummy.txt']);
-
-        $this->command($directory, $dummies)->execute();
-
-        $this->assertFiles($directory, ['foo/bar/orig.txt']);
-    }
-
-    public function testMultipleDummiesInSameDirectoryWithoutOriginalFiles_AreNotRemoved()
-    {
-        $directory = $this->directory(['foo/dummy1.txt', 'foo/dummy2.txt']);
-        $dummies   = $this->directory(['foo/dummy1.txt', 'foo/dummy2.txt', 'foo/dummy3.txt']);
-
-        $this->command($directory, $dummies)->execute();
-        $this->assertCount(2, $directory->fileList());
-    }
-
-    public function testDummiesWithSiblingsInSubdirectory_AreRemoved()
-    {
-        $directory = $this->directory(['foo/dummy0.txt', 'foo/bar/dummy1.txt']);
-        $dummies   = $this->directory(['foo/dummy0.txt', 'foo/bar/dummy1.txt']);
-
-        $this->command($directory, $dummies)->execute();
-
-        $this->assertFiles($directory, ['foo/bar/dummy1.txt']);
-    }
-
-    public function testDummiesWithOriginalFilesInSameSubdirectory_AreRemoved()
-    {
-        $directory = $this->directory(['foo/baz/dummy0.txt', 'foo/bar/dummy1.txt', 'foo/bar/baz.txt']);
-        $dummies   = $this->directory(['foo/baz/dummy0.txt', 'foo/bar/dummy1.txt']);
-
-        $this->command($directory, $dummies)->execute();
-
-        $this->assertFiles($directory, ['foo/baz/dummy0.txt', 'foo/bar/baz.txt']);
-    }
-
-    public function testRedundantDummiesInMultipleDirectories_AreRemoved()
-    {
-        $files = [
-            'orig'    => ['foo/orig0.txt', 'bar/orig1.txt', 'bar/baz/orig2,txt'],
-            'dummies' => ['foo/dummy0.txt', 'bar/dummy1.txt', 'foo/bar/dummy3.txt']
-        ];
-        $directory = $this->directory(array_merge($files['orig'], $files['dummies']));
-        $dummies   = $this->directory(array_merge($files['dummies'], ['bar/baz/removed-dummy.txt']));
-
-        $this->command($directory, $dummies)->execute();
-
-        $this->assertFiles($directory, array_merge($files['orig'], ['foo/bar/dummy3.txt']));
-    }
-
-    public function testMissingDummyFiles_AreCreated()
-    {
-        $directory = $this->directory($files = ['foo/orig0.txt', 'bar/orig1.txt', 'bar/baz/orig2,txt']);
-        $dummies   = $this->directory(['foo/bar/dummy3.txt']);
-
-        $this->command($directory, $dummies)->execute();
-
-        $this->assertFiles($directory, array_merge($files, ['foo/bar/dummy3.txt']));
-    }
-
-    private function assertFiles(Files\Directory $directory, array $filenames)
-    {
-        $expected = array_flip($filenames);
-        foreach ($directory->fileList() as $file) {
-            $filename = $file->name();
-            $this->assertArrayHasKey($filename, $expected);
-            unset($expected[$filename]);
+        $messages = self::$terminal->messagesSent();
+        if (!$strings) {
+            $this->assertEmpty($messages);
+            return;
         }
-
-        $this->assertSame([], $expected);
+        foreach ($strings as $index => $string) {
+            $this->assertStringContainsString($string, $messages[$index]);
+        }
     }
 
-    private function directory(array $subdirectories = []): Files\Directory
+    private function directory(array $filenames = []): Files\Directory
     {
         $directory = new Files\Directory\VirtualDirectory();
-        foreach ($subdirectories as $file) {
-            $directory->addFile($file);
+        foreach ($filenames as $filename) {
+            $directory->addFile($filename);
         }
 
         return $directory;
     }
 
-    private function command(Files\Directory $directory, Files $files, bool $validate = false): Command
+    private function command(Files\Directory $directory, Files $files): Command
     {
-        return new Command\HandleDummyFiles($directory, $files, self::$terminal->reset(), $validate);
+        return new Command\HandleDummyFiles($directory, new DummyFiles($files), self::$terminal->reset());
     }
 }

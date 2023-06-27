@@ -28,8 +28,7 @@ class AppSetup
     private const EXT_TYPES  = [
         self::EXT_PREFIX . 'file',
         self::EXT_PREFIX . 'local',
-        self::EXT_PREFIX . 'init',
-        self::EXT_PREFIX . 'dummy'
+        self::EXT_PREFIX . 'init'
     ];
 
     /** @var ?Replacement[] */
@@ -106,6 +105,8 @@ class AppSetup
 
     private function fileType(string $filename): string
     {
+        if (basename($filename) === '.gitkeep') { return 'dummy'; }
+
         $extFound = strrpos($filename, self::EXT_PREFIX);
         if (!$extFound) { return 'orig'; }
 
@@ -117,7 +118,7 @@ class AppSetup
 
     private function targetFilename(string $filename, string $type): string
     {
-        if ($type === 'orig') { return $filename; }
+        if ($type === 'orig' || $type === 'dummy') { return $filename; }
         $realPathFilename = str_replace(self::EXT_DIR . '/', '/', $filename);
         if (strpos($realPathFilename, '//')) { $realPathFilename = $filename; }
         return substr($realPathFilename, 0, -strlen(self::EXT_PREFIX . $type));

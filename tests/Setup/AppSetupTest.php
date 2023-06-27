@@ -27,11 +27,11 @@ class AppSetupTest extends TestCase
 {
     public function testTemplates_ReturnsTemplatesWithIndexedSkeletonFiles()
     {
-        $filenames = ['basic.file', 'escaped.file', 'escaped/local.file', 'dir/initial.file', 'src/dummy.file'];
+        $filenames = ['basic.file', 'escaped.file', 'escaped/local.file', 'dir/initial.file', 'src/.gitkeep'];
         $package   = $this->directoryFiles($filenames);
         $template  = $this->directoryFiles([
             'basic.file', 'escaped.file.sk_file',
-            'dir/initial.file.sk_init', 'src/dummy.file.sk_dummy',
+            'dir/initial.file.sk_init', 'src/.gitkeep',
             'escaped.sk_dir/local.file.sk_local'
         ]);
 
@@ -39,10 +39,10 @@ class AppSetupTest extends TestCase
         $templates = $setup->templates(new Doubles\FakeRuntimeEnv($package, $template));
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'init', '--local']));
-        $this->assertFileList($files, $filenames, ['src/dummy.file']);
+        $this->assertFileList($files, $filenames, ['src/.gitkeep']);
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'init']));
-        $this->assertFileList($files, $filenames, ['src/dummy.file', 'escaped/local.file']);
+        $this->assertFileList($files, $filenames, ['src/.gitkeep', 'escaped/local.file']);
 
         $files = $templates->generatedFiles(new InputArgs(['script', 'check', '--local']));
         $this->assertFileList($files, ['basic.file', 'escaped.file', 'escaped/local.file']);
@@ -50,16 +50,16 @@ class AppSetupTest extends TestCase
         $files = $templates->generatedFiles(new InputArgs(['script', 'check']));
         $this->assertFileList($files, ['basic.file', 'escaped.file']);
 
-        $this->assertFileList($templates->dummyFiles(), ['src/dummy.file']);
+        $this->assertFileList($templates->dummyFiles(), ['src/.gitkeep']);
     }
 
     public function testRemovingTemplateGeneratedFiles_RemovesFilesFromPackageDirectory()
     {
-        $filenames = ['basic.file', 'escaped.file', 'escaped/local.file', 'dir/initial.file', 'src/dummy.file'];
+        $filenames = ['basic.file', 'escaped.file', 'escaped/local.file', 'dir/initial.file', 'src/.gitkeep'];
         $package   = $this->directoryFiles($filenames);
         $template  = $this->directoryFiles([
             'basic.file', 'escaped.file.sk_file',
-            'dir/initial.file.sk_init', 'src/dummy.file.sk_dummy',
+            'dir/initial.file.sk_init', 'src/.gitkeep',
             'escaped.sk_dir/local.file.sk_local'
         ]);
 
@@ -69,7 +69,7 @@ class AppSetupTest extends TestCase
 
         $this->assertFileList($package, $filenames);
         array_walk($generated, fn (File $file) => $file->remove());
-        $this->assertFileList($package, ['src/dummy.file']);
+        $this->assertFileList($package, ['src/.gitkeep']);
     }
 
     public function testReplacementSetup_AddsReplacementsInDefinedOrder()

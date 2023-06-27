@@ -15,6 +15,7 @@ use Shudd3r\Skeletons\Commands;
 use Shudd3r\Skeletons\InputArgs;
 use Shudd3r\Skeletons\RuntimeEnv;
 use Shudd3r\Skeletons\Templates;
+use Shudd3r\Skeletons\Templates\DummyFiles;
 use Shudd3r\Skeletons\Replacements;
 use Shudd3r\Skeletons\Replacements\TokenCache;
 use Shudd3r\Skeletons\Processors;
@@ -55,6 +56,11 @@ abstract class Factory implements Commands
     protected function fileGenerators(TokenCache $tokenCache = null): Processors
     {
         return new Processors\FileGenerators($this->env->output(), $tokenCache);
+    }
+
+    protected function dummyFiles(): DummyFiles
+    {
+        return new DummyFiles($this->templates->dummyFiles());
     }
 
     protected function commandInfo(Command $command, string $message): Command

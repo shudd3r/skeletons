@@ -21,7 +21,6 @@ class Validate extends Factory
     public function command(InputArgs $args): Command
     {
         $files     = $this->templates->generatedFiles($args);
-        $dummies   = $this->templates->dummyFiles();
         $tokens    = new Tokens($this->replacements, new Reader($this->env, $args, false));
         $processor = $this->filesProcessor($files, $this->fileValidators());
 
@@ -35,7 +34,7 @@ class Validate extends Factory
         $processTokens = new Command\ProcessTokens($tokens, $processor, $this->output);
         $command       = new Command\CommandSequence(
             $this->commandInfo($processTokens, 'Checking skeleton files synchronization:'),
-            new Command\HandleDummyFiles($this->env->package(), $dummies, $this->output, true)
+            new Command\ValidateDummyFiles($this->env->package(), $this->dummyFiles(), $this->output)
         );
 
         return new Command\ProtectedCommand($command, $precondition, $this->output);
