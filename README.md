@@ -6,19 +6,26 @@
 [![LICENSE](https://img.shields.io/github/license/shudd3r/skeletons.svg?color=blue)](LICENSE)
 ### Template engine for package skeletons
 
+**_Feels like you're repeating yourself every time you start a new project?\
+This package might help you automate some stuff!_**
+
 Skeleton packages are used to maintain **consistent structure**
-of document (license, readme etc.) and dev environment files
-**across multiple packages**. This library allows building skeleton
-package scripts capable of:
-- Generating package skeleton from template files
-- Verifying synchronization of existing project with chosen
-  template as a part of [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) process
+of document (`LICENSE`, `README` etc.) & dev environment files (tool configs,
+workflows, scripts) across multiple packages & projects.
+This library allows building skeleton package scripts capable of:
+- Generating file structure for deployed package & local dev
+  environment from skeleton files with built-in placeholder replacements
+  or customized template processing scripts
+- Verifying synchronization of existing project with chosen template
+  as a part of [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) process
+- Synchronizing mismatched & missing files in existing project built
+  with prepared skeleton script and its template files
 - Updating template placeholder values used in existing package files
 
 ### Basic Usage
 Before diving into details you can learn some basics about skeleton
 scripts by browsing files (or playing with to some extent) embedded
-[skeleton example package](example).
+[skeleton package example](example).
 
 Neither applications nor libraries will use this package directly,
 but as a command line tool of the skeleton package they were built
@@ -197,9 +204,9 @@ Dummy files should be removed when other files in required directory are
 present.
 
 Skeleton script will _create essential_ or _remove redundant_ `.gitkeep` files
-with `init`, `update` & `sync` command, but package with redundant or missing
-dummy files will be **marked as invalid** by `check` operation. Contents of these
-files are not validated and [placeholders are not replaced](tests/Fixtures/example-files/package-after-sync/src/.gitkeep).
+with `init`, `update` & `sync` command, and package with redundant or missing
+dummy files will be **marked as invalid** by `check` operation.
+Contents of these files are not validated and [placeholders are not replaced](tests/Fixtures/example-files/package-after-sync/src/.gitkeep).
 
 > In [example template](example/template) `src` and `tests` directories are
 required, but on initialization `src/Example.php` and `tests/ExampleTest.php`
@@ -220,17 +227,17 @@ $app->replacement('namespace.src')->add(new Replacement\SrcNamespace());
 Replacement, beside direct value may define its subtypes.
 For example [`SrcNamespace`](src/Replacements/Replacement/SrcNamespace.php)
 replacement defined above will also replace `{namespace.src.esc}`
-with escaped backslashes (needed for `composer.json` file),
+with escaped backslashes used in `composer.json` file,
 and [`PackageName`](src/Replacements/Replacement/PackageName.php)
-covers `{placeholder.composer}` subtype that gives normalized,
-packagist package name in lowercase.
+has `{*.composer}` subtype that gives normalized packagist
+package name in lowercase.
 
 ##### Original Content placeholder
 `{original.content}` is a special built-in placeholder that
 represents places where project specific text might appear.
 It's useful especially for README files, where skeleton cannot
 dictate its entire content.
-Template can also define **initial "prompt" value** for it, and
+Template can also define **initial/default value** for it, and
 single template file can use this placeholder multiple times.
 For example README file that is expected to contain concrete
 sections might be defined as follows:
@@ -248,10 +255,11 @@ sections might be defined as follows:
 
 #### Custom Template processing
 Some files that change dynamically throughout project lifetime cannot be
-handled in a simple, text expanding way like, for example,`README.md` file.
-This is where custom templates might be used.
+handled in a simple, text expanding way like, for example,`README.md`.
+This is where custom [templates](src/Templates/Template.php) might be used.
 
-As for now this package provides only one file-based template:
+This package comes with [`Merged Json Template`](src/Templates/Template/MergedJsonTemplate.php)
+as the only one file-based template.
 
 ##### Merged Json Template
 This custom template can handle normalization & merging of generated `.json`
