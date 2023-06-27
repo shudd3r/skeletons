@@ -198,8 +198,8 @@ present.
 
 Skeleton script will _create essential_ or _remove redundant_ `.gitkeep` files
 with `init`, `update` & `sync` command, but package with redundant or missing
-dummy files will be **marked as invalid** by `check` operation. These files
-are not validated for their contents, and placeholders are not replaced.
+dummy files will be **marked as invalid** by `check` operation. Contents of these
+files are not validated and [placeholders are not replaced](tests/Fixtures/example-files/package-after-sync/src/.gitkeep).
 
 > In [example template](example/template) `src` and `tests` directories are
 required, but on initialization `src/Example.php` and `tests/ExampleTest.php`
