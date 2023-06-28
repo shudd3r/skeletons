@@ -28,13 +28,34 @@ class MergedJsonTemplateTest extends TestCase
         self::$files = new Fixtures\ExampleFiles('json-merge-example');
     }
 
-    /**
-     * @dataProvider nonStructuralContents
-     */
-    public function testWithoutContentsToMerge_ReturnsOriginalTemplateRender(string $contents)
+    public static function nonStructuralContents(): array
     {
-        $this->assertSame($contents, $this->jsonTemplate($contents, '')->render(self::$token));
-        $this->assertSame('not json', $this->jsonTemplate('not json', $contents)->render(self::$token));
+        return [
+            'empty string'     => [''],
+            'non-json string'  => ['some non-json contents'],
+            'simple type json' => ['123']
+        ];
+    }
+
+    public static function mismatchedDataTypes(): array
+    {
+        $assoc = ['foo' => 'a', 'bar' => 'b'];
+        $tpl   = ['foo' => null, 'bar' => null];
+        $list  = ['c', 'd'];
+        $val   = 'value';
+
+        return [
+            'assoc-list'              => [$assoc, $list, null],
+            'list-assoc'              => [$list, $assoc, null],
+            'list:assoc-val'          => [[$assoc, $assoc], [$val, $val], null],
+            'list:list-val'           => [[$list, $list], [$val, $val], null],
+            'list:assoc-list'         => [[$assoc, $assoc], [$list, $list], null],
+            'list:list-assoc'         => [[$list, $list], [$assoc, $assoc], null],
+            'list:tpl-list'           => [[$tpl], [$list, $list], []],
+            'list:tpl+assoc-list'     => [[$tpl, $assoc], [$list, $list], [$assoc]],
+            'sub assoc-val'           => [['foo' => $assoc], ['foo' => $val], null],
+            'sub list-val'            => [['foo' => $list], ['foo' => $val], null]
+        ];
     }
 
     public function testDecoratedTemplate_IsRenderedWithProvidedToken()
@@ -77,6 +98,41 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
+    /** @dataProvider nonStructuralContents */
+    public function testWithoutStructureToMerge_ReturnsOriginalTemplateRender(string $contents)
+    {
+        $this->assertSame('not {json}', $this->jsonTemplate('not {json}', $contents)->render(self::$token));
+        $this->assertSame($contents, $this->jsonTemplate($contents, '{"foo": "bar"}')->render(self::$token));
+        $this->assertSame('{"foo": "bar"}', $this->jsonTemplate('{"foo": "bar"}', $contents)->render(self::$token));
+    }
+
+    /** @dataProvider mismatchedDataTypes */
+    public function testForNotMatchingTypes_PackageValuesAreIgnored(array $template, array $package, ?array $expected)
+    {
+        $expected ??= $template;
+        $this->assertJsonData($expected, $this->template($template, $package));
+
+        $template = ['sub' => $template];
+        $package  = ['sub' => $package];
+        $expected = $expected !== [] ? ['sub' => $expected] : [];
+        $this->assertJsonData($expected, $this->template($template, $package));
+
+        $expand = ['valid' => 'value'];
+
+        $expTemplate = array_merge($template, $expand);
+        $this->assertJsonData(array_merge($expected, $expand), $this->template($expTemplate, $package));
+
+        $expTemplate = array_merge($expand, $template);
+        $this->assertJsonData(array_merge($expand, $expected), $this->template($expTemplate, $package));
+
+        $expPackage = array_merge($package, $expand);
+        $expected   = array_merge($expected, $expand);
+        $this->assertJsonData($expected, $this->template($template, $expPackage));
+
+        $expPackage = array_merge($expand, $package);
+        $this->assertJsonData($expected, $this->template($template, $expPackage));
+    }
+
     public function testFirstArrayInTemplateList_IsUsedAsStructureTemplateForAllItems()
     {
         $template = ['list' => [['a' => 1, 'b' => 1]]];
@@ -106,6 +162,9 @@ class MergedJsonTemplateTest extends TestCase
         $template = ['foo' => 'foo-value', 'list' => [['a' => null, 'b' => null]]];
         $package  = ['bar' => 'bar-value'];
         $expected = ['foo' => 'foo-value', 'bar' => 'bar-value'];
+        $this->assertJsonData($expected, $this->template($template, $package));
+
+        $package = ['bar' => 'bar-value', 'list' => [['type', 'mismatch']]];
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
@@ -155,15 +214,6 @@ class MergedJsonTemplateTest extends TestCase
 
         $expected = self::$files->contentsOf('update-synchronized.json');
         $this->assertSame($expected, $template->render($token));
-    }
-
-    public function nonStructuralContents(): array
-    {
-        return [
-            'empty string'     => [''],
-            'non-json string'  => ['some non-json contents'],
-            'simple type json' => ['123']
-        ];
     }
 
     private function assertJsonData(array $expected, Template $json): void

@@ -52,7 +52,7 @@ class MergedJsonTemplate implements Template
         $templateData = json_decode($rendered, true);
         $packageData  = json_decode($this->jsonString, true);
 
-        if (!$templateData || !is_array($packageData)) { return $rendered; }
+        if (!$templateData || !is_array($templateData) || !is_array($packageData)) { return $rendered; }
 
         return $this->jsonString($templateData, $packageData);
     }
@@ -67,7 +67,10 @@ class MergedJsonTemplate implements Template
 
     private function mergedDataStructure(array $template, array $package): ?array
     {
-        return $this->isList($template)
+        $isList  = $this->isList($template);
+        $package = $this->isList($package) === $isList ? $package : [];
+
+        return $isList
             ? $this->mergedListItems($template, $package)
             : $this->mergedAssocStructure($template, $package);
     }
@@ -82,13 +85,14 @@ class MergedJsonTemplate implements Template
         $merged = [];
         foreach ($template as $key => $value) {
             $mergedValue = is_array($value)
-                ? $this->mergedDataStructure($value, $package[$key] ?? [])
+                ? $this->mergedDataStructure($value, $this->ignoreNonArray($package, $key))
                 : $value ?? $package[$key] ?? null;
-            if ($mergedValue === null) { continue; }
 
-            $merged[$key] = $mergedValue;
             $usedKey = $this->isSynchronized ? array_key_first($package) : $key;
             unset($package[$usedKey]);
+
+            if ($mergedValue === null || $mergedValue === []) { continue; }
+            $merged[$key] = $mergedValue;
         }
 
         foreach ($package as $key => $value) {
@@ -105,17 +109,20 @@ class MergedJsonTemplate implements Template
             $package = array_slice($package, count($items));
         }
 
+        $structItems = $template || is_array($items[0] ?? null);
         foreach ($package as $value) {
-            if (in_array($value, $items)) { continue; }
+            $itemMismatch = $structItems !== is_array($value);
+            $typeMismatch = $itemMismatch || $structItems && empty($template) !== $this->isList($value);
+            if ($typeMismatch || in_array($value, $items)) { continue; }
             $items[] = $template ? $this->mergedAssocStructure($template, $value) : $value;
         }
 
-        return $items ?: null;
+        return $items;
     }
 
     private function extractedFirstItemTemplate(array &$items): ?array
     {
-        $assocItems = is_array($items[0]) && !$this->isList($items[0]);
+        $assocItems = is_array($items[0] ?? null) && !$this->isList($items[0]);
         if (!$assocItems) { return null; }
 
         $template = array_fill_keys(array_keys($items[0]), null);
@@ -124,5 +131,11 @@ class MergedJsonTemplate implements Template
         if (!$items[0]) { array_shift($items); }
 
         return $template;
+    }
+
+    private function ignoreNonArray(array $package, string $key): array
+    {
+        $value = $package[$key] ?? [];
+        return is_array($value) ? $value : [];
     }
 }
