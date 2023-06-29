@@ -47,10 +47,7 @@ class ComposerJsonDataTest extends TestCase
         $this->assertNull($composer->value('strings.value3'));
     }
 
-    /**
-     * @dataProvider notValueKeys
-     * @param string $notValueKey
-     */
+    /** @dataProvider notValueKeys */
     public function testNotStringValue_ThrowsException(string $notValueKey)
     {
         $composer = $this->composer();
@@ -59,10 +56,7 @@ class ComposerJsonDataTest extends TestCase
         $composer->value($notValueKey);
     }
 
-    /**
-     * @dataProvider notArrayKeys
-     * @param string $notArrayKey
-     */
+    /** @dataProvider notArrayKeys */
     public function testNotArray_ThrowsException(string $notArrayKey)
     {
         $composer = $this->composer();
@@ -71,10 +65,7 @@ class ComposerJsonDataTest extends TestCase
         $composer->array($notArrayKey);
     }
 
-    /**
-     * @dataProvider notValidKeys
-     * @param string $notValidKey
-     */
+    /** @dataProvider notValidKeys */
     public function testNotValidKey_ThrowsException(string $notValidKey)
     {
         $composer = $this->composer();

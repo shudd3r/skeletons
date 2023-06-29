@@ -18,10 +18,7 @@ use Shudd3r\Skeletons\Replacements\Replacement;
 
 class ReplacementBuilderTest extends TestCase
 {
-    /**
-     * @dataProvider constructorParams
-     * @param array $params
-     */
+    /** @dataProvider constructorParams */
     public function testBuildingReplacement(array $params)
     {
         $builder = new Builder\ReplacementBuilder($params[0]);

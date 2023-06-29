@@ -67,22 +67,14 @@ class InitialContentsTest extends TestCase
         $this->assertSame($expected, $token->replace($template));
     }
 
-    /**
-     * @dataProvider replaceWithInitialValue
-     * @param string $template
-     * @param string $expected
-     */
+    /** @dataProvider replaceWithInitialValue */
     public function testReplacingWithInitialValue(string $template, string $expected)
     {
         $token = new InitialContents();
         $this->assertSame($expected, $token->replace($template));
     }
 
-    /**
-     * @dataProvider replaceWithPlaceholder
-     * @param string $template
-     * @param string $expected
-     */
+    /** @dataProvider replaceWithPlaceholder */
     public function testReplacingWithOriginalContentPlaceholder(string $template, string $expected)
     {
         $token = new InitialContents(false);

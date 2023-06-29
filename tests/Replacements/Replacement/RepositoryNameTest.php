@@ -59,12 +59,7 @@ class RepositoryNameTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider valueExamples
-     *
-     * @param string $invalid
-     * @param string $valid
-     */
+    /** @dataProvider valueExamples */
     public function testResolvedTokenValue_IsValidated(string $invalid, string $valid)
     {
         $source = Source::create(['foo' => $valid, 'bar' => $invalid]);

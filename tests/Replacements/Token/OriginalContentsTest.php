@@ -26,12 +26,7 @@ class OriginalContentsTest extends TestCase
         $this->assertNull($token->value());
     }
 
-    /**
-     * @dataProvider useCases
-     * @param string  $original
-     * @param string  $mask
-     * @param ?string $expected
-     */
+    /** @dataProvider useCases */
     public function testUseCases(string $original, string $mask, ?string $expected)
     {
         $token = $this->token($original);

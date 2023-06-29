@@ -21,12 +21,7 @@ class LocalDirectoryTest extends LocalFileSystemTests
         $this->assertSame(self::$root . DIRECTORY_SEPARATOR . 'test', self::directory('test')->path());
     }
 
-    /**
-     * @dataProvider pathNormalizations
-     *
-     * @param string $mixedDir
-     * @param string $normalizedDir
-     */
+    /** @dataProvider pathNormalizations */
     public function testPathIsNormalized(string $mixedDir, string $normalizedDir)
     {
         $this->assertEquals(self::directory($normalizedDir, true), $directory = self::directory($mixedDir, true));

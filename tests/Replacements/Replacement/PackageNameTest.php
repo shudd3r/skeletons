@@ -44,31 +44,20 @@ class PackageNameTest extends TestCase
         $this->assertToken('Composer/Package', $source);
     }
 
-    /**
-     * @dataProvider validReplacementValues
-     * @param string $original
-     * @param string $capitalized
-     */
+    /** @dataProvider validReplacementValues */
     public function testValuesResolvedForDefault_AreCapitalized(string $original, string $capitalized)
     {
         $this->assertToken($capitalized, Source::create()->withPackagePath('/path/to/' . $original));
         $this->assertToken($capitalized, Source::create()->withComposerData(['name' => $original]));
     }
 
-    /**
-     * @dataProvider validReplacementValues
-     *
-     * @param string $baseValue
-     */
+    /** @dataProvider validReplacementValues */
     public function testDirectSourceValue_IsNotCapitalized(string $baseValue)
     {
         $this->assertToken($baseValue, Source::create(['foo' => $baseValue]));
     }
 
-    /**
-     * @dataProvider invalidReplacementValues
-     * @param string $invalidValue
-     */
+    /** @dataProvider invalidReplacementValues */
     public function testForInvalidSourceValue_TokenMethod_ReturnsNull(string $invalidValue)
     {
         $source = Source::create(['foo' => $invalidValue]);

@@ -25,14 +25,7 @@ class MessagesTest extends TestCase
         self::$output = new Doubles\MockedTerminal();
     }
 
-    /**
-     * @dataProvider expectedOutputs
-     *
-     * @param array $params
-     * @param string $success
-     * @param string $failure
-     * @param int $error
-     */
+    /** @dataProvider expectedOutputs */
     public function testMessageWithDefaultInstanceValues(array $params, string $success, string $failure, int $error)
     {
         $message = new Messages(self::$output->reset(), ...$params);

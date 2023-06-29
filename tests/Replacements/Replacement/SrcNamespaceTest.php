@@ -52,12 +52,7 @@ class SrcNamespaceTest extends TestCase
         $this->assertToken('Composer\\Namespace', $source);
     }
 
-    /**
-     * @dataProvider valueExamples
-     *
-     * @param string $invalid
-     * @param string $valid
-     */
+    /** @dataProvider valueExamples */
     public function testResolvedTokenValue_IsValidated(string $invalid, string $valid)
     {
         $source = Source::create(['foo' => $valid, 'bar' => $invalid]);

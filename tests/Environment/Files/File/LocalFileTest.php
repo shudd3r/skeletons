@@ -29,12 +29,7 @@ class LocalFileTest extends LocalFileSystemTests
         $this->assertSame('test.tmp', self::file('test.tmp')->name());
     }
 
-    /**
-     * @dataProvider pathNormalizations
-     *
-     * @param string $mixedFilename
-     * @param string $normalizedFilename
-     */
+    /** @dataProvider pathNormalizations */
     public function testPathIsNormalized(string $mixedFilename, string $normalizedFilename)
     {
         $this->assertEquals(self::file($normalizedFilename), $file = self::file($mixedFilename));

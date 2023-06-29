@@ -31,11 +31,7 @@ class IterativeTokenTest extends TestCase
         $this->assertSame('one=1 two=2 three=3 four=4', $token->replace($template));
     }
 
-    /**
-     * @dataProvider mismatchedPlaceholders
-     * @param string $template
-     * @param array $values
-     */
+    /** @dataProvider mismatchedPlaceholders */
     public function testDifferentNumberOfPlaceholders_ThrowsException(string $template, array $values)
     {
         $token = $this->token($values);

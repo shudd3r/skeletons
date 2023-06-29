@@ -25,11 +25,7 @@ class SynchronizationTest extends ApplicationTests
         $this->assertSameFiles($package, 'package-after-sync');
     }
 
-    /**
-     * @dataProvider fileContentsBackupStrategy
-     * @param string $contents
-     * @param bool   $expectBackup
-     */
+    /** @dataProvider fileContentsBackupStrategy */
     public function testSynchronizingPackage_CreatesBackupOnlyForMismatchedNonEmptyFiles(string $contents, bool $expectBackup)
     {
         $package = self::$files->directory('package-desynchronized');

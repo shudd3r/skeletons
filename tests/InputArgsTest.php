@@ -37,11 +37,7 @@ class InputArgsTest extends TestCase
         $this->assertSame('--this-is-command', $args->command());
     }
 
-    /**
-     * @dataProvider interactiveArgs
-     * @param bool   $expected
-     * @param array  $args
-     */
+    /** @dataProvider interactiveArgs */
     public function testInteractiveOption(bool $expected, array $args)
     {
         $args = new InputArgs(array_merge(['script'], $args));
@@ -64,11 +60,7 @@ class InputArgsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider localFilesArgs
-     * @param bool   $expected
-     * @param array  $args
-     */
+    /** @dataProvider localFilesArgs */
     public function testLocalFilesOption(bool $expected, array $args)
     {
         $args = new InputArgs(array_merge(['script'], $args));

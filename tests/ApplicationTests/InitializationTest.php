@@ -36,11 +36,7 @@ class InitializationTest extends ApplicationTests
         $this->assertSameFiles($package, 'package-initialized');
     }
 
-    /**
-     * @dataProvider fileContentsBackupStrategy
-     * @param string $contents
-     * @param bool   $expectBackup
-     */
+    /** @dataProvider fileContentsBackupStrategy */
     public function testInitialization_CreatesBackupOnlyForMismatchedNonEmptyFiles(string $contents, bool $expectBackup)
     {
         $package = self::$files->directory('package');
