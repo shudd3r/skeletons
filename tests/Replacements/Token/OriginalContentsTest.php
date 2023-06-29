@@ -38,7 +38,7 @@ class OriginalContentsTest extends TestCase
         $this->assertSame($expected ?? $original, $cache->token(self::FILENAME)->replace($mask));
     }
 
-    public function useCases(): array
+    public static function useCases(): array
     {
         $orig = '{' . Token\OriginalContents::PLACEHOLDER . '}';
 

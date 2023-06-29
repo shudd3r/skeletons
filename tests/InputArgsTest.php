@@ -44,7 +44,7 @@ class InputArgsTest extends TestCase
         $this->assertSame($expected, $args->interactive());
     }
 
-    public function interactiveArgs(): array
+    public static function interactiveArgs(): array
     {
         return [
             'command only'  => [true, ['init']],
@@ -67,7 +67,7 @@ class InputArgsTest extends TestCase
         $this->assertSame($expected, $args->includeLocalFiles());
     }
 
-    public function localFilesArgs(): array
+    public static function localFilesArgs(): array
     {
         return [
             'no args'       => [false, ['init']],

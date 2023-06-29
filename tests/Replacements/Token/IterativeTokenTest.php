@@ -39,7 +39,7 @@ class IterativeTokenTest extends TestCase
         $token->replace($template);
     }
 
-    public function mismatchedPlaceholders(): array
+    public static function mismatchedPlaceholders(): array
     {
         return [
             ['this {replace} has {replace} placeholders {replace}', ['one', 'three']],

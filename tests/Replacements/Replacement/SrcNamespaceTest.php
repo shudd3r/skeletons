@@ -61,7 +61,7 @@ class SrcNamespaceTest extends TestCase
         $this->assertNull(self::$replacement->token('bar-fallback', $source));
     }
 
-    public function valueExamples(): array
+    public static function valueExamples(): array
     {
         return [
             ['Foo/Bar', 'Foo\Bar'],

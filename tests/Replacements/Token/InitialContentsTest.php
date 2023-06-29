@@ -35,14 +35,14 @@ class InitialContentsTest extends TestCase
     public function testForTemplateWithMisplacedPlaceholders_ReturnsUnchangedTemplate()
     {
         $token    = new InitialContents();
-        $template = $this->template('example <<<end} template {start>>> and {some.token} content');
+        $template = self::template('example <<<end} template {start>>> and {some.token} content');
 
         $this->assertSame($template, $token->replace($template));
     }
 
     public function testInitialVsReplaced()
     {
-        $template = $this->template('example {start>>>initial template content<<<end} and {some.token}');
+        $template = self::template('example {start>>>initial template content<<<end} and {some.token}');
 
         $token    = new InitialContents();
         $expected = 'example initial template content and {some.token}';
@@ -57,13 +57,29 @@ class InitialContentsTest extends TestCase
     {
         $token = new InitialContents();
 
-        [$contents, $expected] = $this->multilineExample();
+        $contents = <<<'TPL'
+            This template part cannot change
+            {start>>>
+            
+            ...but here you can write anything
+            <<<end}
+            Again.
+            This content is mandatory. DO NOT REMOVE!
+            TPL;
 
-        $template = $this->template($contents);
+        $expected = <<<'TPL'
+            This template part cannot change
+            
+            ...but here you can write anything
+            Again.
+            This content is mandatory. DO NOT REMOVE!
+            TPL;
+
+        $template = self::template($contents);
         $this->assertSame($expected, $token->replace($template));
 
         $contents = str_replace(['>>>', "\n<<<"], [">>>\r", "\r\n<<<"], $contents);
-        $template = $this->template($contents);
+        $template = self::template($contents);
         $this->assertSame($expected, $token->replace($template));
     }
 
@@ -74,6 +90,15 @@ class InitialContentsTest extends TestCase
         $this->assertSame($expected, $token->replace($template));
     }
 
+    public static function replaceWithInitialValue(): array
+    {
+        $examples = [];
+        foreach (self::transformations() as $name => [$template, $replaced, ]) {
+            $examples[$name] = [$template, $replaced];
+        }
+        return $examples;
+    }
+
     /** @dataProvider replaceWithPlaceholder */
     public function testReplacingWithOriginalContentPlaceholder(string $template, string $expected)
     {
@@ -81,28 +106,19 @@ class InitialContentsTest extends TestCase
         $this->assertSame($expected, $token->replace($template));
     }
 
-    public function replaceWithPlaceholder(): array
+    public static function replaceWithPlaceholder(): array
     {
         $examples = [];
-        foreach ($this->transformations() as $name => [$template, , $replaced]) {
+        foreach (self::transformations() as $name => [$template, , $replaced]) {
             $examples[$name] = [$template, $replaced];
         }
         return $examples;
     }
 
-    public function replaceWithInitialValue(): array
-    {
-        $examples = [];
-        foreach ($this->transformations() as $name => [$template, $replaced, ]) {
-            $examples[$name] = [$template, $replaced];
-        }
-        return $examples;
-    }
-
-    public function transformations(): array
+    private static function transformations(): array
     {
         $orig     = '{' . OriginalContents::PLACEHOLDER . '}';
-        $template = fn (string $init) => $this->template('{start>>>' . $init . '<<<end}');
+        $template = fn (string $init) => self::template('{start>>>' . $init . '<<<end}');
         $multiline = <<<'TPL'
             This is multi line content,
             and this is its second line {placeholder?}
@@ -139,32 +155,9 @@ class InitialContentsTest extends TestCase
         ];
     }
 
-    private function template(string $template): string
+    private static function template(string $template): string
     {
         $realPlaceholders = [InitialContents::CONTENT_START, InitialContents::CONTENT_END];
         return str_replace(['{start>>>', '<<<end}'], $realPlaceholders, $template);
-    }
-
-    private function multilineExample(): array
-    {
-        $contents = <<<'TPL'
-            This template part cannot change
-            {start>>>
-            
-            ...but here you can write anything
-            <<<end}
-            Again.
-            This content is mandatory. DO NOT REMOVE!
-            TPL;
-
-        $expected = <<<'TPL'
-            This template part cannot change
-            
-            ...but here you can write anything
-            Again.
-            This content is mandatory. DO NOT REMOVE!
-            TPL;
-
-        return [$contents, $expected];
     }
 }

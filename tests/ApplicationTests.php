@@ -40,7 +40,7 @@ class ApplicationTests extends TestCase
         self::$terminal = new Doubles\MockedTerminal();
     }
 
-    public function fileContentsBackupStrategy(): array
+    public static function fileContentsBackupStrategy(): array
     {
         return [
             'mismatched' => ['{}', true],

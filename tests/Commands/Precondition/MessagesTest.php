@@ -26,7 +26,7 @@ class MessagesTest extends TestCase
     }
 
     /** @dataProvider expectedOutputs */
-    public function testMessageWithDefaultInstanceValues(array $params, string $success, string $failure, int $error)
+    public function testDisplayMessagesWithVariousStatusSettings(array $params, string $success, string $failure, int $error)
     {
         $message = new Messages(self::$output->reset(), ...$params);
 
@@ -39,27 +39,14 @@ class MessagesTest extends TestCase
         $this->assertOutput($failure, $error);
     }
 
-    public function testMessageWithoutStatusDisplay()
-    {
-        $message = new Messages(self::$output->reset(), 'Testing OK status:', []);
-
-        $message->describeProcedure();
-        $message->sendResult(true);
-        $this->assertOutput('- Testing OK status:' . PHP_EOL);
-
-        $message->describeProcedure();
-        $message->sendResult(false);
-        $this->assertOutput('- Testing OK status:' . PHP_EOL, 2);
-    }
-
-    public function expectedOutputs(): array
+    public static function expectedOutputs(): array
     {
         return [
             'Default instance' => [['Testing defaults'],
                 '- Testing defaults... OK' . PHP_EOL,
                 '- Testing defaults... FAIL' . PHP_EOL, 2
             ],
-            'OK only' => [['Testing OK status', ['DONE']],
+            'DONE status only' => [['Testing OK status', ['DONE']],
                 '- Testing OK status... DONE' . PHP_EOL,
                 '- Testing OK status...', 2
             ],

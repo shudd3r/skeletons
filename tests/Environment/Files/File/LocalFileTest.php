@@ -29,11 +29,22 @@ class LocalFileTest extends LocalFileSystemTests
         $this->assertSame('test.tmp', self::file('test.tmp')->name());
     }
 
-    /** @dataProvider pathNormalizations */
+    /** @dataProvider filePathNormalizations */
     public function testPathIsNormalized(string $mixedFilename, string $normalizedFilename)
     {
         $this->assertEquals(self::file($normalizedFilename), $file = self::file($mixedFilename));
         $this->assertSame($normalizedFilename, $file->name());
+    }
+
+    public static function filePathNormalizations(): array
+    {
+        return [
+            ['file\\', "file"],
+            ['file.tmp/', "file.tmp"],
+            ['\\\\Foo.tmp/file/', "Foo.tmp/file"],
+            ['/Foo/Bar\\baz.tmp\\', "Foo/Bar/baz.tmp"],
+            ['/Foo\\Bar/file.tmp', "Foo/Bar/file.tmp"]
+        ];
     }
 
     public function testExistsMethod()
@@ -111,16 +122,5 @@ class LocalFileTest extends LocalFileSystemTests
         $this->assertFalse($file->exists());
         $this->assertEmpty($file->contents());
         self::clear();
-    }
-
-    public function pathNormalizations(): array
-    {
-        return [
-            ['file\\', "file"],
-            ['file.tmp/', "file.tmp"],
-            ['\\\\Foo.tmp/file/', "Foo.tmp/file"],
-            ['/Foo/Bar\\baz.tmp\\', "Foo/Bar/baz.tmp"],
-            ['/Foo\\Bar/file.tmp', "Foo/Bar/file.tmp"]
-        ];
     }
 }

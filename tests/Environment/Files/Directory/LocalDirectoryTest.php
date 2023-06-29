@@ -21,11 +21,23 @@ class LocalDirectoryTest extends LocalFileSystemTests
         $this->assertSame(self::$root . DIRECTORY_SEPARATOR . 'test', self::directory('test')->path());
     }
 
-    /** @dataProvider pathNormalizations */
+    /** @dataProvider directoryPathNormalizations */
     public function testPathIsNormalized(string $mixedDir, string $normalizedDir)
     {
         $this->assertEquals(self::directory($normalizedDir, true), $directory = self::directory($mixedDir, true));
         $this->assertSame($normalizedDir, $directory->path());
+    }
+
+    public static function directoryPathNormalizations(): array
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        return [
+            ['\\', ''],
+            ['/', ''],
+            ['//Foo/', "{$ds}{$ds}Foo"],
+            ['\Foo/Bar\\', "{$ds}Foo{$ds}Bar"],
+            ['Foo\\Bar/baz////', "Foo{$ds}Bar{$ds}baz"]
+        ];
     }
 
     public function testExistsMethod()
@@ -84,17 +96,5 @@ class LocalDirectoryTest extends LocalFileSystemTests
         $this->assertEquals(self::files(['e.tmp'], 'bar'), $directory->subdirectory('bar')->fileList());
         $this->assertEquals(self::files(['f.tmp'], 'foo/baz'), $directory->subdirectory('foo/baz')->fileList());
         self::clear();
-    }
-
-    public function pathNormalizations(): array
-    {
-        $ds = DIRECTORY_SEPARATOR;
-        return [
-            ['\\', ''],
-            ['/', ''],
-            ['//Foo/', "{$ds}{$ds}Foo"],
-            ['\Foo/Bar\\', "{$ds}Foo{$ds}Bar"],
-            ['Foo\\Bar/baz////', "Foo{$ds}Bar{$ds}baz"]
-        ];
     }
 }

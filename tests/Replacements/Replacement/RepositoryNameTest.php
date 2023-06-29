@@ -68,7 +68,7 @@ class RepositoryNameTest extends TestCase
         $this->assertNull(self::$replacement->token('bar-fallback', $source));
     }
 
-    public function valueExamples(): array
+    public static function valueExamples(): array
     {
         $name = function (int $length) { return str_repeat('x', $length); };
 
