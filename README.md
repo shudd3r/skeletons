@@ -56,9 +56,9 @@ sections will cover template & script files in more details:
 Entire script that uses this library might look like attached [example-skeleton](example/example-skeleton) file.
 
 ##### Scripting features:
-- Template placeholders can be chosen by skeleton creators.
-- Each placeholder is assigned to `Replacement` abstraction that manages validation,
-  providing & resolving placeholder's (default) value.
+- Template placeholders are chosen by skeleton creators.
+- Each placeholder is assigned to `Replacement` abstraction that manages user input,
+  validation and resolving placeholder's (default) value.
 - Replacement may also provide subtypes for defined placeholder (e.g. escaped slashes for `{namespace}`).
 - `GenericReplacement` for simple replacements and fluent builder interface for easier instantiation.
 - Placeholders for `{original.content}` with optional default mockup value.
@@ -70,7 +70,7 @@ Entire script that uses this library might look like attached [example-skeleton]
   - including (deactivating) files that could affect deployed skeleton files (e.g. `.gitignore`),
   - handling "local" files, that are not (or cannot be) part of published package,
   - using initial "mockup" files that can be removed or developed without breaking skeleton synchronization,
-  - automatic adding/removing dummy files that ensure directory existence (`.gitkeep`)
+- Directories without specified files required by skeleton are managed by `.gitkeep` dummy files.
 
 ##### Setup steps:
 - Instantiate input arguments and application:
