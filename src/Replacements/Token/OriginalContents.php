@@ -59,7 +59,7 @@ class OriginalContents implements Token
         return $this->newTokenInstance($clips);
     }
 
-    protected function newTokenInstance(array $values = null): Token
+    protected function newTokenInstance(?array $values = null): Token
     {
         return !$values || count($values) === 1
             ? new BasicToken(self::PLACEHOLDER, $values[0] ?? '')

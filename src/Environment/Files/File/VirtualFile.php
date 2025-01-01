@@ -25,7 +25,7 @@ class VirtualFile implements File
 
     private VirtualDirectory $root;
 
-    public function __construct(string $name = 'foo.txt', ?string $contents = '', VirtualDirectory $root = null)
+    public function __construct(string $name = 'foo.txt', ?string $contents = '', ?VirtualDirectory $root = null)
     {
         $this->name     = $this->normalized($name);
         $this->contents = $contents;

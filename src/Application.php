@@ -22,14 +22,14 @@ use Exception;
 
 class Application
 {
-    private const VERSION = '1.0.1';
+    private const VERSION = '1.0.2';
 
     private EnvSetup $envSetup;
     private AppSetup $appSetup;
     private Terminal $terminal;
     private string   $skeletonName;
 
-    public function __construct(Directory $package, Directory $skeleton, Terminal $terminal = null)
+    public function __construct(Directory $package, Directory $skeleton, ?Terminal $terminal = null)
     {
         $this->envSetup = new EnvSetup($package, $skeleton);
         $this->appSetup = new AppSetup();

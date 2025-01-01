@@ -88,7 +88,7 @@ class ComposerJsonDataTest extends TestCase
         return [['name.something'], ['strings.value1.more']];
     }
 
-    private function composer(array &$data = null): ComposerJsonData
+    private function composer(?array &$data = null): ComposerJsonData
     {
         $data ??= [
             'name' => 'FooName',

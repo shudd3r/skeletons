@@ -24,7 +24,7 @@ class FakeRuntimeEnv extends RuntimeEnv
     private VirtualDirectory $bkp;
     private VirtualFile      $met;
 
-    public function __construct(VirtualDirectory $package = null, VirtualDirectory $templates = null)
+    public function __construct(?VirtualDirectory $package = null, ?VirtualDirectory $templates = null)
     {
         $this->pkg = $package ?? new VirtualDirectory();
         $this->tpl = $templates ?? new VirtualDirectory();

@@ -188,7 +188,7 @@ class ReaderTest extends TestCase
         $this->assertEquals($expected, $tokens);
     }
 
-    private function reader(?Doubles\FakeRuntimeEnv $env = null, array $args = null, bool $input = true): Reader
+    private function reader(?Doubles\FakeRuntimeEnv $env = null, ?array $args = null, bool $input = true): Reader
     {
         $env ??= new Doubles\FakeRuntimeEnv();
         return new Reader($env, new InputArgs($args ?: ['script', 'command']), $input);
