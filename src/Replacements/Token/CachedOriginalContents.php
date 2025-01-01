@@ -27,7 +27,7 @@ class CachedOriginalContents extends OriginalContents
         parent::__construct($contents);
     }
 
-    protected function newTokenInstance(array $values = null): Token
+    protected function newTokenInstance(?array $values = null): Token
     {
         $token = parent::newTokenInstance($values);
         $this->cache->add($this->cacheKey, $token);

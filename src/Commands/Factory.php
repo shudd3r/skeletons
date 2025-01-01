@@ -48,12 +48,12 @@ abstract class Factory implements Commands
         return new Processor\FilesProcessor($files, $this->templates, $processors);
     }
 
-    protected function fileValidators(?TokenCache $tokenCache = null, Files $backup = null): Processors
+    protected function fileValidators(?TokenCache $tokenCache = null, ?Files $backup = null): Processors
     {
         return new Processors\FileValidators($this->env->output(), $tokenCache, $backup);
     }
 
-    protected function fileGenerators(TokenCache $tokenCache = null): Processors
+    protected function fileGenerators(?TokenCache $tokenCache = null): Processors
     {
         return new Processors\FileGenerators($this->env->output(), $tokenCache);
     }
@@ -68,7 +68,7 @@ abstract class Factory implements Commands
         return new Command\DescribedCommand($command, $this->env->output(), $message);
     }
 
-    protected function checkInfo(Precondition $precondition, string $message, int $errorCode = 2, array $status = null): Precondition
+    protected function checkInfo(Precondition $precondition, string $message, int $errorCode = 2, ?array $status = null): Precondition
     {
         $messages = new Precondition\Messages($this->env->output(), $message, $status, $errorCode);
         return new Precondition\DescribedPrecondition($precondition, $messages);

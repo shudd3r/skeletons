@@ -23,7 +23,7 @@ class ExampleFiles
         $this->directory = new Directory\LocalDirectory(__DIR__ . '/' . $directory);
     }
 
-    public function directory(string $name = null): Directory\VirtualDirectory
+    public function directory(?string $name = null): Directory\VirtualDirectory
     {
         $dirname = $name ? '/root/directory/' . $name : '/dummy/directory';
         $files   = $name ? $this->directory->subdirectory($name)->fileList() : [];

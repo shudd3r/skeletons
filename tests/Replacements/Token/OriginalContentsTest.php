@@ -61,7 +61,7 @@ class OriginalContentsTest extends TestCase
         ];
     }
 
-    private function token(string $contents, TokenCache $cache = null): Token\OriginalContents
+    private function token(string $contents, ?TokenCache $cache = null): Token\OriginalContents
     {
         return $cache
             ? new Token\CachedOriginalContents($contents, self::FILENAME, $cache)

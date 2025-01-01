@@ -29,7 +29,7 @@ class Application
     private Terminal $terminal;
     private string   $skeletonName;
 
-    public function __construct(Directory $package, Directory $skeleton, Terminal $terminal = null)
+    public function __construct(Directory $package, Directory $skeleton, ?Terminal $terminal = null)
     {
         $this->envSetup = new EnvSetup($package, $skeleton);
         $this->appSetup = new AppSetup();
