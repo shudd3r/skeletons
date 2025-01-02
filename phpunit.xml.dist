@@ -2,14 +2,14 @@
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
-    cacheResultFile=".dev/temp/.phpunit.result.cache"
+    cacheResultFile=".dev/cache/.phpunit.result.cache"
     colors="true"
     bootstrap="vendor/autoload.php"
 >
     <php>
         <ini name="error_reporting" value="-1" />
+        <env name="DEV_TESTS_DIRECTORY" value=".dev/tests" force="true" />
     </php>
-
     <testsuites>
         <testsuite name="Shudd3r/Skeletons tests">
             <directory>./tests/</directory>
