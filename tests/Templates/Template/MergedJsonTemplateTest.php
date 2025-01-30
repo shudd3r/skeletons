@@ -69,11 +69,11 @@ class MergedJsonTemplateTest extends TestCase
     }
 
     /** @dataProvider nonStructuralContents */
-    public function testWithoutStructureToMerge_ReturnsOriginalTemplateRender(string $contents)
+    public function testWithoutStructureToMerge_ReturnsFilteredTemplateRender(string $contents)
     {
         $this->assertSame('not {json}', $this->jsonTemplate('not {json}', $contents)->render(self::$token));
         $this->assertSame($contents, $this->jsonTemplate($contents, '{"foo": "bar"}')->render(self::$token));
-        $this->assertSame('{"foo": "bar"}', $this->jsonTemplate('{"foo": "bar"}', $contents)->render(self::$token));
+        $this->assertJsonData(['foo' => 'bar'], $this->jsonTemplate('{"foo": "bar", "baz": null}', $contents));
     }
 
     public static function nonStructuralContents(): array

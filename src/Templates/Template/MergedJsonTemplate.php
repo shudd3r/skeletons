@@ -52,9 +52,9 @@ class MergedJsonTemplate implements Template
         $templateData = json_decode($rendered, true);
         $packageData  = json_decode($this->jsonString, true);
 
-        if (!$templateData || !is_array($templateData) || !is_array($packageData)) { return $rendered; }
+        if (!$templateData || !is_array($templateData)) { return $rendered; }
 
-        return $this->jsonString($templateData, $packageData);
+        return $this->jsonString($templateData, is_array($packageData) ? $packageData : []);
     }
 
     private function jsonString(array $template, array $package): string
