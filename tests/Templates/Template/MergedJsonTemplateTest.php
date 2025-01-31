@@ -69,11 +69,10 @@ class MergedJsonTemplateTest extends TestCase
     }
 
     /** @dataProvider nonStructuralContents */
-    public function testWithoutStructureToMerge_ReturnsFilteredTemplateRender(string $contents)
+    public function testWithoutJsonTemplate_ReturnsTemplateRender(string $contents)
     {
-        $this->assertSame('not {json}', $this->jsonTemplate('not {json}', $contents)->render(self::$token));
+        $this->assertSame($contents, $this->jsonTemplate($contents, 'not {json}')->render(self::$token));
         $this->assertSame($contents, $this->jsonTemplate($contents, '{"foo": "bar"}')->render(self::$token));
-        $this->assertJsonData(['foo' => 'bar'], $this->jsonTemplate('{"foo": "bar", "baz": null}', $contents));
     }
 
     public static function nonStructuralContents(): array
@@ -83,6 +82,16 @@ class MergedJsonTemplateTest extends TestCase
             'non-json string'  => ['some non-json contents'],
             'simple type json' => ['123']
         ];
+    }
+
+    public function testMergingNonJsonString_ReturnsFilteredTemplateRender()
+    {
+        $this->assertJsonData(['foo' => 'bar'], $this->jsonTemplate('{"foo": "bar", "baz": null}', 'not json'));
+
+        $template = $this->examplePackageTemplate('not-existing.json', false);
+        $token    = $this->token('package/name', 'Initial package description', 'MyProject\\\\Namespace', 'initial@example.com');
+        $expected = self::$files->contentsOf('initialized-from-empty.json');
+        $this->assertSame($expected, $template->render($token));
     }
 
     /** @dataProvider mismatchedDataTypes */

@@ -1,0 +1,24 @@
+{
+    "name": "package/name",
+    "description": "Initial package description",
+    "authors": [
+        {
+            "name": "Shudd3r",
+            "email": "initial@example.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "MyProject\\Namespace\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MyProject\\Namespace\\Tests\\": "tests/"
+        },
+        "classmap": [
+            "lib/"
+        ]
+    }
+}
