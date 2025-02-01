@@ -19,17 +19,17 @@ use Shudd3r\Skeletons\Templates\Template;
 
 // This script should be executed from package root directory
 $rootDirectory = getcwd();
-if (!file_exists($rootDirectory . '/vendor/autoload.php')) {
-    fwrite(STDERR, 'Cannot find vendor/autoload.php file in package root directory');
-    die(1);
-}
 
-if (!file_exists($rootDirectory . '/composer.json')) {
-    fwrite(STDERR, 'Cannot find composer.json file in package root directory');
-    die(1);
+// Autoload from Composer vendor/bin executable or simplified demo callback
+if (isset($GLOBALS['_composer_autoload_file'])) {
+    require_once $GLOBALS['_composer_autoload_path'];
+} else {
+    spl_autoload_register(function (string $classname): void {
+        if (strpos($classname, __NAMESPACE__) !== 0) { return; }
+        $classFile = '/src/' . substr($classname, strlen(__NAMESPACE__) + 1) . '.php';
+        require_once dirname(__DIR__) . str_replace('\\', DIRECTORY_SEPARATOR, $classFile);
+    });
 }
-
-require_once $rootDirectory . '/vendor/autoload.php';
 
 $args = new InputArgs($argv ?? []);
 
