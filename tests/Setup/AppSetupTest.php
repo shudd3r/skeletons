@@ -25,7 +25,7 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class AppSetupTest extends TestCase
 {
-    public function testTemplates_ReturnsTemplatesWithIndexedSkeletonFiles()
+    public function test_templates_method_returns_templates_with_indexed_skeleton_files(): void
     {
         $filenames = ['basic.file', 'escaped.file', 'escaped/local.file', 'dir/initial.file', 'src/.gitkeep'];
         $package   = $this->directoryFiles($filenames);
@@ -53,7 +53,7 @@ class AppSetupTest extends TestCase
         $this->assertFileList($templates->dummyFiles(), ['src/.gitkeep']);
     }
 
-    public function testRemovingTemplateGeneratedFiles_RemovesFilesFromPackageDirectory()
+    public function test_removing_template_generated_files_removes_files_from_package_directory(): void
     {
         $filenames = ['basic.file', 'escaped.file', 'escaped/local.file', 'dir/initial.file', 'src/.gitkeep'];
         $package   = $this->directoryFiles($filenames);
@@ -72,7 +72,7 @@ class AppSetupTest extends TestCase
         $this->assertFileList($package, ['src/.gitkeep']);
     }
 
-    public function testReplacementSetup_AddsReplacementsInDefinedOrder()
+    public function test_replacement_setup_adds_replacements_in_order_of_their_definition(): void
     {
         $setup = new AppSetup();
 
@@ -96,7 +96,7 @@ class AppSetupTest extends TestCase
         }
     }
 
-    public function testOverwritingDefinedReplacement_ThrowsException()
+    public function test_overwriting_replacement_definition_throws_Exception(): void
     {
         $setup = new AppSetup();
 
@@ -105,7 +105,7 @@ class AppSetupTest extends TestCase
         $setup->addReplacement('foo', new Doubles\FakeReplacement());
     }
 
-    public function testOverwritingBuiltInReplacement_ThrowsException()
+    public function test_overwriting_built_in_replacement_throws_Exception(): void
     {
         $setup = new AppSetup();
 
@@ -113,7 +113,7 @@ class AppSetupTest extends TestCase
         $setup->addReplacement('original.content', new Doubles\FakeReplacement());
     }
 
-    public function testOverwritingTemplateForDefinedFile_ThrowsException()
+    public function test_overwriting_template_for_defined_file_throws_Exception(): void
     {
         $setup = new AppSetup();
 
@@ -122,7 +122,7 @@ class AppSetupTest extends TestCase
         $setup->addTemplate('file.txt', fn () => null);
     }
 
-    public function testReplacementSetupBuildForExistingPlaceholder_ThrowsException()
+    public function test_replacement_setup_build_for_existing_placeholder_throws_Exception(): void
     {
         $setup = new AppSetup();
 
@@ -134,7 +134,7 @@ class AppSetupTest extends TestCase
         $replacement->build(fn () => 'dummy');
     }
 
-    public function testReplacementSetupBuildForBuiltInPlaceholder_ThrowsException()
+    public function test_replacement_setup_build_for_built_in_placeholder_throws_Exception(): void
     {
         $setup = new AppSetup();
 

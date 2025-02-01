@@ -18,7 +18,7 @@ use Shudd3r\Skeletons\Environment\Files;
 
 class DummyFilesTest extends TestCase
 {
-    public function testDummyInRootDirectory_IsIgnored()
+    public function test_dummy_in_root_directory_is_ignored(): void
     {
         $dummies = $this->dummies(['.gitkeep']);
 
@@ -31,7 +31,7 @@ class DummyFilesTest extends TestCase
         $this->assertEmpty($verified->redundantFiles());
     }
 
-    public function testNonTemplateDummies_AreIgnored()
+    public function test_non_template_dummies_are_ignored(): void
     {
         $dummies = $this->dummies([]);
 
@@ -40,7 +40,7 @@ class DummyFilesTest extends TestCase
         $this->assertEmpty($verified->redundantFiles());
     }
 
-    public function testSynchronizedDirectory()
+    public function test_synchronized_directory(): void
     {
         $dummies = $this->dummies(['foo/.gitkeep', 'bar/baz/.gitkeep']);
 
@@ -49,7 +49,7 @@ class DummyFilesTest extends TestCase
         $this->assertEmpty($verified->redundantFiles());
     }
 
-    public function testMissingSubdirectories()
+    public function test_missing_subdirectories(): void
     {
         $dummies = $this->dummies(['foo/bar/.gitkeep', 'baz/.gitkeep']);
 
@@ -58,7 +58,7 @@ class DummyFilesTest extends TestCase
         $this->assertEmpty($verified->redundantFiles());
     }
 
-    public function testDummiesInExistingDirectories()
+    public function test_dummies_in_existing_directories(): void
     {
         $dummies = $this->dummies(['foo/.gitkeep', 'bar/.gitkeep']);
 
@@ -68,7 +68,7 @@ class DummyFilesTest extends TestCase
         $this->assertFiles(['foo/.gitkeep', 'bar/.gitkeep'], $verified->redundantFiles());
     }
 
-    public function testBothMissingAndRedundantDummies()
+    public function test_both_missing_and_redundant_dummies(): void
     {
         $dummies = $this->dummies(['foo/bar/.gitkeep', 'bar/baz/.gitkeep']);
 
@@ -79,7 +79,7 @@ class DummyFilesTest extends TestCase
     }
 
     /** @dataProvider redundantTemplateFiles */
-    public function testRedundantDummyFilesInTemplate_AreIgnored(array $template, string $relevant)
+    public function test_redundant_dummy_files_in_template_are_ignored(array $template, string $relevant): void
     {
         $dummies = $this->dummies($template);
 

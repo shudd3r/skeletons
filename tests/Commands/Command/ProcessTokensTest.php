@@ -18,7 +18,7 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class ProcessTokensTest extends TestCase
 {
-    public function testResolvedTokens_ArePassedToProcessor()
+    public function test_resolved_tokens_are_passed_to_processor(): void
     {
         $tokens    = new Doubles\FakeTokens(true);
         $processor = new Doubles\MockedProcessor();
@@ -29,7 +29,7 @@ class ProcessTokensTest extends TestCase
         $this->assertEquals($tokens->compositeToken(), $processor->passedToken());
     }
 
-    public function testUnresolvedTokens_ExecutionIsStopped()
+    public function test_unresolved_tokens_execution_is_stopped(): void
     {
         $tokens    = new Doubles\FakeTokens(false);
         $processor = new Doubles\MockedProcessor();

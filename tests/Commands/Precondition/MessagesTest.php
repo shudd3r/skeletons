@@ -26,7 +26,7 @@ class MessagesTest extends TestCase
     }
 
     /** @dataProvider expectedOutputs */
-    public function testDisplayMessagesWithVariousStatusSettings(array $params, string $success, string $failure, int $error)
+    public function test_displaying_messages_with_various_status_settings(array $params, string $success, string $failure, int $error): void
     {
         $message = new Messages(self::$output->reset(), ...$params);
 

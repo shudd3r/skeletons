@@ -21,7 +21,7 @@ use Shudd3r\Skeletons\Templates\Template;
 
 class CompareFileTest extends TestCase
 {
-    public function testSuccessfulComparison_ReturnsTrue()
+    public function test_successful_comparison_returns_true(): void
     {
         $template = new Template\BasicTemplate('{replace.me} contents');
         $token    = new BasicToken('replace.me', 'expected');
@@ -31,7 +31,7 @@ class CompareFileTest extends TestCase
         $this->assertTrue($processor->process($token));
     }
 
-    public function testFailedComparison_ReturnsFalse()
+    public function test_failed_comparison_returns_false(): void
     {
         $template = new Template\BasicTemplate('{replace.me} contents');
         $token    = new BasicToken('replace.me', 'unexpected');
@@ -41,7 +41,7 @@ class CompareFileTest extends TestCase
         $this->assertFalse($processor->process($token));
     }
 
-    public function testInstanceWithBackup_FailedComparison_CreatesCopyOfExistingFile()
+    public function test_failed_comparison_for_instance_with_backup_creates_copy_of_existing_file(): void
     {
         $template = new Template\BasicTemplate('{replace.me} contents');
         $backup   = new VirtualDirectory();
@@ -59,7 +59,7 @@ class CompareFileTest extends TestCase
         $this->assertSame('foo contents', $backup->file('foo.file')->contents());
     }
 
-    public function testEmptyTemplate_ForNotExistingFile_ReturnsFalse()
+    public function test_empty_template_for_not_existing_file_returns_false(): void
     {
         $template = new Template\BasicTemplate('');
         $file     = new VirtualFile('foo.txt', null);

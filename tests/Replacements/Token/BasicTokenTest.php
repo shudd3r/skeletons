@@ -17,13 +17,13 @@ use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 
 class BasicTokenTest extends TestCase
 {
-    public function testPlaceholderIsReplaced()
+    public function test_placeholder_is_replaced(): void
     {
         $token = new BasicToken('replace', 'bar');
         $this->assertSame('foo bar', $token->replace('foo {replace}'));
     }
 
-    public function testValueMethod_ReturnsCorrectValue()
+    public function test_value_method_returns_correct_value(): void
     {
         $token = new BasicToken('foo', 'bar');
         $this->assertSame('bar', $token->value());

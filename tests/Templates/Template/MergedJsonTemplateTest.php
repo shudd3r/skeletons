@@ -28,7 +28,7 @@ class MergedJsonTemplateTest extends TestCase
         self::$files = new Fixtures\ExampleFiles('json-merge-example');
     }
 
-    public function testDecoratedTemplate_IsRenderedWithProvidedToken()
+    public function test_decorated_template_is_rendered_with_provided_Token(): void
     {
         $template = ['foo' => '{replace.me}', 'bar' => 'value'];
         $package  = ['baz' => 'merged'];
@@ -36,7 +36,7 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
-    public function testForFlatArrays_ReturnsMergedJsonMatchingTemplateStructure()
+    public function test_for_flat_arrays_it_returns_merged_json_matching_flat_structure(): void
     {
         $template = ['first' => 'template_first', 'bar' => 'template_bar'];
         $package  = ['foo' => 'package_foo', 'bar' => 'package_bar'];
@@ -44,7 +44,7 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
-    public function testNullValuesAfterMergeAreFiltered()
+    public function test_null_values_after_merge_are_filtered(): void
     {
         $template = ['first' => null, 'bar' => null];
         $package  = ['foo' => 'package_foo', 'bar' => 'package_bar'];
@@ -52,7 +52,7 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
-    public function testForNestedArrays_ReturnsStructureWithNestedArraysMatchingTemplateStructure()
+    public function test_for_nested_arrays_it_returns_merged_json_matching_nested_structure(): void
     {
         $template = ['first' => 'tpl', 'bar' => ['nest1' => 'tpl', 'nest2' => null, 'nest3' => 'tpl']];
         $package  = ['first' => 'pkg', 'bar' => ['nest1' => 'pkg', 'nest2' => 'pkg', 'nest4' => 'pkg']];
@@ -60,7 +60,7 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
-    public function testForNestedLists_ReturnsListsWithCombinedValues()
+    public function test_for_nested_lists_it_returns_lists_with_combined_values(): void
     {
         $template = ['list' => ['foo', 'bar', 'baz']];
         $package  = ['list' => ['package1', 'baz', 'foo', 'package2']];
@@ -69,7 +69,7 @@ class MergedJsonTemplateTest extends TestCase
     }
 
     /** @dataProvider nonStructuralContents */
-    public function testWithoutJsonTemplate_ReturnsTemplateRender(string $contents)
+    public function test_without_json_template_it_returns_template_render(string $contents): void
     {
         $this->assertSame($contents, $this->jsonTemplate($contents, 'not {json}')->render(self::$token));
         $this->assertSame($contents, $this->jsonTemplate($contents, '{"foo": "bar"}')->render(self::$token));
@@ -84,7 +84,7 @@ class MergedJsonTemplateTest extends TestCase
         ];
     }
 
-    public function testMergingNonJsonString_ReturnsFilteredTemplateRender()
+    public function test_without_json_structure_in_package_it_returns_filtered_template_render(): void
     {
         $this->assertJsonData(['foo' => 'bar'], $this->jsonTemplate('{"foo": "bar", "baz": null}', 'not json'));
 
@@ -95,7 +95,7 @@ class MergedJsonTemplateTest extends TestCase
     }
 
     /** @dataProvider mismatchedDataTypes */
-    public function testForNotMatchingTypes_PackageValuesAreIgnored(array $template, array $package, ?array $expected)
+    public function test_for_not_matching_types_package_values_are_ignored(array $template, array $package, ?array $expected): void
     {
         $expected ??= $template;
         $this->assertJsonData($expected, $this->template($template, $package));
@@ -142,7 +142,7 @@ class MergedJsonTemplateTest extends TestCase
         ];
     }
 
-    public function testFirstArrayInTemplateList_IsUsedAsStructureTemplateForAllItems()
+    public function test_first_array_in_template_list_is_used_as_structure_template_for_all_items(): void
     {
         $template = ['list' => [['a' => 1, 'b' => 1]]];
         $package  = ['list' => [['b' => 2, 'a' => 2, 'c' => 2], ['c' => 3, 'a' => 3], ['b' => 1, 'a' => 1]]];
@@ -150,7 +150,7 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
-    public function testFirstArrayInTemplateListWithNullValues_IsCombinedWithItemsWithoutNullValues()
+    public function test_null_values_in_template_item_are_filtered_after_merge(): void
     {
         $template = [['a' => null, 'b' => 1, 'c' => null]];
         $package  = [['b' => 2, 'a' => 2, 'c' => 2], ['c' => 3, 'a' => 3], ['b' => 1]];
@@ -158,7 +158,7 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
-    public function testFirstArrayInListWithNullValuesOnly_IsUsedOnlyAsTemplateAndNotMergedIntoList()
+    public function test_template_item_with_only_null_values_is_not_added(): void
     {
         $template = [['a' => null, 'b' => null]];
         $package  = [['b' => 1, 'a' => 1, 'c' => 1], ['c' => 2, 'a' => 2]];
@@ -166,7 +166,7 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
-    public function testEmptyTemplateListAfterMerge_IsFiltered()
+    public function test_empty_template_list_after_merge_is_filtered(): void
     {
         $template = ['foo' => 'foo-value', 'list' => [['a' => null, 'b' => null]]];
         $package  = ['bar' => 'bar-value'];
@@ -177,7 +177,7 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($expected, $this->template($template, $package));
     }
 
-    public function testTypeOfEmptyStructureAfterMerge_IsBasedOnTemplateType()
+    public function test_type_of_empty_structure_after_merge_is_based_on_template_type(): void
     {
         $template = json_encode(['first' => null, 'bar' => null]);
         $this->assertSame('{}', trim($this->jsonTemplate($template, '[]')->render(self::$token)));
@@ -186,7 +186,7 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertSame('[]', trim($this->jsonTemplate($template, '{}')->render(self::$token)));
     }
 
-    public function testUpdatedKeysInSynchronizedStructures_AreMerged()
+    public function test_updated_keys_in_synchronized_structures_are_merged(): void
     {
         $template = ['foo' => null, 'updated_key' => 'something'];
         $package  = ['foo' => 'value', 'old_key' => 'something', 'bar' => 'value'];
@@ -198,7 +198,7 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertJsonData($synchronizedMerge, $this->template($template, $package, true));
     }
 
-    public function testExampleComposerJsonFileInitialization()
+    public function test_example_composer_json_file_initialization(): void
     {
         $template = $this->examplePackageTemplate('package-composer.json', false);
         $token    = $this->token('package/name', 'Initial package description', 'MyProject\\\\Namespace', 'initial@example.com');
@@ -207,7 +207,7 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertSame($expected, $template->render($token));
     }
 
-    public function testWithoutSynchronizationFlag_UpdatedKeyIsAdded()
+    public function test_without_synchronization_flag_updated_key_is_addedd(): void
     {
         $template = $this->examplePackageTemplate('initialized-composer.json', false);
         $token    = $this->token('new-package/name', 'Updated description', 'MyProject\\\\UpdatedNamespace', 'updated@example.com');
@@ -216,7 +216,7 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertSame($expected, $template->render($token));
     }
 
-    public function testWithSynchronizationFlag_UpdatedKeyIsReplaced()
+    public function test_with_synchronization_flag_updated_key_is_replaced(): void
     {
         $template = $this->examplePackageTemplate('initialized-composer.json', true);
         $token    = $this->token('new-package/name', 'Updated description', 'MyProject\\\\UpdatedNamespace', 'updated@example.com');

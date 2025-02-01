@@ -28,21 +28,21 @@ class DescribedProcessorTest extends TestCase
         self::$token  = new Token\BasicToken('placeholder', 'value');
     }
 
-    public function testForSuccessfulProcess_DisplaysOKStatus()
+    public function test_successful_process_displays_OK_status(): void
     {
         $described = $this->described(true, 'Checking foo');
         $this->assertTrue($described->process(self::$token));
         $this->assertMessageLine('    Checking foo... OK');
     }
 
-    public function testForFailedProcess_DisplaysFAILStatus()
+    public function test_failed_process_displays_FAIL_status(): void
     {
         $described = $this->described(false, 'Checking bar');
         $this->assertFalse($described->process(self::$token));
         $this->assertMessageLine('    Checking bar... FAIL');
     }
 
-    public function testWithoutStatus_DisplaysDescriptionOnly()
+    public function test_without_status_displays_description_only(): void
     {
         $described = $this->described(true, 'Checking foo', false);
         $this->assertTrue($described->process(self::$token));

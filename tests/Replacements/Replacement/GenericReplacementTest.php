@@ -19,7 +19,7 @@ use Shudd3r\Skeletons\Replacements\Token;
 
 class GenericReplacementTest extends TestCase
 {
-    public function testWithoutOtherDataSourceDefined_TokenIsBuiltWithResolvedValue()
+    public function test_without_other_data_source_defined_Token_is_built_with_resolved_value(): void
     {
         $resolvedValue = fn (Source $source) => $source->metaValueOf('placeholder');
         $replacement   = new GenericReplacement($resolvedValue);
@@ -28,7 +28,7 @@ class GenericReplacementTest extends TestCase
         $this->assertToken('value from source', $replacement, $source);
     }
 
-    public function testWithValidationCallback_TokenValueIsValidated()
+    public function test_with_validation_callback_Token_value_is_validated(): void
     {
         $resolvedValue = fn (Source $source) => $source->metaValueOf('placeholder');
         $isValid       = fn (string $value) => $value !== 'invalid value';
@@ -38,7 +38,7 @@ class GenericReplacementTest extends TestCase
         $this->assertNull($replacement->token('foo', $source));
     }
 
-    public function testWithTokenInstanceCallback_TokenIsCreatedWithThatCallback()
+    public function test_with_Token_istance_callback_Token_is_created_with_that_callback(): void
     {
         $resolvedValue = fn (Source $source) => $source->metaValueOf('placeholder');
         $isValid       = fn (string $value) => $value === 'valid value';

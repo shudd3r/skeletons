@@ -27,7 +27,7 @@ class InitializationTest extends ApplicationTests
         'email=initial@example.com'
     ];
 
-    public function testInitialization_GeneratesFilesFromTemplate()
+    public function test_files_from_template_are_generated(): void
     {
         $package = self::$files->directory('package');
         $app     = $this->app($package);
@@ -37,7 +37,7 @@ class InitializationTest extends ApplicationTests
     }
 
     /** @dataProvider fileContentsBackupStrategy */
-    public function testInitialization_CreatesBackupOnlyForMismatchedNonEmptyFiles(string $contents, bool $expectBackup)
+    public function test_backup_is_created_only_for_changed_non_empty_files(string $contents, bool $expectBackup): void
     {
         $package = self::$files->directory('package');
         $backup  = self::$files->directory();
@@ -54,7 +54,7 @@ class InitializationTest extends ApplicationTests
         $this->assertSame($expectBackup, $backup->file('composer.json')->exists());
     }
 
-    public function testInitialization_CreatesEmptyTemplateFiles()
+    public function test_empty_template_files_are_created(): void
     {
         $package  = self::$files->directory();
         $template = self::$files->directory();
@@ -65,7 +65,7 @@ class InitializationTest extends ApplicationTests
         $this->assertTrue($package->file('empty.txt')->exists());
     }
 
-    public function testInitializationWithExistingMetaDataFile_AbortsExecutionWithoutSideEffects()
+    public function test_existing_meta_data_file_aborts_execution_without_side_effects(): void
     {
         $package = self::$files->directory('package');
         $app     = $this->app($package);
@@ -78,7 +78,7 @@ class InitializationTest extends ApplicationTests
         $this->assertSame($expected, $this->snapshot($package));
     }
 
-    public function testInitializationThatCouldOverwriteBackupFile_AbortsExecutionWithoutSideEffects()
+    public function test_backup_file_overwrite_aborts_execution_without_side_effects(): void
     {
         $package = self::$files->directory('package');
         $app     = $this->app($package);
@@ -92,7 +92,7 @@ class InitializationTest extends ApplicationTests
         $this->assertSame($expected, $this->snapshot($package));
     }
 
-    public function testInitializeWithInvalidReplacements_AbortsExecutionWithoutSideEffects()
+    public function test_invalid_replacement_aborts_execution_without_side_effects(): void
     {
         $package = self::$files->directory('package');
         $app     = $this->app($package);
@@ -106,7 +106,7 @@ class InitializationTest extends ApplicationTests
         $this->assertSame($expected, $this->snapshot($package));
     }
 
-    public function testRedundantDummyFiles_AreNotAdded()
+    public function test_redundant_dummy_files_are_not_added(): void
     {
         $package = self::$files->directory('package');
         $app     = $this->app($package);

@@ -17,20 +17,20 @@ use Shudd3r\Skeletons\Environment\Files;
 
 class LocalFileTest extends LocalFileSystemTests
 {
-    public function testInstantiation()
+    public function test_instantiation(): void
     {
         $file = new Files\File\LocalFile(self::directory(), 'test.tmp');
         $this->assertEquals(self::file('test.tmp'), $file);
         $this->assertInstanceOf(Files\File::class, $file);
     }
 
-    public function testPathMethod_ReturnsPathProperty()
+    public function test_path_method_returns_path_property(): void
     {
         $this->assertSame('test.tmp', self::file('test.tmp')->name());
     }
 
     /** @dataProvider filePathNormalizations */
-    public function testPathIsNormalized(string $mixedFilename, string $normalizedFilename)
+    public function test_path_is_normalized(string $mixedFilename, string $normalizedFilename): void
     {
         $this->assertEquals(self::file($normalizedFilename), $file = self::file($mixedFilename));
         $this->assertSame($normalizedFilename, $file->name());
@@ -47,7 +47,7 @@ class LocalFileTest extends LocalFileSystemTests
         ];
     }
 
-    public function testExistsMethod()
+    public function test_exists_method(): void
     {
         $file = self::file('test.tmp');
         $this->assertFalse($file->exists());
@@ -56,7 +56,7 @@ class LocalFileTest extends LocalFileSystemTests
         self::clear();
     }
 
-    public function testExistsMethodForDirectoryPath_ReturnsFalse()
+    public function test_exists_method_for_directory_path_returns_false(): void
     {
         self::create('foo/bar.dir/baz.tmp');
         $this->assertFalse(self::file('foo/bar.dir')->exists());
@@ -64,19 +64,19 @@ class LocalFileTest extends LocalFileSystemTests
         self::clear();
     }
 
-    public function testForNotExistingFile_ContentsMethod_ReturnsEmptyString()
+    public function test_for_not_existing_file_contents_method_returns_empty_string(): void
     {
         $this->assertSame('', self::file('test.tmp')->contents());
     }
 
-    public function testForExistingFile_ContentsMethod_ReturnsFileContents()
+    public function test_for_existing_file_contents_method_returns_file_contents(): void
     {
         self::create('test.tmp', $contents = 'Test file contents...');
         $this->assertSame($contents, self::file('test.tmp')->contents());
         self::clear();
     }
 
-    public function testWriteMethod_SavesPassedStringInFile()
+    public function test_write_method_saves_passed_string(): void
     {
         self::create('test.tmp', 'Initial file contents...');
         $file = self::file('test.tmp');
@@ -87,7 +87,7 @@ class LocalFileTest extends LocalFileSystemTests
         self::clear();
     }
 
-    public function testForNotExistingFile_WriteMethod_CreatesFileWithPassedContents()
+    public function test_for_not_existing_file_write_method_creates_file_with_passed_contents(): void
     {
         $file = self::file('test.tmp');
         $this->assertFalse($file->exists());
@@ -100,7 +100,7 @@ class LocalFileTest extends LocalFileSystemTests
         self::clear();
     }
 
-    public function testForNotExistingFile_WriteMethod_CreatesRequiredDirectoryStructure()
+    public function test_for_not_existing_file_write_method_creates_required_directory_structure(): void
     {
         $file = self::file('missing/directory/file.tmp');
         $this->assertFalse($file->exists());
@@ -110,7 +110,7 @@ class LocalFileTest extends LocalFileSystemTests
         self::clear();
     }
 
-    public function testRemoveMethod_RemovesFile()
+    public function test_remove_method_deletes_file(): void
     {
         self::create('test.tmp', 'contents');
         $file = self::file('test.tmp');

@@ -22,13 +22,13 @@ class VirtualFilesTest extends TestCase
 {
     use Paths;
 
-    public function testPathMethod_ReturnsNormalizedDirectoryPath()
+    public function test_path_returns_normalized_directory_path(): void
     {
         $directory = new VirtualDirectory('/some/path\foo\bar');
         $this->assertSame($this->normalized('/some/path/foo/bar', DIRECTORY_SEPARATOR, true), $directory->path());
     }
 
-    public function testExistsMethod_ReturnsTrueIfDirectoryExists()
+    public function test_exists_returns_true_for_existing_directories(): void
     {
         $directory = new VirtualDirectory('/some/path', false);
         $this->assertFalse($directory->exists());
@@ -36,7 +36,7 @@ class VirtualFilesTest extends TestCase
         $this->assertTrue($directory->exists());
     }
 
-    public function testFilesCanBeAddedAndRemovedFromDirectory()
+    public function test_files_can_be_added_and_removed_from_directory(): void
     {
         $directory = new VirtualDirectory();
 
@@ -64,7 +64,7 @@ class VirtualFilesTest extends TestCase
         $this->assertFalse($directory->file('foo.file')->exists());
     }
 
-    public function testAddingFileTwice_ThrowsException()
+    public function test_adding_file_twice_throws_Exception(): void
     {
         $directory = new VirtualDirectory();
         $directory->addFile('foo.txt');
@@ -72,7 +72,7 @@ class VirtualFilesTest extends TestCase
         $directory->addFile('foo.txt');
     }
 
-    public function testAddingFileMakeDirectoryExistAndRemovingFileDoesntChangeIt()
+    public function test_adding_file_creates_directory_that_is_not_removed_when_file_is_deleted(): void
     {
         $directory = new VirtualDirectory('/some/path', false);
         $directory->addFile('foo.txt');
@@ -81,7 +81,7 @@ class VirtualFilesTest extends TestCase
         $this->assertTrue($directory->exists());
     }
 
-    public function testSubdirectoryMethod_ReturnsSubdirectoryWithExtendedPathThatDoesNotExistWithoutFiles()
+    public function test_subdirectory_returns_directory_with_extended_path_that_does_not_exist_without_files(): void
     {
         $directory    = new VirtualDirectory('/root');
         $subdirectory = $directory->subdirectory('foo/bar');
@@ -89,7 +89,7 @@ class VirtualFilesTest extends TestCase
         $this->assertFalse($subdirectory->exists());
     }
 
-    public function testAddingAndRemovingFilesFromSubdirectory()
+    public function test_adding_and_removing_files_from_subdirectory(): void
     {
         $directory    = new VirtualDirectory();
         $subdirectory = $directory->subdirectory('foo/bar');
@@ -104,7 +104,7 @@ class VirtualFilesTest extends TestCase
         $this->assertFalse($directory->file('foo/bar/baz.txt')->exists());
     }
 
-    public function testSubdirectoryInstance_ContainsFilesCreatedInParentDirectory()
+    public function test_subdirectory_instance_contain_files_created_in_parent_directory(): void
     {
         $directory = new VirtualDirectory();
         $directory->addFile('foo/bar/baz.txt');
@@ -119,7 +119,7 @@ class VirtualFilesTest extends TestCase
         $this->assertEquals($expectedFiles, $subdirectory->fileList());
     }
 
-    public function testWritingFileContents_CreatesFileInAllContexts()
+    public function test_writing_file_contents_creates_file_in_all_contexts(): void
     {
         $directory    = new VirtualDirectory();
         $subdirectory = $directory->subdirectory('foo/bar');
@@ -136,7 +136,7 @@ class VirtualFilesTest extends TestCase
         $this->assertSame('other saved in both', $subdirectory->file('other.txt')->contents());
     }
 
-    public function testRemoveMethodOnFile_RemovesFileFromAllContexts()
+    public function test_remove_method_on_file_instance_removes_file_from_all_contexts(): void
     {
         $directory    = new VirtualDirectory();
         $subdirectory = $directory->subdirectory('foo/bar');
@@ -151,7 +151,7 @@ class VirtualFilesTest extends TestCase
         $this->assertEmpty($subdirectory->fileList());
     }
 
-    public function testFilesWithoutSubdirectories_AreNotFilteredBySynchronization()
+    public function test_files_without_subdirectories_are_not_filtered_by_synchronization(): void
     {
         $directory    = new VirtualDirectory();
         $subdirectory = $directory->subdirectory('foo');
@@ -164,7 +164,7 @@ class VirtualFilesTest extends TestCase
         $this->assertCount(3, $directory->fileList());
     }
 
-    public function testInstantiationWithFileList_AddsFilesFilteringTestPostfix()
+    public function test_instantiation_with_file_list_adds_files_filtering_test_postfix(): void
     {
         $files = [
             new VirtualFile('foo.txt.sk_tests', 'foo contents'),

@@ -18,7 +18,7 @@ use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 
 class BasicTemplateTest extends TestCase
 {
-    public function testPlaceholders_AreReplacedByTokenValues()
+    public function test_placeholders_are_replaced_by_Token_values(): void
     {
         $contents = <<<'TPL'
             This file is part of {placeholder.name} package.

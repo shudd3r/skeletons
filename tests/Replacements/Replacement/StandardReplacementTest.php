@@ -19,18 +19,18 @@ use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 
 class StandardReplacementTest extends TestCase
 {
-    public function testWithoutDefinedInputSourceAndMetaValue_Token_ReturnsTokenWithResolvedValue()
+    public function test_without_defined_input_source_and_meta_data_Token_value_is_resolved(): void
     {
         $this->assertToken('resolved value', $this->replacement(), Source::create());
     }
 
-    public function testWithMetaValue_Token_ReturnsTokenWithThatValue()
+    public function test_value_is_resolved_with_defined_meta_data(): void
     {
         $source = Source::create(['foo' => 'meta value']);
         $this->assertToken('meta value', $this->replacement(), $source);
     }
 
-    public function testWithArgumentName_Token_ReturnsTokenWithInputArgument()
+    public function test_value_is_resolved_from_command_line_argument(): void
     {
         $source = Source::create(['foo' => 'meta value'], ['fooArg' => 'arg value']);
         $this->assertToken('arg value', $this->replacement()->withInputArg('fooArg'), $source);
@@ -39,7 +39,7 @@ class StandardReplacementTest extends TestCase
         $this->assertToken('', $this->replacement()->withInputArg('emptyArg'), $source);
     }
 
-    public function testForInvalidArgument_Token_ReturnsNull()
+    public function test_for_invalid_command_line_value_token_method_returns_null(): void
     {
         $replacement = $this->replacement()->withInputArg('fooArg');
 
@@ -50,14 +50,14 @@ class StandardReplacementTest extends TestCase
         $this->assertNull($replacement->withPrompt('Enter foo')->token('foo', $source), 'Non-interactive mode');
     }
 
-    public function testWithInputPromptProperty_Token_ReturnsTokenUsingInputEntry()
+    public function test_with_input_prompt_property_value_can_be_resolved_from_interactive_input(): void
     {
         $source = Source::create()->withInputStrings('input value');
         $this->assertToken('input value', $this->replacement('default value')->withPrompt('Enter foo'), $source);
         $this->assertSame('Enter foo [default: default value]', $source->promptUsed());
     }
 
-    public function testForEmptyInput_Token_ReturnsTokenWithDefaultValue()
+    public function test_for_empty_input_value_is_resolved_to_default(): void
     {
         $replacement = $this->replacement()->withPrompt('Enter foo');
 
@@ -74,7 +74,7 @@ class StandardReplacementTest extends TestCase
         $this->assertSame('Enter foo [default: arg value]', $source->promptUsed());
     }
 
-    public function testForInteractiveInput_EmptyDefaultValue_IsNotDisplayed()
+    public function test_empty_default_value_is_not_displayed_in_input_prompt(): void
     {
         $replacement = $this->replacement('')->withPrompt('Enter foo');
 
@@ -83,7 +83,7 @@ class StandardReplacementTest extends TestCase
         $this->assertSame('Enter foo', $source->promptUsed());
     }
 
-    public function testForInteractiveInput_InvalidValueCannotBeDefault()
+    public function test_invalid_value_cannot_be_default_for_interactive_input(): void
     {
         $replacement = $this->replacement('invalid')->withPrompt('Enter foo');
 
@@ -100,7 +100,7 @@ class StandardReplacementTest extends TestCase
         $this->assertSame('Enter foo', $source->promptUsed());
     }
 
-    public function testForInteractiveInput_InvalidArgumentValueIsIgnored()
+    public function test_invalid_argument_value_is_ignored_for_interactive_input(): void
     {
         $replacement = $this->replacement()->withPrompt('Enter foo')->withInputArg('fooArg');
 
@@ -111,7 +111,7 @@ class StandardReplacementTest extends TestCase
         $this->assertToken('meta value', $replacement, $source);
     }
 
-    public function testForInvalidValue_Token_ReturnsNull()
+    public function test_for_invalid_input_value_token_method_returns_null(): void
     {
         $replacement = $this->replacement('invalid');
 
@@ -127,7 +127,7 @@ class StandardReplacementTest extends TestCase
         $this->assertSame($expectedMessages, $source->messagesSent());
     }
 
-    public function testForInteractiveInput_ValidValueWithinRetryLimit_ReturnsToken()
+    public function test_valid_value_provided_within_retry_limit(): void
     {
         $replacement = $this->replacement();
 
@@ -138,7 +138,7 @@ class StandardReplacementTest extends TestCase
         $this->assertSame($expectedMessages, $source->messagesSent());
     }
 
-    public function testForInteractiveInput_InvalidValuesExceedingRetryLimit_ReturnNull()
+    public function test_for_invalid_values_exceeding_retry_limit_token_method_returns_null(): void
     {
         $replacement = $this->replacement();
 
@@ -154,7 +154,7 @@ class StandardReplacementTest extends TestCase
         $this->assertSame($expectedMessages, $source->messagesSent());
     }
 
-    public function testForInteractiveInputWithoutRetryLimit_InputIsRepeatedUntilValidValueIsGiven()
+    public function test_interactive_input_is_retried_until_valid_value_is_provided(): void
     {
         $replacement = $this->replacement();
 
@@ -165,17 +165,17 @@ class StandardReplacementTest extends TestCase
         $this->assertSame($expectedMessages, $source->messagesSent());
     }
 
-    public function testWithoutArgumentName_Description_ReturnsEmptyString()
+    public function test_without_argument_name_description_returns_empty_string(): void
     {
         $this->assertEmpty($this->replacement()->withDescription('This is Foo')->description('foo'));
     }
 
-    public function testWithoutDefinedDescriptionProperty_Description_ReturnsDefaultPlaceholderInfo()
+    public function test_without_defined_description_property_description_returns_default_placeholder_info(): void
     {
         $this->assertStringContainsString('{foo}', $this->replacement()->withInputArg('fooArg')->description('foo'));
     }
 
-    public function testDescriptionFormatting()
+    public function test_description_formatting(): void
     {
         $description = <<<DESC
             This value replaces {%s} placeholder.

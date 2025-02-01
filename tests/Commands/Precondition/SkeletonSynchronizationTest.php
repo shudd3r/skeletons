@@ -18,7 +18,7 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class SkeletonSynchronizationTest extends TestCase
 {
-    public function testUnresolvedToken_ReturnsFalse()
+    public function test_unresolved_token_returns_false():void
     {
         $tokens       = new Doubles\FakeTokens(false);
         $processor    = new Doubles\MockedProcessor(true);
@@ -26,7 +26,7 @@ class SkeletonSynchronizationTest extends TestCase
         $this->assertFalse($precondition->isFulfilled());
     }
 
-    public function testResolvedToken_ReturnsStatusFromProcessor()
+    public function test_resolved_token_returns_status_from_processor(): void
     {
         $tokens       = new Doubles\FakeTokens(true);
         $processor    = new Doubles\MockedProcessor(true);

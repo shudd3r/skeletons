@@ -20,14 +20,14 @@ class OriginalContentsTest extends TestCase
 {
     private const FILENAME = 'cached/file.txt';
 
-    public function testValueMethod_ReturnsNull()
+    public function test_value_method_returns_null(): void
     {
         $token = $this->token('foo');
         $this->assertNull($token->value());
     }
 
     /** @dataProvider useCases */
-    public function testUseCases(string $original, string $mask, ?string $expected)
+    public function test_use_cases(string $original, string $mask, ?string $expected): void
     {
         $token = $this->token($original);
         $this->assertSame($expected ?? $original, $token->replace($mask));

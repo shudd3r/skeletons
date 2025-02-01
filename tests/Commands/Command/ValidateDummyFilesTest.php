@@ -27,7 +27,7 @@ class ValidateDummyFilesTest extends TestCase
         self::$terminal = new Doubles\MockedTerminal();
     }
 
-    public function testNoInvalidDummies_SendsNoOutput()
+    public function test_without_invalid_dummies_no_output_is_sent(): void
     {
         $directory = $this->directory(['foo/.gitkeep', 'file1.txt', 'bar/file2.txt']);
         $dummies   = $this->directory(['foo/.gitkeep', 'bar/.gitkeep']);
@@ -36,7 +36,7 @@ class ValidateDummyFilesTest extends TestCase
         $this->assertOutput(0);
     }
 
-    public function testMissingDummiesInCheckMode_SendsFileListWithErrorCode()
+    public function test_missing_dummies_in_check_mode_send_file_list_with_error_code(): void
     {
         $directory = $this->directory(['foo/.gitkeep']);
         $dummies   = $this->directory(['foo/.gitkeep', 'bar/.gitkeep', '.baz/.gitkeep']);
@@ -45,7 +45,7 @@ class ValidateDummyFilesTest extends TestCase
         $this->assertOutput(1, ['Missing', 'bar/.gitkeep', '.baz/.gitkeep', 'create']);
     }
 
-    public function testRedundantDummies_SendsFileListWithErrorCode()
+    public function test_redundant_dummies_send_file_list_with_error_code(): void
     {
         $directory = $this->directory(['foo/.gitkeep', 'foo/file.txt', 'bar/.gitkeep', 'bar/baz/file.txt']);
         $dummies   = $this->directory(['foo/.gitkeep', 'bar/.gitkeep']);
@@ -54,7 +54,7 @@ class ValidateDummyFilesTest extends TestCase
         $this->assertOutput(1, ['Redundant', 'foo/.gitkeep', 'bar/.gitkeep', 'remove']);
     }
 
-    public function testListingBothMissingAndRedundantDummyFiles()
+    public function test_lits_for_both_missing_and_redundant_dummy_files(): void
     {
         $directory = $this->directory(['root.txt', 'foo/file.txt', 'foo/.gitkeep']);
         $dummies   = $this->directory(['foo/.gitkeep', 'bar/.gitkeep']);

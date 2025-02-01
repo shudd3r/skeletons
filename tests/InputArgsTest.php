@@ -17,28 +17,28 @@ use Shudd3r\Skeletons\InputArgs;
 
 class InputArgsTest extends TestCase
 {
-    public function testEmptyArrayInstance_ReturnsDefaultValues()
+    public function test_empty_array_instance_returns_default_values(): void
     {
         $args = new InputArgs([]);
         $this->assertSame('skeleton-script', $args->script());
         $this->assertSame('help', $args->command());
     }
 
-    public function testScriptNameOnlyInstance_ReturnsDefaultCommand()
+    public function test_empty_script_name_only_instance_returns_default_command(): void
     {
         $args = new InputArgs(['script-only']);
         $this->assertSame('script-only', $args->script());
         $this->assertSame('help', $args->command());
     }
 
-    public function testCommandValue_IsAlwaysSecondArgument()
+    public function test_command_name_is_always_second_argument(): void
     {
         $args = new InputArgs(['script-name', '--this-is-command']);
         $this->assertSame('--this-is-command', $args->command());
     }
 
     /** @dataProvider interactiveArgs */
-    public function testInteractiveOption(bool $expected, array $args)
+    public function test_interactive_option(bool $expected, array $args): void
     {
         $args = new InputArgs(array_merge(['script'], $args));
         $this->assertSame($expected, $args->interactive());
@@ -61,7 +61,7 @@ class InputArgsTest extends TestCase
     }
 
     /** @dataProvider localFilesArgs */
-    public function testLocalFilesOption(bool $expected, array $args)
+    public function test_local_files_option(bool $expected, array $args): void
     {
         $args = new InputArgs(array_merge(['script'], $args));
         $this->assertSame($expected, $args->includeLocalFiles());
@@ -80,7 +80,7 @@ class InputArgsTest extends TestCase
         ];
     }
 
-    public function testArgumentValues()
+    public function test_argument_values(): void
     {
         $argv = ['script', 'init', 'none', 'foo=value', '--notArg=foo', 'empty=', 'withSpaces=foo bar baz'];
         $args = new InputArgs($argv);

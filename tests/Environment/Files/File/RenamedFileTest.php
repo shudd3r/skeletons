@@ -18,13 +18,13 @@ use Shudd3r\Skeletons\Environment\Files\File\VirtualFile;
 
 class RenamedFileTest extends TestCase
 {
-    public function testNameMethod_ReturnsNameProperty()
+    public function test_name_method_returns_name_property(): void
     {
         $file = $this->file(new VirtualFile('', 'original/name.ext'), 'given/name.ext');
         $this->assertSame('given/name.ext', $file->name());
     }
 
-    public function testMethodsReferringToWrappedFileInstance()
+    public function test_methods_referring_to_wrapped_file_instance(): void
     {
         $wrapped = new VirtualFile('foo.txt', null);
         $file    = $this->file($wrapped);

@@ -26,18 +26,18 @@ class PackageNameTest extends TestCase
         self::$replacement = new PackageName();
     }
 
-    public function testWithoutEnoughDataToResolveValue_TokenMethod_ReturnsNull()
+    public function test_without_data_to_resolve_value_token_method_returns_null(): void
     {
         $this->assertNull(self::$replacement->token('foo', Source::create()));
     }
 
-    public function testForPackageDirectoryWithParentDirectory_TokenValueIsResolvedFromPackageDirectoryPath()
+    public function test_value_is_resolved_from_package_directory_path(): void
     {
         $source = Source::create()->withPackagePath('/path/to/directory/package');
         $this->assertToken('Directory/Package', $source);
     }
 
-    public function testWithPackageNameInComposerJsonFile_TokenValueIsResolvedWithComposerJsonData()
+    public function test_value_is_resolved_with_package_name_in_composer_json_file(): void
     {
         $source = Source::create()->withPackagePath('/path/to/directory/package')
                                   ->withComposerData(['name' => 'composer/package']);
@@ -45,14 +45,14 @@ class PackageNameTest extends TestCase
     }
 
     /** @dataProvider validReplacementValues */
-    public function testValuesResolvedForDefault_AreCapitalized(string $original, string $capitalized)
+    public function test_default_values_are_capitalized(string $original, string $capitalized): void
     {
         $this->assertToken($capitalized, Source::create()->withPackagePath('/path/to/' . $original));
         $this->assertToken($capitalized, Source::create()->withComposerData(['name' => $original]));
     }
 
     /** @dataProvider validReplacementValues */
-    public function testDirectSourceValue_IsNotCapitalized(string $baseValue)
+    public function test_direct_source_value_is_not_capitalized(string $baseValue): void
     {
         $this->assertToken($baseValue, Source::create(['foo' => $baseValue]));
     }
@@ -68,7 +68,7 @@ class PackageNameTest extends TestCase
     }
 
     /** @dataProvider invalidReplacementValues */
-    public function testForInvalidSourceValue_TokenMethod_ReturnsNull(string $invalidValue)
+    public function test_for_invalid_source_value_token_method_returns_null(string $invalidValue): void
     {
         $source = Source::create(['foo' => $invalidValue]);
         $this->assertNull(self::$replacement->token('foo', $source));

@@ -26,12 +26,12 @@ class RepositoryNameTest extends TestCase
         self::$replacement = new RepositoryName('bar');
     }
 
-    public function testWithoutDataToResolveValue_TokenMethod_ReturnsNull()
+    public function test_without_data_to_resolve_value_token_method_returns_null(): void
     {
         $this->assertNull(self::$replacement->token('foo', Source::create()));
     }
 
-    public function testWithValidFallbackValue_TokenValueIsResolvedFromThatValue()
+    public function test_value_is_resolved_from_valid_fallback(): void
     {
         $source = Source::create()->withFallbackTokenValue('bar', 'not repository name');
         $this->assertNull(self::$replacement->token('foo', $source));
@@ -40,7 +40,7 @@ class RepositoryNameTest extends TestCase
         $this->assertToken('package/name', $source);
     }
 
-    public function testWithGitConfigWithRemoteDefinitions_TokenValueIsResolvedFromMostAccurateOne()
+    public function test_value_is_resolved_from_most_accurate_git_config_remote_definition(): void
     {
         $remoteList = [
             '--none--' => ['fallback/name', ''],
@@ -60,7 +60,7 @@ class RepositoryNameTest extends TestCase
     }
 
     /** @dataProvider valueExamples */
-    public function testResolvedTokenValue_IsValidated(string $invalid, string $valid)
+    public function test_resolved_value_is_validated(string $invalid, string $valid): void
     {
         $source = Source::create(['foo' => $valid, 'bar' => $invalid]);
         $this->assertToken($valid, $source);

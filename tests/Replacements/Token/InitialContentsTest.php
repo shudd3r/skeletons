@@ -18,13 +18,13 @@ use Shudd3r\Skeletons\Replacements\Token\OriginalContents;
 
 class InitialContentsTest extends TestCase
 {
-    public function testValueMethod_ReturnsNull()
+    public function test_value_method_returns_null(): void
     {
         $token = new InitialContents();
         $this->assertNull($token->value());
     }
 
-    public function testForTemplateWithoutPlaceholders_ReturnsUnchangedTemplate()
+    public function test_replace_for_template_without_placeholders_returns_unchanged_template(): void
     {
         $token    = new InitialContents();
         $template = 'example template {some.token} content';
@@ -32,7 +32,7 @@ class InitialContentsTest extends TestCase
         $this->assertSame($template, $token->replace($template));
     }
 
-    public function testForTemplateWithMisplacedPlaceholders_ReturnsUnchangedTemplate()
+    public function test_replace_for_template_with_misplaced_placeholders_returns_unchanged_template(): void
     {
         $token    = new InitialContents();
         $template = self::template('example <<<end} template {start>>> and {some.token} content');
@@ -40,7 +40,7 @@ class InitialContentsTest extends TestCase
         $this->assertSame($template, $token->replace($template));
     }
 
-    public function testInitialVsReplaced()
+    public function test_initial_vs_replaced(): void
     {
         $template = self::template('example {start>>>initial template content<<<end} and {some.token}');
 
@@ -53,7 +53,7 @@ class InitialContentsTest extends TestCase
         $this->assertSame($expected, $token->replace($template));
     }
 
-    public function testSingleNewLineNextToMultilinePlaceholderDelimiter_IsIgnored()
+    public function test_single_new_line_next_to_multiline_placeholder_delimiter_is_ignored(): void
     {
         $token = new InitialContents();
 
@@ -84,7 +84,7 @@ class InitialContentsTest extends TestCase
     }
 
     /** @dataProvider replaceWithInitialValue */
-    public function testReplacingWithInitialValue(string $template, string $expected)
+    public function test_replace_with_initial_value(string $template, string $expected): void
     {
         $token = new InitialContents();
         $this->assertSame($expected, $token->replace($template));
@@ -100,7 +100,7 @@ class InitialContentsTest extends TestCase
     }
 
     /** @dataProvider replaceWithPlaceholder */
-    public function testReplacingWithOriginalContentPlaceholder(string $template, string $expected)
+    public function test_replace_with_original_content_placeholder(string $template, string $expected): void
     {
         $token = new InitialContents(false);
         $this->assertSame($expected, $token->replace($template));

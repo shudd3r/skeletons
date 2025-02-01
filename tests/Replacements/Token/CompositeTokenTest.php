@@ -18,7 +18,7 @@ use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 
 class CompositeTokenTest extends TestCase
 {
-    public function testTokenReplacesAllInternalPlaceholders()
+    public function test_replace_is_applied_to_all_internal_tokens(): void
     {
         $token = new CompositeToken(
             new BasicToken('foo.token', 'foo'),
@@ -30,13 +30,13 @@ class CompositeTokenTest extends TestCase
         $this->assertSame('Template with foo-bar-baz', $token->replace($template));
     }
 
-    public function testDefaultInstanceValueMethod_ReturnsNull()
+    public function test_for_default_instance_value_method_returns_null(): void
     {
         $token = new CompositeToken(new BasicToken('foo', 'foo-value'));
         $this->assertNull($token->value());
     }
 
-    public function testInstanceWithValueToken_ValueMethod_ReturnsValueOfFirstToken()
+    public function test_for_instance_with_value_token_value_method_returns_value_of_first_token(): void
     {
         $token = CompositeToken::withValueToken(
             new BasicToken('foo', 'foo-value'),

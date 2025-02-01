@@ -26,12 +26,12 @@ class SrcNamespaceTest extends TestCase
         self::$replacement = new SrcNamespace('bar');
     }
 
-    public function testWithoutEnoughDataToResolveValue_TokenMethod_ReturnsNull()
+    public function test_without_enough_data_to_resolve_value_token_method_returns_null(): void
     {
         $this->assertNull(self::$replacement->token('foo', Source::create()));
     }
 
-    public function testWithCorrectFallbackValue_TokenValueIsResolvedFromFallback()
+    public function test_value_is_resolved_from_fallback(): void
     {
         $source = Source::create()->withFallbackTokenValue('bar', 'invalid fallback value');
         $this->assertNull(self::$replacement->token('foo', $source));
@@ -40,7 +40,7 @@ class SrcNamespaceTest extends TestCase
         $this->assertToken('Fallback\\PackageName', $source);
     }
 
-    public function testWithMatchingNamespaceInComposerJsonFile_TokenValueIsResolvedWithComposerData()
+    public function test_value_is_resolved_from_matching_namespace_in_composer_json_file(): void
     {
         $composer = fn (string $directory) => ['autoload' => ['psr-4' => ['Composer\\Namespace\\' => $directory]]];
         $source   = Source::create()->withFallbackTokenValue('bar', 'fallback/package-name');
@@ -53,7 +53,7 @@ class SrcNamespaceTest extends TestCase
     }
 
     /** @dataProvider valueExamples */
-    public function testResolvedTokenValue_IsValidated(string $invalid, string $valid)
+    public function test_resolved_value_is_validated(string $invalid, string $valid): void
     {
         $source = Source::create(['foo' => $valid, 'bar' => $invalid]);
         $this->assertToken($valid, $source);

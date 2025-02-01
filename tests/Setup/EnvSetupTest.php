@@ -21,7 +21,7 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class EnvSetupTest extends TestCase
 {
-    public function testRuntimeEnvMethod_CreatesRuntimeEnvWithGivenValues()
+    public function test_runtimeEnv_method_creates_runtime_env_with_given_values(): void
     {
         $package  = new Directory\VirtualDirectory();
         $skeleton = new Directory\VirtualDirectory();
@@ -44,7 +44,7 @@ class EnvSetupTest extends TestCase
         $this->assertEquals(new Data\MetaData($package->file($filename)), $env->metaData());
     }
 
-    public function testResolvingDefaultValues()
+    public function test_resolving_default_values(): void
     {
         $package = new Directory\VirtualDirectory();
         $setup   = new EnvSetup($package, new Directory\VirtualDirectory());
@@ -56,7 +56,7 @@ class EnvSetupTest extends TestCase
         $this->assertSame($package->file($filename), $env->metaDataFile());
     }
 
-    public function testNotExistingPackageDirectory_RuntimeEnvMethod_ThrowsException()
+    public function test_runtimeEnv_method_for_not_existing_package_directory_throws_Exception(): void
     {
         $package = new Directory\VirtualDirectory('/some/path', false);
         $setup   = new EnvSetup($package, new Directory\VirtualDirectory());
@@ -65,7 +65,7 @@ class EnvSetupTest extends TestCase
         $setup->runtimeEnv(new Doubles\MockedTerminal());
     }
 
-    public function testNotExistingSkeletonDirectory_RuntimeEnvMethod_ThrowsException()
+    public function test_runtimeEnv_method_for_not_existing_skeleton_directory_throws_Exception(): void
     {
         $skeleton = new Directory\VirtualDirectory('/some/path', false);
         $setup    = new EnvSetup(new Directory\VirtualDirectory(), $skeleton);

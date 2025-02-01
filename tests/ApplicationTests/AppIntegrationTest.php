@@ -16,13 +16,13 @@ use Shudd3r\Skeletons\Tests\ApplicationTests;
 
 class AppIntegrationTest extends ApplicationTests
 {
-    public function testUnknownCommand_ReturnsErrorCode()
+    public function test_unknown_command_returns_error_code(): void
     {
         $app = $this->app(self::$files->directory());
         $this->assertSame(128, $app->run($this->args('unknown')));
     }
 
-    public function testWithBackupDirectorySet_BackupFilesAreCopiedToThatDirectory()
+    public function test_backup_will_change_default_backup_directory_for_modified_files(): void
     {
         $package = self::$files->directory('package');
         $app     = $this->app($package);
@@ -37,7 +37,7 @@ class AppIntegrationTest extends ApplicationTests
         $this->assertTrue($backup->file('composer.json')->exists());
     }
 
-    public function testWithMetaDataFilenameSet_MetaDataIsSavedInThatFileInsidePackageDirectory()
+    public function test_metaFile_will_change_default_meta_data_filename(): void
     {
         $package = self::$files->directory();
         $app     = $this->app($package);
@@ -49,7 +49,7 @@ class AppIntegrationTest extends ApplicationTests
         $this->assertTrue($package->file('dev/meta-data.json')->exists());
     }
 
-    public function testWithoutOptionValues_ReplacementsAreTakenFromInput()
+    public function test_without_option_values_replacements_are_taken_from_interactive_input(): void
     {
         $package = self::$files->directory();
         $app = $this->app($package);
@@ -68,7 +68,7 @@ class AppIntegrationTest extends ApplicationTests
         $this->assertSame($expected, json_decode($package->file('dev/meta-date.json')->contents(), true));
     }
 
-    public function testWithoutInput_ReplacementsAreResolvedFromDefaultsAndFallbacks()
+    public function test_without_input_replacements_are_resolved_from_defaults_and_fallbacks(): void
     {
         $package = self::$files->directory('not/exists/package/directory');
         $app     = $this->app($package);
@@ -89,7 +89,7 @@ class AppIntegrationTest extends ApplicationTests
         $this->assertSame($expected, json_decode($package->file('dev/meta-data.json')->contents(), true));
     }
 
-    public function testDisplaysSkeletonNameInScriptHeader()
+    public function test_skeleton_name_is_displayed_in_script_header(): void
     {
         $app = $this->app(self::$files->directory());
 

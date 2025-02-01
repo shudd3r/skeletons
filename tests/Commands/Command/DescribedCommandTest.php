@@ -18,7 +18,7 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class DescribedCommandTest extends TestCase
 {
-    public function testExecute_DisplaysMessage()
+    public function test_execute_displays_message(): void
     {
         $output  = new Doubles\MockedTerminal();
         $message = 'Doing something now';

@@ -20,7 +20,7 @@ use Shudd3r\Skeletons\Environment\Files\File;
 
 class GenerateFileTest extends TestCase
 {
-    public function testRenderedStringIsWrittenToFile()
+    public function test_rendered_string_is_written_to_file(): void
     {
         $template  = new Template\BasicTemplate('{replace.me} string');
         $file      = new File\VirtualFile();

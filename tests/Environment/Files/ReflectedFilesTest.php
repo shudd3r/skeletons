@@ -18,7 +18,7 @@ use Shudd3r\Skeletons\Environment\Files\Directory\VirtualDirectory;
 
 class ReflectedFilesTest extends TestCase
 {
-    public function testFileMethod_ReturnsFileFromTargetFiles()
+    public function test_file_returns_file_from_target_files(): void
     {
         $target = new VirtualDirectory();
         $target->addFile('foo.txt');
@@ -27,7 +27,7 @@ class ReflectedFilesTest extends TestCase
         $this->assertSame($target->file('foo.txt'), $files->file('foo.txt'));
     }
 
-    public function testFileList_ReturnsFilesFromTargetThatExistInSource()
+    public function test_fileList_returns_files_from_target_that_exist_in_source_directory(): void
     {
         $target = new VirtualDirectory();
         $target->addFile('target-foo.txt');

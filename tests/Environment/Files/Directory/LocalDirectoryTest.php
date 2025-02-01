@@ -16,13 +16,13 @@ use Shudd3r\Skeletons\Tests\Environment\Files\LocalFileSystemTests;
 
 class LocalDirectoryTest extends LocalFileSystemTests
 {
-    public function testPathMethod_ReturnsPathProperty()
+    public function test_path_method_returns_path_property(): void
     {
         $this->assertSame(self::$root . DIRECTORY_SEPARATOR . 'test', self::directory('test')->path());
     }
 
     /** @dataProvider directoryPathNormalizations */
-    public function testPathIsNormalized(string $mixedDir, string $normalizedDir)
+    public function test_returned_path_is_normalized(string $mixedDir, string $normalizedDir): void
     {
         $this->assertEquals(self::directory($normalizedDir, true), $directory = self::directory($mixedDir, true));
         $this->assertSame($normalizedDir, $directory->path());
@@ -40,13 +40,13 @@ class LocalDirectoryTest extends LocalFileSystemTests
         ];
     }
 
-    public function testExistsMethod()
+    public function test_exists_method(): void
     {
         $this->assertTrue(self::directory()->exists());
         $this->assertFalse(self::directory('foo/bar')->exists());
     }
 
-    public function testExistsMethodForFilePath_ReturnsFalse()
+    public function test_exists_method_for_file_path_returns_false(): void
     {
         self::create('foo/bar.dir/baz.tmp');
         $this->assertTrue(self::directory('foo/bar.dir')->exists());
@@ -54,7 +54,7 @@ class LocalDirectoryTest extends LocalFileSystemTests
         self::clear();
     }
 
-    public function testFileMethod()
+    public function test_file_method_creates_file_instance(): void
     {
         self::create('exists.tmp');
         $directory = self::directory();
@@ -63,7 +63,7 @@ class LocalDirectoryTest extends LocalFileSystemTests
         self::clear();
     }
 
-    public function testFileMethod_RemovesSuperfluousSlashes()
+    public function test_file_method_ignores_superfluous_slashes(): void
     {
         $directory = self::directory();
         $file      = self::file('dir/path/file.tmp');
@@ -71,7 +71,7 @@ class LocalDirectoryTest extends LocalFileSystemTests
         $this->assertEquals($directory->file('\dir\path\file.tmp'), $file);
     }
 
-    public function testFileListMethod_ReturnsFilesArray()
+    public function test_file_list_method_returns_files_array(): void
     {
         $directory = self::directory();
         $files     = ['a.tmp', 'b.tmp', 'c.tmp'];
@@ -81,7 +81,7 @@ class LocalDirectoryTest extends LocalFileSystemTests
         self::clear();
     }
 
-    public function testFileStructure()
+    public function test_file_structure(): void
     {
         $directory = self::directory();
         $files = ['b.tmp', 'a.tmp', 'foo/c.tmp', 'foo/d.tmp', 'bar/e.tmp', 'foo/baz/f.tmp'];

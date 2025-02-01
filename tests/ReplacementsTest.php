@@ -18,7 +18,7 @@ use Shudd3r\Skeletons\Tests\Doubles\FakeReplacement;
 
 class ReplacementsTest extends TestCase
 {
-    public function testPlaceholdersMethod_ReturnsDefinedPlaceholderNames()
+    public function test_placeholders_method_returns_defined_placeholder_names(): void
     {
         $replacements = new Replacements([
             'foo' => new FakeReplacement(),
@@ -27,7 +27,7 @@ class ReplacementsTest extends TestCase
         $this->assertSame(['foo', 'bar'], $replacements->placeholders());
     }
 
-    public function testReplacementMethod_ReturnsDefinedReplacement()
+    public function test_replacement_method_returns_defined_Replacement(): void
     {
         $replacements = new Replacements($replacementArray = [
             'foo' => new FakeReplacement()
@@ -36,7 +36,7 @@ class ReplacementsTest extends TestCase
         $this->assertNull($replacements->replacement('bar'));
     }
 
-    public function testInfoMethod_ReturnsFilteredArrayOfDescriptions()
+    public function test_info_method_returns_filtered_array_of_Replacement_descriptions(): void
     {
         $replacement = new FakeReplacement();
         $replacements = new Replacements($replacementArray = [

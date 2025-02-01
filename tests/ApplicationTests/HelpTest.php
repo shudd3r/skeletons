@@ -18,7 +18,7 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class HelpTest extends ApplicationTests
 {
-    public function testWithoutDefinedReplacementOptions_DisplaysBaseMessage()
+    public function test_without_defined_replacement_options_only_base_message_is_displayed(): void
     {
         $app = $this->dummyApp();
         $this->assertSame(0, $app->run($this->args('help')));
@@ -37,7 +37,7 @@ class HelpTest extends ApplicationTests
         $this->assertMessage($expectedStart, $expectedEnd);
     }
 
-    public function testWithDefinedReplacementOptions_DisplaysArgsInfo()
+    public function test_with_defined_replacement_options_args_info_is_displayed(): void
     {
         $app = $this->dummyApp();
         $app->replacement('foo.test')

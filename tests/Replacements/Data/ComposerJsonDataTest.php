@@ -19,14 +19,14 @@ use RuntimeException;
 
 class ComposerJsonDataTest extends TestCase
 {
-    public function testNotJsonData_ThrowsException()
+    public function test_not_json_data_throws_Exception(): void
     {
         $composer = new ComposerJsonData(new VirtualFile('not-json.foo', 'some string'));
         $this->expectException(RuntimeException::class);
         $composer->value('foo');
     }
 
-    public function testExtractingValues()
+    public function test_extracting_values(): void
     {
         $composer = $this->composer($data);
 
@@ -38,7 +38,7 @@ class ComposerJsonDataTest extends TestCase
         $this->assertSame($data['objects'][0]['foo'], $composer->value('objects.0.foo'));
     }
 
-    public function testMissingData_ReturnsNull()
+    public function test_missing_data_returns_null(): void
     {
         $composer = $this->composer();
 
@@ -48,7 +48,7 @@ class ComposerJsonDataTest extends TestCase
     }
 
     /** @dataProvider notValueKeys */
-    public function testNotStringValue_ThrowsException(string $notValueKey)
+    public function test_not_string_value_throws_Exception(string $notValueKey): void
     {
         $composer = $this->composer();
         $composer->array($notValueKey);
@@ -62,7 +62,7 @@ class ComposerJsonDataTest extends TestCase
     }
 
     /** @dataProvider notArrayKeys */
-    public function testNotArray_ThrowsException(string $notArrayKey)
+    public function test_not_array_throws_Exception(string $notArrayKey): void
     {
         $composer = $this->composer();
         $composer->value($notArrayKey);
@@ -76,7 +76,7 @@ class ComposerJsonDataTest extends TestCase
     }
 
     /** @dataProvider notValidKeys */
-    public function testNotValidKey_ThrowsException(string $notValidKey)
+    public function test_not_valid_key_throws_Exception(string $notValidKey): void
     {
         $composer = $this->composer();
         $this->expectException(RuntimeException::class);

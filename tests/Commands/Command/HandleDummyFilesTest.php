@@ -27,7 +27,7 @@ class HandleDummyFilesTest extends TestCase
         self::$terminal = new Doubles\MockedTerminal();
     }
 
-    public function testWithoutRedundantOrMissingDummyFiles_CommandExecutesWithoutSideEffects()
+    public function test_without_redundant_or_missing_dummy_files_command_executes_without_side_effects(): void
     {
         $directory = $this->directory($files = ['root.txt', 'foo/file.txt', 'bar/.gitkeep']);
         $dummies   = $this->directory(['foo/.gitkeep', 'bar/.gitkeep']);
@@ -37,7 +37,7 @@ class HandleDummyFilesTest extends TestCase
         $this->assertMessages();
     }
 
-    public function testMissingDummyFiles_AreCreatedWithTemplateContents()
+    public function test_missing_dummy_files_are_created_with_template_contents(): void
     {
         $directory = $this->directory(['foo/orig0.txt']);
         $dummies   = $this->directory(['foo/bar/.gitkeep', 'baz/.gitkeep']);
@@ -49,7 +49,7 @@ class HandleDummyFilesTest extends TestCase
         $this->assertSame($contents, $directory->file('baz/.gitkeep')->contents());
     }
 
-    public function testRedundantDummyFiles_AreRemoved()
+    public function test_redundant_dummy_files_are_removed(): void
     {
         $directory = $this->directory(['foo/.gitkeep', 'foo/file1.txt', 'bar/.gitkeep', 'bar/file2.txt']);
         $dummies   = $this->directory(['foo/.gitkeep', 'bar/.gitkeep']);
@@ -59,7 +59,7 @@ class HandleDummyFilesTest extends TestCase
         $this->assertMessages(['Removing', 'foo/.gitkeep', 'bar/.gitkeep']);
     }
 
-    public function testHandlingBothMissingAndRedundantDummies()
+    public function test_handling_both_missing_and_redundant_dummies(): void
     {
         $directory = $this->directory(['foo/file1.txt', 'foo/.gitkeep', 'bar/file2.txt']);
         $dummies   = $this->directory(['foo/.gitkeep', 'bar/baz/.gitkeep']);

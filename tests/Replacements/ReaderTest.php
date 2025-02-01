@@ -23,7 +23,7 @@ class ReaderTest extends TestCase
 {
     use Environment\Files\Paths;
 
-    public function testTokensMethod_ReturnsTokensFromReplacements()
+    public function test_tokens_method_returns_tokens_from_replacements(): void
     {
         $replacements = new Replacements([
             'foo' => new Doubles\FakeReplacement('foo-value'),
@@ -35,7 +35,7 @@ class ReaderTest extends TestCase
         $this->assertTokens($expected, $this->reader()->tokens($replacements));
     }
 
-    public function testSourceFallbackMethod()
+    public function test_source_fallback_method(): void
     {
         $reader = $this->reader();
 
@@ -46,7 +46,7 @@ class ReaderTest extends TestCase
         $this->assertSame('', $reader->tokenValueOf('bar'));
     }
 
-    public function testUsingSourceFallbackWhileReadingTokens()
+    public function test_using_source_fallback_while_reading_tokens(): void
     {
         $replacements = new Replacements([
             'foo' => new Doubles\FakeReplacement('bar', true),
@@ -58,7 +58,7 @@ class ReaderTest extends TestCase
         $this->assertTokens($expected, $this->reader()->tokens($replacements));
     }
 
-    public function testCircularFallbackReferenceWhileReadingTokens_FallbackValue_ReturnsEmptyString()
+    public function test_fallback_value_for_circular_reference_while_reading_tokens_returns_empty_string(): void
     {
         $replacements = new Replacements([
             'foo' => new Doubles\FakeReplacement('baz', true),
@@ -70,7 +70,7 @@ class ReaderTest extends TestCase
         $this->assertTokens($expected, $this->reader()->tokens($replacements));
     }
 
-    public function testSourceDataMethods()
+    public function test_source_data_methods(): void
     {
         $path   = $this->normalized('/path/to/package/directory', DIRECTORY_SEPARATOR, true);
         $env    = new Doubles\FakeRuntimeEnv(new Environment\Files\Directory\VirtualDirectory($path));
@@ -88,7 +88,7 @@ class ReaderTest extends TestCase
         $this->assertNull($reader->metaValueOf('bar'));
     }
 
-    public function testForInvalidTokenInInteractiveMode_TokensMethod_ReturnsAtFirstNullValue()
+    public function test_tokens_method_with_invalid_token_in_interactive_mode_returns_at_first_null_value(): void
     {
         $env    = new Doubles\FakeRuntimeEnv();
         $reader = $this->reader($env, ['script', 'update']);
@@ -106,7 +106,7 @@ class ReaderTest extends TestCase
         $this->assertSame('Aborting...', trim($messages[0]));
     }
 
-    public function testForNonInteractiveMode_InputValueMethod_ReturnsNull()
+    public function test_inputValue_method_for_non_interactive_mode_returns_null(): void
     {
         $env    = new Doubles\FakeRuntimeEnv();
         $reader = $this->reader($env);
@@ -115,7 +115,7 @@ class ReaderTest extends TestCase
         $this->assertEmpty($env->output()->messagesSent());
     }
 
-    public function testForInteractiveMode_InputValueMethod_ReturnsPromptedUserInput()
+    public function test_inputValue_method_for_interactive_mode_returns_prompted_user_input(): void
     {
         $env    = new Doubles\FakeRuntimeEnv();
         $reader = $this->reader($env, ['script', 'update']);
@@ -126,7 +126,7 @@ class ReaderTest extends TestCase
         $this->assertSame(['  > Enter foo:'], $env->output()->messagesSent());
     }
 
-    public function testForNoInputReader_InputValueMethod_ReturnsNullWithoutPromptDisplay()
+    public function test_inputValue_method_for_reader_without_input_returns_null_without_prompt_display(): void
     {
         $env    = new Doubles\FakeRuntimeEnv();
         $reader = $this->reader($env, ['script', 'update'], false);
@@ -135,7 +135,7 @@ class ReaderTest extends TestCase
         $this->assertEmpty($env->output()->messagesSent());
     }
 
-    public function testCommandArgument_ReturnsInputArgSourceValue()
+    public function test_commandArgument_method_returns_command_line_argument_value(): void
     {
         $reader = $this->reader(null, ['command', 'update', 'fooArg=foo command line value', 'barArg=', 'bazArg']);
 
@@ -145,13 +145,13 @@ class ReaderTest extends TestCase
         $this->assertNull($reader->commandArgument('notArg'));
     }
 
-    public function testForNoInputReader_CommandArgumentMethod_ReturnsNull()
+    public function test_commandArgument_method_for_reader_without_input_returns_null(): void
     {
         $reader = $this->reader(null, ['script', 'update', 'fooArg=foo value'], false);
         $this->assertNull($reader->commandArgument('fooArg'));
     }
 
-    public function testSendMessageMethod_SendsIndentedMessageToOutput()
+    public function test_sendMessage_method_sends_indented_message_to_output(): void
     {
         $env    = new Doubles\FakeRuntimeEnv();
         $reader = $this->reader($env);
@@ -170,7 +170,7 @@ class ReaderTest extends TestCase
         $this->assertSame([str_replace("\n", PHP_EOL, $expected)], $env->output()->messagesSent());
     }
 
-    public function testForNoInputReader_SendMessageMethod_hasNoEffect()
+    public function test_sendMessage_method_for_reader_without_input_has_no_effect(): void
     {
         $env    = new Doubles\FakeRuntimeEnv();
         $reader = $this->reader($env, null, false);

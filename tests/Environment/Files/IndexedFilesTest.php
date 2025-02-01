@@ -19,7 +19,7 @@ use Shudd3r\Skeletons\Environment\Files\Directory;
 
 class IndexedFilesTest extends TestCase
 {
-    public function testFileMethod_ForChangedIndexName_ReturnsRenamedFile()
+    public function test_file_for_changed_index_name_returns_RenamedFile_instance(): void
     {
         $source = $this->sourceFiles(['foo.txt']);
         $files  = new IndexedFiles($source, ['bar.txt' => 'foo.txt']);
@@ -28,7 +28,7 @@ class IndexedFilesTest extends TestCase
         $this->assertEquals($expected, $files->file('bar.txt'));
     }
 
-    public function testFileMethod_ForUnchangedIndexName_ReturnsSourceFile()
+    public function test_file_for_unchanged_index_name_returns_source_file(): void
     {
         $source = $this->sourceFiles(['foo.txt']);
         $files  = new IndexedFiles($source, ['foo.txt' => 'foo.txt']);
@@ -37,7 +37,7 @@ class IndexedFilesTest extends TestCase
         $this->assertSame($expected, $files->file('foo.txt'));
     }
 
-    public function testFileMethod_ForNotIndexedName_ReturnsSourceFile()
+    public function test_file_for_not_indexed_name_returns_source_file(): void
     {
         $source = $this->sourceFiles(['foo.txt']);
         $files = new IndexedFiles($source, []);
@@ -46,7 +46,7 @@ class IndexedFilesTest extends TestCase
         $this->assertSame($expected, $files->file('foo.txt'));
     }
 
-    public function testFileListMethod_ReturnsOnlyIndexedFiles()
+    public function test_fileList_returns_only_indexed_files(): void
     {
         $source = $this->sourceFiles(['dir/foo.txt', 'bar.ini', 'baz.out']);
         $index  = [

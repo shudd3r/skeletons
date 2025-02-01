@@ -19,7 +19,7 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class FallbackProcessorTest extends TestCase
 {
-    public function testForSuccessfulPrimaryProcessing_FallbackProcessIsNotExecuted()
+    public function test_for_successful_primary_processing_fallback_process_is_not_executed(): void
     {
         $fallback  = new Doubles\MockedProcessor(false);
         $processor = new FallbackProcessor(new Doubles\MockedProcessor(true), $fallback);
@@ -27,7 +27,7 @@ class FallbackProcessorTest extends TestCase
         $this->assertNull($fallback->passedToken());
     }
 
-    public function testForFailedPrimaryProcessing_ReturnsStatusFromFallbackProcess()
+    public function test_for_failed_primary_processing_returns_status_from_fallback_process(): void
     {
         $fallback  = new Doubles\MockedProcessor(false);
         $processor = new FallbackProcessor(new Doubles\MockedProcessor(false), $fallback);

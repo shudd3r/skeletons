@@ -26,7 +26,7 @@ class UpdateTest extends ApplicationTests
         'email=updated@example.com'
     ];
 
-    public function testUpdatingSynchronizedPackage_GeneratesUpdatedPackageFiles()
+    public function test_package_files_are_updated_with_new_placeholders(): void
     {
         $package = self::$files->directory('package-synchronized');
         $app     = $this->app($package, true);
@@ -35,7 +35,7 @@ class UpdateTest extends ApplicationTests
         $this->assertSameFiles($package, 'package-updated');
     }
 
-    public function testUpdatingPackageWithoutMetaDataFile_AbortsExecutionWithoutSideEffects()
+    public function test_missing_meta_data_file_aborts_execution_without_side_effects(): void
     {
         $package = self::$files->directory('package-synchronized');
         $app     = $this->app($package, true);
@@ -47,7 +47,7 @@ class UpdateTest extends ApplicationTests
         $this->assertSame($expected, $this->snapshot($package));
     }
 
-    public function testUpdatingDesynchronizedPackage_AbortsExecutionWithoutSideEffects()
+    public function test_updating_desynchronized_package_aborts_execution_without_side_effects(): void
     {
         $package = self::$files->directory('package-desynchronized');
         $app     = $this->app($package, true);
@@ -57,7 +57,7 @@ class UpdateTest extends ApplicationTests
         $this->assertSame($expected, $this->snapshot($package));
     }
 
-    public function testUpdatingWithInvalidReplacements_AbortsExecutionWithoutSideEffects()
+    public function test_invalid_replacement_aborts_execution_without_side_effects(): void
     {
         $package = self::$files->directory('package-synchronized');
         $app     = $this->app($package, true);
@@ -71,7 +71,7 @@ class UpdateTest extends ApplicationTests
         $this->assertSame($expected, $this->snapshot($package));
     }
 
-    public function testRedundantDummyFiles_AreRemoved()
+    public function test_redundant_dummy_files_are_removed(): void
     {
         $package = self::$files->directory('package-synchronized');
         $app     = $this->app($package, true);

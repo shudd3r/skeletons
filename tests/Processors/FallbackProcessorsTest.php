@@ -21,7 +21,7 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class FallbackProcessorsTest extends TestCase
 {
-    public function testProcessorMethod_ReturnsFallbackProcessor()
+    public function test_processor_method_returns_fallback_processor(): void
     {
         $primary  = new Doubles\MockedProcessors();
         $fallback = new Doubles\MockedProcessors();

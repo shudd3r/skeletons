@@ -18,7 +18,7 @@ use Shudd3r\Skeletons\Replacements\Token\BasicToken;
 
 class TokenCacheTest extends TestCase
 {
-    public function testGettingTokenFromCache()
+    public function test_getting_Token_from_cache(): void
     {
         $initialToken = new BasicToken('foo', 'one');
         $addedToken   = new BasicToken('bar', 'two');
@@ -30,7 +30,7 @@ class TokenCacheTest extends TestCase
         $this->assertSame($addedToken, $tokens->token('foo/bar.php'));
     }
 
-    public function testMissingToken_ReturnsNull()
+    public function test_missing_Token_returns_null(): void
     {
         $tokens = new TokenCache();
         $this->assertNull($tokens->token('someName'));

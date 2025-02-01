@@ -22,7 +22,7 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class TokensTest extends TestCase
 {
-    public function testForValidTokens_CompositeTokenMethod_ReturnCompositeToken()
+    public function test_compositeToken_method_for_valid_tokens_returns_CompositeToken_instance(): void
     {
         $replacements = $this->replacements(['foo' => 'foo-value', 'bar' => 'valid', 'baz' => 'null']);
         $tokens       = $this->tokens($replacements);
@@ -32,13 +32,13 @@ class TokensTest extends TestCase
         $this->assertEquals($expected, $tokens->compositeToken());
     }
 
-    public function testForInvalidTokens_CompositeTokenMethod_ReturnsNull()
+    public function test_compositeToken_method_for_invalid_tokens_returns_null(): void
     {
         $tokens = $this->tokens($this->replacements(['foo' => 'bar', 'bar' => 'invalid', 'baz' => 'baz-value']));
         $this->assertNull($tokens->compositeToken());
     }
 
-    public function testForValidTokens_PlaceholderValuesMethod_ReturnListWithNotNullTokenValues()
+    public function test_placeholderValues_method_for_valid_tokens_returns_list_without_null_values(): void
     {
         $tokens   = $this->tokens($this->replacements(['foo' => 'foo-value', 'bar' => 'valid', 'baz' => 'baz-value']));
         $expected = ['foo' => 'foo-value', 'bar' => 'valid', 'baz' => 'baz-value'];
@@ -49,7 +49,7 @@ class TokensTest extends TestCase
         $this->assertSame($expected, $tokens->placeholderValues());
     }
 
-    public function testForInvalidTokens_CompositeTokenMethod_ReturnsListWithNullValues()
+    public function test_placeholderValues_method_for_invalid_tokens_returns_list_with_null_values(): void
     {
         $tokens = $this->tokens($this->replacements(['foo' => 'bar', 'bar' => 'invalid', 'baz' => 'baz-value']));
         $this->assertNull($tokens->compositeToken());

@@ -26,25 +26,25 @@ class PackageDescriptionTest extends TestCase
         self::$replacement = new PackageDescription('bar');
     }
 
-    public function testWithoutDataToResolveValue_TokenMethod_ReturnsNull()
+    public function test_without_data_to_resolve_value_token_method_returns_null(): void
     {
         $this->assertNull(self::$replacement->token('foo', Source::create()));
     }
 
-    public function testWithFallbackValue_TokenValueIsResolvedFromThatValue()
+    public function test_with_fallback_value_Token_value_is_resolved_from_that_value(): void
     {
         $source = Source::create()->withFallbackTokenValue('bar', 'bar value');
         $this->assertToken('bar value package', $source);
     }
 
-    public function testWithDescriptionInComposerJsonFile_TokenValueIsResolvedWithComposerData()
+    public function test_value_is_resolved_with_description_in_composer_json_file(): void
     {
         $source = Source::create()->withFallbackTokenValue('bar', 'bar value')
                                   ->withComposerData(['description' => 'Package description']);
         $this->assertToken('Package description', $source);
     }
 
-    public function testForTokenValueResolvedToEmptyString_TokenMethod_ReturnsNull()
+    public function test_for_value_resolved_to_empty_string_token_method_returns_null(): void
     {
         $source = Source::create()->withFallbackTokenValue('bar', 'bar value')
                                   ->withComposerData(['description' => '']);

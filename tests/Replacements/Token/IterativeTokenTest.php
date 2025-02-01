@@ -18,13 +18,13 @@ use RuntimeException;
 
 class IterativeTokenTest extends TestCase
 {
-    public function testValueMethod_ReturnsNull()
+    public function test_value_method_returns_null(): void
     {
         $token = $this->token(['foo', 'bar']);
         $this->assertNull($token->value());
     }
 
-    public function testPlaceholdersAreReplacedWithConsecutiveValues()
+    public function test_placeholders_are_replaced_with_consecutive_values(): void
     {
         $template = '{replace}=1 {replace}=2 {replace}=3 {replace}=4';
         $token    = $this->token(['one', 'two', 'three', 'four']);
@@ -32,7 +32,7 @@ class IterativeTokenTest extends TestCase
     }
 
     /** @dataProvider mismatchedPlaceholders */
-    public function testDifferentNumberOfPlaceholders_ThrowsException(string $template, array $values)
+    public function test_different_number_of_placeholders_throws_Exception(string $template, array $values): void
     {
         $token = $this->token($values);
         $this->expectException(RuntimeException::class);

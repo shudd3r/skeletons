@@ -17,7 +17,7 @@ use Shudd3r\Skeletons\Environment;
 
 class TerminalTest extends TestCase
 {
-    public function testInstantiation()
+    public function test_instantiation(): void
     {
         $terminal = $this->terminal($input, $output, $error);
         $this->assertInstanceOf(Environment\Terminal::class, $terminal);
@@ -25,7 +25,7 @@ class TerminalTest extends TestCase
         $this->assertInstanceOf(Environment\Output::class, $terminal);
     }
 
-    public function testRender_SendsMessagesToOutputStream()
+    public function test_render_sends_messages_to_output_stream(): void
     {
         $terminal = $this->terminal($input, $output, $error);
         $messages = ['foo message', 'bar message', 'baz message'];
@@ -36,7 +36,7 @@ class TerminalTest extends TestCase
         $this->assertSame(implode('', $messages), fgets($output));
     }
 
-    public function testRenderWithErrorCode_SendsMessagesErrorStream()
+    public function test_render_with_error_code_sends_messages_to_error_stream(): void
     {
         $terminal = $this->terminal($input, $output, $error);
         $messages = ['foo message', 'bar message', 'baz message'];
@@ -47,7 +47,7 @@ class TerminalTest extends TestCase
         $this->assertSame(implode('', $messages), fgets($error));
     }
 
-    public function testRenderWithErrorCode_CollectsBinarySumOfErrorCodes()
+    public function test_render_with_error_code_collects_binary_sum_of_error_codes(): void
     {
         $terminal = $this->terminal($input, $output, $error);
         $messages = [32 => 'foo message', 8 => 'bar message', 1 => 'baz message', 9 => 'already covered'];
@@ -57,7 +57,7 @@ class TerminalTest extends TestCase
         $this->assertSame(32 | 8 | 1 | 9, $terminal->exitCode());
     }
 
-    public function testInput_ReadsLineFromInputStream()
+    public function test_input_reads_line_from_input_stream(): void
     {
         $terminal = $this->terminal($input, $output, $error);
         $messages = ['foo message', 'bar message', 'baz message'];

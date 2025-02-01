@@ -16,7 +16,7 @@ use Shudd3r\Skeletons\Tests\ApplicationTests;
 
 class SynchronizationTest extends ApplicationTests
 {
-    public function testSynchronizingPackage_GeneratesMissingAndDivergentFiles()
+    public function test_missing_and_divergent_files_are_generated(): void
     {
         $package = self::$files->directory('package-desynchronized');
         $app     = $this->app($package);
@@ -26,7 +26,7 @@ class SynchronizationTest extends ApplicationTests
     }
 
     /** @dataProvider fileContentsBackupStrategy */
-    public function testSynchronizingPackage_CreatesBackupOnlyForMismatchedNonEmptyFiles(string $contents, bool $expectBackup)
+    public function test_backup_is_created_only_for_changed_non_empty_files(string $contents, bool $expectBackup): void
     {
         $package = self::$files->directory('package-desynchronized');
         $backup  = self::$files->directory();
@@ -43,7 +43,7 @@ class SynchronizationTest extends ApplicationTests
         $this->assertSame($expectBackup, $backup->file('composer.json')->exists());
     }
 
-    public function testRedundantDummyFiles_AreRemoved()
+    public function test_redundant_dummy_files_are_removed(): void
     {
         $package = self::$files->directory('package-desynchronized');
         $app     = $this->app($package);

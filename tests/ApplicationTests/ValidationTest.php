@@ -16,7 +16,7 @@ use Shudd3r\Skeletons\Tests\ApplicationTests;
 
 class ValidationTest extends ApplicationTests
 {
-    public function testSynchronizedPackage_IsValidForLocalCheck()
+    public function test_synchronized_package_is_valid_for_local_check(): void
     {
         $app = $this->app(self::$files->directory('package-initialized'));
         $this->assertSame(0, $app->run($this->args('check', '--local')));
@@ -25,7 +25,7 @@ class ValidationTest extends ApplicationTests
         $this->assertSame(0, $app->run($this->args('check', '--local')));
     }
 
-    public function testSynchronizedPackageWithoutLocalFiles_IsValidForDeployedFiles()
+    public function test_synchronized_package_without_local_files_is_valid_for_deployed_files(): void
     {
         $package = self::$files->directory('package-synchronized');
         $app     = $this->app($package);
@@ -36,13 +36,13 @@ class ValidationTest extends ApplicationTests
         $this->assertSame(1, $app->run($this->args('check', '--local')));
     }
 
-    public function testDesynchronizedPackage_IsInvalid()
+    public function test_desynchronized_package_is_invalid(): void
     {
         $app = $this->app(self::$files->directory('package-desynchronized'));
         $this->assertSame(1, $app->run($this->args('check', '--local')));
     }
 
-    public function testPackageWithoutMetaDataFile_IsInvalid()
+    public function test_package_without_meta_data_file_is_invalid(): void
     {
         $package = self::$files->directory('package-synchronized');
         $app     = $this->app($package);
@@ -51,7 +51,7 @@ class ValidationTest extends ApplicationTests
         $this->assertSame(10, $app->run($this->args('check', '--local')));
     }
 
-    public function testPackageWithRedundantDummyFiles_IsInvalid()
+    public function test_package_with_redundant_dummy_files_is_invalid(): void
     {
         $package = self::$files->directory('package-synchronized');
         $app     = $this->app($package);
@@ -62,7 +62,7 @@ class ValidationTest extends ApplicationTests
         $this->assertSame(1, $app->run($this->args('check')));
     }
 
-    public function testPackageWithoutRedundantDummyFiles_IsValid()
+    public function test_package_without_redundant_dummy_files_is_valid(): void
     {
         $package = self::$files->directory('package-synchronized');
         $app     = $this->app($package);
