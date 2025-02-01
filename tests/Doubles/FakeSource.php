@@ -18,6 +18,11 @@ use Shudd3r\Skeletons\Environment\Files\File\VirtualFile;
 
 class FakeSource implements Source
 {
+    public static function create(array $metaData = [], array $commandArgs = []): self
+    {
+        return new self($metaData, $commandArgs);
+    }
+
     private array  $commandArgs;
     private array  $metaData;
     private array  $inputStrings = [];
@@ -33,11 +38,6 @@ class FakeSource implements Source
     {
         $this->commandArgs = $commandArgs;
         $this->metaData    = $metaData;
-    }
-
-    public static function create(array $metaData = [], array $commandArgs = []): self
-    {
-        return new self($metaData, $commandArgs);
     }
 
     public function sendMessage(string $message): void

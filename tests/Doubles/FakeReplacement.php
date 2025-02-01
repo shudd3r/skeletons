@@ -19,6 +19,11 @@ use Shudd3r\Skeletons\Replacements\Token;
 
 class FakeReplacement extends StandardReplacement
 {
+    public static function create(string $value = '', bool $isFallback = false): self
+    {
+        return new self($value, $isFallback);
+    }
+
     private string   $value;
     private bool     $isFallback;
     private ?Closure $validate = null;
@@ -27,11 +32,6 @@ class FakeReplacement extends StandardReplacement
     {
         $this->value      = $value;
         $this->isFallback = $isFallback;
-    }
-
-    public static function create(string $value = '', bool $isFallback = false): self
-    {
-        return new self($value, $isFallback);
     }
 
     public function withDescription(string $description): self
@@ -53,13 +53,6 @@ class FakeReplacement extends StandardReplacement
     {
         $clone = clone $this;
         $clone->argumentName = $argumentName;
-        return $clone;
-    }
-
-    public function withValidation(Closure $validate): self
-    {
-        $clone = clone $this;
-        $clone->validate = $validate;
         return $clone;
     }
 

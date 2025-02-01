@@ -16,19 +16,19 @@ use Shudd3r\Skeletons\Replacements\Token;
 
 class CompositeToken implements Token
 {
+    public static function withValueToken(Token $valueToken, Token ...$tokens): self
+    {
+        $token = new self($valueToken, ...$tokens);
+        $token->value = $valueToken->value();
+        return $token;
+    }
+
     private array   $tokens;
     private ?string $value = null;
 
     public function __construct(Token ...$tokens)
     {
         $this->tokens = $tokens;
-    }
-
-    public static function withValueToken(Token $valueToken, Token ...$tokens): self
-    {
-        $token = new self($valueToken, ...$tokens);
-        $token->value = $valueToken->value();
-        return $token;
     }
 
     public function replace(string $template): string

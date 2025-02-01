@@ -25,6 +25,19 @@ class VirtualDirectory implements Directory
 
     protected const TEST_EXT = '.sk_tests';
 
+    /**
+     * @param File[] $files
+     */
+    public static function withFiles(array $files, string $path = '/virtual/directory'): self
+    {
+        $directory = new self($path);
+        foreach ($files as $file) {
+            $directory->addFile(str_replace(self::TEST_EXT, '', $file->name()), $file->contents());
+        }
+
+        return $directory;
+    }
+
     private string $path;
     private bool   $exists;
 
@@ -38,19 +51,6 @@ class VirtualDirectory implements Directory
     {
         $this->exists = $exists;
         $this->path   = $this->normalized($path, DIRECTORY_SEPARATOR, true);
-    }
-
-    /**
-     * @param File[] $files
-     */
-    public static function withFiles(array $files, string $path = '/virtual/directory'): self
-    {
-        $directory = new self($path);
-        foreach ($files as $file) {
-            $directory->addFile(str_replace(self::TEST_EXT, '', $file->name()), $file->contents());
-        }
-
-        return $directory;
     }
 
     public function path(): string
