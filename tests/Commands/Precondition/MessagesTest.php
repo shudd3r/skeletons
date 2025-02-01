@@ -39,7 +39,7 @@ class MessagesTest extends TestCase
         $this->assertOutput($failure, $error);
     }
 
-    public static function expectedOutputs(): array
+    public static function expectedOutputs(): iterable
     {
         return [
             'Default instance' => [['Testing defaults'],

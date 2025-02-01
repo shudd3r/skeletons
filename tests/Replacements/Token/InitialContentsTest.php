@@ -83,36 +83,32 @@ class InitialContentsTest extends TestCase
         $this->assertSame($expected, $token->replace($template));
     }
 
-    /** @dataProvider replaceWithInitialValue */
+    /** @dataProvider initialValueReplacements */
     public function test_replace_with_initial_value(string $template, string $expected): void
     {
         $token = new InitialContents();
         $this->assertSame($expected, $token->replace($template));
     }
 
-    public static function replaceWithInitialValue(): array
-    {
-        $examples = [];
-        foreach (self::transformations() as $name => [$template, $replaced, ]) {
-            $examples[$name] = [$template, $replaced];
-        }
-        return $examples;
-    }
-
-    /** @dataProvider replaceWithPlaceholder */
+    /** @dataProvider placeholderValueReplacements */
     public function test_replace_with_original_content_placeholder(string $template, string $expected): void
     {
         $token = new InitialContents(false);
         $this->assertSame($expected, $token->replace($template));
     }
 
-    public static function replaceWithPlaceholder(): array
+    public static function initialValueReplacements(): iterable
     {
-        $examples = [];
-        foreach (self::transformations() as $name => [$template, , $replaced]) {
-            $examples[$name] = [$template, $replaced];
+        foreach (self::transformations() as $name => [$template, $replaced, ]) {
+            yield $name => [$template, $replaced];
         }
-        return $examples;
+    }
+
+    public static function placeholderValueReplacements(): iterable
+    {
+        foreach (self::transformations() as $name => [$template, , $replaced]) {
+            yield $name => [$template, $replaced];
+        }
     }
 
     private static function transformations(): array

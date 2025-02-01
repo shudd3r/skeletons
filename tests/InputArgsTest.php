@@ -44,7 +44,27 @@ class InputArgsTest extends TestCase
         $this->assertSame($expected, $args->interactive());
     }
 
-    public static function interactiveArgs(): array
+    /** @dataProvider localFilesArgs */
+    public function test_local_files_option(bool $expected, array $args): void
+    {
+        $args = new InputArgs(array_merge(['script'], $args));
+        $this->assertSame($expected, $args->includeLocalFiles());
+    }
+
+    public function test_argument_values(): void
+    {
+        $argv = ['script', 'init', 'none', 'foo=value', '--notArg=foo', 'empty=', 'withSpaces=foo bar baz'];
+        $args = new InputArgs($argv);
+        $this->assertSame(null, $args->valueOf('undefined'));
+        $this->assertSame(null, $args->valueOf('notArg'));
+        $this->assertSame(null, $args->valueOf('--notArg'));
+        $this->assertSame('', $args->valueOf('none'));
+        $this->assertSame('', $args->valueOf('empty'));
+        $this->assertSame('value', $args->valueOf('foo'));
+        $this->assertSame('foo bar baz', $args->valueOf('withSpaces'));
+    }
+
+    public static function interactiveArgs(): iterable
     {
         return [
             'command only'  => [true, ['init']],
@@ -60,14 +80,7 @@ class InputArgsTest extends TestCase
         ];
     }
 
-    /** @dataProvider localFilesArgs */
-    public function test_local_files_option(bool $expected, array $args): void
-    {
-        $args = new InputArgs(array_merge(['script'], $args));
-        $this->assertSame($expected, $args->includeLocalFiles());
-    }
-
-    public static function localFilesArgs(): array
+    public static function localFilesArgs(): iterable
     {
         return [
             'no args'       => [false, ['init']],
@@ -78,18 +91,5 @@ class InputArgsTest extends TestCase
             'correct long'  => [true, ['init', '--long-args', '--local']],
             'long & short'  => [true, ['init', '--long-args', '--local', '-il']],
         ];
-    }
-
-    public function test_argument_values(): void
-    {
-        $argv = ['script', 'init', 'none', 'foo=value', '--notArg=foo', 'empty=', 'withSpaces=foo bar baz'];
-        $args = new InputArgs($argv);
-        $this->assertSame(null, $args->valueOf('undefined'));
-        $this->assertSame(null, $args->valueOf('notArg'));
-        $this->assertSame(null, $args->valueOf('--notArg'));
-        $this->assertSame('', $args->valueOf('none'));
-        $this->assertSame('', $args->valueOf('empty'));
-        $this->assertSame('value', $args->valueOf('foo'));
-        $this->assertSame('foo bar baz', $args->valueOf('withSpaces'));
     }
 }

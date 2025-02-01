@@ -95,7 +95,7 @@ class DummyFilesTest extends TestCase
         $this->assertFiles([$relevant], $verified->redundantFiles());
     }
 
-    public static function redundantTemplateFiles(): array
+    public static function redundantTemplateFiles(): iterable
     {
         return [
             [['foo/.gitkeep', 'foo/bar/.gitkeep'], 'foo/bar/.gitkeep'],

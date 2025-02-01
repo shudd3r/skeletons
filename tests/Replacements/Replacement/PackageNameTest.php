@@ -57,7 +57,14 @@ class PackageNameTest extends TestCase
         $this->assertToken($baseValue, Source::create(['foo' => $baseValue]));
     }
 
-    public static function validReplacementValues(): array
+    /** @dataProvider invalidReplacementValues */
+    public function test_for_invalid_source_value_token_method_returns_null(string $invalidValue): void
+    {
+        $source = Source::create(['foo' => $invalidValue]);
+        $this->assertNull(self::$replacement->token('foo', $source));
+    }
+
+    public static function validReplacementValues(): iterable
     {
         return [
             'no changes needed'     => ['PackageAuthor/NoChange', 'PackageAuthor/NoChange'],
@@ -67,14 +74,7 @@ class PackageNameTest extends TestCase
         ];
     }
 
-    /** @dataProvider invalidReplacementValues */
-    public function test_for_invalid_source_value_token_method_returns_null(string $invalidValue): void
-    {
-        $source = Source::create(['foo' => $invalidValue]);
-        $this->assertNull(self::$replacement->token('foo', $source));
-    }
-
-    public static function invalidReplacementValues(): array
+    public static function invalidReplacementValues(): iterable
     {
         return [['-Packa-ge1/na.me'], ['1Package000_/na_Me'], ['package/na-me-']];
     }

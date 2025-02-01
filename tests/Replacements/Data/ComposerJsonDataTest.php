@@ -56,11 +56,6 @@ class ComposerJsonDataTest extends TestCase
         $composer->value($notValueKey);
     }
 
-    public static function notValueKeys(): array
-    {
-        return [['arrays'], ['strings'], ['arrays.first'], ['arrays.second']];
-    }
-
     /** @dataProvider notArrayKeys */
     public function test_not_array_throws_Exception(string $notArrayKey): void
     {
@@ -68,11 +63,6 @@ class ComposerJsonDataTest extends TestCase
         $composer->value($notArrayKey);
         $this->expectException(RuntimeException::class);
         $composer->array($notArrayKey);
-    }
-
-    public static function notArrayKeys(): array
-    {
-        return [['name'], ['strings.value1'], ['strings.value2']];
     }
 
     /** @dataProvider notValidKeys */
@@ -83,7 +73,17 @@ class ComposerJsonDataTest extends TestCase
         $composer->value($notValidKey);
     }
 
-    public static function notValidKeys(): array
+    public static function notValueKeys(): iterable
+    {
+        return [['arrays'], ['strings'], ['arrays.first'], ['arrays.second']];
+    }
+
+    public static function notArrayKeys(): iterable
+    {
+        return [['name'], ['strings.value1'], ['strings.value2']];
+    }
+
+    public static function notValidKeys(): iterable
     {
         return [['name.something'], ['strings.value1.more']];
     }

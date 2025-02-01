@@ -34,7 +34,7 @@ class ReplacementBuilderTest extends TestCase
         $this->assertEquals($expected, $builder->build());
     }
 
-    public static function constructorParams(): array
+    public static function constructorParams(): iterable
     {
         $dummy = fn (int $value) => fn () => $value;
 

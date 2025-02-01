@@ -19,7 +19,7 @@ use Shudd3r\Skeletons\Tests\Fixtures;
 
 class MergedJsonTemplateTest extends TestCase
 {
-    private static Token $token;
+    private static Token                 $token;
     private static Fixtures\ExampleFiles $files;
 
     public static function setUpBeforeClass(): void
@@ -75,15 +75,6 @@ class MergedJsonTemplateTest extends TestCase
         $this->assertSame($contents, $this->jsonTemplate($contents, '{"foo": "bar"}')->render(self::$token));
     }
 
-    public static function nonStructuralContents(): array
-    {
-        return [
-            'empty string'     => [''],
-            'non-json string'  => ['some non-json contents'],
-            'simple type json' => ['123']
-        ];
-    }
-
     public function test_without_json_structure_in_package_it_returns_filtered_template_render(): void
     {
         $this->assertJsonData(['foo' => 'bar'], $this->jsonTemplate('{"foo": "bar", "baz": null}', 'not json'));
@@ -119,27 +110,6 @@ class MergedJsonTemplateTest extends TestCase
 
         $expPackage = array_merge($expand, $package);
         $this->assertJsonData($expected, $this->template($template, $expPackage));
-    }
-
-    public static function mismatchedDataTypes(): array
-    {
-        $assoc = ['foo' => 'a', 'bar' => 'b'];
-        $tpl   = ['foo' => null, 'bar' => null];
-        $list  = ['c', 'd'];
-        $val   = 'value';
-
-        return [
-            'assoc-list'              => [$assoc, $list, null],
-            'list-assoc'              => [$list, $assoc, null],
-            'list:assoc-val'          => [[$assoc, $assoc], [$val, $val], null],
-            'list:list-val'           => [[$list, $list], [$val, $val], null],
-            'list:assoc-list'         => [[$assoc, $assoc], [$list, $list], null],
-            'list:list-assoc'         => [[$list, $list], [$assoc, $assoc], null],
-            'list:tpl-list'           => [[$tpl], [$list, $list], []],
-            'list:tpl+assoc-list'     => [[$tpl, $assoc], [$list, $list], [$assoc]],
-            'sub assoc-val'           => [['foo' => $assoc], ['foo' => $val], null],
-            'sub list-val'            => [['foo' => $list], ['foo' => $val], null]
-        ];
     }
 
     public function test_first_array_in_template_list_is_used_as_structure_template_for_all_items(): void
@@ -223,6 +193,36 @@ class MergedJsonTemplateTest extends TestCase
 
         $expected = self::$files->contentsOf('update-synchronized.json');
         $this->assertSame($expected, $template->render($token));
+    }
+
+    public static function nonStructuralContents(): iterable
+    {
+        return [
+            'empty string'     => [''],
+            'non-json string'  => ['some non-json contents'],
+            'simple type json' => ['123']
+        ];
+    }
+
+    public static function mismatchedDataTypes(): iterable
+    {
+        $assoc = ['foo' => 'a', 'bar' => 'b'];
+        $tpl   = ['foo' => null, 'bar' => null];
+        $list  = ['c', 'd'];
+        $val   = 'value';
+
+        return [
+            'assoc-list'              => [$assoc, $list, null],
+            'list-assoc'              => [$list, $assoc, null],
+            'list:assoc-val'          => [[$assoc, $assoc], [$val, $val], null],
+            'list:list-val'           => [[$list, $list], [$val, $val], null],
+            'list:assoc-list'         => [[$assoc, $assoc], [$list, $list], null],
+            'list:list-assoc'         => [[$list, $list], [$assoc, $assoc], null],
+            'list:tpl-list'           => [[$tpl], [$list, $list], []],
+            'list:tpl+assoc-list'     => [[$tpl, $assoc], [$list, $list], [$assoc]],
+            'sub assoc-val'           => [['foo' => $assoc], ['foo' => $val], null],
+            'sub list-val'            => [['foo' => $list], ['foo' => $val], null]
+        ];
     }
 
     private function assertJsonData(array $expected, Template $json): void
