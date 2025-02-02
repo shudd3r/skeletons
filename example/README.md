@@ -11,15 +11,13 @@ that uses **shudd3r/skeletons** library.
 > reflects configuration used in example [`composer.json`](composer.json)
 > file as if this directory was a standalone package.
 > 
-> However, you can run the `example-skeleton` script on testing project
-> with skeletons package installed by running it from its root directory
-> (with composer.json) - the (unix) command would be for example:
+> However, you can download this package and run the `example-skeleton`
+> script from root directory of a test package to try out building project
+> with dedicated skeleton script. You could also run it as package's own
+> dependency - for example:
 > ```bash
-> vendor/shudd3r/skeletons/example/example-skeletons check
-> ```
-> You can also create some `test-skeleton.php` "shortcut" file there with:
-> ```php
-> include __DIR__ . '/vendor/shudd3r/skeletons/example/example-skeletons';
+> composer require --dev shudd3r/skeletons
+> vendor/shudd3r/skeletons/example/example-skeletons init
 > ```
 
 ### Installation
