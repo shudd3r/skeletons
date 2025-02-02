@@ -23,15 +23,17 @@ This library allows building skeleton package scripts capable of:
 - Updating template placeholder values used in existing package files
 
 ### Basic Usage
+Neither applications nor libraries will use this package directly,
+but as a command line tool of a skeleton package they were built
+with - either tool application or project's composer dev binary.
+
+To avoid conflicts it is released as a standalone package that doesn't
+use any production dependencies, and php version compatibility is the
+only limitation.
+
 Before diving into details you can learn some basics about skeleton
 scripts by browsing files (or playing with to some extent) embedded
 [skeleton package example](example).
-
-Neither applications nor libraries will use this package directly,
-but as a command line tool of the skeleton package they were built
-with (dev dependency). To avoid conflicts it is released as a
-standalone package that doesn't use any production dependencies,
-and php version compatibility is the only limitation.
 
 #### Skeleton package
 Here's a list of main steps to create and use skeleton package - following
