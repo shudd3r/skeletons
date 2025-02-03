@@ -14,18 +14,16 @@ namespace Shudd3r\Skeletons\Tests\Environment\Files;
 use PHPUnit\Framework\TestCase;
 use Shudd3r\Skeletons\Environment\Files\Directory\VirtualDirectory;
 use Shudd3r\Skeletons\Environment\Files\File\VirtualFile;
-use Shudd3r\Skeletons\Environment\Files\Paths;
 use LogicException;
 
 
 class VirtualFilesTest extends TestCase
 {
-    use Paths;
-
     public function test_path_returns_normalized_directory_path(): void
     {
         $directory = new VirtualDirectory('/some/path\foo\bar');
-        $this->assertSame($this->normalized('/some/path/foo/bar', DIRECTORY_SEPARATOR, true), $directory->path());
+        $expected  = DIRECTORY_SEPARATOR === '\\' ? '\\some\\path\\foo\\bar' : '/some/path/foo/bar';
+        $this->assertSame($expected, $directory->path());
     }
 
     public function test_exists_returns_true_for_existing_directories(): void
@@ -85,7 +83,8 @@ class VirtualFilesTest extends TestCase
     {
         $directory    = new VirtualDirectory('/root');
         $subdirectory = $directory->subdirectory('foo/bar');
-        $this->assertSame($this->normalized('/root/foo/bar', DIRECTORY_SEPARATOR, true), $subdirectory->path());
+        $expectedPath = DIRECTORY_SEPARATOR === '\\' ? '\\root\\foo\\bar' : '/root/foo/bar';
+        $this->assertSame($expectedPath, $subdirectory->path());
         $this->assertFalse($subdirectory->exists());
     }
 

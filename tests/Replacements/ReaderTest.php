@@ -21,8 +21,6 @@ use Shudd3r\Skeletons\Tests\Doubles;
 
 class ReaderTest extends TestCase
 {
-    use Environment\Files\Paths;
-
     public function test_tokens_method_returns_tokens_from_replacements(): void
     {
         $replacements = new Replacements([
@@ -72,7 +70,7 @@ class ReaderTest extends TestCase
 
     public function test_source_data_methods(): void
     {
-        $path   = $this->normalized('/path/to/package/directory', DIRECTORY_SEPARATOR, true);
+        $path   = DIRECTORY_SEPARATOR === '/' ? '/path/to/package/directory' : '\\path\\to\\package\\directory';
         $env    = new Doubles\FakeRuntimeEnv(new Environment\Files\Directory\VirtualDirectory($path));
         $reader = $this->reader($env);
 
