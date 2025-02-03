@@ -17,7 +17,10 @@ trait Paths
     private function normalized(string $path, string $separator = '/', bool $absolute = false): string
     {
         $replace = array_diff(['\\', '/'], [$separator]);
-        $path    = str_replace($replace, $separator, $path);
-        return $absolute ? rtrim($path, $separator) : trim($path, $separator);
+        $pos     = $absolute && $separator === '\\' ? strpos($path, '://') : false;
+        $scheme  = $pos ? substr($path, 0, $pos + 3) : '';
+        $path    = str_replace($replace, $separator, $pos ? substr($path, $pos + 3) : $path);
+
+        return $absolute ? $scheme . rtrim($path, $separator) : trim($path, $separator);
     }
 }
