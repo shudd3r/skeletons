@@ -33,7 +33,7 @@ only limitation.
 
 Before diving into details you can learn some basics about skeleton
 scripts by browsing files (or playing with to some extent) embedded
-[skeleton package example](example).
+[skeleton package example](https://github.com/shudd3r/skeleton-example).
 
 #### Skeleton package
 Here's a list of main steps to create and use skeleton package - following
@@ -55,7 +55,7 @@ sections will cover template & script files in more details:
 - Use skeleton as their desired file structure through [CLI commands](#command-line-usage)
 
 ### Executable script file
-Entire script that uses this library might look like attached [example-skeleton](example/example-skeleton) file.
+Entire script that uses this library might look like attached [example-skeleton](https://github.com/shudd3r/skeleton-example/blob/develop/example-skeleton) file.
 
 ##### Scripting features:
 - Template placeholders are chosen by skeleton creators.
@@ -171,7 +171,7 @@ Currently, built-in placeholders can receive their values from following argumen
 - `ns`: project's main namespace
 
 Values that contain spaces should be surrounded with double quotes.
-For example following command for [example-skeleton](example/example-skeleton)
+For example following command for [example-skeleton](https://github.com/shudd3r/skeleton-example/blob/develop/example-skeleton)
 script would update package description:
 ```bash
 vendor/bin/example-skeleton update desc="New package description"
@@ -183,7 +183,7 @@ valid argument values will become default for empty input.
 Project file structure controlled by skeleton will
 reflect template directory, and placeholders within
 its files will be replaced.
-Check out template directory in [example skeleton package](example/template)
+Check out template directory in [example skeleton package](https://github.com/shudd3r/skeleton-example/tree/develop/template)
 
 #### Directive suffixes
 Behavior of some template files can be modified by adding
@@ -210,7 +210,7 @@ with `init`, `update` & `sync` command, and package with redundant or missing
 dummy files will be **marked as invalid** by `check` operation.
 Contents of these files are not validated and [placeholders are not replaced](tests/Fixtures/example-files/package-after-sync/src/.gitkeep).
 
-> In [example template](example/template) `src` and `tests` directories are
+> In [example template](https://github.com/shudd3r/skeleton-example/tree/develop/template) `src` and `tests` directories are
 required, but on initialization `src/Example.php` and `tests/ExampleTest.php`
 files will be created and `.gitkeep` file will be ignored, but when these
 files are removed (and no other file is added) `.gitkeep` will become necessary

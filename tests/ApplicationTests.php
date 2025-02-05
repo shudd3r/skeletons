@@ -36,7 +36,7 @@ class ApplicationTests extends TestCase
     public static function setUpBeforeClass(): void
     {
         self::$files    = new Fixtures\ExampleFiles('example-files');
-        self::$skeleton = new Directory\LocalDirectory(dirname(__DIR__) . '/example/template');
+        self::$skeleton = new Directory\LocalDirectory(__DIR__ . '/Fixtures/example-template');
         self::$terminal = new Doubles\MockedTerminal();
     }
 
